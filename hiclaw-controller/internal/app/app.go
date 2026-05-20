@@ -229,6 +229,9 @@ func (a *App) initInfraClients(_ context.Context) error {
 		// the accessresolver needs to read Worker/Manager CRs.
 		logger.Info("credential-provider sidecar configured", "url", cfg.CredentialProviderURL)
 	}
+	if a.credProvider != nil {
+		a.packages.CredClient = a.credProvider
+	}
 
 	// Gateway client — provider-driven.
 	if cfg.UsesAIGateway() {
@@ -441,14 +444,15 @@ func (a *App) initServiceLayer(_ context.Context) error {
 	}
 
 	a.deployer = service.NewDeployer(service.DeployerConfig{
-		AgentConfig:    a.agentGen,
-		OSS:            a.oss,
-		Executor:       a.shell,
-		Packages:       a.packages,
-		Legacy:         a.legacy,
-		AgentFSDir:     cfg.AgentFSDir(),
-		WorkerAgentDir: cfg.WorkerAgentDir(),
-		MatrixDomain:   cfg.MatrixDomain,
+		AgentConfig:     a.agentGen,
+		OSS:             a.oss,
+		Executor:        a.shell,
+		Packages:        a.packages,
+		Legacy:          a.legacy,
+		AgentFSDir:      cfg.AgentFSDir(),
+		WorkerAgentDir:  cfg.WorkerAgentDir(),
+		MatrixDomain:    cfg.MatrixDomain,
+		NacosCredClient: a.credProvider,
 	})
 
 	return nil
