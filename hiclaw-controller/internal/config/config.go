@@ -464,6 +464,10 @@ func (c *Config) DockerConfig() backend.DockerConfig {
 		HermesWorkerImage:    envOrDefault("HICLAW_HERMES_WORKER_IMAGE", "hiclaw/hermes-worker:latest"),
 		OpenHumanWorkerImage: envOrDefault("HICLAW_OPENHUMAN_WORKER_IMAGE", "hiclaw/openhuman-worker:latest"),
 		DefaultNetwork:       envOrDefault("HICLAW_DOCKER_NETWORK", "hiclaw-net"),
+		WorkerCPU:            envOrDefault("HICLAW_DOCKER_WORKER_CPU", "1000m"),
+		WorkerMemory:         envOrDefault("HICLAW_DOCKER_WORKER_MEMORY", "2Gi"),
+		ManagerCPU:           envOrDefault("HICLAW_DOCKER_MANAGER_CPU", "1000m"),
+		ManagerMemory:        envOrDefault("HICLAW_DOCKER_MANAGER_MEMORY", "2Gi"),
 	}
 }
 
