@@ -236,7 +236,7 @@ If the output is `available`, proceed with the following steps:
 
 **All heartbeat findings MUST be sent to the admin via `copaw channels send`** (not as a reply in the current heartbeat context).
 
-- If all Workers are healthy and there are no pending items: HEARTBEAT_OK (no message needed)
+- If all Workers are healthy and there are no pending items: HEARTBEAT_OK, then fall through to the **daily digest gate** below instead of staying silent.
 - Otherwise, **read SOUL.md first** — use the identity, personality, and **user's preferred language** defined there when composing the report. Report in that language and tone.
 - Resolve the notification channel:
   ```bash
@@ -256,6 +256,26 @@ If the output is `available`, proceed with the following steps:
     If the summary contains characters that break double-quoted `--text`, switch to single-quoted `--text` and type the admin Matrix id literally inside the string.
   - When `channel` is **not** `matrix` and not `"none"`: use **`copaw channels send`** with the resolved `channel` and `target` per **channel-management** / **primary-channel** skill references for that channel.
   - If `channel` is **`"none"`**: admin DM room has not been discovered yet — attempt discovery now (see Step 1), then retry.
+
+#### Daily digest (quiet-day gate)
+
+Findings (anomalies, blockers, capacity asks) always go out immediately via the reporting flow above — the digest never replaces that. The digest exists only to break silence on days where the healthy-branch above would otherwise send nothing.
+
+Time-gate this against `last_digest_sent_at` in state.json so it fires **at most once per 24h**:
+
+1. Read the current value:
+   ```bash
+   bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh --action last-digest get
+   ```
+2. If the returned timestamp is `null`, or is more than 24 hours before the current UTC time, send the digest; otherwise skip it (already sent within the last day).
+3. Digest content — a cross-team summary, not per-tool-call detail: per-team active task counts, idle workers, blocked items (from `mark-blocked`/`blocked_since`), and prior-day completions.
+4. Send it to the admin using the **same channel-resolution steps as the rest of Step 7** (`resolve-notify-channel.sh` → `copaw channels send`, in SOUL.md persona/language) — the digest is a Manager→admin report, addressed to the admin DM/notification channel, never posted into a Worker/Leader/project room.
+5. On successful send, record the timestamp so the gate holds for the next 24h:
+   ```bash
+   bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh --action last-digest set --at "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+   ```
+
+**Interaction with quiet rooms (Phase 5b):** quiet-rooms suppression targets **Worker** per-tool-call chatter inside Worker/Leader/project rooms — it never touches the Manager's own admin-facing sends. The digest is a Manager→admin event-level report, so it always goes out over the admin channel regardless of any room's quiet-rooms setting. Do not attempt to satisfy the digest by posting into a team/project room instead of the admin channel — a quiet-suppressed room is not an acceptable substitute delivery path.
 
 ---
 
