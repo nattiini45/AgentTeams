@@ -1,6 +1,6 @@
 # AgentTeams → Personal AI Coworking — Reshape Plan
 
-> **Status:** Draft v2.1 · **Date:** 2026-06-29 (v1) · 2026-06-30 (v2) · **Owner:** @nattiini45
+> **Status:** Draft v2.3 · **Date:** 2026-06-29 (v1) · 2026-06-30 (v2) · 2026-07-02 (v2.2/v2.3) · **Owner:** @nattiini45
 > Authored with Claude Code (Opus 4.8) after a full codebase analysis + live VPS survey.
 >
 > **v2 (home session) added:** multi-provider LLM (Phase 2b), harness enrichment / skills + CLIs on
@@ -9,6 +9,16 @@
 > verified; `file:line` anchors are inline. Where a verifier overturned a finding, the corrected fact
 > is what's written here (flagged ⚠️). **v2.1** adds §10 — implementation-ready build specs (Project
 > CRD, dashboard data contracts, spike exit-criteria, migration mapping) for the four weakest spots.
+> **v2.2 (2026-07-02):** a 48-agent post-verification pass re-checked every anchor against the fork.
+> Folded in: the **mcp consumer-isolation fix** (Step-5 override, decision #14), the **CoPaw two-channel
+> re-anchor** (S1 statically resolved, decision #15), new spike **S9** (Hermes inbound media, Phase 6),
+> an orphaned CoPaw patch script (§6), PAT-lifecycle hardening (§7), and ~10 anchor corrections.
+> **v2.3 (2026-07-02):** an improvement round (~50 agents over usability / stability / agent-workflows /
+> web-UI project control) folded in: **projectflow↔CRD federation** (#16 — the runtime already has a
+> full project-execution system the plan had missed), **dashboard control tiers** (#17), **project
+> completion lifecycle** (#18), Phase 0 backend hardening (docker limits + restart policy), Phase 1
+> chat-ops + new Phase 1b task-lifecycle robustness, spikes **S10 + S-BACKUP**, a §7 capacity budget,
+> and the §10.2 table-F shape-contradiction fix.
 >
 > **How to continue at home:** this lives on branch `plan/ai-coworking-reshape`.
 > `git fetch origin && git checkout plan/ai-coworking-reshape` (or merge into `main`).
@@ -106,6 +116,7 @@ restructured into Teams. **Daily snapshots** at `/root/backups/hiclaw-snapshot-*
 | 0 | Fresh deploy you control | Foundation | M | Clean instance from fork, on your domains, TLS, reproducible |
 | 0b | Local satellite (Docker Desktop) | Foundation | M | Second instance on your home box (more RAM); shares the VPS Gitea |
 | 1 | Fix chat & assignment | Config/prompts | S | Natural delegation; solo-mode UX |
+| 1b | Task-lifecycle robustness | Skills/scripts | S–M | Cancel/reassign, orphaned-task sweep, id de-dupe (v2.3) |
 | 2 | Wire the Gitea MCP | Config/wiring | S | Workers do real git work through the gateway |
 | 2b | Multi-provider LLM | Config/wiring | S–M | DeepSeek + Xiaomi MiMo + Ollama Cloud + more; per-agent model/provider |
 | 3 | Teams + Hermes workers | Config + validate | M | The functional-team org, autonomous coders |
@@ -145,6 +156,14 @@ tear-down/rebuild at will.
 4. **Selective data import:** restore only the workspaces/personas you want from
    `/root/backups/hiclaw-snapshot-2026-06-29` (don't blanket-restore the old DB).
 5. **Smoke test:** Manager comes up, joins the admin DM, LLM-auth probe passes, you can chat.
+6. **Backend hardening (v2.3):** make the Docker backend honor the resource limits the CRDs already
+   carry end-to-end — `buildCreatePayload` (`internal/backend/docker.go:517-599`) never reads
+   `req.Resources` and `dockerHostConfig` has no Memory/CPU fields; add them, defaulting to the same
+   1000m/2Gi the k8s backend uses (`kubernetes.go:433-479`), via new `DockerConfig.{Worker,Manager}{CPU,Memory}`.
+   Also set `createReq.RestartPolicy = "unless-stopped"` for team members in `createMemberContainer`
+   (`member_reconcile.go:414-425`) — today only the Manager gets it (`manager_reconcile_container.go:222`),
+   so a VPS/dockerd restart brings the Manager back and leaves every lead/worker dark until the next
+   reconcile. Unit-test both (assert HostConfig.Memory/NanoCpus set from req.Resources and from defaults).
 
 **Files/components:** `install/hiclaw-install.sh` (or a new compose with Traefik labels),
 `hiclaw-controller/Dockerfile.embedded`, `hiclaw-controller/supervisord.embedded.conf`,
@@ -165,11 +184,14 @@ This is the "just a second *team set*" idea — same externals, different teams.
 - ONE embedded `hiclaw-controller` container (Higress + Tuwunel + MinIO + Element + controller under
   `supervisord`) that spawns **separate** manager/worker containers via the mounted Docker socket
   (`member_reconcile.go:414-425`). The Manager is **not** inside the embedded image.
-- Differs from the VPS: **no Traefik/TLS**, ports bound to `127.0.0.1` (`18080`/`18001`/`18088`),
-  `*-local.hiclaw.io` network aliases (`LOCAL_ONLY`, `install/hiclaw-install.ps1:3174-3176`).
+- Differs from the VPS: **no Traefik/TLS**, ports bound to `127.0.0.1` (`18080`/`18001`/`18088`,
+  `install/hiclaw-install.ps1:3174-3176`), `*-local.hiclaw.io` network aliases (`LOCAL_ONLY`,
+  `ps1:3076-3079`; legacy non-embedded path `:2727-2730`).
 - ⚠️ **The Docker backend sets NO per-container memory/CPU limits** — `buildCreatePayload` never reads
   `req.Resources`; limits are k8s-only (`internal/backend/docker.go:491-599` vs `kubernetes.go:433-479`).
   Your **WSL2 `.wslconfig memory=` ceiling is the only governor** — set it generously *before* first boot.
+  *(v2.3: Phase 0 step 6 fixes this in the shared backend code — once landed, the local satellite gets
+  hard caps too and `.wslconfig` becomes a second line of defense, not the only one.)*
 - Per-worker RAM: OpenClaw ~500 MB, **QwenPaw ~150 MB**, Hermes between (`docs/windows-deploy.md:50,294-305`).
   HW min 2c/4 GB; recommended 4c/8 GB (`windows-deploy.md:46-47`). Workers are **stateless** — no host
   volumes; their FS is MinIO inside the controller `/data`.
@@ -191,7 +213,8 @@ What collides and what doesn't (track verified **solid**):
 - ❌ **No instance discriminator exists today.** Matrix localparts/aliases are raw names (worker
   localpart = CR name; manager = literal `"manager"`, `provisioner.go:308-311`; alias
   `hiclaw-<kind>-<name>`, `:211-213`). `EnsureUser`/`CreateRoom` silently log into / return an existing
-  account/alias (`client.go:225-273`) → silent hijack on a shared homeserver.
+  account/alias (`client.go:225-273` EnsureUser; CreateRoom's `M_ROOM_IN_USE` alias-reuse `:481-496`)
+  → silent hijack on a shared homeserver.
 - ❌ Matrix **AppService defaults ON and claims an exclusive `@.*:<domain>` namespace** (`config.go:319`,
   `appservice.go:33-45`) → two AppServices on one homeserver = hard conflict.
 - ❌ Single MinIO bucket `hiclaw-storage`; `hiclaw-config/` is mirrored and **ingested as CRs**
@@ -239,28 +262,70 @@ that push to the **shared VPS Gitea**; the (future) dashboard shows both VPS and
 
 **Steps**
 1. **Bare `@mention` resolution** — resolve `@alice` → `@alice:domain` from the worker registry so
-   natural mentions wake agents. *(`copaw/src/matrix/channel.py` `_was_mentioned()` + a localpart cache.)*
+   natural mentions wake agents. **Patch BOTH channel impls (✓ #15 — S1 statically resolved):** the
+   Manager runs the overlay *(`copaw/src/matrix/channel.py` `_was_mentioned()` `:981-1015` — baked into
+   the manager image by `manager/Dockerfile.copaw:86-96`)*; CoPaw leads/workers run the standalone
+   near-duplicate *(`copaw/src/copaw_worker/matrix_channel.py` `_was_mentioned()` `:662` — installed
+   into `custom_channels/` at startup by `worker.py:570-583`)*. Add the localpart cache to each.
 2. **In-turn acknowledgment** for CoPaw orchestrators — send an immediate ack on receiving a task/
-   completion before deferring detailed work to the heartbeat. *(`copaw/src/matrix/channel.py`,
-   `manager/agent/copaw-manager-agent/AGENTS.md`, `HEARTBEAT.md`.)*
+   completion before deferring detailed work to the heartbeat. *(Both channel files per #15 —
+   `copaw/src/matrix/channel.py` for the Manager, `copaw/src/copaw_worker/matrix_channel.py` for
+   leads/workers; `manager/agent/copaw-manager-agent/AGENTS.md`, `HEARTBEAT.md`.)*
 3. **Tighter heartbeat** — make the interval configurable and drop from 1h to ~5–10 min.
    *(`manager/scripts/init/start-copaw-manager.sh`, `manager/configs/manager-openclaw.json.tmpl`
    for the OpenClaw analogue if ever used.)*
 4. **Catch-up-sync replay safety net** — persist + replay messages received during first-boot sync
-   instead of dropping them. *(`copaw/src/matrix/channel.py` `_sync_loop`, add `catch_up_replay`.)*
+   instead of dropping them. *(Both files per #15 — overlay `_sync_loop` `channel.py:750-798` for the
+   Manager, standalone `copaw_worker/matrix_channel.py:537-569` for leads/workers; near-duplicate
+   "catch-up sync (messages suppressed)" logic in each — add `catch_up_replay` to both.)*
 5. **Solo mode** (`HICLAW_SOLO_OPERATOR`): drop `PermissionLevel`, auto-resolve the operator as sole
    admin, force `PeerMentions=true`, skip the onboarding interview.
    *(`hiclaw-controller/api/v1beta1/types.go`, `internal/controller/{team,manager}_controller.go`,
-   `internal/config/config.go`.)*
+   `internal/config/config.go`. **The interview itself lives elsewhere:** the 4-question Q&A prompt is
+   rendered by `internal/service/provisioner.go` `renderManagerWelcomeBody` `:1540-1568` and sent via
+   `internal/controller/manager_reconcile_welcome.go` — that's where the solo-mode skip goes.)*
 6. **Proactive Manager nudges (✓ decided #5):** drive heartbeat-based nudges so the Manager pings you on
    meaningful events (a task **stalls**, **finishes**, or **needs input**) rather than staying purely
    reactive. Keep them coarse (Manager→you, event-level) so they coexist with quiet rooms (Phase 5b) —
    these are status nudges, not per-turn worker chatter. *(`manager/agent/copaw-manager-agent/HEARTBEAT.md`,
    `AGENTS.md`.)*
+7. **Structured task intake (v2.3):** add a fill-in-the-blanks `spec.md` skeleton to
+   `task-management/references/finite-tasks.md` (deliverable, acceptance criteria, target team/worker,
+   priority, due) — Manager fills by best guess, asks at most one clarifying question, confirms in one
+   message. Doubles as the schema behind the future dashboard task form (#17).
+8. **Blocked-task routing (v2.3):** `manage-state.sh` gains `mark-blocked --task-id T --reason` /
+   `unblock --task-id T` (writes `status:"blocked"` + `blocked_since` on the active_tasks entry);
+   escalations are formatted `[task-id] blocker text` and the Manager parses that tag from the admin's
+   reply — so two concurrent blockers in one DM don't collide. HEARTBEAT gains a blocked-age nudge.
+9. **Daily digest (v2.3):** time-gate HEARTBEAT.md Step 7's healthy branch — once per 24h
+   (`last_digest_sent_at` in state.json) send a cross-team digest (per-team active counts, idle workers,
+   blocked items, prior-day completions) instead of silence on quiet days.
 
 **Acceptance:** `@alice do X` (bare) works; you get an immediate ack; a freshly-created worker
 doesn't drop your first message; no permission/onboarding friction; the Manager nudges you when a task
 stalls/finishes without you asking.
+
+---
+
+### Phase 1b — Task-lifecycle robustness (v2.3)  · effort S–M · risk L
+Three gaps from the improvement round; all Manager-skill/script changes, no controller code:
+1. **Cancel/reassign primitive** — nothing in the stack can cancel or reassign a task today. Add
+   `cancel` / `reassign` actions to `manage-state.sh` plus a `task-management` reference describing the
+   protocol (notify the worker's room, update `meta.json`, remove/replace the active_tasks entry).
+   Surfaced later as dashboard actions (#17).
+2. **Orphaned-task reconciliation** — a container delete+recreate (any spec change,
+   `member_reconcile.go:316-329`) strands the in-flight task in `state.json` forever. Add a HEARTBEAT
+   step: for each active task, check the assigned worker is Running and the task dir shows recent
+   progress; stale → nudge the operator or mark blocked.
+3. **Task-id collision guard** — ids are second-granularity timestamps (`task-YYYYMMDD-HHMMSS`).
+   `action_add_finite` already de-dupes on exact id (`manage-state.sh:55-61`, SKIP if present) — which
+   is exactly the problem: two *distinct* same-second creates collide on id and the second is
+   **silently skipped**, not added. On id collision with a different title/assignee, suffix the id and
+   add, instead of skipping.
+
+**Acceptance:** a running task can be cancelled and reassigned from chat; recreating a worker container
+mid-task produces a heartbeat alert instead of a permanent ghost entry; two add-finite calls in the same
+second yield two distinct ids.
 
 ---
 
@@ -273,9 +338,22 @@ stalls/finishes without you asking.
    `mcp-gitea-<worker>` via `setup-mcp-proxy.sh`, each carrying that worker's own PAT as the upstream
    `defaultCredential` and gated via `allowedConsumers` to that worker's single consumer (the operator
    helper #12 runs this loop). Higress holds the PATs; the worker presents only its consumer key.
-   *(`manager/scripts/init/setup-mcp-proxy.sh`, `manager/agent/skills/mcp-server-management/`.)*
-3. **Worker skill:** add `manager/agent/worker-skills/gitea-operations/SKILL.md` describing the 18
-   Gitea tools (mirror `github-operations`).
+   ⚠️ **Do NOT reuse the script's Step 5 as-is (✓ #14):** Step 5 (`setup-mcp-proxy.sh:326-339`)
+   REPLACE-broadcasts **every** registry worker's consumer onto the new server and rewrites **all**
+   workers' `config/mcporter.json` — silently voiding the per-worker isolation. The helper runs the
+   script's steps 1–4 only, then itself PUTs `/v1/mcpServer/consumers` = `[<that worker>]` and updates
+   only that worker's `mcporter.json`. Budget the ~10s auth-plugin wait per server (~2–3 min sequential
+   over 14 workers); N registrations also mean N DNS service-sources pointing at the same gitea-mcp
+   backend (harmless, just visible in the console).
+   *(`manager/agent/skills/mcp-server-management/scripts/setup-mcp-proxy.sh` — note the real path;
+   earlier drafts cited `manager/scripts/init/`, which never held it.)*
+3. **Worker skill + review loop (v2.3):** add `manager/agent/worker-skills/gitea-operations/SKILL.md`
+   describing the **actual** gitea-mcp tools — **S-GIT first enumerates the live tool names/schemas**
+   (don't assume GitHub parity; mirror `github-operations` in shape only). Add a **lead-review-loop**
+   reference for the team-leader agent: worker opens a PR via its own `mcp-gitea-<worker>` → lead
+   fetches the diff via *its own* identity, reviews, requests changes → worker fixes → lead merges.
+   Workers report PR deliverables with review state (open / changes-requested / merged) in the Result
+   Contract — this is what per-worker attribution (#4) buys you.
 4. **Per-worker reach + Hermes-native path:** each worker reaches Gitea as its **own Gitea user** via its
    own `mcp-gitea-<worker>` registration (Higress holds that worker's PAT as the upstream `defaultCredential`;
    the worker presents only its consumer key). When a working tree is needed (gitea-mcp is API-based, no
@@ -288,7 +366,8 @@ stalls/finishes without you asking.
 
 **Acceptance:** a worker lists issues / opens a PR on a Gitea repo via its own `mcp-gitea-<worker>` (the PR
 is attributed to that worker's Gitea user); revoking its consumer from that server's `allowedConsumers` cuts
-access.
+access. **Isolation (✓ #14):** worker A's consumer key is rejected (401/403) on worker B's
+`mcp-gitea-<worker>` — verified as part of spike S-GIT.
 
 ---
 
@@ -364,6 +443,13 @@ between providers; revoking a pinned agent's route cuts its provider.
 4. **⚠️ Validate interop (the one real risk):** confirm a **CoPaw lead ↔ Hermes worker** round-trip
    over Matrix (mention → task → result) works, and that Hermes workers can consume the team-worker
    skill templates. Run the **spike** (§7) early.
+5. **Coordination patterns (v2.3)** — document in the `team-leader-agent` skills: (a) **cross-team
+   requests** are Manager-mediated (requesting lead → Manager → new task/Project in the serving team,
+   result relayed back; keeps #2's team-scoping intact); (b) an **Escalation Report envelope** for every
+   needs-input ping — project/task id, blocker category (ambiguous requirement / technical / needs
+   credential / needs decision), what was tried, the specific question — reused later by the dashboard's
+   needs-you queue; (c) a note that `PeerMentions` only enables ad-hoc worker↔worker @mention chat — it
+   creates no tasks and grants no delegation authority.
 
 **Acceptance:** assign a task to a team in chat; the CoPaw lead delegates to a Hermes worker; the
 worker executes and reports back; you see it in the (future) dashboard.
@@ -444,7 +530,9 @@ below by *which layer* each enhancement belongs in.
 **Recommended approach — skills**
 1. **The "every worker" seam = builtin template dirs.** Drop your skill under
    `manager/agent/{worker-agent,copaw-worker-agent,hermes-worker-agent,openhuman-worker-agent,team-leader-agent}/skills/<name>/`
-   (one source dir symlinked across runtimes to avoid 5× copies), rebuild + **redeploy the controller
+   (one source dir **copied** across runtimes by a small Makefile/CI copy step — **not a git symlink**:
+   this checkout has `core.symlinks=false` and Docker COPY doesn't dereference, so a committed symlink
+   ships as a broken text file), rebuild + **redeploy the controller
    image** → it reaches every worker (incl. the 14 migrated) within ~5 min. The real constraint is
    "controller rebuild + redeploy," not "create-only."
 2. **Market skills → pre-fetch at build time** (`@nacos-group/cli skill-get`) into a builtin dir rather than
@@ -454,7 +542,9 @@ below by *which layer* each enhancement belongs in.
 3. ✓ **Workers self-install skills (DECIDED 2026-06-30).** So **stop `pull_all` from pruning local skills
    absent from MinIO** (`copaw/src/copaw_worker/sync.py:709-716`) — otherwise a worker's `find-skills
    install` is reverted on the next ~5-min sync. Keep the operator's builtin set as the floor and let
-   workers add on top. Also fix the stale "workers can't modify own skills" docs (`skills-management.md:38`,
+   workers add on top. **Floor semantics, explicit:** the ~5-min `Overwrite:true` builtin mirror still
+   wins any *name collision* — a self-installed skill sharing a builtin's directory name is re-overwritten
+   every reconcile regardless of the pruning fix; workers durably own only non-builtin names. Also fix the stale "workers can't modify own skills" docs (`skills-management.md:38`,
    `worker-skills/README.md:56`). ⚠️ Verify Hermes FileSync has no equivalent pruning during the §7 spike.
    (Heads-up: this loosens reproducibility — a worker's exact skill set is no longer fully operator-defined;
    the dashboard file browser, Phase 5, is where you'd inspect what a worker self-installed.)
@@ -503,8 +593,32 @@ within ~5 min with zero per-worker steps; a CoPaw image bump gives CoPaw workers
 2. **v2:** task detail panel (`meta.json` + `result.md` + latest `progress`), kanban by status,
    DAG render from `plan.md`.
 3. **Serve behind Traefik at `hq.pawcommit.com` with forward/basic-auth (✓ decided #1, #3)** — same pattern
-   as `git-mcp.pawcommit.com`, no app-level auth code. Serve via nginx alongside Element or the controller
-   static dir (`internal/server/http.go`).
+   as `git-mcp.pawcommit.com`, no app-level auth code. Serve via nginx alongside Element (the controller
+   has **no** static-file serving in `internal/server/` today — hosting the SPA from the controller would
+   be net-new code; §10.2's same-origin proxy design assumes the nginx path).
+4. **Control tiers (✓ #17 — v2.3):** the controller already has the write surface; the dashboard climbs
+   a ladder instead of staying read-only forever. **v1** read-only (as above) → **v1.1** wake/sleep
+   buttons proxying the existing `POST /api/v1/workers/{name}/wake|sleep|ensure-ready`
+   (`lifecycle_handler.go:35-160`) with a confirm dialog + proxy request-log (Traefik basic-auth can't
+   identify callers, so the log is the audit trail) → **v1.5** two ~20-line controller endpoints
+   `POST /api/v1/managers/{name}/message` + `POST /api/v1/teams/{name}/message` (gated
+   `RequireAuthz(ActionUpdate, …)`, delivered via the existing `SendMessageAsAdmin`,
+   `internal/matrix/client.go:645-658`) so "start project X", "pause project" (→ the lead's
+   `projectflow(pause_project)`, #16), and needs-input replies become dashboard actions riding the
+   existing chat orchestration → **Phase 4+** native `POST /api/v1/projects` mirroring the existing
+   `CreateTeam` handler pattern (zero new authz code — `authorizer.go` admin/manager roles don't inspect
+   ResourceKind). The proxy's GET-only rule becomes a **scoped allowlist**; this consciously amends #3's
+   "no app-level auth code" spirit — still no login UI, but method-scoped writes + logging. `/docker/`
+   is **never** exposed to the UI beyond read-only logs (it allows exec behind one coarse authz check).
+5. **Observability kit (v2.3):** (a) a per-container **Logs tab** via the existing `/docker/` reverse
+   proxy (`http.go:123-128`, embedded mode; GET-only passthrough) — nearly free; (b) enable the
+   built-but-disabled Prometheus endpoint (`app.go:651` `BindAddress:"0"` → `":8091"`, container-network
+   only, never through Traefik) and render a controller health card; (c) the `shared/events/*.jsonl`
+   schema is **specified now, built only if the inferred-progress view proves insufficient**:
+   `{ts, actor, event: progress|subtask_done|blocked, subtask?, detail}` — hermes/openhuman workers
+   already `mc mirror` the whole task dir, so the file would ride along free; (d) Higress exposes **no
+   per-consumer LLM-spend** API (console API = provisioning endpoints only) — don't design a spend view
+   against it.
 
 **Known gaps to design around:** no `%`-complete / per-subtask status / live stream today — v1 infers
 from Phase + timestamps; add a lightweight event log (`shared/events/*.jsonl`) only if needed.
@@ -524,7 +638,10 @@ stalls / finishes / needs input), driven by the Manager heartbeat (Phase 1 step 
 keep the Manager's event-level pings.
 
 **Verified mechanics (the two runtimes need different fixes)**
-- **CoPaw:** the fork's overlay channel (`copaw/src/matrix/channel.py`) posts only the **final `m.text`
+- **CoPaw (✓ #15 — two files, fix both):** the overlay channel (`copaw/src/matrix/channel.py`) is the
+  **Manager's** runtime channel (baked in by `manager/Dockerfile.copaw:86-96`); CoPaw leads/workers run
+  the near-duplicate standalone `copaw_worker/matrix_channel.py` — apply the same suppression to both.
+  The overlay posts only the **final `m.text`
   reply** + a readiness probe; the per-tool-call / reasoning chatter comes from CoPaw's installed
   `BaseChannel` (external package), gated by forwarded flags. The one open tap is **`show_tool_details`**
   (defaults **True**, never set anywhere — `config.py:1164`). Typing indicators + read receipts are already
@@ -568,7 +685,14 @@ result**, not a message per tool call; the dashboard still has the full detail.
 
 **Steps**
 1. **Matrix-attachment → MinIO bridge:** on upload, push into the task/project dir so workers can
-   `mc` it. *(`copaw/src/matrix/channel.py` `_on_room_media_event`, Hermes `overlay_adapter.py`.)*
+   `mc` it. *(CoPaw — both files carry the near-duplicate generic hook, per #15: Manager overlay
+   `channel.py:528-535`; leads/workers standalone `copaw_worker/matrix_channel.py` — registered for
+   Image/File/Audio/Video at `:395-396`, handler at `:1210`. Today both download to `WORKING_DIR/media`;
+   redirect to MinIO. Hermes: ⚠️ **no equivalent hook exists** — `overlay_adapter.py:179-239` only
+   intercepts `m.image` (vision downgrade); generic `m.file`/`m.audio`/`m.video` pass straight through
+   to the **un-vendored** native adapter → **spike S9**. Fallback: route attachments through the CoPaw
+   lead — its standalone channel has the hook (`copaw_worker/matrix_channel.py:395-396,1210`) — into
+   MinIO, and Hermes workers read from there.)*
 2. **Dashboard file browser** (Phase 5) covers browse/download; optionally point the existing
    **filebrowser** at the AgentTeams workspace for a familiar UI.
 3. Write-back: worker outputs surface in the dashboard + optionally posted to chat as attachments.
@@ -591,6 +715,13 @@ Both runtimes are pinned old and carry version-sensitive patches.
     bug". **Likely deletable** once on a fixed release.
   - `copaw/scripts/patch_{reme,agentscope,agentscope_runtime}_lazy.py` — lazy-import monkey-patches
     against specific module layouts; **verify they still apply** to the new AgentScope.
+  - ⚠️ **ORPHANED 4th patch (found in v2.2 pass):** `copaw/scripts/patch_copaw_stream_errors.py`
+    (reclassifies stream disconnects as `ModelTimeoutException` instead of `UnknownAgentException` and
+    extends the 60s stream timeout to 900s) **exists but is never COPY'd/RUN by `copaw/Dockerfile`** —
+    the commit that added it (#847) touched the Dockerfile without wiring it in. **Wire it into
+    `copaw/Dockerfile` NOW (v2.3 — Phase 0/1 hardening),** next to the sed patches at `:93-102` (both
+    target the standard venv's copaw package); at bump time re-verify it still applies against the new
+    exceptions.py shape, and delete it only if upstream fixed the misclassification.
 - **⚠️ Rebrand:** **CoPaw → QwenPaw** (2026-04-12). The canonical runtime now lives at
   `github.com/agentscope-ai/QwenPaw`; the pinned `johnlanni/CoPaw` lite fork is effectively
   superseded by it.
@@ -620,8 +751,13 @@ Both runtimes are pinned old and carry version-sensitive patches.
 - **To bump:** set `HERMES_GIT_REF=v2026.6.19` in `hermes/Dockerfile` (or switch the install to
   `pip install hermes-agent==0.17.0`); then **verify the shim still applies** —
   `hermes/Dockerfile:138-140` depends on `gateway/platforms/matrix.py` existing, and
-  `hermes/src/hermes_matrix/{_shim.py,overlay_adapter.py}` subclass the native `MatrixAdapter`
-  (check its `__init__`/method signatures haven't shifted across 7 releases). Rebuild
+  `hermes/src/hermes_matrix/overlay_adapter.py` subclasses the native `MatrixAdapter` (`_shim.py` only
+  renames/re-exports). **The coupling surface is wider than `__init__` — re-diff all four overridden
+  touchpoints against v0.17.0** (folded into spike S3): `connect()`/`self._client` + the monkey-patched
+  `send_message_event` (`overlay_adapter.py:103-116`), `self._user_id` (`:127`),
+  `_resolve_message_context`'s implicit 6-tuple return `(body, is_dm, chat_type, thread_id,
+  display_name, source)` (`:134-177`) incl. `_is_dm_room`/`_get_display_name` (`:144,158`), and
+  `_handle_media_message`/`_handle_text_message` (`:179-239`). Rebuild
   `hiclaw-hermes-worker`.
 
 ### Where image tags live
@@ -638,13 +774,33 @@ throwaway team; confirm mention→task→result over Matrix and that Hermes cons
 skills. This de-risks Phase 3 before the full restructure. **Fold two Phase 5b checks into this same
 spike** (both flagged uncertain): (a) does CoPaw `show_tool_details=false` actually silence the stream
 (it lives in the external `BaseChannel`), and (b) does Hermes stream steps as new events or `m.replace`
-edits, and does the native adapter route them through `send_message_event`?
+edits, and does the native adapter route them through `send_message_event`? **Plus the Phase 6 check
+(S9):** drop an `m.file` on the Hermes worker and find where (if anywhere) the native adapter lands it —
+the overlay has no generic inbound-media hook.
 
 **→ Full spike table with PASS/FAIL exit-criteria for every ⚠️ item: see §10.3.**
 
 **Hardening:**
 - **Rotate MinIO creds** (currently `admin` / weak default) and the gateway/LLM keys; keep them in
   the install env file, not in image layers.
+- **Per-worker Gitea PATs (post-#4):** give the #12 helper a `--rotate` mode and set a rotation cadence.
+  Note the **Higress config store now holds every worker's PAT** (as `mcp-gitea-<worker>`
+  `defaultCredential`s) — confirm whether the daily `hiclaw-snapshot` archives capture it, and
+  encrypt/exclude those archives accordingly, or every PAT lands in plaintext backups.
+- **Embedded-container health (v2.3):** add a Docker `HEALTHCHECK` to `Dockerfile.embedded` — one
+  composite CMD hitting the controller `/healthz`, MinIO `/minio/health/live`, and Tuwunel
+  `/_matrix/client/versions` — so `docker ps` reflects inner-subsystem crash-loops instead of only
+  supervisord/PID-1 liveness. Plus a startup pre-flight `PRAGMA integrity_check` on the kine SQLite DB
+  before `StartKine` (log loudly and refuse a silent fallback-to-empty on corruption — that file is the
+  source of truth for all CRs).
+- **Capacity budget (v2.3):** worst-case hot-burst RAM — Manager + 4 CoPaw leads at ~150–500 MB each,
+  14 Hermes workers at ~150–500 MB each (`windows-deploy.md:50,294-305`) ≈ **3–9.5 GB for agents alone**,
+  before the embedded stack (Higress+Tuwunel+MinIO+Element+controller, unmeasured) and the box's other
+  tenants (Gitea, 3× act_runner, filebrowser, …) — against 16 GB shared. Mitigations: the Phase 0 step-6
+  docker-limits fix (hard caps), `workerIdleTimeout` guidance of **30–60m** (the CRD default is 720m,
+  `types.go:562` — far too lazy for this box; and note idle-sleep is *advisory*: the lead decides,
+  `coordination.go:87-90`, the controller enforces nothing), and running heavy teams on the local
+  satellite. Spot-check real tenant usage with `docker stats` / `free -h` on the VPS before Phase 3.
 - Keep `console.pawcommit.com` and any MinIO console behind Traefik auth.
 - Continue the daily `hiclaw-snapshot` backups; snapshot before each phase's deploy.
 
@@ -656,7 +812,7 @@ the Aliyun CN one; mirror or build locally).
 
 ## 8. Decisions log (v2 — resolved 2026-06-30)
 
-*All v1 + v2 open questions are now resolved except #9, deferred with the Option A choice. ✓ = decided, ⏸ = deferred.*
+*All v1 + v2 open questions are now resolved except #9, deferred with the Option A choice. ✓ = decided, ⏸ = deferred. v2.2 adds #14–#15; v2.3 adds #16–#18.*
 
 1. ✓ **Dashboard domain — `hq.pawcommit.com`** (dedicated subdomain behind Traefik).
 2. ✓ **Project scope — always team-scoped** (every Project belongs to one functional Team).
@@ -682,13 +838,48 @@ the Aliyun CN one; mirror or build locally).
     membership. Keeps the controller free of any Gitea API client / PAT handling.
 13. ✓ **Per-repo RW/RO (#4/Phase 4) — DECIDED 2026-06-30: enforced via Gitea repo-collaborator roles**
     (ro → read, rw → write), driven by the Project manifest — not advisory.
+14. ✓ **mcp-gitea consumer isolation — DECIDED 2026-07-02.** `provision-worker-gitea.sh` (#12) must
+    **not** run `setup-mcp-proxy.sh`'s Step 5 as-is: Step 5 (`setup-mcp-proxy.sh:326-339`)
+    REPLACE-broadcasts **all** registry workers' consumers onto whatever server it registers and rewrites
+    every worker's `mcporter.json` — voiding the per-worker isolation decision #4 depends on. The helper
+    runs steps 1–4, then PUTs `/v1/mcpServer/consumers` = `[<that worker>]` itself and updates only that
+    worker's `mcporter.json`. S-GIT gains an isolation assertion (worker A's key → 401/403 on worker B's
+    server). Outside-in, nothing changes: workers just get their git tools.
+15. ✓ **CoPaw channel split — RESOLVED STATICALLY 2026-07-02 (supersedes S1's open framing).** The
+    Manager runs the overlay `copaw/src/matrix/channel.py` (baked in by `manager/Dockerfile.copaw:86-96`);
+    CoPaw leads/workers run the standalone near-duplicate `copaw_worker/matrix_channel.py` (installed
+    into `custom_channels/` by `worker.py:570-583`; the worker image applies only a one-line sed fix to
+    the built-in, no overlay). Phase 1 + 5b fixes land in **both** files; S1 is demoted to a quick
+    live-confirm. Leads stay CoPaw forever (leader runtime forced), so the standalone file matters even
+    after the Hermes migration.
+16. ✓ **Project CRD ↔ projectflow federation — DECIDED 2026-07-02 (v2.3).** The CoPaw lead runtime
+    already ships a complete project-execution system: the `projectflow`/`taskflow` MCP tools with
+    `create_project`/`plan_dag`/`pause_project`/`resume_project`/`complete_project`
+    (`copaw/src/copaw_worker/hooks/tools/projectflow.py`, `task.py:191-214,496-541`) and their own
+    `meta.json` schema. The Phase 4 CRD is a **second, federated concept** — CRD = repo/access
+    provisioning; projectflow = work execution; linked by project id, **no schema merge**. §10.2 table
+    F's "shape unchanged" claim was false and is corrected. The reconciler notifies the lead's Team Room
+    on new Projects (step 8b) since nothing watches `shared/projects/` otherwise.
+17. ✓ **Dashboard control tiers — DECIDED 2026-07-02 (v2.3).** v1 read-only → v1.1 wake/sleep
+    passthrough (existing `POST /api/v1/workers/{name}/wake|sleep`, `lifecycle_handler.go:35-160`) →
+    v1.5 message-injection endpoints (`POST /api/v1/managers/{name}/message` +
+    `/api/v1/teams/{name}/message` via the existing `SendMessageAsAdmin`) → Phase 4+
+    `POST /api/v1/projects`. Consciously amends #3's "no app-level auth code": still Traefik-only login,
+    but the proxy grows a scoped write allowlist + request log as the audit trail. `/docker/` is never
+    exposed to the UI beyond read-only logs.
+18. ✓ **Project completion lifecycle — DECIDED 2026-07-02 (v2.3).** `status.phase` gains
+    **Completed/Archived** as operator-set states, signalled by the lead's
+    `projectflow(complete_project)`; on Completed the reconciler raises `DeprovisionPending=True` and
+    the dashboard surfaces "run `provision-worker-gitea.sh --deprovision <id>`" (#12 gains the flag;
+    controller still makes no Gitea calls). CR delete remains hard cleanup.
 
 ---
 
 ## 9. Appendix — key references
 
 **Code hot-spots:** `manager/agent/AGENTS.md` · `manager/agent/copaw-manager-agent/` ·
-`manager/agent/skills/` + `worker-skills/` · `copaw/src/matrix/channel.py` ·
+`manager/agent/skills/` + `worker-skills/` · `copaw/src/matrix/channel.py` +
+`copaw/src/copaw_worker/matrix_channel.py` (✓ #15 — Manager vs leads/workers) ·
 `hermes/src/hermes_matrix/{_shim.py,overlay_adapter.py}` ·
 `hiclaw-controller/internal/controller/{member_reconcile,team_controller,manager_controller}.go` ·
 `hiclaw-controller/internal/service/provisioner.go` · `hiclaw-controller/internal/gateway/higress.go` ·
@@ -723,7 +914,8 @@ each carrying that worker's PAT as the upstream `defaultCredential`).
   `internal/initializer`/`appservice.go` (exclusive `@.*` namespace) · `internal/service/provisioner.go:211-213,308-311`
   (Matrix naming) · `internal/minio/minio_admin.go:124-162` (bucket) · `install/hiclaw-install.ps1` ·
   `Makefile:632-633` · `manager/scripts/init/start-tuwunel.sh:26-27` · `docs/windows-deploy.md`.
-- *Matrix verbosity (5b):* `copaw/src/matrix/channel.py` + CoPaw `config.py:1164` (`show_tool_details`) ·
+- *Matrix verbosity (5b):* `copaw/src/matrix/channel.py` + `copaw/src/copaw_worker/matrix_channel.py`
+  (✓ #15) + CoPaw `config.py:1164` (`show_tool_details`) ·
   `copaw/src/copaw_worker/bridge.py:226-239` · `hermes/src/hermes_matrix/{overlay_adapter.py:109-132,policies.py}` ·
   `hermes/src/hermes_worker/bridge.py:249-253` (dead `MATRIX_FILTER_*`).
 
@@ -765,12 +957,13 @@ left uncertain is fixed or clearly marked ⚠️ rather than asserted as fact.
 
 #### 0. Critical context found in the code (read before building)
 
-- **Git access reuses the existing gitea-mcp — no controller Gitea client, per-worker identity.** Each worker reaches Gitea as its **own Gitea user + scoped PAT** through a per-worker `mcp-gitea-<worker>` Higress server (Higress holds the PAT; the worker presents only its consumer key — plan §3, `ai-coworking-reshape-plan.md:82`). The Project controller does **only** two things: project the CR → MinIO manifest, and record assigned workers + per-repo `access`. **No Gitea REST client, no per-repo deploy keys, no scoped tokens, no PAT handling, no project credential storage** — the per-worker Gitea user/PAT, `mcp-gitea-<worker>` registration, and collaborator role are applied by the operator helper (#12) from the manifest. (high confidence)
+- **Git access reuses the existing gitea-mcp — no controller Gitea client, per-worker identity.** Each worker reaches Gitea as its **own Gitea user + scoped PAT** through a per-worker `mcp-gitea-<worker>` Higress server (Higress holds the PAT; the worker presents only its consumer key — plan §3, Git MCP row). The Project controller does **only** two things: project the CR → MinIO manifest, and record assigned workers + per-repo `access`. **No Gitea REST client, no per-repo deploy keys, no scoped tokens, no PAT handling, no project credential storage** — the per-worker Gitea user/PAT, `mcp-gitea-<worker>` registration, and collaborator role are applied by the operator helper (#12) from the manifest. (high confidence)
 - **Workers are stateless; gateway/FS secrets reach them via container env**, built in `service/worker_env.go:21-37` (`Build`) — keys like `HICLAW_WORKER_GATEWAY_KEY`, `HICLAW_FS_SECRET_KEY`. The worker presents its gateway consumer key to its own `mcp-gitea-<worker>` server (which carries the worker's PAT upstream) — no per-project secret and no PAT is injected into the worker. (high confidence)
 - **OSS interface** (`oss/client.go:7-33`) gives `PutObject`, `GetObject`, `DeleteObject`, `DeletePrefix`, `Mirror` — exactly what the MinIO projection + cleanup need. Deployer already uses `d.oss.PutObject` / `d.oss.Mirror` (`deployer.go:826,852`). (high confidence)
 - **Finalizer constant is shared**: `finalizerName = "hiclaw.io/cleanup"` (`worker_controller.go:28`), reconcile cadence `reconcileInterval = 5*time.Minute`, retry `30*time.Second` (`:29-30`). Reuse all three. (high confidence)
 - **Two finalizer idioms exist** — Worker uses `client.MergeFrom` patch + deferred status patch (`worker_controller.go:95-110`); Team/Human use `r.Update` (`team_controller.go:96-118`). Mirror the **Worker** idiom (status subresource + deferred merge-patch) since Project has a rich status. (high confidence)
 - **Per-worker gitea-mcp registration reuses the Higress proxy path** — `setup-mcp-proxy.sh` registers one `mcp-gitea-<worker>` per worker, each carrying that worker's PAT as the upstream `defaultCredential` and gated by `allowedConsumers` to that worker's consumer (`internal/gateway/higress.go` for the consumer/route mechanics). Higress holds the PATs; the operator helper (#12) runs the per-worker registration, not the controller. (high confidence)
+- **The runtime already has its own Project system (✓ #16 — v2.3).** The CoPaw lead's `projectflow`/`taskflow` MCP tools (`copaw/src/copaw_worker/hooks/tools/projectflow.py`, `copaw/src/copaw_worker/task.py:36-44,191-214,496-541`) implement `create_project`/`plan_dag`/`pause_project`/`resume_project`/`complete_project` with their **own** `meta.json` schema (`source`/`requester`/`parent_task_id` — no `team`, no `repos`). The CRD is a **second, federated concept**: CRD = repo/access provisioning ("infra project"); projectflow = work execution — linked by project id, **not** schema-merged. Mid-flight steering (pause/resume/reprioritize) therefore needs **no CRD field**: it's a message to the lead (#17 tier v1.5), and the lead's existing tool actions do the rest. (high confidence)
 
 ---
 
@@ -834,7 +1027,8 @@ spec:
                   format: int64
                 phase:
                   type: string
-                  enum: [Pending, Provisioning, Ready, Degraded, Failed]
+                  enum: [Pending, Provisioning, Ready, Degraded, Failed, Completed, Archived]
+                  description: "Pending→Provisioning→Ready are reconciler-computed; Completed/Archived are operator-set (✓ #18), signalled by the lead's projectflow(complete_project)."
                 message:
                   type: string
                 repoCount:
@@ -887,7 +1081,7 @@ spec:
     shortNames: [proj]
 ```
 
-Shape mirrors `workers.hiclaw.io.yaml` exactly: `subresources.status: {}` (`workers…yaml:260-261`), `additionalPrinterColumns` (`:262-274`), `scope: Namespaced` + `names` block (`:275-281`). The `enum`/`required`/`pattern` validation idiom is copied from the Worker spec. **Copy the file verbatim to `helm/hiclaw/crds/projects.hiclaw.io.yaml`** — the four existing CRDs are duplicated there (`helm/hiclaw/crds/{workers,teams,managers,humans}.hiclaw.io.yaml`); the multi-provider track already flagged Helm/CRD drift.
+Shape mirrors `workers.hiclaw.io.yaml` exactly: `subresources.status: {}` (`workers…yaml:260-261`), `additionalPrinterColumns` (`:262-274`), `scope: Namespaced` + `names` block (`:275-281`). The `enum`/`required`/`pattern` validation idiom is copied from the Worker spec. **The Helm copy is automatic:** `make generate` already runs `cp config/crd/*.yaml ../helm/hiclaw/crds/` after deepcopy (`hiclaw-controller/Makefile:50-53`) — so write the CRD to `config/crd/` and run `make generate`; no manual copy to forget. (The four existing CRDs are duplicated at `helm/hiclaw/crds/{workers,teams,managers,humans}.hiclaw.io.yaml` by exactly this mechanism.)
 
 ---
 
@@ -941,7 +1135,7 @@ func (s ProjectSpec) EffectiveProjectName(metadataName string) string {
 
 type ProjectStatus struct {
 	ObservedGeneration int64                  `json:"observedGeneration,omitempty"`
-	Phase              string                 `json:"phase,omitempty"` // Pending/Provisioning/Ready/Degraded/Failed
+	Phase              string                 `json:"phase,omitempty"` // Pending/Provisioning/Ready/Degraded/Failed + operator-set Completed/Archived (#18)
 	Message            string                 `json:"message,omitempty"`
 	RepoCount          int                    `json:"repoCount,omitempty"`          // backs the Repos printer column
 	RecordedWorkers    []string               `json:"recordedWorkers,omitempty"`    // workers recorded in the manifest; operator helper (#12) provisions Gitea user/mcp-gitea-<worker>/collaborator role from it
@@ -992,7 +1186,8 @@ type ProjectReconciler struct {
 6. **Record assigned workers + per-repo access (idempotent)** — for each assigned worker, record its name + the Project's `repos[].access` into `status.recordedWorkers` and the MinIO manifest (step 8). The **per-worker Gitea identity, the `mcp-gitea-<worker>` Higress registration, and the repo-collaborator membership are applied by the operator helper (#12) from that manifest — the controller makes NO Gitea calls and registers no shared route.** Set condition `WorkersRecorded`. The `access: rw|ro` from `spec.repos` is the **source of the collaborator-role mapping (#13)** the helper applies — enforced, not advisory.
 7. *(no credential injection step)* — the worker presents its own consumer key to its own `mcp-gitea-<worker>` server (Higress holds the worker's PAT); nothing per-project is injected into the worker by the controller.
 8. **MinIO projection** (§5) — `PutObject(shared/projects/<id>/manifest.json, …)` including each repo's `access` (the source of the worker-user collaborator-role mapping #13 the helper applies). Set condition `MinIOProjected`.
-9. Phase `Ready` when all conditions True; `Provisioning` while any in flight. Return `RequeueAfter: reconcileInterval`.
+8b. **Notify the lead (✓ #16 — v2.3):** the first time `MinIOProjected` goes True, post a message into the team's existing `Team.Status.TeamRoomID` via the provisioner's `SendMessageAsAdmin` (`internal/matrix/client.go:645-658` — the controller's existing Matrix-out primitive, already used for onboarding at `provisioner.go:1534`): project id + manifest path + "run `projectflow(create_project)` to start planning". Track condition `LeaderNotified` for idempotence (fire once). **Without this the manifest lands silently** — nothing watches `shared/projects/`: the lead's `pull_all` never pulls `shared/` (`sync.py:654-718`), and the lead heartbeat only iterates *local* project dirs (`projectflow.py:137-145`). Optional belt-and-suspenders: a lead-heartbeat `mc ls` diff of remote vs local project ids surfacing `new_project_manifest_pending`.
+9. Phase `Ready` when all conditions True; `Provisioning` while any in flight. **`Completed`/`Archived` (✓ #18) are operator-set, never reconciler-computed** — see the completion-lifecycle note below. Return `RequeueAfter: reconcileInterval`.
 
 **`reconcileDelete` (finalizer cleanup):**
 ```
@@ -1003,6 +1198,8 @@ The controller only deletes the MinIO projection — **no Gitea-side calls, no g
 
 **Status transitions:** `"" → Pending` (created, finalizer added) → `Provisioning` (recording/projection in flight) → `Ready` (all conditions True) → `Degraded` (team missing or partial recording failure) → `Failed` (only when nothing could be recorded/projected and MinIO is unreachable). Mirror `computeWorkerPhase` semantics: on transient error keep the prior non-empty Phase rather than flapping to Failed (`worker_controller.go:325-338`).
 
+**Completion lifecycle (✓ #18 — v2.3):** `Completed`/`Archived` are **operator-set** phases (dashboard button or `hiclaw` patch), never reconciler-computed — the *signal* that work is done is the lead running `projectflow(complete_project)` (`task.py:496-541`, already implemented today). On `Completed` the reconciler raises condition `DeprovisionPending=True`, which the dashboard surfaces as "run `provision-worker-gitea.sh --deprovision <id>`" — #12's helper gains that flag; **the controller still makes no Gitea calls.** `Archived` additionally moves the MinIO projection to a cold prefix. CR delete stays the hard-cleanup path, unchanged. Without this lifecycle, finished projects hold live Gitea collaborator grants indefinitely — a real hygiene problem for a solo operator who won't remember manual cleanup.
+
 **SetupWithManager:** `ctrl.NewControllerManagedBy(mgr).For(&v1beta1.Project{}).Complete(r)`. **Add a `Watches` on Team** (enqueue Projects whose `spec.team` changed membership) so adding a worker to a team re-records it in the manifest (the operator helper then provisions its Gitea user / `mcp-gitea-<worker>` / collaborator role) — mirror the Pod-watch wiring in `worker_controller.go:340-371` but keyed on Team. (TODO-CRD-4: a `spec.team` field indexer like `TeamLeaderNameField` at `team_controller.go:34-37`.)
 
 ---
@@ -1011,7 +1208,9 @@ The controller only deletes the MinIO projection — **no Gitea-side calls, no g
 
 **Each worker has its own Gitea user + scoped PAT; all access flows through the existing gitea-mcp.** Verified mechanism (gitea-mcp source-cloned, HEAD bbde7ee):
 - gitea-mcp (HTTP mode) reads a per-request `Authorization: Bearer <PAT>` and builds the upstream Gitea client from it, **overriding** its own `GITEA_ACCESS_TOKEN` env (`operation.go:72-84` → `pkg/gitea/gitea.go:76-81` → `rest.go`; precedence header > flag > env). One gitea-mcp process serves N Gitea identities.
-- **Registration:** one Higress MCP-server **per worker** — `mcp-gitea-<worker>` via `setup-mcp-proxy.sh`, proxying the existing gitea-mcp URL, with that worker's PAT as the upstream `defaultCredential`/`defaultUpstreamSecurity`, `allowedConsumers` limited to that worker's consumer. **Higress holds each PAT**; the worker presents only its existing consumer key — credential firewall preserved. (Today's shared `mcp-github` pattern broadcasts one server to all workers — `setup-mcp-server.sh` Step 5 — so the registration loop becomes per-worker; config only, no controller Go change for the gateway leg.)
+- **Registration:** one Higress MCP-server **per worker** — `mcp-gitea-<worker>` via `setup-mcp-proxy.sh`, proxying the existing gitea-mcp URL, with that worker's PAT as the upstream `defaultCredential`/`defaultUpstreamSecurity`, `allowedConsumers` limited to that worker's consumer. **Higress holds each PAT**; the worker presents only its existing consumer key — credential firewall preserved. (Today's shared `mcp-github` pattern broadcasts one server to all workers — `setup-mcp-server.sh` Step 5 — so the registration loop becomes per-worker; config only, no controller Go change for the gateway leg.
+⚠️ **#14:** skip the script's Step-5 all-workers broadcast — the helper sets the single-consumer list
+itself.)
 - **Provisioning (✓ #12 — operator helper):** a standalone `scripts/provision-worker-gitea.sh` (operator-run, **not** the controller) creates the Gitea user + scoped PAT (`POST /users`, `POST /users/:name/tokens`), registers the per-worker mcp server, and sets repo-collaborator membership. **No Gitea admin client in the controller; the controller never handles PATs.**
 - **RW/RO enforcement (✓ #13 — real):** the Project manifest's `repos[].access` maps to each assigned worker-user's **Gitea repo-collaborator role** (ro → read, rw → write), applied by the helper — a `ro` repo genuinely cannot be pushed. (PAT scopes are global per scope-block; the per-repo wall is the collaborator role.)
 - **Hermes native checkout:** reuses the worker's **own PAT** via a git credential helper when a working tree is needed — spike **S-GIT**.
@@ -1052,7 +1251,7 @@ Uses the exact `oss.StorageClient.PutObject(ctx, key, []byte)` signature (`oss/c
 - **✓ NET-NEW OPERATOR HELPER (#12)**: `scripts/provision-worker-gitea.sh` is net-new and **owns all Gitea-admin + per-worker-mcp-registration work** — it creates each worker's Gitea user + scoped PAT (`POST /users`, `POST /users/:name/tokens`), registers the per-worker `mcp-gitea-<worker>` Higress server (via `setup-mcp-proxy.sh`), and sets repo-collaborator membership from the manifest. **Keeps the controller Gitea-free** (no Gitea client, no PAT handling, no gateway calls for the Gitea leg).
 - **BUILD**: construct `ProjectReconciler` in `initReconcilers` (`app.go:530-597`); the reconciler needs no gitea-mcp route config (it makes no gateway calls — the operator helper owns the `mcp-gitea-<worker>` registrations).
 - **BUILD**: add `&Project{}/&ProjectList{}` to the `scheme.AddKnownTypes` call inside `addKnownTypes` (`register.go:19-29`) and run `make generate` for `zz_generated.deepcopy.go`.
-- **BUILD**: write `projects.hiclaw.io.yaml` to BOTH `config/crd/` and `helm/hiclaw/crds/` to avoid drift; add the `status.repoCount` field that backs the Repos printer column (the `.length` jsonPath is invalid).
+- **BUILD**: write `projects.hiclaw.io.yaml` to `config/crd/` and run `make generate` — it deepcopies AND syncs `config/crd/*.yaml` → `helm/hiclaw/crds/` (`Makefile:50-53`), preventing drift by construction; add the `status.repoCount` field that backs the Repos printer column (the `.length` jsonPath is invalid).
 - **BUILD**: `project_provisioner.go` does **only** MinIO projection — no Gitea client, no gateway calls. Update the `gitea-operations` skill to read repo URLs + access from the Project manifest (not inline paths) per Phase 4 step 4.
 
 ---
@@ -1080,7 +1279,7 @@ Uses the exact `oss.StorageClient.PutObject(ctx, key, []byte)` signature (`oss/c
 | D | Manager `state.json` | **NET-NEW** `GET :8090/api/v1/manager-tasks` (exposes `~/state.json`) | active-task registry — see (2) | file at `manage-state.sh:18` (`${HOME}/state.json`); endpoint does not exist yet |
 | E | MinIO task store | bucket `hiclaw-storage`, prefix `shared/tasks/{id}/` (`meta.json`, `spec.md`, `result.md`, `plan.md`, `progress/YYYY-MM-DD.md`, `base/`) | see (1.E) | layout `task-lifecycle.md:99-109` + `worker-agent/AGENTS.md:138-144`; `meta.json` `task-lifecycle.md:34-45`; `progress/` `task-progress/SKILL.md:18-20` |
 | F | MinIO project store | prefix `shared/projects/{id}/` (`meta.json`, `plan.md`) | see (1.F) | `create-project.sh:57,64-74` |
-| G | Gitea API | `git.pawcommit.com` (repo/PR/issue context per Project) — **v2, out of v1 scope** | upstream Gitea REST | plan §3 line 80 |
+| G | Gitea API | `git.pawcommit.com` (repo/PR/issue context per Project) — **v2, out of v1 scope** | upstream Gitea REST | plan §3 |
 
 Bucket name `hiclaw-storage` is the install default — it is **env-driven**: `OSSBucket = envOrDefault(HICLAW_FS_BUCKET, "hiclaw-storage")` (`config.go:287`; also worker `FSBucket :354`, propagated `:707`). The local satellite sets `HICLAW_FS_BUCKET=hiclaw-storage-home` (plan line 204) — the proxy/dashboard must read `HICLAW_FS_BUCKET` per-instance, not hard-code it.
 
@@ -1185,7 +1384,7 @@ Sibling files in the same prefix: `spec.md` (Manager-written), `plan.md` (worker
   "confirmed_at":    "ISO-8601"      // null until confirmed (create-project.sh:73)
 }
 ```
-Sibling: `plan.md` (the DAG / phase plan; `[ ]`/`[~]`/`[x]` checkboxes, parsed for the v2 DAG render). **Phase 4 note:** once the `Project` CRD lands, this `meta.json` becomes the **MinIO projection of the CR** (plan line 384, "CR is source of truth, MinIO the cache") — the dashboard reads the projection, shape unchanged.
+Sibling: `plan.md` (the DAG / phase plan; `[ ]`/`[~]`/`[x]` checkboxes, parsed for the v2 DAG render). **Phase 4 note (CORRECTED v2.3 — the earlier "shape unchanged" claim was false):** once the `Project` CRD lands, the CRD's projection is `shared/projects/<id>/manifest.json` with the **§10.1 shape** (`id/team/description/repos/recordedWorkers/updatedAt`) — which shares almost nothing with this chat-flow `meta.json` (`project_room_id/status/workers/confirmed_at`, written by the lead's `projectflow` system, decision #16). The dashboard must **join both**: the CRD manifest for repos/access/provisioning state, and the `projectflow` `meta.json` + `plan.md` for execution status and the DAG render — linked by project id.
 
 #### (2) NET-NEW: `GET /api/v1/manager-tasks` — expose `state.json`
 
@@ -1229,7 +1428,7 @@ This is the **task board's primary feed** (it's the registry the Manager heartbe
 
 #### (3) Same-origin backend-proxy contract (NET-NEW)
 
-**Rationale (verified):** `:8090` does **no CORS/OPTIONS handling** — there is no `Access-Control-*` header set and no `OPTIONS` handler or CORS middleware in the mux (`http.go:44-130`). (A bare `grep Options` substring-matches Go's `metav1.*Options` types — that's noise, not CORS.) A browser SPA on `hq.pawcommit.com` therefore cannot `fetch()` `:8090` cross-origin. **Second reason, stronger:** `:8090` **requires a Bearer SA token** in *both* modes — embedded mode runs an embedded apiserver (`app.go:367,636`) → `restCfg != nil` → TokenReview auth enabled (`app.go:432-443`); missing/invalid token → `401 "invalid or missing bearer token"` (`middleware.go:62,137-141`, `extractBearerToken` `:158-168`). The browser must never hold that token. → the proxy is mandatory, not just a CORS workaround.
+**Rationale (verified):** `:8090` does **no CORS/OPTIONS handling** — there is no `Access-Control-*` header set and no `OPTIONS` handler or CORS middleware in the mux (`http.go:44-130`). (A bare `grep Options` substring-matches Go's `metav1.*Options` types — that's noise, not CORS.) A browser SPA on `hq.pawcommit.com` therefore cannot `fetch()` `:8090` cross-origin. **Second reason, stronger:** `:8090` **requires a Bearer SA token** in *both* modes — embedded mode runs an embedded apiserver (`app.go:367,636`) → `restCfg != nil` → TokenReview auth enabled (`app.go:432-443`); missing/invalid token → `401 "invalid or missing bearer token"` (`internal/auth/middleware.go:62,137-141` — note the package: `auth`, not `server`; `extractBearerToken` `:158-168`). The browser must never hold that token. → the proxy is mandatory, not just a CORS workaround.
 
 **Shape:** a thin server (nginx or a small Go/Node service) co-located with the SPA behind Traefik at `hq.pawcommit.com`, same origin as the static assets. It holds **one credential**: a controller admin SA token (the bootstrapped CLI token, `app.go:211-220`).
 
@@ -1243,13 +1442,13 @@ This is the **task board's primary feed** (it's the registry the Manager heartbe
 | `/api/projects`, `/api/projects/{id}/*` | MinIO `s3://$HICLAW_FS_BUCKET/shared/projects/...` | MinIO creds | |
 | `/api/files/*` | MinIO browse/download | MinIO creds | the file browser (Phase 6 overlap) |
 
-**Auth boundary:** the **only** external auth is Traefik forward/basic-auth on `hq.pawcommit.com` (✓ decided #1/#3, plan line 487) — same pattern as `git-mcp.pawcommit.com`. No app-level auth code. The proxy is read-only for v1 (GET only); reject all other methods.
+**Auth boundary:** the **only** external auth is Traefik forward/basic-auth on `hq.pawcommit.com` (✓ decided #1/#3, Phase 5 build step 3) — same pattern as `git-mcp.pawcommit.com`. No app-level auth code. The proxy is read-only for v1 (GET only); reject all other methods — **v1.1+ grows a scoped write allowlist** (wake/sleep, then message-injection) per decision #17 / Phase 5 step 4.
 
-**Cross-instance (Phase 0b Option A):** the dashboard aggregates **both** controllers' `:8090` (plan line 206). The proxy fans out to `vps-controller:8090` and `home-controller:8090` (over the tailnet), tagging each response with an `instance` field client-side. **TODO (live-VPS):** confirm the home controller's `:8090` is reachable from the proxy host (tailnet/`host.docker.internal`), and that the home MinIO bucket is `hiclaw-storage-home`.
+**Cross-instance (Phase 0b Option A):** the dashboard aggregates **both** controllers' `:8090` (§0b Option A). The proxy fans out to `vps-controller:8090` and `home-controller:8090` (over the tailnet), tagging each response with an `instance` field client-side. **TODO (live-VPS):** confirm the home controller's `:8090` is reachable from the proxy host (tailnet/`host.docker.internal`), and that the home MinIO bucket is `hiclaw-storage-home`.
 
 #### (4) SPA polling model
 
-No websockets/SSE exist server-side — the v1 SPA **polls** (plan line 485, "Poll every ~15s").
+No websockets/SSE exist server-side — the v1 SPA **polls** (Phase 5 build step 1, "Poll every ~15s").
 
 | Feed | Source via proxy | Interval | Notes |
 |---|---|---|---|
@@ -1260,7 +1459,7 @@ No websockets/SSE exist server-side — the v1 SPA **polls** (plan line 485, "Po
 
 **ETag/caching: none today.** No handler sets `ETag`/`Last-Modified`/`Cache-Control` (the writers are `httputil.WriteJSON`, no cache headers; MinIO objects do carry native `ETag`/`Last-Modified`). Recommendation: the **proxy** adds conditional-GET support for the MinIO routes (pass through MinIO `ETag`, honor `If-None-Match` → `304`) so polling task/progress files is cheap; the controller REST feeds are small enough to fetch fresh each poll. Client-side: diff by `updated_at` (`manager-tasks`) and by `phase`/`containerState`/`message` (cards) to avoid re-render churn.
 
-**Known gaps to design around (unchanged from plan line 491):** no `%`-complete, no per-subtask status, no live stream. v1 infers progress from `phase` + `meta.json` timestamps + `result.md` Outcome + counting `[x]`/`[~]`/`[ ]` in `plan.md`. Add `shared/events/*.jsonl` only if the inferred view proves insufficient.
+**Known gaps to design around (unchanged from Phase 5's known-gaps note):** no `%`-complete, no per-subtask status, no live stream. v1 infers progress from `phase` + `meta.json` timestamps + `result.md` Outcome + counting `[x]`/`[~]`/`[ ]` in `plan.md`. Add `shared/events/*.jsonl` only if the inferred view proves insufficient.
 
 #### Open TODOs
 
@@ -1283,7 +1482,7 @@ No websockets/SSE exist server-side — the v1 SPA **polls** (plan line 485, "Po
 
 | ID | Uncertainty (plan §, file:line) | Exact experiment — commands / where / what to observe | PASS criterion | FAIL → fallback | Gates | Priority |
 |---|---|---|---|---|---|---|
-| **S1** | **CoPaw two-channel-impl: which registers at runtime** (§0b/§5b; overlay `copaw/src/matrix/channel.py` vs standalone `copaw/src/copaw_worker/matrix_channel.py`, both `CHANNEL_KEY="matrix"`). | On a running CoPaw **worker**: `docker exec <copaw-worker> sh -c 'ls -la $COPAW_WORKING_DIR/custom_channels/ && cat $COPAW_WORKING_DIR/custom_channels/matrix_channel.py \| head -5'`. Confirm against `worker.py:570-583` (`_install_matrix_channel` copies `copaw_worker/matrix_channel.py` → `custom_channels/`) and `worker.py:283-298` (`clear_builtin_channel_cache()` at :286, then `ChannelManager.from_config` at :293-297). For the **manager**, grep its image/agent dir for which channel module loads. | The runtime channel is the **standalone `copaw_worker/matrix_channel.py`** (workers); manager path identified. The overlay `matrix/channel.py` is confirmed a *separate* code path, not the worker runtime one. | If a CoPaw worker actually loads `matrix/channel.py` (overlay), all §5b CoPaw fixes (S2) must target that file instead — re-anchor before editing. | 5b, 3 (interop) | **P0** (blocks correct targeting of every other CoPaw spike) |
+| **S1** | **CoPaw two-channel-impl: which registers at runtime** (§0b/§5b; overlay `copaw/src/matrix/channel.py` vs standalone `copaw/src/copaw_worker/matrix_channel.py`, both `CHANNEL_KEY="matrix"`). | On a running CoPaw **worker**: `docker exec <copaw-worker> sh -c 'ls -la $COPAW_WORKING_DIR/custom_channels/ && cat $COPAW_WORKING_DIR/custom_channels/matrix_channel.py \| head -5'`. Confirm against `worker.py:570-583` (`_install_matrix_channel` copies `copaw_worker/matrix_channel.py` → `custom_channels/`) and `worker.py:283-298` (`clear_builtin_channel_cache()` at :286, then `ChannelManager.from_config` at :293-297). For the **manager**, grep its image/agent dir for which channel module loads. | The runtime channel is the **standalone `copaw_worker/matrix_channel.py`** (workers); manager path identified. The overlay `matrix/channel.py` is confirmed a *separate* code path, not the worker runtime one. | If a CoPaw worker actually loads `matrix/channel.py` (overlay), all §5b CoPaw fixes (S2) must target that file instead — re-anchor before editing. | 5b, 3 (interop) | **✓ STATICALLY RESOLVED 2026-07-02 (#15)** — manager = overlay (baked by `Dockerfile.copaw:86-96`), leads/workers = standalone (`worker.py:570-583`). Phase 1/5b re-anchored to both files; this row is now a quick live-confirm, no longer P0-blocking. |
 | **S2** | **CoPaw `show_tool_details=false` efficacy** (§5b step 1; plan claims field lives in external `BaseChannel`). **Correction found:** `show_tool_details` is a **top-level `Config` field** (`copaw/src/matrix/config.py:1164`), NOT in the `channels.matrix` dict; both fork channels only accept it as a default `=True` param and **never set it** (`matrix_channel.py:193,200,274,289`; `channel.py:300,307,352,367`). The open question is whether external `copaw.app.channels.ChannelManager.from_config` threads root `Config.show_tool_details` into the channel's `from_config(..., show_tool_details=...)`. **(Grouped under the §7 Hermes-interop spike.)** | In the throwaway team, run a multi-tool task against the CoPaw lead and **count messages/turn** in the room (Element or `mc cat` the room timeline). Then set `show_tool_details: false` **at the config.json root** (not under `channels.matrix`) via the bridge — `docker exec` patch `$COPAW_WORKING_DIR/config.json` `{"show_tool_details": false, ...}`, restart, rerun the same task, re-count. Also `grep -rn show_tool_details` inside the installed `copaw` package (`python -c "import copaw, os; print(os.path.dirname(copaw.__file__))"`) to see if `ChannelManager`/`BaseChannel` reads `cfg.show_tool_details` and forwards it. | Per-tool-call/reasoning messages drop (e.g. 1 final `m.text` reply instead of N) with the **root-level** flag set, while typing indicators + final reply remain. | (a) If only the channel-dict flag is read, set it there instead and re-test. (b) If neither silences the stream (external `BaseChannel` ignores it), fall back to **post-send suppression** in the standalone `matrix_channel.py` (filter outbound events by type before `room_send`), reusing `filter_tool_messages`/`filter_thinking` (already read at `matrix_channel.py:166-167,290-291`) — verify *those* are actually honored by `BaseChannel` first. | 5b | **P1** |
 | **S3** | **Hermes streaming shape + adapter chokepoint** (§5b step 2 / "⚠️ Confirm in spike"; `overlay_adapter.py:109-132` wraps `send_message_event`). Two sub-questions: (a) new events vs `m.replace` edits; (b) does the native adapter route streaming steps through `send_message_event` (the wrapped chokepoint) or a lower-level method. ⚠️ **Do NOT trust the `bridge.py:249-250` comment** claiming `MATRIX_FILTER_*` are "consumed by `hermes_matrix.adapter` directly" — that comment is stale/false; the vars are written but **read nowhere** in `hermes/` (`bridge.py:252-253`), so suppression must be added explicitly in the overlay. Version-dependent: pin **v0.10.0** → target **v0.17.0**. **(Grouped under the §7 Hermes-interop spike.)** | In the throwaway team, run a multi-tool task against the Hermes worker. Capture the raw room timeline (Element devtools, or `mc`/Matrix CS `/messages` API). Inspect each event for `content["m.relates_to"]["rel_type"] == "m.replace"`. Add a temporary `logger.warning` at the `wrapped` send in `overlay_adapter.py:118-128` printing `event_type`+`msgtype`+whether `m.replace`; rebuild Hermes image, rerun, read worker logs to confirm **every** outbound step passes through that wrapper. | You can state, with evidence: (a) steps stream as **new events** OR as **`m.replace` edits of one message**; and (b) **all** outbound events traverse the `send_message_event` wrapper (the log fires for each). | If streaming **bypasses** `send_message_event` (no log lines for steps), find the lower-level send the native `_matrix_native.MatrixAdapter` uses and override *that* instead in the overlay. If steps are `m.replace` edits, suppression policy must keep only the final edit, not drop all. | 5b, 3 | **P1** |
 | **S4** | **Hermes FileSync pruning parity** (§4.5 / decision #10; gates worker self-install — plan asks "⚠️ Verify Hermes FileSync has no equivalent pruning"). **Answer found in-repo (no live spike needed to confirm existence):** Hermes prunes in **TWO** places — periodic sync `hermes/src/hermes_worker/sync.py:448-452` (`minio_skill_set` / `rmtree`, identical to CoPaw `sync.py:709-716`) **and** at startup-install `hermes/src/hermes_worker/worker.py:368-375` (`keep = installed ∪ {file-sync}`, `rmtree` the rest). | Static: already verified — both sites prune local skills absent from MinIO/the manager pool. Live confirm: `find-skills install <x>` inside a Hermes worker, wait one ~5-min reconcile, `docker exec <hermes-worker> ls skills/` — observe `<x>` removed and a log line `"Removed local skill no longer in MinIO"` (`sync.py:453-455`, multi-line) or `"Removed stale hermes skill"` (`worker.py:373`). | Live behavior matches static reading: a self-installed skill is pruned on the next sync (and at next startup) **before** the fix. After patching **both** loops (skip dirs not in MinIO instead of `rmtree`; mirror the CoPaw `sync.py:709-716` patch), `<x>` **survives** a reconcile and a worker restart. | If a third prune path exists (e.g. the `_install_skills` copy at `worker.py:350-361` overwriting), patch it too. Keep the builtin set as the floor either way. | 4.5 | **P1** (decided #10 can't ship correctly without both sites patched) |
@@ -1291,7 +1490,10 @@ No websockets/SSE exist server-side — the v1 SPA **polls** (plan line 485, "Po
 | **S6** | **Xiaomi MiMo hosted base URL + current model IDs** (§2b "Provider compatibility"; "⚠️ confirm the exact hosted base URL at provision time", models **MiMo-V2.5 / V2.5-Pro**, route by `^mimo`). | Web: confirm the live OpenAI-compatible base URL (candidates: `platform.xiaomimimo.com`, WaveSpeedAI, OpenRouter, or self-host vLLM) and the **exact current model IDs**. Then live probe: `curl -s <BASE>/v1/chat/completions -H "Authorization: Bearer $MIMO_KEY" -H 'Content-Type: application/json' -d '{"model":"<MIMO_MODEL_ID>","messages":[{"role":"user","content":"ping"}]}'`. | A 200 with a valid completion from a known model ID over an OpenAI-compatible `/v1/chat/completions`; base URL + model IDs recorded for `setup-higress.sh`/catalog (`generator.go:451-494`, `known-models.json`, `manager-openclaw.json.tmpl`, `update-manager-model.sh`). | If no stable hosted OpenAI-compatible endpoint exists for the operator's account, route MiMo via OpenRouter (`openrouter/...` prefix) or self-host vLLM and point `openaiCustomUrl` at it. **TODO (human/live):** which MiMo hosting the operator actually has access to. | 2b | **P2** |
 | **S7** | **market.hiclaw.io reachability** (§4.5 step 2; default `find-skills` registry = `nacos://market.hiclaw.io:80/public`, `install/hiclaw-install.sh:3059` → `config.go:371` → `worker_env.go:146-148` sets `SKILLS_API_URL`). | From the VPS **and** the local box: `curl -sv -m 10 http://market.hiclaw.io:80/ ; echo exit=$?` and a real `@nacos-group/cli skill-get` / `find-skills` list against `nacos://market.hiclaw.io:80/public` from inside a worker container. | Both boxes resolve + connect and a skill list/get returns from the nacos registry. | If unreachable: self-host Nacos (mirror the public skill set) or switch to a `skills.sh`-style HTTP registry; set `HICLAW_SKILLS_API_URL` to it. Decide before pre-fetching market skills at build time (§4.5 step 2). | 4.5 | **P2** |
 | **S8** | **manager-workspace mount-target "mismatch"** (§0b Caveats; controller binds host ws → `/root/hiclaw-fs/agents/manager` `ps1:3168`, spawned manager binds → `/root/manager-workspace` `manager_reconcile_container.go:209-213`). **Static finding:** likely **benign** — both derive from the same host `HICLAW_WORKSPACE_DIR` (`config.go:306` → `EmbeddedConfig.WorkspaceDir` `app.go:587` → HostPath of the spawned-manager mount). `/root/hiclaw-fs/agents/manager` is only the *controller's own* view; the spawned manager (host docker.sock) mounts the host path at `/root/manager-workspace` and `HOME=/root/manager-workspace` (`worker_env.go:61`). | Local box, embedded bring-up: after the manager spawns, `docker inspect <manager-container> --format '{{json .Mounts}}'` and confirm its `/root/manager-workspace` HostPath == the host `HICLAW_WORKSPACE_DIR`. `docker exec <manager> sh -c 'ls -la /root/manager-workspace && cat /root/manager-workspace/AGENTS.md \| head -3'` to confirm persona/state are present. | Spawned manager's `/root/manager-workspace` is backed by the real host workspace dir and contains its persona/`state.json`/registry — i.e. no actual mismatch. | If the manager comes up with an empty workspace, the two paths are genuinely crossed: align `EmbeddedConfig.WorkspaceDir` (host path) with whatever the spawned-manager HostPath should be, or fix the ps1 controller-bind target. | 0b | **P2** |
-| **S-GIT** | **Per-worker Gitea identity (source-verified) + own-PAT native checkout** (§2 step 4 / §4 decision #4 / §10.1 #4 / decisions #12,#13). The per-request `Authorization: Bearer <PAT>` override of gitea-mcp's env token is **source-verified** (gitea-mcp cloned, `operation.go:72-84` → `pkg/gitea/gitea.go:76-81` → `rest.go`; header > flag > env) — no longer the uncertainty. The **live** unknown is whether **Higress per-server `defaultCredential`** attaches that Bearer to the upstream gitea-mcp on the VPS Higress version. Sub-test: does a worker's **own scoped PAT** via a git credential helper work for clone+push (gitea-mcp is API-only, no working tree)? | Register **two** `mcp-gitea-<worker>` servers with **two different PATs** (two Gitea users) via `setup-mcp-proxy.sh`; from each worker's consumer, open a PR. Inspect the PR author in Gitea. **Sub-test:** from a Hermes sandbox, configure the **worker's own PAT** via a git credential helper (`store`/`cache` or `https://<user>:<token>@git.pawcommit.com`), `git clone` a test repo, edit, `git push`. | PRs are attributed to **two different Gitea users** (Higress per-server `defaultCredential` → upstream Bearer overrides gitea-mcp's env token); the own-PAT clone+edit+push succeeds. | Higress **per-consumer request-transform** to inject the Bearer, or **per-worker gitea-mcp instances** (one process per PAT). ⚠️ The **Sudo-impersonation** variant is **non-viable** — gitea-mcp strips Sudo headers (zero source matches). | 2, 4 | **P1** |
+| **S-GIT** | **Per-worker Gitea identity (source-verified) + own-PAT native checkout** (§2 step 4 / §4 decision #4 / §10.1 #4 / decisions #12,#13). The per-request `Authorization: Bearer <PAT>` override of gitea-mcp's env token is **source-verified** (gitea-mcp cloned, `operation.go:72-84` → `pkg/gitea/gitea.go:76-81` → `rest.go`; header > flag > env) — no longer the uncertainty. The **live** unknown is whether **Higress per-server `defaultCredential`** attaches that Bearer to the upstream gitea-mcp on the VPS Higress version. Sub-test: does a worker's **own scoped PAT** via a git credential helper work for clone+push (gitea-mcp is API-only, no working tree)? | Register **two** `mcp-gitea-<worker>` servers with **two different PATs** (two Gitea users) via `setup-mcp-proxy.sh`; from each worker's consumer, open a PR. Inspect the PR author in Gitea. **Sub-test:** from a Hermes sandbox, configure the **worker's own PAT** via a git credential helper (`store`/`cache` or `https://<user>:<token>@git.pawcommit.com`), `git clone` a test repo, edit, `git push`. **Also (v2.3): enumerate the live tool list/names/schemas exposed through `mcp-gitea-<worker>`** — the input to authoring the `gitea-operations` SKILL (Phase 2 step 3); don't assume GitHub parity. | PRs are attributed to **two different Gitea users** (Higress per-server `defaultCredential` → upstream Bearer overrides gitea-mcp's env token); the own-PAT clone+edit+push succeeds; **AND isolation holds (✓ #14):** worker A's consumer key gets 401/403 on worker B's `mcp-gitea-<worker>` after the helper has provisioned both (i.e. Step-5's all-workers broadcast was successfully avoided). | Higress **per-consumer request-transform** to inject the Bearer, or **per-worker gitea-mcp instances** (one process per PAT). ⚠️ The **Sudo-impersonation** variant is **non-viable** — gitea-mcp strips Sudo headers (zero source matches). | 2, 4 | **P1** |
+| **S9** | **Hermes inbound media path** (Phase 6 step 1, added v2.2; `overlay_adapter.py:179-239` `_handle_media_message` only intercepts `msgtype == "m.image"` — generic `m.file`/`m.audio`/`m.video` pass through to the **un-vendored** native adapter (`_matrix_native.py`, created only at Docker build), so there is no in-repo hook for the drag-drop-a-file case). | In the throwaway team, send an `m.file` attachment to the Hermes worker's room. Read worker logs + `docker exec` the container FS to see where (if anywhere) the native adapter downloads it. Then locate the native-adapter method that handles media (mirror the S3 chokepoint hunt) and prototype an overlay override that diverts the bytes / mxc URL into MinIO `shared/tasks/<id>/`. | A concrete overridable native-adapter method is identified and a prototype diverts one attached file into the MinIO task dir. | Route attachments through the **CoPaw lead** instead — its standalone channel's `_on_room_media_event` (`copaw_worker/matrix_channel.py:395-396` registration, `:1210` handler; generic for Image/File/Audio/Video) pushes to MinIO, and Hermes workers read from there. | 6 | **P2** |
+| **S10** | **Hermes Matrix sync-token persistence across recreate** (v2.3; the native mautrix adapter `_matrix_native.py` is created at Docker build time, not vendored — where does it persist its `next_batch`/sync token, and does that path fall inside `hermes_worker/sync.py`'s MinIO mirror scope?). | Locate the token path inside a running Hermes worker (`docker exec`, grep for next_batch / sync-token files under the agent home); check whether the sync mirror covers it. Then destroy+recreate the worker container while a message is sent to its room; observe whether the message is processed after restart or silently skipped. | Token survives recreate (or is safely re-derived) and the in-between message reaches the agent. | Add the token path to the MinIO mirror set (persist under `agents/<name>/`); if the adapter can't point at a persisted path, document that recreate = missed-message window and add a Hermes catch-up equivalent to Phase 1 step 4. | 3, 0b | **P1** |
+| **S-BACKUP** | **Snapshot restore path is unvalidated** (v2.3; `/root/backups/hiclaw-snapshot-*` exist, but no restore script or doc exists in-repo, and Tuwunel+MinIO+kine+Higress state co-mingle in one `hiclaw-data` volume). | On the VPS: inspect one snapshot's contents/format; hand-restore into a THROWAWAY embedded instance (fresh container, restored volume); verify Manager identity, rooms, MinIO task/project data, and Higress config (incl. worker PATs, #14) survive. Time it; write it down as `docs/restore.md`. | A documented, tested restore procedure exists; the snapshot demonstrably contains (or explicitly excludes) the Higress PAT config. | If snapshots are partial/unrestorable: fix the snapshot script scope (whole `hiclaw-data` volume + env file) **before** Phase 0 step 4's selective data import relies on them. | 0 | **P1** |
 
 #### Open TODOs
 
@@ -1299,6 +1501,7 @@ No websockets/SSE exist server-side — the v1 SPA **polls** (plan line 485, "Po
 - **S6 (human/live)**: confirm which MiMo hosting the operator's account actually has — `platform.xiaomimimo.com` vs OpenRouter vs WaveSpeedAI vs self-host vLLM — plus exact current model IDs (MiMo-V2.5 / V2.5-Pro candidates).
 - **S7 (live, both boxes)**: confirm `market.hiclaw.io:80` reachability from VPS and local before committing to nacos-based market-skill pre-fetch.
 - **S2/S3 (live worker)**: both require the throwaway CoPaw-lead+Hermes-worker team standing up first; they cannot be pre-decided from this repo because the streaming lives in external packages.
+- **S9 (live worker)**: same throwaway team — the Hermes inbound-media hook hunt; if no clean override exists, fall back to lead-mediated attachment ingest (see row).
 - **Decision-log update**: record PASS/FAIL of each spike in §8 once run; S4's two-site finding should be folded into decision #10's implementation note.
 
 ---
