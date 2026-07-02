@@ -92,6 +92,11 @@ func NewHTTPServer(addr string, deps ServerDeps) *HTTPServer {
 	mux.Handle("PUT /api/v1/managers/{name}", mw.RequireAuthz(authpkg.ActionUpdate, "manager", nameFn)(http.HandlerFunc(rh.UpdateManager)))
 	mux.Handle("DELETE /api/v1/managers/{name}", mw.RequireAuthz(authpkg.ActionDelete, "manager", nameFn)(http.HandlerFunc(rh.DeleteManager)))
 
+	// --- Message injection ---
+	msgh := NewMessageHandler(deps.Client, deps.Provisioner, deps.Namespace)
+	mux.Handle("POST /api/v1/managers/{name}/message", mw.RequireAuthz(authpkg.ActionUpdate, "manager", nameFn)(http.HandlerFunc(msgh.SendManagerMessage)))
+	mux.Handle("POST /api/v1/teams/{name}/message", mw.RequireAuthz(authpkg.ActionUpdate, "team", nameFn)(http.HandlerFunc(msgh.SendTeamMessage)))
+
 	// --- Package upload ---
 	ph := NewPackageHandler(deps.OSS)
 	mux.Handle("POST /api/v1/packages", mw.RequireAuthz(authpkg.ActionCreate, "worker", nil)(http.HandlerFunc(ph.Upload)))

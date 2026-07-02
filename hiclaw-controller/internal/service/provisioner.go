@@ -195,6 +195,14 @@ func (p *Provisioner) MatrixUserID(name string) string {
 	return p.matrix.UserID(name)
 }
 
+// SendAdminMessage delivers body to roomID using the homeserver-admin
+// identity, bypassing the recipient's own token. Used by the message-
+// injection HTTP endpoints (plan #17) to post operator-authored messages
+// directly into a Manager's Admin DM room or a Team's leader room.
+func (p *Provisioner) SendAdminMessage(ctx context.Context, roomID, body string) error {
+	return p.matrix.SendMessageAsAdmin(ctx, roomID, body)
+}
+
 // MatrixAppServiceEnabled reports whether the controller is running in
 // Matrix AppService mode. In this mode, user registration and login use
 // the Application Service API instead of passwords.
