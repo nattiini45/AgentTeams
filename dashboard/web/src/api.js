@@ -1,0 +1,49 @@
+// Thin fetch wrapper for the same-origin dashboard proxy. Every call is a
+// relative /api/... path -- the SPA never talks to the controller or MinIO
+// directly, and never sees the admin token (the proxy injects it).
+
+async function request(path, opts) {
+  const res = await fetch(path, opts);
+  if (res.status === 404) {
+    const err = new Error(`not found: ${path}`);
+    err.status = 404;
+    throw err;
+  }
+  if (!res.ok) {
+    let detail = '';
+    try {
+      detail = await res.text();
+    } catch {
+      /* ignore */
+    }
+    const err = new Error(`request failed (${res.status}): ${path} ${detail}`);
+    err.status = res.status;
+    throw err;
+  }
+  const contentType = res.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    return res.json();
+  }
+  return res.text();
+}
+
+export const api = {
+  listManagers: () => request('/api/managers'),
+  listTeams: () => request('/api/teams'),
+  listWorkers: () => request('/api/workers'),
+  managerTasks: () => request('/api/manager-tasks'),
+  listProjects: () => request('/api/projects'),
+
+  // MinIO-backed reads. Callers should catch 404 (missing file) themselves --
+  // it's an expected condition (e.g. a project with no plan.md yet).
+  taskMeta: (taskId) => request(`/api/tasks/${encodeURIComponent(taskId)}/meta.json`),
+  fileBrowse: (pathSegments) => request(`/api/files/${pathSegments.map(encodeURIComponent).join('/')}`),
+  fileGetJson: (pathSegments) => request(`/api/files/${pathSegments.map(encodeURIComponent).join('/')}`),
+  fileGetText: (pathSegments) => request(`/api/files/${pathSegments.map(encodeURIComponent).join('/')}`),
+
+  // Lifecycle writes (v1.1). Confirmation is handled by the caller (UI layer)
+  // before invoking these.
+  wake: (name) => request(`/api/workers/${encodeURIComponent(name)}/wake`, { method: 'POST' }),
+  sleep: (name) => request(`/api/workers/${encodeURIComponent(name)}/sleep`, { method: 'POST' }),
+  ensureReady: (name) => request(`/api/workers/${encodeURIComponent(name)}/ensure-ready`, { method: 'POST' }),
+};
