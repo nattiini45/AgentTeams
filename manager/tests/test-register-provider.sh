@@ -126,7 +126,7 @@ while [ $i -lt ${#args[@]} ]; do
         -X) i=$((i+1)); method="${args[$i]}" ;;
         -o) i=$((i+1)); outfile="${args[$i]}" ;;
         -w) i=$((i+1)); write_out="${args[$i]}" ;;
-        -d) i=$((i+1)); body="${args[$i]}" ;;
+        -d|--data) i=$((i+1)); if [ "${args[$i]}" = "@-" ]; then body=$(cat); else body="${args[$i]}"; fi ;;
         http*://*) path="${args[$i]}" ;;
     esac
     i=$((i+1))

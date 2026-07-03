@@ -157,10 +157,10 @@ _relogin() {
     log "Higress session expired, re-logging in..."
     local body
     body=$(jq -nc --arg u "${admin_user}" --arg p "${admin_password}" '{username:$u,password:$p}')
-    curl -sf -o /dev/null -X POST "${CONSOLE_URL}/session/login" \
+    printf '%s' "${body}" | curl -sf -o /dev/null -X POST "${CONSOLE_URL}/session/login" \
         -H 'Content-Type: application/json' \
         -c "${HIGRESS_COOKIE_FILE}" \
-        -d "${body}" 2>/dev/null \
+        --data @- 2>/dev/null \
         || { log "ERROR: re-login to Higress Console failed"; return 1; }
     return 0
 }
@@ -181,10 +181,10 @@ higress_api() {
         local tmpfile
         tmpfile=$(mktemp)
         local http_code
-        http_code=$(curl -s -o "${tmpfile}" -w '%{http_code}' -X "${method}" "${CONSOLE_URL}${path}" \
+        http_code=$(printf '%s' "${body}" | curl -s -o "${tmpfile}" -w '%{http_code}' -X "${method}" "${CONSOLE_URL}${path}" \
             -b "${HIGRESS_COOKIE_FILE}" \
             -H 'Content-Type: application/json' \
-            -d "${body}" 2>/dev/null) || true
+            --data @- 2>/dev/null) || true
         local response
         response=$(cat "${tmpfile}" 2>/dev/null)
         rm -f "${tmpfile}"
