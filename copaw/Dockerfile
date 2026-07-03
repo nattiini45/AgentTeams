@@ -45,6 +45,8 @@ RUN if [ -n "${APT_MIRROR}" ]; then \
         curl \
         git \
         jq \
+        ripgrep \
+        ffmpeg \
         tzdata \
     && rm -rf /var/lib/apt/lists/*
 
@@ -68,7 +70,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     rm -rf /var/lib/apt/lists/*
 
 RUN npm config set registry ${NPM_REGISTRY} && \
-    npm install -g mcporter skills && \
+    npm install -g mcporter skills @nacos-group/cli && \
     rm -rf /root/.npm
 
 # Download lite CoPaw source archive from GitHub
