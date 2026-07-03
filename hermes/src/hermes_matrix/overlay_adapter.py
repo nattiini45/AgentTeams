@@ -26,6 +26,7 @@ from hermes_matrix.policies import (
     DualAllowList,
     HistoryBuffer,
     apply_outbound_mentions,
+    should_suppress_outbound,
 )
 
 logger = logging.getLogger(__name__)
@@ -99,6 +100,12 @@ class MatrixAdapter(_NativeMatrixAdapter):
         self._dual_allow = DualAllowList.from_env()
         self._history = HistoryBuffer.from_env()
         self._vision_enabled = _truthy_env("MATRIX_VISION_ENABLED", default=False)
+        self._filter_tool_messages = _truthy_env(
+            "MATRIX_FILTER_TOOL_MESSAGES", default=False
+        )
+        self._filter_thinking = _truthy_env(
+            "MATRIX_FILTER_THINKING", default=False
+        )
 
     async def connect(self) -> bool:
         ok = await super().connect()
@@ -107,13 +114,17 @@ class MatrixAdapter(_NativeMatrixAdapter):
         return ok
 
     def _wrap_send_message_event(self) -> None:
-        """Inject MSC3952 ``m.mentions`` into every outgoing Matrix event."""
+        """Inject MSC3952 ``m.mentions`` into every outgoing Matrix event and
+        enforce quiet-rooms suppression (Phase 5b, env-gated default-off).
+        """
         if self._client is None:
             return
         if getattr(self._client, "_hiclaw_mentions_wrapped", False):
             return
 
         original = self._client.send_message_event
+        filter_tool = self._filter_tool_messages
+        filter_thinking = self._filter_thinking
 
         async def wrapped(
             client: Any,
@@ -124,6 +135,12 @@ class MatrixAdapter(_NativeMatrixAdapter):
             **kwargs: Any,
         ) -> Any:
             if isinstance(content, dict):
+                if should_suppress_outbound(
+                    content,
+                    filter_tool=filter_tool,
+                    filter_thinking=filter_thinking,
+                ):
+                    return None
                 apply_outbound_mentions(content, self_user_id=self._user_id)
             return await original(room_id, event_type, content, *args, **kwargs)
 
