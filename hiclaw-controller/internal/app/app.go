@@ -175,12 +175,12 @@ func (a *App) Start(ctx context.Context) error {
 				TuwunelURL:                 a.cfg.MatrixServerURL,
 				ElementWebURL:              a.cfg.ElementWebURL,
 				ControllerName:             a.cfg.ControllerName,
-				AppServiceEnabled:         a.cfg.MatrixAppServiceEnabled,
-				AppServiceID:              a.cfg.MatrixAppServiceID,
-				AppServiceToken:           a.cfg.MatrixAppServiceASToken,
-				AppServiceHSToken:         a.cfg.MatrixAppServiceHSToken,
-				AppServiceSenderLocalpart: a.cfg.MatrixAppServiceSenderLocalpart,
-				MatrixDomain:              a.cfg.MatrixDomain,
+				AppServiceEnabled:          a.cfg.MatrixAppServiceEnabled,
+				AppServiceID:               a.cfg.MatrixAppServiceID,
+				AppServiceToken:            a.cfg.MatrixAppServiceASToken,
+				AppServiceHSToken:          a.cfg.MatrixAppServiceHSToken,
+				AppServiceSenderLocalpart:  a.cfg.MatrixAppServiceSenderLocalpart,
+				MatrixDomain:               a.cfg.MatrixDomain,
 			},
 		}
 		if err := init.Run(ctx); err != nil {
@@ -513,15 +513,15 @@ func (a *App) initServiceLayer(_ context.Context) error {
 	}
 
 	a.deployer = service.NewDeployer(service.DeployerConfig{
-		AgentConfig:         a.agentGen,
-		OSS:                 a.oss,
-		Executor:            a.shell,
-		Packages:            a.packages,
-		Legacy:              a.legacy,
-		AgentFSDir:          cfg.AgentFSDir(),
-		WorkerAgentDir:      cfg.WorkerAgentDir(),
-		MatrixDomain:        cfg.MatrixDomain,
-		NacosCredClient:     a.credProvider,
+		AgentConfig:     a.agentGen,
+		OSS:             a.oss,
+		Executor:        a.shell,
+		Packages:        a.packages,
+		Legacy:          a.legacy,
+		AgentFSDir:      cfg.AgentFSDir(),
+		WorkerAgentDir:  cfg.WorkerAgentDir(),
+		MatrixDomain:    cfg.MatrixDomain,
+		NacosCredClient: a.credProvider,
 	})
 
 	return nil
@@ -594,6 +594,15 @@ func (a *App) initReconcilers(_ context.Context) error {
 	}
 	if err := mgrReconciler.SetupWithManager(a.mgr); err != nil {
 		return fmt.Errorf("setup ManagerReconciler: %w", err)
+	}
+
+	if err := (&controller.ProjectReconciler{
+		Client:         a.mgr.GetClient(),
+		OSS:            a.oss,
+		Messenger:      a.provisioner,
+		ControllerName: a.cfg.ControllerName,
+	}).SetupWithManager(a.mgr); err != nil {
+		return fmt.Errorf("setup ProjectReconciler: %w", err)
 	}
 
 	return nil

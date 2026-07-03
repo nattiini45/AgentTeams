@@ -259,6 +259,47 @@ type ManagerListResponse struct {
 	Total    int               `json:"total"`
 }
 
+// --- Project API types ---
+
+type CreateProjectRequest struct {
+	Name        string                `json:"name"`
+	Team        string                `json:"team"`
+	Description string                `json:"description,omitempty"`
+	ProjectName string                `json:"projectName,omitempty"`
+	Repos       []v1beta1.ProjectRepo `json:"repos"`
+	Workers     []string              `json:"workers,omitempty"`
+}
+
+type UpdateProjectRequest struct {
+	Description string                `json:"description,omitempty"`
+	ProjectName string                `json:"projectName,omitempty"`
+	Repos       []v1beta1.ProjectRepo `json:"repos,omitempty"`
+	Workers     []string              `json:"workers,omitempty"`
+	// Phase allows the operator to set Completed/Archived (decision #18).
+	// Any other value is rejected — reconciler-computed phases (Pending,
+	// Provisioning, Ready, Degraded, Failed) cannot be set via the API.
+	Phase string `json:"phase,omitempty"`
+}
+
+type ProjectResponse struct {
+	Name            string                     `json:"name"`
+	Team            string                     `json:"team"`
+	Description     string                     `json:"description,omitempty"`
+	ProjectName     string                     `json:"projectName,omitempty"`
+	Repos           []v1beta1.ProjectRepo      `json:"repos"`
+	Workers         []string                   `json:"workers,omitempty"`
+	Phase           string                     `json:"phase"`
+	Message         string                     `json:"message,omitempty"`
+	RepoCount       int                        `json:"repoCount"`
+	RecordedWorkers []string                   `json:"recordedWorkers,omitempty"`
+	Conditions      []v1beta1.ProjectCondition `json:"conditions,omitempty"`
+}
+
+type ProjectListResponse struct {
+	Projects []ProjectResponse `json:"projects"`
+	Total    int               `json:"total"`
+}
+
 // --- Gateway API types ---
 
 type CreateConsumerRequest struct {

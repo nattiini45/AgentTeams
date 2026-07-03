@@ -27,9 +27,9 @@ type ServerDeps struct {
 	AuthMw         *authpkg.Middleware
 	KubeMode       string
 	Namespace      string
-	ControllerName string // HICLAW_CONTROLLER_NAME; empty in embedded mode
-	SocketPath     string       // Docker proxy (embedded only)
-	MatrixConfig   matrix.Config       // for AppService rotation endpoint
+	ControllerName string               // HICLAW_CONTROLLER_NAME; empty in embedded mode
+	SocketPath     string               // Docker proxy (embedded only)
+	MatrixConfig   matrix.Config        // for AppService rotation endpoint
 	Provisioner    *service.Provisioner // for Matrix token refresh
 	SoloOperator   bool                 // HICLAW_SOLO_OPERATOR; defaults the sole Human to Admin
 }
@@ -93,6 +93,13 @@ func NewHTTPServer(addr string, deps ServerDeps) *HTTPServer {
 	mux.Handle("GET /api/v1/managers/{name}", mw.RequireAuthz(authpkg.ActionGet, "manager", nameFn)(http.HandlerFunc(rh.GetManager)))
 	mux.Handle("PUT /api/v1/managers/{name}", mw.RequireAuthz(authpkg.ActionUpdate, "manager", nameFn)(http.HandlerFunc(rh.UpdateManager)))
 	mux.Handle("DELETE /api/v1/managers/{name}", mw.RequireAuthz(authpkg.ActionDelete, "manager", nameFn)(http.HandlerFunc(rh.DeleteManager)))
+
+	// Projects
+	mux.Handle("POST /api/v1/projects", mw.RequireAuthz(authpkg.ActionCreate, "project", nil)(http.HandlerFunc(rh.CreateProject)))
+	mux.Handle("GET /api/v1/projects", mw.RequireAuthz(authpkg.ActionList, "project", nil)(http.HandlerFunc(rh.ListProjects)))
+	mux.Handle("GET /api/v1/projects/{name}", mw.RequireAuthz(authpkg.ActionGet, "project", nameFn)(http.HandlerFunc(rh.GetProject)))
+	mux.Handle("PUT /api/v1/projects/{name}", mw.RequireAuthz(authpkg.ActionUpdate, "project", nameFn)(http.HandlerFunc(rh.UpdateProject)))
+	mux.Handle("DELETE /api/v1/projects/{name}", mw.RequireAuthz(authpkg.ActionDelete, "project", nameFn)(http.HandlerFunc(rh.DeleteProject)))
 
 	// --- Message injection ---
 	msgh := NewMessageHandler(deps.Client, deps.Provisioner, deps.Namespace)

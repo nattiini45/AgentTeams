@@ -881,6 +881,192 @@ func (h *ResourceHandler) DeleteManager(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// --- Projects ---
+
+func (h *ResourceHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
+	var req CreateProjectRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid JSON: "+err.Error())
+		return
+	}
+	if req.Name == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "name is required")
+		return
+	}
+	if req.Team == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "team is required")
+		return
+	}
+	if len(req.Repos) == 0 {
+		httputil.WriteError(w, http.StatusBadRequest, "at least one repo is required")
+		return
+	}
+	for _, repo := range req.Repos {
+		if repo.URL == "" {
+			httputil.WriteError(w, http.StatusBadRequest, "repos[].url is required")
+			return
+		}
+		if repo.Access != "rw" && repo.Access != "ro" {
+			httputil.WriteError(w, http.StatusBadRequest, "repos[].access must be rw or ro")
+			return
+		}
+	}
+
+	proj := &v1beta1.Project{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      req.Name,
+			Namespace: h.namespace,
+		},
+		Spec: v1beta1.ProjectSpec{
+			Team:        req.Team,
+			Description: req.Description,
+			ProjectName: req.ProjectName,
+			Repos:       req.Repos,
+			Workers:     req.Workers,
+		},
+	}
+
+	h.stampControllerLabel(&proj.ObjectMeta)
+
+	if err := h.client.Create(r.Context(), proj); err != nil {
+		writeK8sError(w, "create project", err)
+		return
+	}
+
+	httputil.WriteJSON(w, http.StatusCreated, projectToResponse(proj))
+}
+
+func (h *ResourceHandler) GetProject(w http.ResponseWriter, r *http.Request) {
+	name := r.PathValue("name")
+	if name == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "project name is required")
+		return
+	}
+
+	var proj v1beta1.Project
+	if err := h.client.Get(r.Context(), client.ObjectKey{Name: name, Namespace: h.namespace}, &proj); err != nil {
+		writeK8sError(w, "get project", err)
+		return
+	}
+
+	httputil.WriteJSON(w, http.StatusOK, projectToResponse(&proj))
+}
+
+func (h *ResourceHandler) ListProjects(w http.ResponseWriter, r *http.Request) {
+	teamFilter := r.URL.Query().Get("team")
+
+	var list v1beta1.ProjectList
+	if err := h.client.List(r.Context(), &list, client.InNamespace(h.namespace)); err != nil {
+		writeK8sError(w, "list projects", err)
+		return
+	}
+
+	projects := make([]ProjectResponse, 0, len(list.Items))
+	for i := range list.Items {
+		if teamFilter != "" && list.Items[i].Spec.Team != teamFilter {
+			continue
+		}
+		projects = append(projects, projectToResponse(&list.Items[i]))
+	}
+
+	httputil.WriteJSON(w, http.StatusOK, ProjectListResponse{Projects: projects, Total: len(projects)})
+}
+
+// allowedProjectPhases are the operator-settable phases (decision #18).
+// Reconciler-computed phases (Pending/Provisioning/Ready/Degraded/Failed)
+// cannot be set through the API.
+var allowedProjectPhases = map[string]bool{
+	"Completed": true,
+	"Archived":  true,
+}
+
+func (h *ResourceHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
+	name := r.PathValue("name")
+	if name == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "project name is required")
+		return
+	}
+
+	var req UpdateProjectRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid JSON: "+err.Error())
+		return
+	}
+	if req.Phase != "" && !allowedProjectPhases[req.Phase] {
+		httputil.WriteError(w, http.StatusBadRequest, "phase must be one of: Completed, Archived (other phases are reconciler-computed)")
+		return
+	}
+	for _, repo := range req.Repos {
+		if repo.Access != "" && repo.Access != "rw" && repo.Access != "ro" {
+			httputil.WriteError(w, http.StatusBadRequest, "repos[].access must be rw or ro")
+			return
+		}
+	}
+
+	ctx := r.Context()
+	for attempt := 0; attempt < k8sUpdateMaxRetries; attempt++ {
+		var proj v1beta1.Project
+		if err := h.client.Get(ctx, client.ObjectKey{Name: name, Namespace: h.namespace}, &proj); err != nil {
+			writeK8sError(w, "get project for update", err)
+			return
+		}
+
+		if req.Description != "" {
+			proj.Spec.Description = req.Description
+		}
+		if req.ProjectName != "" {
+			proj.Spec.ProjectName = req.ProjectName
+		}
+		if req.Repos != nil {
+			proj.Spec.Repos = req.Repos
+		}
+		if req.Workers != nil {
+			proj.Spec.Workers = req.Workers
+		}
+
+		if err := h.client.Update(ctx, &proj); err != nil {
+			if apierrors.IsConflict(err) && attempt+1 < k8sUpdateMaxRetries {
+				time.Sleep(time.Duration(attempt+1) * 100 * time.Millisecond)
+				continue
+			}
+			writeK8sError(w, "update project", err)
+			return
+		}
+
+		// Phase is an operator-set status field (decision #18); patch it
+		// separately via the status subresource after the spec update lands.
+		if req.Phase != "" && req.Phase != proj.Status.Phase {
+			statusBase := proj.DeepCopy()
+			proj.Status.Phase = req.Phase
+			if err := h.client.Status().Patch(ctx, &proj, client.MergeFrom(statusBase)); err != nil {
+				writeK8sError(w, "update project status", err)
+				return
+			}
+		}
+
+		httputil.WriteJSON(w, http.StatusOK, projectToResponse(&proj))
+		return
+	}
+}
+
+func (h *ResourceHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
+	name := r.PathValue("name")
+	if name == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "project name is required")
+		return
+	}
+
+	proj := &v1beta1.Project{
+		ObjectMeta: metav1.ObjectMeta{Name: name, Namespace: h.namespace},
+	}
+	if err := h.client.Delete(r.Context(), proj); err != nil {
+		writeK8sError(w, "delete project", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // --- Conversion helpers ---
 
 func workerToResponse(w *v1beta1.Worker) WorkerResponse {
@@ -980,6 +1166,26 @@ func managerToResponse(m *v1beta1.Manager) ManagerResponse {
 		Version:      m.Status.Version,
 		Message:      m.Status.Message,
 		WelcomeSent:  m.Status.WelcomeSent,
+	}
+	if resp.Phase == "" {
+		resp.Phase = "Pending"
+	}
+	return resp
+}
+
+func projectToResponse(p *v1beta1.Project) ProjectResponse {
+	resp := ProjectResponse{
+		Name:            p.Name,
+		Team:            p.Spec.Team,
+		Description:     p.Spec.Description,
+		ProjectName:     p.Spec.EffectiveProjectName(p.Name),
+		Repos:           p.Spec.Repos,
+		Workers:         p.Spec.Workers,
+		Phase:           p.Status.Phase,
+		Message:         p.Status.Message,
+		RepoCount:       p.Status.RepoCount,
+		RecordedWorkers: p.Status.RecordedWorkers,
+		Conditions:      p.Status.Conditions,
 	}
 	if resp.Phase == "" {
 		resp.Phase = "Pending"
