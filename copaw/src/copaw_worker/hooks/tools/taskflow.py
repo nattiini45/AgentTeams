@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import asdict
 import json
 import os
@@ -195,7 +196,7 @@ async def taskflow(
             )
             task_path = f"shared/tasks/{task_id}/"
             sync = create_sync()
-            sync.push_shared_path(task_path)
+            await asyncio.to_thread(sync.push_shared_path, task_path)
             return _ok(action=action, task=asdict(meta), synced=True)
 
         if action == "check_task":
@@ -204,7 +205,7 @@ async def taskflow(
                 return _ok(dryRun=True, action=action, taskId=task_id)
             task_path = f"shared/tasks/{task_id}/"
             sync = create_sync()
-            sync.pull_shared_path(task_path)
+            await asyncio.to_thread(sync.pull_shared_path, task_path)
             meta = store.read_task_meta(task_id)
             result = check_task(store, task_id=task_id)
             return _ok(
@@ -220,12 +221,14 @@ async def taskflow(
                 return _ok(dryRun=True, action=action, taskId=task_id)
             task_path = f"shared/tasks/{task_id}/"
             sync = create_sync()
-            sync.pull_shared_path(task_path)
+            await asyncio.to_thread(sync.pull_shared_path, task_path)
             actor = _current_actor()
             _require_ack_preconditions(store.read_task_meta(task_id), actor)
             spec = store.read_task_spec(task_id)
             meta = ack_task(store, task_id=task_id, actor=actor)
-            sync.push_shared_path(task_path, exclude=["spec.md", "base/"])
+            await asyncio.to_thread(
+                sync.push_shared_path, task_path, exclude=["spec.md", "base/"]
+            )
             return _ok(action=action, task=asdict(meta), spec=spec)
 
         if action == "submit_task":
@@ -246,8 +249,10 @@ async def taskflow(
             task_path = f"shared/tasks/{task_id}/"
             result_path = f"shared/tasks/{task_id}/result.md"
             sync = create_sync()
-            sync.push_shared_path(task_path, exclude=["spec.md", "base/"])
-            sync.stat_shared_path(result_path)
+            await asyncio.to_thread(
+                sync.push_shared_path, task_path, exclude=["spec.md", "base/"]
+            )
+            await asyncio.to_thread(sync.stat_shared_path, result_path)
             response_payload: dict[str, Any] = {
                 "action": action,
                 "task": asdict(meta),

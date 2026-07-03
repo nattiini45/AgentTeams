@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 from pathlib import Path
@@ -187,18 +188,18 @@ async def filesync(
             return _ok(dryRun=True, **payload)
 
         if action == "pull":
-            sync.pull_shared_path(resolved_path)
+            await asyncio.to_thread(sync.pull_shared_path, resolved_path)
             return _ok(pulled=True, **payload)
 
         if action == "push":
-            sync.push_shared_path(resolved_path, exclude=excludes)
+            await asyncio.to_thread(sync.push_shared_path, resolved_path, exclude=excludes)
             return _ok(pushed=True, **payload)
 
         if action == "stat":
-            sync.stat_shared_path(resolved_path)
+            await asyncio.to_thread(sync.stat_shared_path, resolved_path)
             return _ok(exists=True, **payload)
 
-        _, entries = sync.list_shared_path(resolved_path)
+        _, entries = await asyncio.to_thread(sync.list_shared_path, resolved_path)
         return _ok(entries=entries, **payload)
     except FilesyncToolError as exc:
         return _error(str(exc), action=action, path=resolved_path)
