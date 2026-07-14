@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"hash/fnv"
+	"os"
 	"path"
 	"reflect"
 	"strings"
@@ -18,6 +19,7 @@ import (
 	"github.com/hiclaw/hiclaw-controller/internal/backend"
 	"github.com/hiclaw/hiclaw-controller/internal/gateway"
 	"github.com/hiclaw/hiclaw-controller/internal/matrix"
+	"github.com/hiclaw/hiclaw-controller/internal/oss"
 	"github.com/hiclaw/hiclaw-controller/internal/service"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -256,7 +258,7 @@ type MemberDeps struct {
 	// ResourcePrefix is the tenant-level prefix that scopes ServiceAccount
 	// (and Pod) names for every member this reconciler provisions. Empty
 	// prefix collapses to the pre-multi-tenant naming scheme
-	// (`hiclaw-worker-<name>`), preserving single-tenant deployments. It is
+	// (`agentteams-worker-<name>`), preserving single-tenant deployments. It is
 	// populated by the owning reconciler (WorkerReconciler / TeamReconciler)
 	// from Config.ResourcePrefix.
 	ResourcePrefix authpkg.ResourcePrefix
@@ -308,7 +310,7 @@ func ValidateMemberDeployment(m MemberContext) error {
 // RoomID, and ProvResult into state.
 func ReconcileMemberInfra(ctx context.Context, d MemberDeps, m MemberContext, state *MemberState) (reconcile.Result, error) {
 	if m.ExistingMatrixUserID != "" {
-		refreshResult, err := d.Provisioner.RefreshWorkerCredentials(ctx, m.Name, m.RuntimeName)
+		refreshResult, err := d.Provisioner.RefreshWorkerCredentials(ctx, m.Name, m.RuntimeName, m.TeamName)
 		if err != nil {
 			return reconcile.Result{}, fmt.Errorf("refresh credentials: %w", err)
 		}
@@ -447,6 +449,9 @@ func ReconcileMemberConfig(ctx context.Context, d MemberDeps, m MemberContext, s
 		Role:              m.Role.String(),
 		TeamName:          m.TeamName,
 		TeamLeaderName:    m.TeamLeaderName,
+		TeamRoomID:        m.TeamRoomID,
+		LeaderDMRoomID:    m.LeaderDMRoomID,
+		TeamMembers:       m.TeamMembers,
 		MatrixToken:       state.ProvResult.MatrixToken,
 		GatewayKey:        state.ProvResult.GatewayKey,
 		MatrixPassword:    state.ProvResult.MatrixPassword,
@@ -738,7 +743,7 @@ func createMemberContainer(ctx context.Context, d MemberDeps, m MemberContext, s
 
 	prov := state.ProvResult
 	if prov == nil || prov.MatrixToken == "" {
-		refreshResult, err := d.Provisioner.RefreshWorkerCredentials(ctx, m.Name, m.RuntimeName)
+		refreshResult, err := d.Provisioner.RefreshWorkerCredentials(ctx, m.Name, m.RuntimeName, m.TeamName)
 		if err != nil {
 			return reconcile.Result{}, fmt.Errorf("refresh credentials for container: %w", err)
 		}
@@ -801,6 +806,10 @@ func createMemberContainer(ctx context.Context, d MemberDeps, m MemberContext, s
 			logger.Error(err, "SA token request failed (non-fatal, worker auth will fail)")
 		}
 		createReq.AuthToken = token
+
+		if err := waitForScopedWorkerConfig(ctx, m.Name, workerEnv); err != nil {
+			return reconcile.Result{}, fmt.Errorf("worker scoped storage config is not readable: %w", err)
+		}
 	}
 
 	if _, err := wb.Create(ctx, createReq); err != nil {
@@ -810,6 +819,55 @@ func createMemberContainer(ctx context.Context, d MemberDeps, m MemberContext, s
 		return reconcile.Result{}, fmt.Errorf("create container: %w", err)
 	}
 	return reconcile.Result{}, nil
+}
+
+func waitForScopedWorkerConfig(ctx context.Context, workerName string, workerEnv map[string]string) error {
+	accessKey := strings.TrimSpace(workerEnv["AGENTTEAMS_FS_ACCESS_KEY"])
+	secretKey := strings.TrimSpace(workerEnv["AGENTTEAMS_FS_SECRET_KEY"])
+	if accessKey == "" || secretKey == "" {
+		return nil
+	}
+
+	endpoint := strings.TrimSpace(os.Getenv("AGENTTEAMS_FS_ENDPOINT"))
+	if endpoint == "" {
+		endpoint = strings.TrimSpace(workerEnv["AGENTTEAMS_FS_ENDPOINT"])
+	}
+	bucket := strings.TrimSpace(workerEnv["AGENTTEAMS_FS_BUCKET"])
+	storagePrefix := strings.TrimSpace(workerEnv["AGENTTEAMS_STORAGE_PREFIX"])
+	if endpoint == "" || bucket == "" || storagePrefix == "" {
+		return nil
+	}
+
+	client := oss.NewMinIOClient(oss.Config{
+		Alias:         "worker-scoped-readiness-" + workerName,
+		Endpoint:      endpoint,
+		AccessKey:     accessKey,
+		SecretKey:     secretKey,
+		Bucket:        bucket,
+		StoragePrefix: storagePrefix,
+	})
+
+	key := "agents/" + workerName + "/openclaw.json"
+	var lastErr error
+	deadline := time.Now().Add(2 * time.Minute)
+	for {
+		if err := client.Stat(ctx, key); err == nil {
+			log.FromContext(ctx).Info("worker scoped storage config readable", "worker", workerName, "key", key)
+			return nil
+		} else {
+			lastErr = err
+		}
+
+		if time.Now().After(deadline) {
+			return fmt.Errorf("stat %s with worker credentials timed out: %w", key, lastErr)
+		}
+
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(5 * time.Second):
+		}
+	}
 }
 
 func refreshSandboxSetWorkerDeps(ctx context.Context, d MemberDeps, m MemberContext, prov *service.WorkerProvisionResult) (time.Duration, string, error) {
@@ -832,7 +890,7 @@ func buildMemberWorkerEnv(ctx context.Context, d MemberDeps, m MemberContext, pr
 	workerEnv := d.EnvBuilder.Build(m.RuntimeName, prov)
 	workerEnv["AGENTTEAMS_WORKER_CR_NAME"] = m.Name
 	// Legacy runtime scripts still read this fallback while AgentTeams env adoption is in progress.
-	workerEnv["HICLAW_WORKER_CR_NAME"] = m.Name
+	workerEnv["AGENTTEAMS_WORKER_CR_NAME"] = m.Name
 	if m.ModelProviderInfo != nil && m.ModelProviderInfo.IntranetURL != "" {
 		workerEnv["AGENTTEAMS_AI_GATEWAY_URL"] = m.ModelProviderInfo.IntranetURL
 	}
