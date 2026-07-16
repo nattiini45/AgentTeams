@@ -70,6 +70,29 @@ $script:config = @{}     # Shared config hashtable for step functions
 # ANSI escape character for terminal colors
 $script:ESC = [char]0x1B
 
+# Returns $true if $V1 < $V2 using semver order; "latest" is treated as greatest.
+# Mirrors the bash installer's _ver_lt (install/hiclaw-install.sh) for cross-source parity.
+function Test-VerLt {
+    param([string]$V1, [string]$V2)
+    if ($V1 -eq "latest") { return $false }
+    if ($V2 -eq "latest") { return $true }
+    if ($V1 -eq $V2) { return $false }
+    try {
+        $p1 = ($V1.TrimStart("v") -split '\.') | ForEach-Object { [int]$_ }
+        $p2 = ($V2.TrimStart("v") -split '\.') | ForEach-Object { [int]$_ }
+        for ($i = 0; $i -lt [Math]::Max($p1.Length, $p2.Length); $i++) {
+            $a = if ($i -lt $p1.Length) { $p1[$i] } else { 0 }
+            $b = if ($i -lt $p2.Length) { $p2[$i] } else { 0 }
+            if ($a -lt $b) { return $true }
+            if ($a -gt $b) { return $false }
+        }
+        return $false
+    } catch {
+        # Non-semver strings (e.g. commit SHAs): fall back to string comparison.
+        return ($V1 -lt $V2)
+    }
+}
+
 # ============================================================
 # Log all output to file
 # ============================================================
@@ -2209,7 +2232,10 @@ function Step-Runtime {
     Write-Host ""
     Write-Host "  1) $(Get-Msg 'worker_runtime.copaw')"
     Write-Host "  2) $(Get-Msg 'worker_runtime.openclaw')"
-    Write-Host "  3) $(Get-Msg 'worker_runtime.hermes')"
+    $hermesAvailable = -not (Test-VerLt $script:HICLAW_VERSION "v1.1.0")
+    if ($hermesAvailable) {
+        Write-Host "  3) $(Get-Msg 'worker_runtime.hermes')"
+    }
     Write-Host ""
 
     if ($script:AGENTTEAMS_NON_INTERACTIVE) {
@@ -2221,8 +2247,8 @@ function Step-Runtime {
         if ($rtChoice) {
             $script:config.DEFAULT_WORKER_RUNTIME = switch ($rtChoice) {
                 "2" { "openclaw" }
-                "3" { "hermes" }
-                default { "copaw" }
+                "3" { if ($hermesAvailable) { "hermes" } else { "copaw" } }
+                default { $defaultRuntime }
             }
         } else {
             $script:config.DEFAULT_WORKER_RUNTIME = $env:AGENTTEAMS_DEFAULT_WORKER_RUNTIME
@@ -2235,8 +2261,8 @@ function Step-Runtime {
         $rtChoice = if ($rtChoice) { $rtChoice } else { "1" }
         $script:config.DEFAULT_WORKER_RUNTIME = switch ($rtChoice) {
             "2" { "openclaw" }
-            "3" { "hermes" }
-            default { "copaw" }
+            "3" { if ($hermesAvailable) { "hermes" } else { "copaw" } }
+            default { $defaultRuntime }
         }
     }
     Write-Log (Get-Msg "worker_runtime.selected" -f $script:config.DEFAULT_WORKER_RUNTIME)
@@ -3096,6 +3122,11 @@ function Install-Manager {
         $fsDomain = if ($config.FS_DOMAIN) { $config.FS_DOMAIN } else { "fs-local.agentteams.io" }
         if ($fsDomain -notmatch ":") { $fsDomain = "${fsDomain}:${internalGwPort}" }
 
+        # Secrets are passed via --env-file (not `-e`) so they don't land in
+        # plaintext inside `docker inspect`'s Config.Env. We reuse the config env
+        # file already written by New-EnvFile above — it contains these same
+        # values and is the persistent secret store for this install (see the
+        # legacy --env-file usage further up for the same pattern).
         $ctrlArgs = @(
             "run", "-d",
             "--name", "agentteams-controller",
@@ -3484,7 +3515,6 @@ function Install-Worker {
         } else {
             $SkillsApiUrl = "nacos://market.agentteams.io:80/public"
         }
-    }
 
     if ($FindSkills -and $SkillsApiUrl) {
         $dockerArgs += @("-e", "SKILLS_API_URL=$SkillsApiUrl")
@@ -3500,9 +3530,12 @@ function Install-Worker {
         $dockerArgs += @("-e", "AGENTTEAMS_NACOS_TOKEN=$($env:AGENTTEAMS_NACOS_TOKEN)")
     }
 
-    $dockerArgs += @("--restart", "unless-stopped", $workerImage)
+        $dockerArgs += @("--restart", "unless-stopped", $workerImage)
 
-    & docker $dockerArgs
+        & docker $dockerArgs
+    } finally {
+        Remove-Item -Path $workerEnvFile -Force -ErrorAction SilentlyContinue
+    }
 
     Write-Log ""
     Write-Log (Get-Msg "worker.started" -f $Name)

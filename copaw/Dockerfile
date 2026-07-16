@@ -45,6 +45,8 @@ RUN if [ -n "${APT_MIRROR}" ]; then \
         curl \
         git \
         jq \
+        ripgrep \
+        ffmpeg \
         tzdata \
     && rm -rf /var/lib/apt/lists/*
 
@@ -68,7 +70,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     rm -rf /var/lib/apt/lists/*
 
 RUN npm config set registry ${NPM_REGISTRY} && \
-    npm install -g mcporter skills && \
+    npm install -g mcporter skills @nacos-group/cli && \
     rm -rf /root/.npm
 
 # Download lite CoPaw source archive from GitHub
@@ -101,6 +103,21 @@ RUN MATRIX_CH=/opt/venv/standard/lib/python3.11/site-packages/copaw/app/channels
          echo 'Patched Matrix channel _sync_loop indentation'; \
        fi
 
+# --- Patch CoPaw stream-error classification (standard venv) ---
+# Upstream classifies mid-stream disconnects (RemoteProtocolError, "peer closed
+# connection", "incomplete chunked read", stream-idle timeouts) as an
+# UnknownAgentException instead of a retryable ModelTimeoutException, and caps
+# the timeout at 60s. Patch fails the build loudly if the upstream markers move.
+COPY scripts/patch_copaw_stream_errors.py /tmp/
+
+RUN /opt/venv/standard/bin/python /tmp/patch_copaw_stream_errors.py \
+        /opt/venv/standard/lib/python3.11/site-packages \
+    && grep -q 'ModelTimeoutException(model, timeout=900' \
+        /opt/venv/standard/lib/python3.11/site-packages/copaw/exceptions.py \
+    && grep -q '"stream_idle_timeout"' \
+        /opt/venv/standard/lib/python3.11/site-packages/copaw/exceptions.py \
+    && rm /tmp/patch_copaw_stream_errors.py
+
 # --- Lite venv: copaw from GitHub fork ---
 RUN python -m venv /opt/venv/lite \
     && /opt/venv/lite/bin/pip install --no-cache-dir \
@@ -119,6 +136,12 @@ RUN python -m venv /opt/venv/lite \
 #   patch_reme_lazy.py             — reme: chromadb/pandas/mcp/elasticsearch
 #   patch_agentscope_lazy.py       — agentscope: redis/socketio/sqlalchemy/mcp
 #   patch_agentscope_runtime_lazy.py — agentscope_runtime: opentelemetry/a2a/fastapi
+#
+# Each patch script silently no-ops on any source block whose upstream markers
+# it no longer finds (see the per-file `if "..." in src:` guards inside the
+# scripts), so upstream source drift could regress the lite-venv RSS savings
+# without failing the build. Verify each patch actually landed by grepping for
+# a stable string it unconditionally writes; fail the build (exit 1) if not.
 # ---------------------------------------------------------------------------
 COPY scripts/patch_reme_lazy.py \
      scripts/patch_agentscope_lazy.py \
@@ -129,6 +152,9 @@ RUN SITE=/opt/venv/lite/lib/python3.11/site-packages \
     && /opt/venv/lite/bin/python /tmp/patch_reme_lazy.py "$SITE/reme" \
     && /opt/venv/lite/bin/python /tmp/patch_agentscope_lazy.py "$SITE/agentscope" \
     && /opt/venv/lite/bin/python /tmp/patch_agentscope_runtime_lazy.py "$SITE/agentscope_runtime" \
+    && grep -q '_LAZY_SUBMODULES = {' "$SITE/reme/core/__init__.py" \
+    && grep -q '_LAZY_MAP = {' "$SITE/agentscope/agent/__init__.py" \
+    && grep -q 'install_lazy_loader(' "$SITE/agentscope_runtime/engine/__init__.py" \
     && rm /tmp/patch_*_lazy.py
 
 # --- Overlay real copaw-worker source (high-frequency changes, ~128KB) ---

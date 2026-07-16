@@ -2,15 +2,22 @@
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import asdict
 import json
 import os
-from pathlib import Path
 from typing import Any
 
-from agentscope.message import TextBlock
 from agentscope.tool import ToolResponse
 
+from copaw_worker.hooks.tools._toolhelpers import (
+    _coerce_payload,
+    _error,
+    _ok,
+    _optional_str,
+    _required_str,
+    _store,
+)
 from copaw_worker.hooks.tools.filesync import create_sync
 from copaw_worker.task import (
     FileSystemTaskStore,
@@ -172,35 +179,6 @@ def _read_config_value(obj: Any, *names: str) -> Any:
     return None
 
 
-def _coerce_payload(payload: dict[str, Any] | str | None) -> dict[str, Any]:
-    if isinstance(payload, str):
-        try:
-            payload = json.loads(payload)
-        except json.JSONDecodeError as exc:
-            raise TaskflowError(f"payload must be a JSON object: {exc.msg}") from exc
-    if payload is None:
-        return {}
-    if not isinstance(payload, dict):
-        raise TaskflowError("payload must be an object")
-    return payload
-
-
-def _required_str(payload: dict[str, Any], key: str) -> str:
-    value = payload.get(key)
-    if not isinstance(value, str) or not value.strip():
-        raise TaskflowError(f"payload.{key} is required")
-    return value.strip()
-
-
-def _optional_str(payload: dict[str, Any], key: str) -> str | None:
-    value = payload.get(key)
-    if value is None:
-        return None
-    if not isinstance(value, str):
-        raise TaskflowError(f"payload.{key} must be a string")
-    return value
-
-
 def _coerce_str_list(payload: dict[str, Any], key: str) -> list[str]:
     value = payload.get(key)
     if value is None:
@@ -278,7 +256,7 @@ async def taskflow(
             )
             task_path = f"shared/tasks/{task_id}/"
             sync = create_sync()
-            sync.push_shared_path(task_path)
+            await asyncio.to_thread(sync.push_shared_path, task_path)
             return _ok(action=action, task=asdict(meta), synced=True)
 
         if action == "check_task":
@@ -287,7 +265,7 @@ async def taskflow(
                 return _ok(dryRun=True, action=action, taskId=task_id)
             task_path = f"shared/tasks/{task_id}/"
             sync = create_sync()
-            sync.pull_shared_path(task_path)
+            await asyncio.to_thread(sync.pull_shared_path, task_path)
             meta = store.read_task_meta(task_id)
             result = check_task(store, task_id=task_id)
             return _ok(
@@ -303,12 +281,14 @@ async def taskflow(
                 return _ok(dryRun=True, action=action, taskId=task_id)
             task_path = f"shared/tasks/{task_id}/"
             sync = create_sync()
-            sync.pull_shared_path(task_path)
+            await asyncio.to_thread(sync.pull_shared_path, task_path)
             actor = _current_actor()
             _require_ack_preconditions(store.read_task_meta(task_id), actor)
             spec = store.read_task_spec(task_id)
             meta = ack_task(store, task_id=task_id, actor=actor)
-            sync.push_shared_path(task_path, exclude=["spec.md", "base/"])
+            await asyncio.to_thread(
+                sync.push_shared_path, task_path, exclude=["spec.md", "base/"]
+            )
             return _ok(action=action, task=asdict(meta), spec=spec)
 
         if action == "submit_task":
@@ -329,8 +309,10 @@ async def taskflow(
             task_path = f"shared/tasks/{task_id}/"
             result_path = f"shared/tasks/{task_id}/result.md"
             sync = create_sync()
-            sync.push_shared_path(task_path, exclude=["spec.md", "base/"])
-            sync.stat_shared_path(result_path)
+            await asyncio.to_thread(
+                sync.push_shared_path, task_path, exclude=["spec.md", "base/"]
+            )
+            await asyncio.to_thread(sync.stat_shared_path, result_path)
             response_payload: dict[str, Any] = {
                 "action": action,
                 "task": asdict(meta),

@@ -276,6 +276,42 @@ elementWeb:
 # ── CMS Observability (optional) ─────────────────────────────────────────
 # Alibaba Cloud CMS 2.0 (ARMS) integration.  Set cms.enabled=true and fill in
 # credentials to enable OTLP trace/metric export from Manager and all Workers.
+
+# ── Operator Dashboard (optional) ────────────────────────────────────────
+dashboard:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: higress-registry.cn-hangzhou.cr.aliyuncs.com/higress/agentteams-dashboard
+    tag: ""
+    pullPolicy: IfNotPresent
+  bindHost: "0.0.0.0"
+  username: "admin"
+  # Set password, or existingSecret. When both are empty Helm generates and
+  # preserves a random password in the release Secret.
+  password: ""
+  existingSecret: ""
+  existingSecretKey: "password"
+  publicOrigin: ""
+  authDisabled: false
+  serviceAccount:
+    create: true
+    # Must resolve to the controller's admin identity
+    # (<controller.resourcePrefix>admin) unless explicitly overridden.
+    name: ""
+  service:
+    type: ClusterIP
+    port: 8090
+  upstreamTimeoutMs: 15000
+  maxJsonBytes: 2097152
+  maxObjectBytes: 16777216
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
 cms:
   enabled: false
   endpoint: ""
@@ -300,7 +336,7 @@ worker:
     openhuman:
       repository: higress-registry.cn-hangzhou.cr.aliyuncs.com/higress/hiclaw-openhuman-worker
       tag: ""                 # defaults to global.imageTag
-  defaultRuntime: "openclaw"
+  defaultRuntime: "hermes"
   resources:
     requests:
       cpu: 100m

@@ -143,6 +143,9 @@ func (b *WorkerEnvBuilder) applyClusterDefaults(env map[string]string) {
 	if b.defaults.CMSWorkspace != "" {
 		env["AGENTTEAMS_CMS_WORKSPACE"] = b.defaults.CMSWorkspace
 	}
+	if b.defaults.CMSServiceName != "" {
+		env["HICLAW_CMS_SERVICE_NAME"] = b.defaults.CMSServiceName
+	}
 	if b.defaults.SkillsAPIURL != "" {
 		env["SKILLS_API_URL"] = b.defaults.SkillsAPIURL
 	}

@@ -50,7 +50,10 @@ class Worker:
         self.sync: Optional[FileSync] = None
         self._hermes_home: Path = config.hermes_home
         self._gateway_task: Optional[asyncio.Task] = None
+        self._sync_task: Optional[asyncio.Task] = None
+        self._push_task: Optional[asyncio.Task] = None
         self._stopping = False
+        self._skipped_local_skills_logged: set[str] = set()
 
     # ------------------------------------------------------------------
     # Public API
@@ -77,6 +80,13 @@ class Worker:
                 await self._gateway_task
             except (asyncio.CancelledError, Exception):
                 pass
+        for task in (self._sync_task, self._push_task):
+            if task and not task.done():
+                task.cancel()
+                try:
+                    await task
+                except (asyncio.CancelledError, Exception):
+                    pass
         console.print("[green]Hermes worker stopped.[/green]")
 
     # ------------------------------------------------------------------
@@ -159,14 +169,14 @@ class Worker:
         self._sync_skills()
         self._copy_mcporter_config()
 
-        asyncio.create_task(
+        self._sync_task = asyncio.create_task(
             sync_loop(
                 self.sync,
                 interval=self.config.sync_interval,
                 on_pull=self._on_files_pulled,
             )
         )
-        asyncio.create_task(push_loop(self.sync, check_interval=5))
+        self._push_task = asyncio.create_task(push_loop(self.sync, check_interval=5))
 
         console.print("[bold green]Hermes worker initialized.[/bold green]")
         return True
@@ -371,15 +381,28 @@ class Worker:
             console.print(f"[green]Skills installed: {', '.join(installed)}[/green]")
 
         # Drop stale skills that are no longer published by the Manager so
-        # they don't leak into the agent's tool list.
+        # they don't leak into the agent's tool list. Local skill dirs that
+        # were never published in MinIO at all (e.g. self-installed by the
+        # worker) are left alone rather than pruned — the controller's
+        # Overwrite:true push still wins name collisions (plan §4.5).
         keep = set(installed) | {"file-sync"}
+        minio_skill_set = set(skill_names)
         for child in list(skills_dir.iterdir()):
-            if child.is_dir() and child.name not in keep:
-                try:
-                    shutil.rmtree(child)
-                    logger.info("Removed stale hermes skill: %s", child.name)
-                except OSError as exc:
-                    logger.debug("Could not remove %s: %s", child, exc)
+            if not child.is_dir() or child.name in keep:
+                continue
+            if child.name not in minio_skill_set:
+                if child.name not in self._skipped_local_skills_logged:
+                    self._skipped_local_skills_logged.add(child.name)
+                    logger.info(
+                        "Skipping local hermes skill not in MinIO (not pruned): %s",
+                        child.name,
+                    )
+                continue
+            try:
+                shutil.rmtree(child)
+                logger.info("Removed stale hermes skill: %s", child.name)
+            except OSError as exc:
+                logger.debug("Could not remove %s: %s", child, exc)
 
     # ------------------------------------------------------------------
     # mcporter config copy

@@ -136,7 +136,10 @@ func (f *fakeTeamMatrix) LeaveRoom(_ context.Context, roomID, token string) erro
 
 func (f *fakeTeamMatrix) SendMessage(context.Context, string, string, string) error { return nil }
 
-func (f *fakeTeamMatrix) SendMessageAsAdmin(context.Context, string, string) error { return nil }
+func (f *fakeTeamMatrix) SendMessageAsAdmin(_ context.Context, _ string, body string) error {
+	f.lastAdminBody = body
+	return nil
+}
 
 func (f *fakeTeamMatrix) Login(context.Context, string, string) (string, error) { return "", nil }
 

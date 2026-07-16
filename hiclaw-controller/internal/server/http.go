@@ -63,6 +63,7 @@ func NewHTTPServer(addr string, deps ServerDeps) *HTTPServer {
 
 	// --- Declarative resource CRUD ---
 	rh := NewResourceHandler(deps.Client, deps.Namespace, deps.Backend, deps.ControllerName)
+	rh.SetSoloOperator(deps.SoloOperator)
 	nameFn := authpkg.NameFromPath
 
 	// Workers
@@ -91,6 +92,22 @@ func NewHTTPServer(addr string, deps ServerDeps) *HTTPServer {
 	mux.Handle("GET /api/v1/managers/{name}", mw.RequireAuthz(authpkg.ActionGet, "manager", nameFn)(http.HandlerFunc(rh.GetManager)))
 	mux.Handle("PUT /api/v1/managers/{name}", mw.RequireAuthz(authpkg.ActionUpdate, "manager", nameFn)(http.HandlerFunc(rh.UpdateManager)))
 	mux.Handle("DELETE /api/v1/managers/{name}", mw.RequireAuthz(authpkg.ActionDelete, "manager", nameFn)(http.HandlerFunc(rh.DeleteManager)))
+
+	// Projects
+	mux.Handle("POST /api/v1/projects", mw.RequireAuthz(authpkg.ActionCreate, "project", nil)(http.HandlerFunc(rh.CreateProject)))
+	mux.Handle("GET /api/v1/projects", mw.RequireAuthz(authpkg.ActionList, "project", nil)(http.HandlerFunc(rh.ListProjects)))
+	mux.Handle("GET /api/v1/projects/{name}", mw.RequireAuthz(authpkg.ActionGet, "project", nameFn)(http.HandlerFunc(rh.GetProject)))
+	mux.Handle("PUT /api/v1/projects/{name}", mw.RequireAuthz(authpkg.ActionUpdate, "project", nameFn)(http.HandlerFunc(rh.UpdateProject)))
+	mux.Handle("DELETE /api/v1/projects/{name}", mw.RequireAuthz(authpkg.ActionDelete, "project", nameFn)(http.HandlerFunc(rh.DeleteProject)))
+
+	// --- Manager tasks (state.json passthrough; plan §10.2 (2)) ---
+	mth := NewManagerTasksHandler(func() string { return deps.ManagerStateFile })
+	mux.Handle("GET /api/v1/manager-tasks", mw.RequireAuthz(authpkg.ActionGet, "manager", nil)(http.HandlerFunc(mth.GetManagerTasks)))
+
+	// --- Message injection ---
+	msgh := NewMessageHandler(deps.Client, deps.Provisioner, deps.Namespace)
+	mux.Handle("POST /api/v1/managers/{name}/message", mw.RequireAuthz(authpkg.ActionUpdate, "manager", nameFn)(http.HandlerFunc(msgh.SendManagerMessage)))
+	mux.Handle("POST /api/v1/teams/{name}/message", mw.RequireAuthz(authpkg.ActionUpdate, "team", nameFn)(http.HandlerFunc(msgh.SendTeamMessage)))
 
 	// --- Package upload ---
 	ph := NewPackageHandler(deps.OSS)

@@ -72,13 +72,19 @@ func TestWorkerEnvBuilderBuildManagerUsesConfiguredRuntimeAndBucket(t *testing.T
 		Runtime:              "docker",
 		DefaultWorkerRuntime: "copaw",
 		SkillsAPIURL:         "nacos://skills.example.com:8848/public",
+		CMSServiceName:       "hiclaw-manager",
 	})
 
 	env := builder.BuildManager("manager", &ManagerProvisionResult{
 		GatewayKey:     "gateway-key",
 		MatrixPassword: "matrix-password",
 		MinIOPassword:  "secret",
-	}, v1beta1.ManagerSpec{})
+	}, v1beta1.ManagerSpec{
+		Config: v1beta1.ManagerConfig{
+			WorkerIdleTimeout: "12h",
+			NotifyChannel:     "admin-dm",
+		},
+	})
 
 	for key, want := range map[string]string{
 		"AGENTTEAMS_MANAGER_NAME":           "manager",
@@ -100,5 +106,36 @@ func TestWorkerEnvBuilderBuildManagerUsesConfiguredRuntimeAndBucket(t *testing.T
 		if _, ok := env[legacyKey]; ok {
 			t.Fatalf("unexpected legacy env %s in manager env", legacyKey)
 		}
+	}
+}
+
+// TestWorkerEnvBuilderBuildEmitsCMSServiceName covers #23: HICLAW_CMS_SERVICE_NAME
+// must be propagated to worker containers (mirroring CMSProject/CMSWorkspace),
+// since worker entrypoints (e.g. hermes-worker-entrypoint.sh) read it for
+// OTEL_SERVICE_NAME.
+func TestWorkerEnvBuilderBuildEmitsCMSServiceName(t *testing.T) {
+	builder := NewWorkerEnvBuilder(config.WorkerEnvDefaults{
+		CMSProject:     "proj",
+		CMSWorkspace:   "ws",
+		CMSServiceName: "hiclaw-worker-alice",
+	})
+
+	env := builder.Build("alice", &WorkerProvisionResult{})
+
+	if got, want := env["HICLAW_CMS_SERVICE_NAME"], "hiclaw-worker-alice"; got != want {
+		t.Fatalf("HICLAW_CMS_SERVICE_NAME = %q, want %q", got, want)
+	}
+}
+
+// TestWorkerEnvBuilderBuildOmitsCMSServiceNameWhenEmpty ensures the key is
+// simply absent (not set to "") when the default is unset, matching the
+// CMSProject/CMSWorkspace "emit only when non-empty" convention.
+func TestWorkerEnvBuilderBuildOmitsCMSServiceNameWhenEmpty(t *testing.T) {
+	builder := NewWorkerEnvBuilder(config.WorkerEnvDefaults{})
+
+	env := builder.Build("alice", &WorkerProvisionResult{})
+
+	if _, ok := env["HICLAW_CMS_SERVICE_NAME"]; ok {
+		t.Fatalf("expected HICLAW_CMS_SERVICE_NAME to be absent when default is empty, got %q", env["HICLAW_CMS_SERVICE_NAME"])
 	}
 }

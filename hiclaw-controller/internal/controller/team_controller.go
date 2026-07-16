@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	v1beta1 "github.com/hiclaw/hiclaw-controller/api/v1beta1"
@@ -386,6 +387,7 @@ func (r *TeamReconciler) reconcileTeamLegacy(ctx context.Context, t *v1beta1.Tea
 	for _, worker := range t.Spec.Workers {
 		workerRuntimeNames = append(workerRuntimeNames, worker.EffectiveWorkerName())
 	}
+	derivedTeam = forceSoloPeerMentions(derivedTeam, r.SoloOperator)
 
 	rooms, err := r.Provisioner.ProvisionTeamRooms(ctx, service.TeamRoomRequest{
 		TeamName:             teamRuntimeName,

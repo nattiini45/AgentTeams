@@ -529,8 +529,16 @@ func (c *TuwunelClient) CreateRoom(ctx context.Context, req CreateRoomRequest) (
 		Error   string `json:"error"`
 	}
 
-	statusCode, respBody, err := c.doJSON(ctx, http.MethodPost,
-		"/_matrix/client/v3/createRoom", token, body, &resp)
+	var statusCode int
+	var respBody []byte
+	var err error
+	if usedAdminToken {
+		statusCode, respBody, err = c.doJSONAsAdmin(ctx, http.MethodPost,
+			"/_matrix/client/v3/createRoom", token, body, &resp)
+	} else {
+		statusCode, respBody, err = c.doJSON(ctx, http.MethodPost,
+			"/_matrix/client/v3/createRoom", token, body, &resp)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("create room %q: %w", req.Name, err)
 	}
@@ -634,7 +642,7 @@ func (c *TuwunelClient) ResolveRoomAlias(ctx context.Context, alias string) (str
 		Error   string `json:"error"`
 	}
 
-	statusCode, respBody, err := c.doJSON(ctx, http.MethodGet,
+	statusCode, respBody, err := c.doJSONAsAdmin(ctx, http.MethodGet,
 		"/_matrix/client/v3/directory/room/"+encodeAlias(alias),
 		token, nil, &resp)
 	if err != nil {
@@ -665,7 +673,7 @@ func (c *TuwunelClient) DeleteRoomAlias(ctx context.Context, alias string) error
 		Error   string `json:"error"`
 	}
 
-	statusCode, respBody, err := c.doJSON(ctx, http.MethodDelete,
+	statusCode, respBody, err := c.doJSONAsAdmin(ctx, http.MethodDelete,
 		"/_matrix/client/v3/directory/room/"+encodeAlias(alias),
 		token, nil, &resp)
 	if err != nil {
@@ -746,7 +754,8 @@ func (c *TuwunelClient) JoinRoom(ctx context.Context, roomID, userToken string) 
 
 func (c *TuwunelClient) LeaveRoom(ctx context.Context, roomID, userToken string) error {
 	token := userToken
-	if token == "" {
+	usedAdminToken := token == ""
+	if usedAdminToken {
 		var err error
 		token, err = c.ensureAdminToken(ctx)
 		if err != nil {
@@ -754,9 +763,15 @@ func (c *TuwunelClient) LeaveRoom(ctx context.Context, roomID, userToken string)
 		}
 	}
 	encodedRoom := encodeRoomID(roomID)
-	statusCode, respBody, err := c.doJSON(ctx, http.MethodPost,
-		fmt.Sprintf("/_matrix/client/v3/rooms/%s/leave", encodedRoom),
-		token, map[string]interface{}{}, nil)
+	var statusCode int
+	var respBody []byte
+	var err error
+	path := fmt.Sprintf("/_matrix/client/v3/rooms/%s/leave", encodedRoom)
+	if usedAdminToken {
+		statusCode, respBody, err = c.doJSONAsAdmin(ctx, http.MethodPost, path, token, map[string]interface{}{}, nil)
+	} else {
+		statusCode, respBody, err = c.doJSON(ctx, http.MethodPost, path, token, map[string]interface{}{}, nil)
+	}
 	if err != nil {
 		return fmt.Errorf("leave room %s: %w", roomID, err)
 	}
@@ -767,6 +782,15 @@ func (c *TuwunelClient) LeaveRoom(ctx context.Context, roomID, userToken string)
 }
 
 func (c *TuwunelClient) SendMessage(ctx context.Context, roomID, token, body string) error {
+	return c.sendMessage(ctx, roomID, token, body, false)
+}
+
+// sendMessage is the shared implementation behind SendMessage and the
+// admin-token call sites (SendMessageAsAdmin, AdminCommand). usedAdminToken
+// scopes the doJSONAsAdmin clear-on-failure behavior to genuine admin-token
+// callers so a per-user SendMessage failure never evicts the cached admin
+// token.
+func (c *TuwunelClient) sendMessage(ctx context.Context, roomID, token, body string, usedAdminToken bool) error {
 	encodedRoom := encodeRoomID(roomID)
 	txnID := fmt.Sprintf("hc-%d", txnCounter.Add(1))
 	msg := map[string]string{
@@ -774,9 +798,15 @@ func (c *TuwunelClient) SendMessage(ctx context.Context, roomID, token, body str
 		"body":    body,
 	}
 
-	statusCode, respBody, err := c.doJSON(ctx, http.MethodPut,
-		fmt.Sprintf("/_matrix/client/v3/rooms/%s/send/m.room.message/%s", encodedRoom, txnID),
-		token, msg, nil)
+	path := fmt.Sprintf("/_matrix/client/v3/rooms/%s/send/m.room.message/%s", encodedRoom, txnID)
+	var statusCode int
+	var respBody []byte
+	var err error
+	if usedAdminToken {
+		statusCode, respBody, err = c.doJSONAsAdmin(ctx, http.MethodPut, path, token, msg, nil)
+	} else {
+		statusCode, respBody, err = c.doJSON(ctx, http.MethodPut, path, token, msg, nil)
+	}
 	if err != nil {
 		return fmt.Errorf("send message to %s: %w", roomID, err)
 	}
@@ -822,7 +852,7 @@ func (c *TuwunelClient) SendMessageAsAdmin(ctx context.Context, roomID, body str
 	if err != nil {
 		return fmt.Errorf("send admin message: %w", err)
 	}
-	if err := c.SendMessage(ctx, roomID, token, body); err != nil {
+	if err := c.sendMessage(ctx, roomID, token, body, true); err != nil {
 		return fmt.Errorf("send admin message: %w", err)
 	}
 	return nil
@@ -840,7 +870,7 @@ func (c *TuwunelClient) AdminCommand(ctx context.Context, command string) error 
 	if err != nil {
 		return fmt.Errorf("admin command: %w", err)
 	}
-	if err := c.SendMessage(ctx, roomID, token, command); err != nil {
+	if err := c.sendMessage(ctx, roomID, token, command, true); err != nil {
 		return fmt.Errorf("admin command: %w", err)
 	}
 	return nil
@@ -851,10 +881,17 @@ func (c *TuwunelClient) ListRoomMembers(ctx context.Context, roomID string) ([]R
 	if err != nil {
 		return nil, fmt.Errorf("list members %s: %w", roomID, err)
 	}
-	return c.ListRoomMembersWithToken(ctx, roomID, token)
+	return c.listRoomMembers(ctx, roomID, token, true)
 }
 
 func (c *TuwunelClient) ListRoomMembersWithToken(ctx context.Context, roomID, userToken string) ([]RoomMember, error) {
+	return c.listRoomMembers(ctx, roomID, userToken, false)
+}
+
+// listRoomMembers is the shared implementation behind ListRoomMembers (admin
+// token) and ListRoomMembersWithToken (caller-supplied token). usedAdminToken
+// scopes the doJSONAsAdmin clear-on-failure behavior to the admin-token path.
+func (c *TuwunelClient) listRoomMembers(ctx context.Context, roomID, userToken string, usedAdminToken bool) ([]RoomMember, error) {
 	if userToken == "" {
 		return nil, fmt.Errorf("list members %s: empty user token", roomID)
 	}
@@ -871,9 +908,15 @@ func (c *TuwunelClient) ListRoomMembersWithToken(ctx context.Context, roomID, us
 		Error   string `json:"error"`
 	}
 
-	statusCode, respBody, err := c.doJSON(ctx, http.MethodGet,
-		fmt.Sprintf("/_matrix/client/v3/rooms/%s/members", encodedRoom),
-		userToken, nil, &resp)
+	path := fmt.Sprintf("/_matrix/client/v3/rooms/%s/members", encodedRoom)
+	var statusCode int
+	var respBody []byte
+	var err error
+	if usedAdminToken {
+		statusCode, respBody, err = c.doJSONAsAdmin(ctx, http.MethodGet, path, userToken, nil, &resp)
+	} else {
+		statusCode, respBody, err = c.doJSON(ctx, http.MethodGet, path, userToken, nil, &resp)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("list members %s: %w", roomID, err)
 	}
@@ -903,10 +946,17 @@ func (c *TuwunelClient) InviteToRoom(ctx context.Context, roomID, userID string)
 	if err != nil {
 		return fmt.Errorf("invite %s to %s: %w", userID, roomID, err)
 	}
-	return c.InviteToRoomWithToken(ctx, roomID, userID, token)
+	return c.inviteToRoom(ctx, roomID, userID, token, true)
 }
 
 func (c *TuwunelClient) InviteToRoomWithToken(ctx context.Context, roomID, userID, inviterToken string) error {
+	return c.inviteToRoom(ctx, roomID, userID, inviterToken, false)
+}
+
+// inviteToRoom is the shared implementation behind InviteToRoom (admin
+// token) and InviteToRoomWithToken (caller-supplied token). usedAdminToken
+// scopes the doJSONAsAdmin clear-on-failure behavior to the admin-token path.
+func (c *TuwunelClient) inviteToRoom(ctx context.Context, roomID, userID, inviterToken string, usedAdminToken bool) error {
 	if inviterToken == "" {
 		return fmt.Errorf("invite %s to %s: empty inviter token", userID, roomID)
 	}
@@ -917,9 +967,15 @@ func (c *TuwunelClient) InviteToRoomWithToken(ctx context.Context, roomID, userI
 		Error   string `json:"error"`
 	}
 
-	statusCode, respBody, err := c.doJSON(ctx, http.MethodPost,
-		fmt.Sprintf("/_matrix/client/v3/rooms/%s/invite", encodedRoom),
-		inviterToken, map[string]string{"user_id": userID}, &resp)
+	path := fmt.Sprintf("/_matrix/client/v3/rooms/%s/invite", encodedRoom)
+	var statusCode int
+	var respBody []byte
+	var err error
+	if usedAdminToken {
+		statusCode, respBody, err = c.doJSONAsAdmin(ctx, http.MethodPost, path, inviterToken, map[string]string{"user_id": userID}, &resp)
+	} else {
+		statusCode, respBody, err = c.doJSON(ctx, http.MethodPost, path, inviterToken, map[string]string{"user_id": userID}, &resp)
+	}
 	if err != nil {
 		return fmt.Errorf("invite %s to %s: %w", userID, roomID, err)
 	}
@@ -942,10 +998,19 @@ func (c *TuwunelClient) KickFromRoom(ctx context.Context, roomID, userID, reason
 	if err != nil {
 		return fmt.Errorf("kick %s from %s: %w", userID, roomID, err)
 	}
-	return c.KickFromRoomWithToken(ctx, roomID, userID, reason, token)
+	return c.kickFromRoom(ctx, roomID, userID, reason, token, true)
 }
 
 func (c *TuwunelClient) KickFromRoomWithToken(ctx context.Context, roomID, userID, reason, kickerToken string) error {
+	return c.kickFromRoom(ctx, roomID, userID, reason, kickerToken, false)
+}
+
+// kickFromRoom is the shared implementation behind KickFromRoom (admin
+// token) and KickFromRoomWithToken (caller-supplied token). usedAdminToken
+// scopes the doJSONAsAdmin clear-on-failure behavior to the admin-token
+// path; a benign 403 (M_FORBIDDEN, treated as idempotent success below)
+// never carries M_UNKNOWN_TOKEN so it never triggers a clear.
+func (c *TuwunelClient) kickFromRoom(ctx context.Context, roomID, userID, reason, kickerToken string, usedAdminToken bool) error {
 	if kickerToken == "" {
 		return fmt.Errorf("kick %s from %s: empty kicker token", userID, roomID)
 	}
@@ -961,9 +1026,15 @@ func (c *TuwunelClient) KickFromRoomWithToken(ctx context.Context, roomID, userI
 		Error   string `json:"error"`
 	}
 
-	statusCode, respBody, err := c.doJSON(ctx, http.MethodPost,
-		fmt.Sprintf("/_matrix/client/v3/rooms/%s/kick", encodedRoom),
-		kickerToken, body, &resp)
+	path := fmt.Sprintf("/_matrix/client/v3/rooms/%s/kick", encodedRoom)
+	var statusCode int
+	var respBody []byte
+	var err error
+	if usedAdminToken {
+		statusCode, respBody, err = c.doJSONAsAdmin(ctx, http.MethodPost, path, kickerToken, body, &resp)
+	} else {
+		statusCode, respBody, err = c.doJSON(ctx, http.MethodPost, path, kickerToken, body, &resp)
+	}
 	if err != nil {
 		return fmt.Errorf("kick %s from %s: %w", userID, roomID, err)
 	}
@@ -1062,6 +1133,11 @@ func (c *TuwunelClient) SyncMessages(ctx context.Context, since string, timeout 
 // If respOut is nil, the response body is not decoded (but still read and returned).
 // The raw body is always returned (possibly nil) so callers can include it in
 // diagnostic error messages even when respOut is set.
+//
+// Note: this does not know whether the caller's token was the cached admin
+// token, so it never clears c.adminToken itself. Call sites that authenticate
+// with the admin token use doJSONAsAdmin, which scopes the clear-on-failure
+// behavior to genuine admin-token invalidation.
 func (c *TuwunelClient) doJSON(ctx context.Context, method, path, token string, reqBody interface{}, respOut interface{}) (int, []byte, error) {
 	operation := matrixOperation(method, path)
 	start := time.Now()
@@ -1101,11 +1177,6 @@ func (c *TuwunelClient) doJSON(ctx context.Context, method, path, token string, 
 	}
 	defer resp.Body.Close()
 	statusCode = resp.StatusCode
-
-	// Clear cached admin token on auth failure so next call re-authenticates
-	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
-		c.adminToken.Store("")
-	}
 
 	respBody, _ := io.ReadAll(resp.Body)
 

@@ -103,8 +103,7 @@ func (c *MinIOClient) GetObject(ctx context.Context, key string) ([]byte, error)
 	}
 	out, err := c.runMC(ctx, "cat", c.fullPath(key))
 	if err != nil {
-		if strings.Contains(err.Error(), "Object does not exist") ||
-			strings.Contains(err.Error(), "exit status") {
+		if isNotExistErr(err) {
 			return nil, os.ErrNotExist
 		}
 		return nil, err
@@ -118,13 +117,21 @@ func (c *MinIOClient) Stat(ctx context.Context, key string) error {
 	}
 	_, err := c.runMC(ctx, "stat", c.fullPath(key))
 	if err != nil {
-		if strings.Contains(err.Error(), "Object does not exist") ||
-			strings.Contains(err.Error(), "exit status") {
+		if isNotExistErr(err) {
 			return os.ErrNotExist
 		}
 		return err
 	}
 	return nil
+}
+
+// isNotExistErr reports whether err represents mc's genuine "object not
+// found" condition. It must NOT match on generic exec failures (e.g. "exit
+// status N", which wraps every non-zero mc exit code including unreachable
+// endpoints, bad/expired credentials, and timeouts) — doing so would
+// collapse real outages into a silently-swallowed os.ErrNotExist.
+func isNotExistErr(err error) bool {
+	return strings.Contains(err.Error(), "Object does not exist")
 }
 
 func (c *MinIOClient) DeleteObject(ctx context.Context, key string) error {
@@ -166,11 +173,15 @@ func (c *MinIOClient) DeletePrefix(ctx context.Context, prefix string) error {
 	return err
 }
 
+func (c *MinIOClient) MovePrefix(ctx context.Context, srcPrefix, dstPrefix string) error {
+	return MovePrefixVerified(ctx, c, srcPrefix, dstPrefix)
+}
+
 func (c *MinIOClient) ListObjects(ctx context.Context, prefix string) ([]string, error) {
 	if err := c.ensureAlias(ctx); err != nil {
 		return nil, err
 	}
-	out, err := c.runMC(ctx, "ls", c.fullPath(prefix))
+	out, err := c.runMC(ctx, "find", c.fullPath(prefix), "--type", "f")
 	if err != nil {
 		return nil, err
 	}
@@ -181,11 +192,9 @@ func (c *MinIOClient) ListObjects(ctx context.Context, prefix string) ([]string,
 		if line == "" {
 			continue
 		}
-		// mc ls output format: "[date] [size] filename"
-		parts := strings.Fields(line)
-		if len(parts) > 0 {
-			names = append(names, parts[len(parts)-1])
-		}
+		root := strings.TrimSuffix(c.fullPath(""), "/") + "/"
+		line = strings.TrimPrefix(line, root)
+		names = append(names, line)
 	}
 	return names, nil
 }

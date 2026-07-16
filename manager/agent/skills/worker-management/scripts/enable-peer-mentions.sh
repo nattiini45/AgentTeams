@@ -17,6 +17,7 @@
 
 set -e
 source /opt/hiclaw/scripts/lib/hiclaw-env.sh
+source /opt/hiclaw/scripts/lib/container-api.sh
 
 # ============================================================
 # Parse arguments

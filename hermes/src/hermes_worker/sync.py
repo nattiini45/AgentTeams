@@ -510,11 +510,16 @@ class FileSync:
             minio_skill_set = set(minio_skills)
             for child in list(local_skills_dir.iterdir()):
                 if child.is_dir() and child.name not in minio_skill_set:
-                    shutil.rmtree(child)
-                    changed.append(f"skills/{child.name}/ (removed)")
-                    logger.info(
-                        "Removed local skill no longer in MinIO: %s", child.name
-                    )
+                    # Locally-installed skills (e.g. self-installed by the
+                    # worker) aren't tracked in MinIO. Skip pruning instead of
+                    # rmtree-ing every sync loop iteration; the controller's
+                    # Overwrite:true push still wins name collisions (plan §4.5).
+                    if child.name not in self._skipped_local_skills_logged:
+                        self._skipped_local_skills_logged.add(child.name)
+                        logger.info(
+                            "Skipping local skill not in MinIO (not pruned): %s",
+                            child.name,
+                        )
 
         return changed
 
@@ -650,8 +655,12 @@ def push_local(sync: FileSync, since: float = 0) -> list[str]:
         key = f"{sync._prefix}/{rel.as_posix()}"
         try:
             remote = sync._cat(key)
-            local_content = path.read_text(errors="replace")
-            if remote == local_content:
+            # Compare raw bytes: read_text(errors="replace") is lossy and can
+            # make a changed binary file appear equal to the remote content,
+            # causing the push to be (wrongly) skipped.
+            local_bytes = path.read_bytes()
+            remote_bytes = remote.encode() if remote is not None else None
+            if remote_bytes == local_bytes:
                 continue
             dest = sync._object_path(key)
             _mc("cp", str(path), dest, check=True)
@@ -664,8 +673,14 @@ def push_local(sync: FileSync, since: float = 0) -> list[str]:
 
 
 async def push_loop(sync: FileSync, check_interval: int = 5) -> None:
-    """Background task: push local changes to MinIO every ``check_interval`` seconds."""
-    last_push_time: float = time.time()
+    """Background task: push local changes to MinIO every ``check_interval`` seconds.
+
+    The first iteration is a full scan (``since=0``) so that files written
+    by bridge/bootstrap BEFORE push_loop was started (e.g. AGENTS.md,
+    SOUL.md) still get uploaded. Otherwise their mtime is always
+    ≤ ``last_push_time`` and they'd never be pushed.
+    """
+    last_push_time: float = 0.0
 
     while True:
         await asyncio.sleep(check_interval)

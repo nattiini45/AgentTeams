@@ -87,14 +87,26 @@ if [ "${AGENTTEAMS_RUNTIME}" != "aliyun" ] && [ "${AGENTTEAMS_RUNTIME}" != "k8s"
     # Create symlink for host directory access
     if [ -d "/host-share" ]; then
         ORIGINAL_HOST_HOME="${HOST_ORIGINAL_HOME:-$HOME}"
-        if [ ! -e "${ORIGINAL_HOST_HOME}" ] && [ "${ORIGINAL_HOST_HOME}" != "/" ] && [ "${ORIGINAL_HOST_HOME}" != "/root" ] && [ "${ORIGINAL_HOST_HOME}" != "/data" ] && [ "${ORIGINAL_HOST_HOME}" != "/host-share" ]; then
-            mkdir -p "$(dirname "${ORIGINAL_HOST_HOME}")"
-            ln -sfn /host-share "${ORIGINAL_HOST_HOME}"
-            log "Created symlink: ${ORIGINAL_HOST_HOME} -> /host-share"
-        else
-            ln -sfn /host-share /root/host-home
-            log "Created fallback symlink: /root/host-home -> /host-share"
-        fi
+        case "${ORIGINAL_HOST_HOME}" in
+            /*)
+                if [ ! -e "${ORIGINAL_HOST_HOME}" ] && [ "${ORIGINAL_HOST_HOME}" != "/" ] && [ "${ORIGINAL_HOST_HOME}" != "/root" ] && [ "${ORIGINAL_HOST_HOME}" != "/data" ] && [ "${ORIGINAL_HOST_HOME}" != "/host-share" ]; then
+                    mkdir -p "$(dirname "${ORIGINAL_HOST_HOME}")"
+                    ln -sfn /host-share "${ORIGINAL_HOST_HOME}"
+                    log "Created symlink: ${ORIGINAL_HOST_HOME} -> /host-share"
+                else
+                    ln -sfn /host-share /root/host-home
+                    log "Created fallback symlink: /root/host-home -> /host-share"
+                fi
+                ;;
+            *)
+                # Not an absolute POSIX path (e.g. a raw Windows path like
+                # "C:\Users\foo" leaked through from HOST_ORIGINAL_HOME) — creating
+                # a symlink target from this value would just produce a bogus,
+                # unusable link. Fall back to the standard /root/host-home symlink.
+                ln -sfn /host-share /root/host-home
+                log "HOST_ORIGINAL_HOME ('${ORIGINAL_HOST_HOME}') is not an absolute POSIX path; created fallback symlink: /root/host-home -> /host-share"
+                ;;
+        esac
     fi
 
     # Add local domains to /etc/hosts
@@ -693,6 +705,7 @@ if [ -f /root/manager-workspace/openclaw.json ]; then
        --arg emb_model "${AGENTTEAMS_EMBEDDING_MODEL}" \
        --arg aigw_domain "${AI_GATEWAY_DOMAIN}" \
        --arg matrix_user_id "@manager:${MATRIX_DOMAIN}" \
+       --arg heartbeat_every "${HICLAW_MANAGER_HEARTBEAT_INTERVAL}" \
        --argjson e2ee "${MATRIX_E2EE_ENABLED}" \
        --argjson known_models "${KNOWN_MODELS}" \
        --argjson ctx "${MODEL_CONTEXT_WINDOW}" \
@@ -722,6 +735,7 @@ if [ -f /root/manager-workspace/openclaw.json ]; then
         | .channels.matrix.encryption = $e2ee
         | .channels.matrix.network = ((.channels.matrix.network // {}) + {"dangerouslyAllowPrivateNetwork": true})
         | .channels.matrix.autoJoin = "always"
+        | .agents.defaults.heartbeat = ((.agents.defaults.heartbeat // {}) + {"every": $heartbeat_every})
         # OpenClaw YOLO defaults: host exec without approval prompts (see openclaw docs tools/exec-approvals)
         | .tools = (.tools // {})
         | .tools.exec = ((.tools.exec // {}) + {"host":"gateway","security":"full","ask":"off"})
@@ -758,6 +772,7 @@ else
            --arg aigw_domain "${AI_GATEWAY_DOMAIN}" \
            --arg key "${AGENTTEAMS_MANAGER_GATEWAY_KEY}" \
            --arg model "${MODEL_NAME}" \
+           --arg heartbeat_every "${HICLAW_MANAGER_HEARTBEAT_INTERVAL}" \
            --argjson ctx "${MODEL_CONTEXT_WINDOW}" \
            --argjson max "${MODEL_MAX_TOKENS}" \
            --argjson reasoning "${MODEL_REASONING}" \

@@ -12,6 +12,7 @@
 #     upgrades (e.g. switching LLM provider) take effect without a clean reinstall.
 
 source /opt/hiclaw/scripts/lib/base.sh
+source /opt/hiclaw/scripts/lib/gateway-api.sh
 
 MATRIX_DOMAIN="${AGENTTEAMS_MATRIX_DOMAIN:-matrix-local.agentteams.io:8080}"
 MATRIX_CLIENT_DOMAIN="${AGENTTEAMS_MATRIX_CLIENT_DOMAIN:-matrix-client-local.agentteams.io}"
@@ -36,59 +37,50 @@ CONSOLE_URL="http://127.0.0.1:8001"
 
 # ============================================================
 # Helper: call Higress Console API, log result, never fail.
+#
+# Request/retry/re-login mechanics live in the shared higress_request()
+# (gateway-api.sh) — this is a thin, desc-specific logging wrapper around it
+# (same consolidation as register-provider.sh's higress_api/higress_get).
 # ============================================================
 higress_api() {
     local method="$1"
     local path="$2"
     local desc="$3"
-    shift 3
-    local body="$*"
+    local body="$4"
 
-    local tmpfile
-    tmpfile=$(mktemp)
-    local http_code
-    http_code=$(curl -s -o "${tmpfile}" -w '%{http_code}' -X "${method}" "${CONSOLE_URL}${path}" \
-        -b "${HIGRESS_COOKIE_FILE}" \
-        -H 'Content-Type: application/json' \
-        -d "${body}" 2>/dev/null) || true
-    local response
-    response=$(cat "${tmpfile}" 2>/dev/null)
-    rm -f "${tmpfile}"
+    higress_request "${method}" "${path}" "${body}" || { log "ERROR: ${desc} ... re-login to Higress Console failed"; return 1; }
 
-    if echo "${response}" | grep -q '<!DOCTYPE html>' 2>/dev/null; then
-        log "ERROR: ${desc} ... got HTML page (session expired?). Re-login needed."
+    if [ "${HIGRESS_REQUEST_AUTH_FAILED}" = "true" ]; then
+        if echo "${HIGRESS_REQUEST_BODY}" | grep -q '<!DOCTYPE html>' 2>/dev/null; then
+            log "ERROR: ${desc} ... got HTML page (session expired?). Re-login needed."
+        else
+            log "ERROR: ${desc} ... HTTP ${HIGRESS_REQUEST_CODE} auth failed"
+        fi
         return 1
     fi
-    if [ "${http_code}" = "401" ] || [ "${http_code}" = "403" ]; then
-        log "ERROR: ${desc} ... HTTP ${http_code} auth failed"
-        return 1
-    fi
-    if echo "${response}" | grep -q '"success":true' 2>/dev/null; then
+
+    if echo "${HIGRESS_REQUEST_BODY}" | grep -q '"success":true' 2>/dev/null; then
         log "${desc} ... OK"
-    elif [ "${http_code}" = "409" ]; then
+    elif [ "${HIGRESS_REQUEST_CODE}" = "409" ]; then
         log "${desc} ... already exists, skipping"
-    elif echo "${response}" | grep -q '"success":false' 2>/dev/null; then
-        log "WARNING: ${desc} ... FAILED (HTTP ${http_code}): ${response}"
-    elif [ "${http_code}" = "200" ] || [ "${http_code}" = "201" ] || [ "${http_code}" = "204" ]; then
-        log "${desc} ... OK (HTTP ${http_code})"
+    elif echo "${HIGRESS_REQUEST_BODY}" | grep -q '"success":false' 2>/dev/null; then
+        log "WARNING: ${desc} ... FAILED (HTTP ${HIGRESS_REQUEST_CODE}): ${HIGRESS_REQUEST_BODY}"
+    elif [ "${HIGRESS_REQUEST_CODE}" = "200" ] || [ "${HIGRESS_REQUEST_CODE}" = "201" ] || [ "${HIGRESS_REQUEST_CODE}" = "204" ]; then
+        log "${desc} ... OK (HTTP ${HIGRESS_REQUEST_CODE})"
     else
-        log "WARNING: ${desc} ... unexpected (HTTP ${http_code}): ${response}"
+        log "WARNING: ${desc} ... unexpected (HTTP ${HIGRESS_REQUEST_CODE}): ${HIGRESS_REQUEST_BODY}"
     fi
 }
 
 # Helper: GET a resource, return body if 200, empty string otherwise.
 higress_get() {
     local path="$1"
-    local tmpfile
-    tmpfile=$(mktemp)
-    local http_code
-    http_code=$(curl -s -o "${tmpfile}" -w '%{http_code}' -X GET "${CONSOLE_URL}${path}" \
-        -b "${HIGRESS_COOKIE_FILE}" 2>/dev/null) || true
-    local body
-    body=$(cat "${tmpfile}" 2>/dev/null)
-    rm -f "${tmpfile}"
-    if [ "${http_code}" = "200" ]; then
-        echo "${body}"
+
+    higress_request GET "${path}" "" || return 1
+    [ "${HIGRESS_REQUEST_AUTH_FAILED}" = "true" ] && return 1
+
+    if [ "${HIGRESS_REQUEST_CODE}" = "200" ]; then
+        echo "${HIGRESS_REQUEST_BODY}"
     fi
 }
 
@@ -282,6 +274,107 @@ if [ -n "${AGENTTEAMS_LLM_API_KEY}" ]; then
 
 else
     log "Skipping AI Gateway configuration (no AGENTTEAMS_LLM_API_KEY)"
+fi
+
+# ============================================================
+# 5c. Extra LLM providers (idempotent, OPT-IN via HICLAW_EXTRA_LLM_PROVIDERS)
+#
+# Plan v2.3 Phase 2b / decision #7: register additional OpenAI-compatible
+# providers (Ollama Cloud, Xiaomi MiMo, ...) alongside the default provider
+# above, each on its OWN AI route so per-agent `spec.modelProvider` can pin
+# an upstream without touching `default-ai-route`.
+#
+# Format: "name1=url1;name2=url2;..." — provider name becomes the Higress
+# service-source name (must not contain "/", docs/faq.md:550-552) and the
+# route's model-prefix match is "^<name>/" (e.g. "^ollama/"). Per-provider
+# API key is read from HICLAW_<NAME>_API_KEY (name upper-cased).
+#
+# HICLAW_EXTRA_LLM_PROVIDERS unset/empty → this whole block is a no-op and
+# setup-higress.sh's behavior is byte-identical to before this change.
+#
+# ⚠️ Provisional (S5/S6, unverifiable from this checkout): the exact hosted
+# MiMo base URL, and whether these new routes are shadowed by
+# default-ai-route's PRE-"/" path predicate (route-priority/ordering is a
+# live-only question) — see the Milestone-2 doc's unverified-assumption
+# ledger. This loop deliberately never reads or writes "default-ai-route".
+# ============================================================
+if [ -n "${HICLAW_EXTRA_LLM_PROVIDERS:-}" ]; then
+    log "Configuring extra LLM providers: ${HICLAW_EXTRA_LLM_PROVIDERS}"
+
+    IFS=';' read -ra _EXTRA_PROVIDER_ENTRIES <<< "${HICLAW_EXTRA_LLM_PROVIDERS}"
+    for _entry in "${_EXTRA_PROVIDER_ENTRIES[@]}"; do
+        [ -z "${_entry}" ] && continue
+        _provider_name="${_entry%%=*}"
+        _provider_url="${_entry#*=}"
+
+        if [ -z "${_provider_name}" ] || [ -z "${_provider_url}" ] || [ "${_provider_url}" = "${_entry}" ]; then
+            log "WARNING: malformed HICLAW_EXTRA_LLM_PROVIDERS entry '${_entry}', skipping"
+            continue
+        fi
+        if echo "${_provider_name}" | grep -q '/'; then
+            log "WARNING: extra LLM provider name '${_provider_name}' must not contain '/', skipping"
+            continue
+        fi
+
+        # Per-provider API key: HICLAW_<NAME>_API_KEY (name upper-cased, non-alnum -> _)
+        _key_var="HICLAW_$(echo "${_provider_name}" | tr '[:lower:]-' '[:upper:]_')_API_KEY"
+        _provider_key="${!_key_var:-}"
+        if [ -z "${_provider_key}" ]; then
+            log "WARNING: ${_key_var} not set, skipping extra LLM provider '${_provider_name}'"
+            continue
+        fi
+
+        # Parse domain, port, protocol from the provider's base URL (same idiom as
+        # the openai-compat case above).
+        _ep_proto="https"
+        _ep_port="443"
+        _ep_url_strip="${_provider_url#https://}"
+        _ep_url_strip="${_ep_url_strip#http://}"
+        echo "${_provider_url}" | grep -q '^http://' && { _ep_proto="http"; _ep_port="80"; }
+        _ep_domain="${_ep_url_strip%%/*}"
+        echo "${_ep_domain}" | grep -q ':' && { _ep_port="${_ep_domain##*:}"; _ep_domain="${_ep_domain%:*}"; }
+
+        # Service source: GET -> PUT if exists, POST if not
+        existing_extra_svc=$(higress_get "/v1/service-sources/${_provider_name}")
+        EXTRA_SVC_BODY='{"type":"dns","name":"'"${_provider_name}"'","port":'"${_ep_port}"',"protocol":"'"${_ep_proto}"'","proxyName":"","domain":"'"${_ep_domain}"'"}'
+        if [ -n "${existing_extra_svc}" ]; then
+            higress_api PUT "/v1/service-sources/${_provider_name}" "Updating ${_provider_name} DNS service source" "${EXTRA_SVC_BODY}"
+        else
+            higress_api POST /v1/service-sources "Registering ${_provider_name} DNS service source" "${EXTRA_SVC_BODY}"
+        fi
+
+        # Provider: GET -> PUT if exists, POST if not
+        EXTRA_PROVIDER_BODY='{"type":"openai","name":"'"${_provider_name}"'","tokens":["'"${_provider_key}"'"],"version":0,"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"openaiCustomUrl":"'"${_provider_url}"'","openaiCustomServiceName":"'"${_provider_name}"'.dns","openaiCustomServicePort":'"${_ep_port}"',"hiclawMode":true}}'
+        existing_extra_provider=$(higress_get "/v1/ai/providers/${_provider_name}")
+        if [ -n "${existing_extra_provider}" ]; then
+            higress_api PUT "/v1/ai/providers/${_provider_name}" "Updating LLM provider (${_provider_name})" "${EXTRA_PROVIDER_BODY}"
+        else
+            higress_api POST /v1/ai/providers "Creating LLM provider (${_provider_name})" "${EXTRA_PROVIDER_BODY}"
+        fi
+
+        # Own AI route, matched by model-name prefix "<name>/" — NEVER
+        # default-ai-route (#S5: that route's PRE-"/" path predicate is a
+        # path-only catch-all; keeping these on separate route names/model
+        # matches avoids touching its boot-time rewrite at all).
+        _route_name="hiclaw-${_provider_name}-route"
+        EXTRA_ROUTE_BODY='{"name":"'"${_route_name}"'","domains":'"${AI_ROUTE_DOMAINS}"',"pathPredicate":{"matchType":"PRE","matchValue":"/","caseSensitive":false},"modelPredicate":{"matchType":"PRE","matchValue":"'"${_provider_name}"'/"},"upstreams":[{"provider":"'"${_provider_name}"'","weight":100,"modelMapping":{}}],"authConfig":{"enabled":true,"allowedCredentialTypes":["key-auth"],"allowedConsumers":["manager"]}}'
+
+        existing_extra_route=$(higress_get "/v1/ai/routes/${_route_name}")
+        if [ -n "${existing_extra_route}" ]; then
+            patched_extra_route=$(echo "${existing_extra_route}" | jq --argjson domains "${AI_ROUTE_DOMAINS}" '
+                .data
+                | .upstreams[0].provider = "'"${_provider_name}"'"
+                | .domains = $domains
+            ' 2>/dev/null)
+            if [ -n "${patched_extra_route}" ] && [ "${patched_extra_route}" != "null" ]; then
+                higress_api PUT "/v1/ai/routes/${_route_name}" "Updating AI Gateway route (${_route_name})" "${patched_extra_route}"
+            fi
+        else
+            higress_api POST /v1/ai/routes "Creating AI Gateway route (${_route_name}, model-prefix ${_provider_name}/)" "${EXTRA_ROUTE_BODY}"
+        fi
+    done
+else
+    log "No HICLAW_EXTRA_LLM_PROVIDERS set, skipping extra LLM provider registration"
 fi
 
 # ============================================================

@@ -1,8 +1,6 @@
 package config
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -199,6 +197,17 @@ type Config struct {
 
 	// Pre-resolved worker environment defaults (passed to worker containers)
 	WorkerEnv WorkerEnvDefaults
+
+	// SoloOperator, when true, tailors the first-boot experience for a
+	// single human running HiClaw alone rather than a multi-person org:
+	// the Manager welcome prompt skips the 4-question identity interview
+	// (renderManagerWelcomeBodySolo), every Team's PeerMentions is forced
+	// to true regardless of Team.Spec.PeerMentions (there is only one
+	// human to loop in, so cross-mentions can't leak to strangers), and
+	// the sole Human created via the HTTP API defaults to Admin
+	// (PermissionLevel=1) when the request omits one. Sourced from
+	// HICLAW_SOLO_OPERATOR. Default false (unchanged multi-user behavior).
+	SoloOperator bool
 }
 
 // WorkerEnvDefaults holds environment variable defaults injected into worker and manager containers.
@@ -226,6 +235,7 @@ type WorkerEnvDefaults struct {
 	CMSLicenseKey     string
 	CMSProject        string
 	CMSWorkspace      string
+	CMSServiceName    string
 
 	// SkillsAPIURL is propagated to workers as SKILLS_API_URL.
 	// Sourced from SKILLS_API_URL, falling back to AGENTTEAMS_SKILLS_API_URL.
@@ -486,6 +496,14 @@ func (c *Config) AgentFSDir() string {
 	return envOrDefault("AGENTTEAMS_AGENT_FS_DIR", "/root/hiclaw-fs/agents")
 }
 
+// ManagerStateFile returns the path to the Manager Agent's task-tracking
+// state.json (embedded mode), defaulting to "<AgentFSDir>/manager/state.json".
+// HICLAW_MANAGER_STATE_FILE overrides the default for testing/non-standard
+// layouts.
+func (c *Config) ManagerStateFile() string {
+	return envOrDefault("HICLAW_MANAGER_STATE_FILE", filepath.Join(c.AgentFSDir(), "manager", "state.json"))
+}
+
 // WorkerAgentDir returns the source directory for builtin worker agent files.
 func (c *Config) WorkerAgentDir() string {
 	return envOrDefault("AGENTTEAMS_WORKER_AGENT_DIR", "/opt/hiclaw/agent/worker-agent")
@@ -590,15 +608,6 @@ func envOrDefault(key, defaultVal string) string {
 		return v
 	}
 	return defaultVal
-}
-
-// generateRandomHex returns a cryptographically random hex string of n bytes (2n hex chars).
-func generateRandomHex(n int) string {
-	b := make([]byte, n)
-	if _, err := rand.Read(b); err != nil {
-		panic(fmt.Sprintf("crypto/rand failed: %v", err))
-	}
-	return hex.EncodeToString(b)
 }
 
 func envOrDefaultInt(key string, defaultVal int) int {
