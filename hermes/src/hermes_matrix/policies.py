@@ -120,9 +120,10 @@ def should_suppress_outbound(
     is never suppressed — this keeps the function conservative: it only
     drops events it can positively identify as tool/thinking chatter.
 
-    When both ``filter_tool`` and ``filter_thinking`` are False (the default,
-    matching ``AGENTTEAMS_QUIET_ROOMS=false``) this always returns False — the
-    function is a no-op until the env gate turns it on.
+    When both ``filter_tool`` and ``filter_thinking`` are False (verbose rooms,
+    e.g. ``AGENTTEAMS_VERBOSE_ROOMS=true``) this always returns False — the
+    function is a no-op. When unset (quiet default), bridge sets both filters
+    to ``"true"`` so tool/thinking chatter is suppressed.
     """
     if not filter_tool and not filter_thinking:
         return False

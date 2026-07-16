@@ -588,8 +588,10 @@ def push_local(sync: FileSync, since: float = 0) -> list[str]:
         ".npm",
         ".local",
         ".mc",
-        # .hermes sub-dirs that are derived / installed at startup
-        "platforms",          # mautrix store, but our overlay uses matrix-nio store
+        # S10: persist mautrix store under .hermes/platforms/ across recreate.
+        # Path confirmed at build as mautrix under platforms/; live Phase 3 spike
+        # must docker exec + grep next_batch and confirm destroy/recreate does
+        # not drop in-flight room messages before claiming live efficacy.
         "matrix-nio-store",
         "image_cache",
         "audio_cache",

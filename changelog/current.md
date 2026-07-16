@@ -4,6 +4,12 @@ Record image-affecting changes to `manager/`, `worker/`, `copaw/`, `openclaw-bas
 
 ---
 
+- feat(manager): add gitea-operations worker skill + lead-review-loop reference
+- docs: add restore.md snapshot restore runbook (S-BACKUP)
+- feat(copaw/hermes): Phase 5b quiet-by-default; AGENTTEAMS_VERBOSE_ROOMS
+- fix(hermes): persist Matrix platforms store across recreate (S10 checkout pattern)
+- docs(copaw): remove stale team-leader ActionReady 403 gotcha
+
 - fix(integration): integrate fork code-review remediation (Tier 0–2C) onto the renamed AgentTeams upstream baseline. Replays the `manager/` / `copaw/` / `hermes/` / `hiclaw-controller/` / `install/` / `plugins/` / `dashboard/` remediation (security/data-loss, correctness, cleanup/dedup) onto `upstream/main` @ `06d75c6` including the `a7b707e` hard-cut AgentTeams contracts rename. Reconciles the `AGENTTEAMS_*` env-var rename end-to-end: fixes the dead Manager heartbeat override (controller emitted `AGENTTEAMS_MANAGER_HEARTBEAT_INTERVAL` but CoPaw/OpenClaw read `HICLAW_`), the dead `CMS_SERVICE_NAME` worker propagation, and the unwired `AGENTTEAMS_SOLO_OPERATOR` config field; renames the fork-internal `MANAGER_HEARTBEAT_INTERVAL`/`CMS_SERVICE_NAME`/`MANAGER_STATE_FILE`/`QUIET_ROOMS`/`CHAT_ACK`/`SOLO_OPERATOR` stragglers. Ports the Tier 0 #8 `oss-credentials.sh` cached-cred-before-refresh fallback onto the dynamic `MC_HOST_*` alias machinery, the Tier 1D openhuman `find-skill` test coverage, and the `buildDesiredMembers` team-controller member builder + helpers. Adds `.gitattributes` (LF hygiene), `.github/workflows/remediation-gates.yml` (CI: go test + pytest + dashboard npm + helm lint), and the `docs/upstream-integration-migration.md` operator cutover runbook. Also captures previously-unrecorded image-affecting changes from `faa8874` (provider-management skill) and `915653d` (11 Kilo review fixes on PR #2).
 - feat(qwenpaw): add the QwenPaw worker runtime Python package baseline with runtime config sync, storage sync, heartbeat reporting, Matrix channel overlay, and focused unit tests.
 - fix(controller): surface Kubernetes Pod container failures in Worker backend status and status API responses.

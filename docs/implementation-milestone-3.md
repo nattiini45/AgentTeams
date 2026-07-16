@@ -29,9 +29,9 @@ Five steps; live-only verification for each is listed explicitly as **deferred-t
 **Deferred to the live milestone (the final, VPS-gated deployment milestone):**
 - **Phase 0 / 0b deploys** — bring-up on the VPS / Docker Desktop; nothing to build from checkout.
 - **All live spikes S1–S10, S-GIT, S-BACKUP** — every one requires a running stack.
-- **`gitea-operations` skill + Phase 2 step 3 lead-review-loop reference** — blocked on S-GIT live tool-name enumeration (don't author against assumed GitHub parity).
+- **`gitea-operations` skill + Phase 2 step 3 lead-review-loop reference** — **authored in checkout** (53 gitea + 18 lifecycle tool names; per-tool JSON schemas still deferred).
 - **§6 runtime bumps** (QwenPaw v1.1.12.post2 / hermes v0.17.0) — version-sensitive patches need live re-validation.
-- **Phase 5b defaults-ON** — gated on S2/S3 efficacy results; M2 shipped the env-gated mechanism.
+- **Phase 5b defaults-ON** — landed in a later batch (`AGENTTEAMS_VERBOSE_ROOMS`, quiet-by-default).
 - **Phase 6 attachment→MinIO bridge** — Hermes side gated S9; CoPaw side deferred with it so the design lands once.
 - **Phase 3 team CRs + 14-persona migration** — needs the live VPS `workers-registry.json` (§10.4 TEMPLATE rows).
 - **Cross-instance fan-out** — needs a second live controller + tailnet reachability (§10.2 (3) TODO).

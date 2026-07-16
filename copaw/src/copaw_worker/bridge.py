@@ -29,20 +29,29 @@ def _is_in_container() -> bool:
     return Path("/.dockerenv").exists() or Path("/run/.containerenv").exists()
 
 
-def _quiet_rooms_enabled() -> bool:
-    """True if AGENTTEAMS_QUIET_ROOMS is set truthily (Phase 5b, default off).
+def _verbose_rooms_enabled() -> bool:
+    """True when Matrix rooms should show per-tool-call detail (Phase 5b).
 
-    Mechanism-only gate: when enabled, the bridge additionally writes a
-    root-level ``show_tool_details: false`` into config.json (the tap
-    hypothesized in the reshape plan for suppressing per-tool-call chatter —
-    efficacy against the external BaseChannel is unverified, see plan S2).
-    When unset (default), config.json output is byte-identical to before
-    this flag existed.
+    Precedence: ``AGENTTEAMS_VERBOSE_ROOMS`` > ``AGENTTEAMS_QUIET_ROOMS`` (deprecated).
+
+    - unset → quiet (default); pydantic ``show_tool_details`` default False applies
+    - ``AGENTTEAMS_VERBOSE_ROOMS`` truthy → verbose (write root ``show_tool_details: true``)
+    - ``AGENTTEAMS_QUIET_ROOMS`` truthy (legacy) → quiet
+    - ``AGENTTEAMS_QUIET_ROOMS`` falsey → verbose (inverted legacy semantics)
     """
-    raw = os.environ.get("AGENTTEAMS_QUIET_ROOMS")
-    if raw is None:
-        return False
-    return raw.strip().lower() in ("true", "1", "yes", "on")
+    verbose_raw = os.environ.get("AGENTTEAMS_VERBOSE_ROOMS")
+    if verbose_raw is not None:
+        return verbose_raw.strip().lower() in ("true", "1", "yes", "on")
+
+    quiet_raw = os.environ.get("AGENTTEAMS_QUIET_ROOMS")
+    if quiet_raw is not None:
+        logger.warning(
+            "AGENTTEAMS_QUIET_ROOMS is deprecated; use AGENTTEAMS_VERBOSE_ROOMS "
+            "(semantics inverted: unset=quiet, truthy=verbose)"
+        )
+        return quiet_raw.strip().lower() not in ("true", "1", "yes", "on")
+
+    return False
 
 
 def _secret_dir(working_dir: Path) -> Path:
@@ -316,17 +325,13 @@ def _write_config_json(
             "max_input_length"
         ] = context_window
 
-    # Phase 5b "quiet rooms" (env-gated, default off): root-level
-    # show_tool_details is a separate knob from channels.matrix.* above
-    # (copaw/src/matrix/config.py:1164, defaults True, never set anywhere
-    # today). Only touch it when the operator opts in — leaving the env
-    # unset must produce byte-identical config.json output to before this
-    # flag existed.
-    if _quiet_rooms_enabled():
-        existing["show_tool_details"] = False
+    # Phase 5b "quiet rooms" (default quiet): root-level show_tool_details is
+    # a separate knob from channels.matrix.* above (copaw/src/matrix/config.py:1164,
+    # default False). Only write True when the operator opts into verbose rooms;
+    # when quiet, pop the key so pydantic default applies and stale true is cleared.
+    if _verbose_rooms_enabled():
+        existing["show_tool_details"] = True
     else:
-        # Restart-time overlay: if quiet rooms was previously enabled and is
-        # now off, don't leave a stale show_tool_details behind.
         existing.pop("show_tool_details", None)
 
     with open(config_path, "w") as f:

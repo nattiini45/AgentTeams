@@ -70,6 +70,18 @@ The bridge maps `openclaw.json` to hermes config in the following way:
 | `system_prompt` / `SOUL.md`             | `<HERMES_HOME>/SOUL.md`                 |
 | `skills/<name>/SKILL.md`                | `<HERMES_HOME>/skills/<name>/SKILL.md`  |
 
+## Matrix sync token persistence (S10)
+
+The mautrix store under ``${HERMES_HOME}/platforms/`` (including sync cursor /
+``next_batch`` state) is included in MinIO push/pull — it is **not** in the
+push exclude list. Intended path: ``<workspace>/.hermes/platforms/``.
+
+**Live validation still required (Phase 3 spike):** after destroy/recreate,
+``docker exec`` into the Worker, grep ``next_batch`` under ``platforms/``, and
+confirm in-flight room messages are not dropped. Do not claim live efficacy until
+that spike passes. If the adapter stores the cursor elsewhere, allowlist that
+exact file instead of ``platforms/``.
+
 ## Why a custom Matrix adapter?
 
 hermes-agent's stock adapter uses [mautrix](https://github.com/mautrix/python),

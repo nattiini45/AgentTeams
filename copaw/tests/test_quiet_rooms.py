@@ -1,23 +1,13 @@
-"""Tests for AGENTTEAMS_QUIET_ROOMS -> config.json root show_tool_details.
+"""Tests for AGENTTEAMS_VERBOSE_ROOMS -> config.json root show_tool_details.
 
-Phase 5b "quiet rooms" (mechanism only, env-gated default-off): when
-AGENTTEAMS_QUIET_ROOMS is truthy, copaw_worker.bridge._write_config_json (via
-bridge_openclaw_to_copaw) additionally writes a root-level
-"show_tool_details": false into config.json — the tap onto
-copaw/src/matrix/config.py:1164 (default True, never set anywhere today).
-The channels.matrix.{filter_tool_messages,filter_thinking} flags are
-untouched either way.
-
-When the env is unset (default), config.json output must be byte-identical
-to before this flag existed — regression-tested here.
-
-This intentionally lives outside test_bridge.py: that file imports the
-nonexistent `bridge_controller_to_copaw` symbol and fails collection
-entirely (pre-existing, unrelated breakage — see baseline). Never add
-tests to test_bridge.py.
+Phase 5b "quiet rooms" (default quiet): unset env leaves show_tool_details absent
+so pydantic default False applies. AGENTTEAMS_VERBOSE_ROOMS truthy writes root
+``show_tool_details: true``. AGENTTEAMS_QUIET_ROOMS is deprecated (inverted
+legacy semantics) with a warning when read.
 """
 
 import json
+import logging
 import tempfile
 from pathlib import Path
 
@@ -51,7 +41,8 @@ def _config_json_path(working_dir: Path) -> dict:
         return json.load(f)
 
 
-def test_quiet_rooms_unset_leaves_show_tool_details_absent(monkeypatch):
+def test_verbose_rooms_unset_leaves_show_tool_details_absent(monkeypatch):
+    monkeypatch.delenv("AGENTTEAMS_VERBOSE_ROOMS", raising=False)
     monkeypatch.delenv("AGENTTEAMS_QUIET_ROOMS", raising=False)
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -64,34 +55,22 @@ def test_quiet_rooms_unset_leaves_show_tool_details_absent(monkeypatch):
     assert config["channels"]["matrix"]["filter_thinking"] is True
 
 
-def test_quiet_rooms_false_leaves_show_tool_details_absent(monkeypatch):
-    monkeypatch.setenv("AGENTTEAMS_QUIET_ROOMS", "false")
+def test_verbose_rooms_truthy_sets_root_show_tool_details_true(monkeypatch):
+    monkeypatch.setenv("AGENTTEAMS_VERBOSE_ROOMS", "true")
+    monkeypatch.delenv("AGENTTEAMS_QUIET_ROOMS", raising=False)
 
     with tempfile.TemporaryDirectory() as tmpdir:
         working_dir = Path(tmpdir) / "agent"
         bridge_openclaw_to_copaw(_make_openclaw_cfg(), working_dir, profile="manager")
         config = _config_json_path(working_dir)
 
-    assert "show_tool_details" not in config
+    assert config["show_tool_details"] is True
 
 
-def test_quiet_rooms_truthy_sets_root_show_tool_details_false(monkeypatch):
-    monkeypatch.setenv("AGENTTEAMS_QUIET_ROOMS", "true")
-
-    with tempfile.TemporaryDirectory() as tmpdir:
-        working_dir = Path(tmpdir) / "agent"
-        bridge_openclaw_to_copaw(_make_openclaw_cfg(), working_dir, profile="manager")
-        config = _config_json_path(working_dir)
-
-    assert config["show_tool_details"] is False
-    # The channel-dict flags are kept as-is alongside the new root flag.
-    assert config["channels"]["matrix"]["filter_tool_messages"] is True
-    assert config["channels"]["matrix"]["filter_thinking"] is True
-
-
-def test_quiet_rooms_accepts_common_truthy_spellings(monkeypatch):
+def test_verbose_rooms_accepts_common_truthy_spellings(monkeypatch):
     for value in ("1", "yes", "on", "TRUE", "True"):
-        monkeypatch.setenv("AGENTTEAMS_QUIET_ROOMS", value)
+        monkeypatch.setenv("AGENTTEAMS_VERBOSE_ROOMS", value)
+        monkeypatch.delenv("AGENTTEAMS_QUIET_ROOMS", raising=False)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             working_dir = Path(tmpdir) / "agent"
@@ -100,41 +79,64 @@ def test_quiet_rooms_accepts_common_truthy_spellings(monkeypatch):
             )
             config = _config_json_path(working_dir)
 
-        assert config["show_tool_details"] is False, f"failed for {value!r}"
+        assert config["show_tool_details"] is True, f"failed for {value!r}"
 
 
-def test_quiet_rooms_env_unset_output_byte_identical_across_runs(monkeypatch):
-    """Regression guard: with the env unset, re-bridging (restart-time
-    overlay) must not introduce show_tool_details or otherwise change the
-    matrix channel block shape from before this flag existed.
-    """
-    monkeypatch.delenv("AGENTTEAMS_QUIET_ROOMS", raising=False)
-
-    with tempfile.TemporaryDirectory() as tmpdir:
-        working_dir = Path(tmpdir) / "agent"
-        bridge_openclaw_to_copaw(_make_openclaw_cfg(), working_dir, profile="manager")
-        first = (working_dir / "config.json").read_text()
-
-        bridge_openclaw_to_copaw(_make_openclaw_cfg(), working_dir, profile="manager")
-        second = (working_dir / "config.json").read_text()
-
-    assert first == second
-    assert "show_tool_details" not in first
-
-
-def test_quiet_rooms_toggling_off_after_on_removes_root_flag(monkeypatch):
-    """If an operator flips AGENTTEAMS_QUIET_ROOMS back off, the next bridge run
-    must not leave a stale show_tool_details: false behind."""
+def test_verbose_rooms_toggling_off_after_on_removes_root_flag(monkeypatch):
     with tempfile.TemporaryDirectory() as tmpdir:
         working_dir = Path(tmpdir) / "agent"
 
-        monkeypatch.setenv("AGENTTEAMS_QUIET_ROOMS", "true")
+        monkeypatch.setenv("AGENTTEAMS_VERBOSE_ROOMS", "true")
         bridge_openclaw_to_copaw(_make_openclaw_cfg(), working_dir, profile="manager")
         enabled = _config_json_path(working_dir)
-        assert enabled["show_tool_details"] is False
+        assert enabled["show_tool_details"] is True
 
-        monkeypatch.delenv("AGENTTEAMS_QUIET_ROOMS", raising=False)
+        monkeypatch.delenv("AGENTTEAMS_VERBOSE_ROOMS", raising=False)
         bridge_openclaw_to_copaw(_make_openclaw_cfg(), working_dir, profile="manager")
         disabled = _config_json_path(working_dir)
 
     assert "show_tool_details" not in disabled
+
+
+def test_quiet_rooms_deprecated_true_keeps_quiet(monkeypatch, caplog):
+    monkeypatch.delenv("AGENTTEAMS_VERBOSE_ROOMS", raising=False)
+    monkeypatch.setenv("AGENTTEAMS_QUIET_ROOMS", "true")
+
+    with caplog.at_level(logging.WARNING):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            working_dir = Path(tmpdir) / "agent"
+            bridge_openclaw_to_copaw(
+                _make_openclaw_cfg(), working_dir, profile="manager"
+            )
+            config = _config_json_path(working_dir)
+
+    assert "show_tool_details" not in config
+    assert any("AGENTTEAMS_QUIET_ROOMS is deprecated" in r.message for r in caplog.records)
+
+
+def test_quiet_rooms_deprecated_false_enables_verbose(monkeypatch, caplog):
+    monkeypatch.delenv("AGENTTEAMS_VERBOSE_ROOMS", raising=False)
+    monkeypatch.setenv("AGENTTEAMS_QUIET_ROOMS", "false")
+
+    with caplog.at_level(logging.WARNING):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            working_dir = Path(tmpdir) / "agent"
+            bridge_openclaw_to_copaw(
+                _make_openclaw_cfg(), working_dir, profile="manager"
+            )
+            config = _config_json_path(working_dir)
+
+    assert config["show_tool_details"] is True
+    assert any("AGENTTEAMS_QUIET_ROOMS is deprecated" in r.message for r in caplog.records)
+
+
+def test_verbose_rooms_wins_when_both_set(monkeypatch):
+    monkeypatch.setenv("AGENTTEAMS_VERBOSE_ROOMS", "true")
+    monkeypatch.setenv("AGENTTEAMS_QUIET_ROOMS", "true")
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        working_dir = Path(tmpdir) / "agent"
+        bridge_openclaw_to_copaw(_make_openclaw_cfg(), working_dir, profile="manager")
+        config = _config_json_path(working_dir)
+
+    assert config["show_tool_details"] is True
