@@ -800,6 +800,13 @@ func createMemberContainer(ctx context.Context, d MemberDeps, m MemberContext, s
 		DeployMode:  m.DeployMode,
 		WorkersDeps: workerDeps,
 	}
+	// Docker-backed workers restart automatically across host reboots so a
+	// transient host restart doesn't orphan the worker pod. K8s/sandbox
+	// backends manage lifecycle via Pod spec RestartPolicy / OpenKruise, so
+	// leave it empty there (the k8s backend ignores this field).
+	if wb.Name() == "docker" {
+		createReq.RestartPolicy = "unless-stopped"
+	}
 	if wb.Name() != "k8s" && wb.Name() != "sandbox" {
 		token, _, err := d.Provisioner.RequestSAToken(ctx, m.Name)
 		if err != nil {

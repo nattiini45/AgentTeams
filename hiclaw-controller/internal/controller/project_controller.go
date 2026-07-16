@@ -274,38 +274,60 @@ func (r *ProjectReconciler) resolveProjectWorkers(ctx context.Context, proj *v1b
 		return nil
 	}
 
-	if len(team.Spec.WorkerMembers) > 0 {
-		for _, ref := range team.Spec.WorkerMembers {
-			var worker v1beta1.Worker
-			if err := r.Get(ctx, client.ObjectKey{Namespace: team.Namespace, Name: ref.Name}, &worker); err != nil {
-				return nil, fmt.Errorf("resolve Team %s member Worker %q: %w", team.Name, ref.Name, err)
+		if len(team.Spec.WorkerMembers) > 0 {
+			for _, ref := range team.Spec.WorkerMembers {
+				var worker v1beta1.Worker
+				if err := r.Get(ctx, client.ObjectKey{Namespace: team.Namespace, Name: ref.Name}, &worker); err != nil {
+					return nil, fmt.Errorf("resolve Team %s member Worker %q: %w", team.Name, ref.Name, err)
+				}
+				if err := add(ref.Name, worker.Spec.EffectiveWorkerName(worker.Name)); err != nil {
+					return nil, err
+				}
 			}
-			if err := add(ref.Name, worker.Spec.EffectiveWorkerName(worker.Name)); err != nil {
-				return nil, err
+		} else {
+			// Compatibility for legacy Teams retained by the upstream schema.
+			// When Status.Members is populated (post-reconcile observed state),
+			// it is authoritative — its RuntimeName supersedes the spec-derived
+			// default (which falls back to Name when WorkerName is unset). Recording
+			// from both would double-count the leader, so prefer Status when present.
+			statusByMember := make(map[string]v1beta1.TeamMemberStatus, len(team.Status.Members))
+			for _, m := range team.Status.Members {
+				statusByMember[m.Name] = m
+			}
+			if team.Spec.Leader.Name != "" {
+				runtimeName := team.Spec.Leader.EffectiveWorkerName()
+				if sm, ok := statusByMember[team.Spec.Leader.Name]; ok && sm.RuntimeName != "" {
+					runtimeName = sm.RuntimeName
+				}
+				if err := add(team.Spec.Leader.Name, runtimeName); err != nil {
+					return nil, err
+				}
+			}
+			for _, worker := range team.Spec.Workers {
+				runtimeName := worker.EffectiveWorkerName()
+				if sm, ok := statusByMember[worker.Name]; ok && sm.RuntimeName != "" {
+					runtimeName = sm.RuntimeName
+				}
+				if err := add(worker.Name, runtimeName); err != nil {
+					return nil, err
+				}
+			}
+			// Record any Status.Members not represented in the spec (e.g. a member
+			// whose CR exists but wasn't listed in legacy Spec.Workers) so their
+			// runtime names are addressable by proj.Spec.Workers lookups.
+			for _, member := range team.Status.Members {
+				if _, already := aliases[member.Name]; already {
+					continue
+				}
+				runtimeName := member.RuntimeName
+				if runtimeName == "" {
+					runtimeName = member.Name
+				}
+				if err := add(member.Name, runtimeName); err != nil {
+					return nil, err
+				}
 			}
 		}
-	} else {
-		// Compatibility for legacy Teams retained by the upstream schema.
-		if team.Spec.Leader.Name != "" {
-			if err := add(team.Spec.Leader.Name, team.Spec.Leader.EffectiveWorkerName()); err != nil {
-				return nil, err
-			}
-		}
-		for _, worker := range team.Spec.Workers {
-			if err := add(worker.Name, worker.EffectiveWorkerName()); err != nil {
-				return nil, err
-			}
-		}
-		for _, member := range team.Status.Members {
-			runtimeName := member.RuntimeName
-			if runtimeName == "" {
-				runtimeName = member.Name
-			}
-			if err := add(member.Name, runtimeName); err != nil {
-				return nil, err
-			}
-		}
-	}
 
 	if len(proj.Spec.Workers) == 0 {
 		return ordered, nil
@@ -383,7 +405,13 @@ func (r *ProjectReconciler) reconcileDelete(ctx context.Context, proj *v1beta1.P
 		}
 		for _, prefix := range prefixes {
 			if err := r.OSS.DeletePrefix(ctx, prefix); err != nil {
-				return reconcile.Result{RequeueAfter: reconcileRetryDelay}, fmt.Errorf("delete project storage prefix %s: %w", prefix, err)
+				// Best-effort cleanup: a transient OSS outage during project
+				// deletion must NOT strand the Project CR with a finalizer
+				// forever. Log and proceed to remove the finalizer; the
+				// prefix is now orphaned (an operator can gc it later) but
+				// deletion completes.
+				log := ctrl.LoggerFrom(ctx)
+				log.Error(err, "non-fatal: failed to delete project storage prefix during finalizer removal", "prefix", prefix)
 			}
 		}
 	}
