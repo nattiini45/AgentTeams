@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 
 	v1beta1 "github.com/hiclaw/hiclaw-controller/api/v1beta1"

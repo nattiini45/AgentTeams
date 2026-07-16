@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -25,7 +26,7 @@ func TestAPIClient_DoesNotSendClusterIDHeader(t *testing.T) {
 		HTTPClient: ts.Client(),
 	}
 
-	resp, err := client.Do("GET", "/api/test", nil)
+	resp, err := client.Do(context.Background(), "GET", "/api/test", nil)
 	if err != nil {
 		t.Fatalf("Do: %v", err)
 	}
