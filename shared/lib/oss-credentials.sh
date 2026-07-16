@@ -182,10 +182,25 @@ _oss_ensure_refresh() {
         needs_refresh=true
     fi
 
-    if [ "${needs_refresh}" = true ]; then
-        ${refresh_fn} || return 1
-        . "${_OSS_CRED_FILE}"
-    fi
-
+    # Export the (possibly stale) cached MC_HOST_* now, before attempting a
+    # refresh (Tier 0 #8). This guarantees that if the refresh fails
+    # transiently, mc still runs with the last-known-good creds instead of
+    # none at all — a transient STS outage must not hard-abort every mc call.
     _oss_export_mc_host
+
+    if [ "${needs_refresh}" = true ]; then
+        if ! ${refresh_fn}; then
+            local _mc_host_var _cached_value
+            _mc_host_var="$(_oss_mc_host_var)"
+            eval "_cached_value=\"\${${_mc_host_var}:-}\""
+            if [ -n "${_cached_value}" ]; then
+                echo "[oss-credentials] WARNING: STS refresh failed, using cached credentials" >&2
+                return 0
+            fi
+            echo "[oss-credentials] ERROR: STS refresh failed and no cached credentials are available" >&2
+            return 1
+        fi
+        . "${_OSS_CRED_FILE}"
+        _oss_export_mc_host
+    fi
 }

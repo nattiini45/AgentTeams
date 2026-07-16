@@ -101,9 +101,13 @@ run_refresh_failure_fallback() {
     local mc_env="${TMPDIR_ROOT}/${case_name}-mc.env"
     local stderr_log="${TMPDIR_ROOT}/${case_name}-stderr.log"
 
-    # Seed a stale-but-not-yet-expired credentials cache.
+    # Seed a stale-but-not-yet-expired credentials cache. The alias is the
+    # dynamic MC_HOST_<storage-alias> computed by _oss_storage_alias (default
+    # "agentteams" when AGENTTEAMS_STORAGE_PREFIX is unset).
+    local _mc_host_var
+    _mc_host_var="MC_HOST_agentteams"
     cat > "${mc_env}" <<EOF
-MC_HOST_hiclaw="https://stale-ak:stale-sk:stale-token@oss.example.test"
+${_mc_host_var}="https://stale-ak:stale-sk:stale-token@oss.example.test"
 _OSS_CRED_EXPIRES_AT=$(( $(date +%s) + 100 ))
 EOF
 
@@ -115,7 +119,7 @@ EOF
         _oss_failing_refresh() { return 1; }
 
         _oss_ensure_refresh _oss_failing_refresh
-        echo "MC_HOST_hiclaw=${MC_HOST_hiclaw:-}"
+        eval "echo \"${_mc_host_var}=\${${_mc_host_var}:-}\""
     ) 2>"${stderr_log}" 1>"${TMPDIR_ROOT}/${case_name}-stdout.log"
 
     cat "${TMPDIR_ROOT}/${case_name}-stdout.log"
@@ -123,7 +127,7 @@ EOF
 }
 
 fallback_stdout="$(run_refresh_failure_fallback 2>"${TMPDIR_ROOT}/refresh-fails-but-cache-valid-stderr-captured.log")"
-assert_contains "MC_HOST_hiclaw stays exported when refresh fails but cache is valid" "MC_HOST_hiclaw=https://stale-ak:stale-sk:stale-token@oss.example.test" "${fallback_stdout}"
+assert_contains "MC_HOST_agentteams stays exported when refresh fails but cache is valid" "MC_HOST_agentteams=https://stale-ak:stale-sk:stale-token@oss.example.test" "${fallback_stdout}"
 assert_contains "a clear fallback warning is surfaced on stderr" "STS refresh failed, using cached credentials" "$(cat "${TMPDIR_ROOT}/refresh-fails-but-cache-valid-stderr-captured.log")"
 
 echo "All oss-credentials tests passed"
