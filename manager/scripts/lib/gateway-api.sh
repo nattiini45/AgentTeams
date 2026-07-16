@@ -36,18 +36,18 @@ _detect_gateway_backend() {
 # retry/detection/status-capture semantics live in exactly one place.
 #
 # _higress_relogin — POST admin credentials to /session/login, refreshing
-# HIGRESS_COOKIE_FILE in place. Requires HICLAW_ADMIN_USER/HICLAW_ADMIN_PASSWORD
+# HIGRESS_COOKIE_FILE in place. Requires AGENTTEAMS_ADMIN_USER/AGENTTEAMS_ADMIN_PASSWORD
 # and a `log` function (base.sh) to already be available to the caller.
 # Uses CONSOLE_URL if the caller has set it (both register-provider.sh and
 # setup-higress.sh hardcode CONSOLE_URL="http://127.0.0.1:8001"), falling
 # back to _HIGRESS_CONSOLE_URL otherwise.
 _higress_relogin() {
     local console_url="${CONSOLE_URL:-${_HIGRESS_CONSOLE_URL}}"
-    local admin_user="${HICLAW_ADMIN_USER:-}"
-    local admin_password="${HICLAW_ADMIN_PASSWORD:-}"
+    local admin_user="${AGENTTEAMS_ADMIN_USER:-}"
+    local admin_password="${AGENTTEAMS_ADMIN_PASSWORD:-}"
 
     if [ -z "${admin_user}" ] || [ -z "${admin_password}" ]; then
-        log "ERROR: Higress session expired and HICLAW_ADMIN_USER/HICLAW_ADMIN_PASSWORD are not set — cannot re-login"
+        log "ERROR: Higress session expired and AGENTTEAMS_ADMIN_USER/AGENTTEAMS_ADMIN_PASSWORD are not set — cannot re-login"
         return 1
     fi
 

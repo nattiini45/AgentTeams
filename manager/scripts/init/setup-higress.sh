@@ -277,7 +277,7 @@ else
 fi
 
 # ============================================================
-# 5c. Extra LLM providers (idempotent, OPT-IN via HICLAW_EXTRA_LLM_PROVIDERS)
+# 5c. Extra LLM providers (idempotent, OPT-IN via AGENTTEAMS_EXTRA_LLM_PROVIDERS)
 #
 # Plan v2.3 Phase 2b / decision #7: register additional OpenAI-compatible
 # providers (Ollama Cloud, Xiaomi MiMo, ...) alongside the default provider
@@ -287,9 +287,9 @@ fi
 # Format: "name1=url1;name2=url2;..." — provider name becomes the Higress
 # service-source name (must not contain "/", docs/faq.md:550-552) and the
 # route's model-prefix match is "^<name>/" (e.g. "^ollama/"). Per-provider
-# API key is read from HICLAW_<NAME>_API_KEY (name upper-cased).
+# API key is read from AGENTTEAMS_<NAME>_API_KEY (name upper-cased).
 #
-# HICLAW_EXTRA_LLM_PROVIDERS unset/empty → this whole block is a no-op and
+# AGENTTEAMS_EXTRA_LLM_PROVIDERS unset/empty → this whole block is a no-op and
 # setup-higress.sh's behavior is byte-identical to before this change.
 #
 # ⚠️ Provisional (S5/S6, unverifiable from this checkout): the exact hosted
@@ -298,17 +298,17 @@ fi
 # live-only question) — see the Milestone-2 doc's unverified-assumption
 # ledger. This loop deliberately never reads or writes "default-ai-route".
 # ============================================================
-if [ -n "${HICLAW_EXTRA_LLM_PROVIDERS:-}" ]; then
-    log "Configuring extra LLM providers: ${HICLAW_EXTRA_LLM_PROVIDERS}"
+if [ -n "${AGENTTEAMS_EXTRA_LLM_PROVIDERS:-}" ]; then
+    log "Configuring extra LLM providers: ${AGENTTEAMS_EXTRA_LLM_PROVIDERS}"
 
-    IFS=';' read -ra _EXTRA_PROVIDER_ENTRIES <<< "${HICLAW_EXTRA_LLM_PROVIDERS}"
+    IFS=';' read -ra _EXTRA_PROVIDER_ENTRIES <<< "${AGENTTEAMS_EXTRA_LLM_PROVIDERS}"
     for _entry in "${_EXTRA_PROVIDER_ENTRIES[@]}"; do
         [ -z "${_entry}" ] && continue
         _provider_name="${_entry%%=*}"
         _provider_url="${_entry#*=}"
 
         if [ -z "${_provider_name}" ] || [ -z "${_provider_url}" ] || [ "${_provider_url}" = "${_entry}" ]; then
-            log "WARNING: malformed HICLAW_EXTRA_LLM_PROVIDERS entry '${_entry}', skipping"
+            log "WARNING: malformed AGENTTEAMS_EXTRA_LLM_PROVIDERS entry '${_entry}', skipping"
             continue
         fi
         if echo "${_provider_name}" | grep -q '/'; then
@@ -316,8 +316,8 @@ if [ -n "${HICLAW_EXTRA_LLM_PROVIDERS:-}" ]; then
             continue
         fi
 
-        # Per-provider API key: HICLAW_<NAME>_API_KEY (name upper-cased, non-alnum -> _)
-        _key_var="HICLAW_$(echo "${_provider_name}" | tr '[:lower:]-' '[:upper:]_')_API_KEY"
+        # Per-provider API key: AGENTTEAMS_<NAME>_API_KEY (name upper-cased, non-alnum -> _)
+        _key_var="AGENTTEAMS_$(echo "${_provider_name}" | tr '[:lower:]-' '[:upper:]_')_API_KEY"
         _provider_key="${!_key_var:-}"
         if [ -z "${_provider_key}" ]; then
             log "WARNING: ${_key_var} not set, skipping extra LLM provider '${_provider_name}'"
@@ -374,7 +374,7 @@ if [ -n "${HICLAW_EXTRA_LLM_PROVIDERS:-}" ]; then
         fi
     done
 else
-    log "No HICLAW_EXTRA_LLM_PROVIDERS set, skipping extra LLM provider registration"
+    log "No AGENTTEAMS_EXTRA_LLM_PROVIDERS set, skipping extra LLM provider registration"
 fi
 
 # ============================================================
