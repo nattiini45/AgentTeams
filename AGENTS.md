@@ -291,8 +291,8 @@ All technical assumptions have been verified in POC. See [design/poc-tech-verifi
 ## Learned Workspace Facts
 
 - Git remote `origin` points at the user's fork: `github.com/nattiini45/AgentTeams`
-- `lifecycle-mcp` is external to this repo (custom service on the Hetzner VPS, Tailscale-only, bearer-authed); orchestration state lives in SQLite `ops.db`
+- `lifecycle-mcp` is external to this repo (private-network MCP service, bearer-authed); orchestration state lives in SQLite `ops.db`
 - `gitea-mcp` (53 tools) is the stateless forge proxy per worker via Higress; `lifecycle-mcp` (18 tools) owns fix-job, verdict, await, and merge orchestration
-- Embedded solo-operator mode accepts direct docker.sock on the controller; use a socket proxy before shared-host or multi-tenant deployment
-- Manager non-root hardening is deferred—target `manager/Dockerfile.copaw` / `manager/Dockerfile` and entrypoints, not `copaw/Dockerfile`
+- Embedded solo-operator deployments should use a Docker socket proxy before shared-host or multi-tenant use
+- Manager container hardening (non-root) is tracked separately in `manager/Dockerfile*` work
 - Backup units: AgentTeams data volume (Tuwunel + MinIO + kine + Higress), install env files, and `lifecycle-mcp:/data/ops.db` (`gitea-mcp` is stateless)

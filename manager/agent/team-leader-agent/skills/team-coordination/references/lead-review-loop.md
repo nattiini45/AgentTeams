@@ -11,7 +11,7 @@ You coordinate code review and merge through **two MCP layers**. Use gitea-mcp f
 
 - **gitea-mcp** = forge proxy (per-worker PAT via Higress). No orchestration SQLite.
 - **lifecycle-mcp** = orchestration SQLite only (`ops.db`). **No forge CRUD** — never use it to create PRs or post file diffs.
-- **lifecycle-mcp endpoint**: Tailscale-only `100.65.242.110:8086`, bearer-authed — not reachable from the public internet.
+- **lifecycle-mcp endpoint**: Tailscale-only private host (from your `mcporter-servers.json` / coordinator config), bearer-authed — not reachable from the public internet.
 
 Read `mcporter` skill before calling either server.
 

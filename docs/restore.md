@@ -125,7 +125,7 @@ Historical volume name: `hiclaw-data`. Newer installs may use `agentteams-data` 
 Minimal one-liner backup (data volume only):
 
 ```bash
-docker run --rm -v hiclaw-data:/data -v $(pwd):/backup ubuntu \
+docker run --rm -v hiclaw-data:/data -v "$(pwd)":/backup ubuntu \
   tar czf /backup/hiclaw-backup-$(date +%Y%m%d).tar.gz /data
 ```
 
