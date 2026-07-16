@@ -233,7 +233,7 @@ func TestCallerFromContext_Empty(t *testing.T) {
 // TestResolveResourceTeam covers the authoritative worker->team resolution:
 // Team CR reverse lookup (leader or worker member name) takes priority,
 // since post-refactor team members have no Worker CR at all. The legacy
-// "hiclaw.io/team" annotation on a standalone Worker CR is only consulted
+// "agentteams.io/team" annotation on a standalone Worker CR is only consulted
 // as a defensive fallback. A worker that resolves to neither returns "".
 func TestResolveResourceTeam(t *testing.T) {
 	scheme := newAuthTestScheme(t)
@@ -248,7 +248,7 @@ func TestResolveResourceTeam(t *testing.T) {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "legacy-worker",
 			Namespace:   "default",
-			Annotations: map[string]string{"hiclaw.io/team": "legacy-team"},
+			Annotations: map[string]string{"agentteams.io/team": "legacy-team"},
 		},
 	}
 

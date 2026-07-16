@@ -174,19 +174,35 @@ class FileSync:
         self._prefix = f"agents/{worker_name}"
         self._alias_set = False
         self._cloud_mode = os.environ.get("AGENTTEAMS_RUNTIME") == "aliyun"
+        # Track which locally-installed skills we've already logged as
+        # "skipped (not pruned)" so we don't spam the log every sync loop.
+        # Referenced by pull_all when pruning local skills absent from MinIO.
+        self._skipped_local_skills_logged: set[str] = set()
 
     # ------------------------------------------------------------------
     # mc alias management
     # ------------------------------------------------------------------
 
     def _refresh_cloud_credentials(self) -> None:
-        """Refresh STS credentials via the shared shell function (lazy)."""
+        """Refresh STS credentials via the shared shell function (lazy).
+
+        The operator-controllable storage alias (``_MC_ALIAS``, derived from
+        ``AGENTTEAMS_STORAGE_ALIAS`` / ``AGENTTEAMS_STORAGE_PREFIX``) is passed
+        to the shell as an environment variable and the ``MC_HOST_<alias>``
+        variable name is constructed *inside* bash, then expanded with bash
+        indirect expansion (``${!_mc_host_var}``). The alias value is therefore
+        never Python-f-string-interpolated into the shell command string, which
+        eliminates the shell-injection vector (Kilo finding #4).
+        """
+        env = {**os.environ, "_AGENTTEAMS_MC_ALIAS": _MC_ALIAS}
         result = subprocess.run(
             ["bash", "-c",
              "source /opt/hiclaw/scripts/lib/oss-credentials.sh && "
              "ensure_mc_credentials && "
-             f"echo $MC_HOST_{_MC_ALIAS}"],
+             "_mc_host_var=\"MC_HOST_${_AGENTTEAMS_MC_ALIAS}\" && "
+             "printf '%s' \"${!_mc_host_var}\""],
             capture_output=True, text=True, check=True,
+            env=env,
         )
         mc_host = result.stdout.strip()
         if mc_host:

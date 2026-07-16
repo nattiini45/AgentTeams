@@ -123,13 +123,5 @@ ENV AGENTTEAMS_CONTROLLER_URL=http://127.0.0.1:8090 \
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD ["/opt/hiclaw/scripts/healthcheck.sh"]
 
-# ---- Health check ----
-# Composite: controller + MinIO + Tuwunel must ALL respond for "healthy".
-# start-period gives the supervisord-managed stack (kine integrity pre-flight,
-# embedded kube-apiserver, CRD registration, Higress pipeline, MinIO, Tuwunel)
-# time to come up before the first probe counts toward the unhealthy streak.
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD ["/opt/hiclaw/scripts/healthcheck.sh"]
-
 # ---- Start ----
 ENTRYPOINT ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

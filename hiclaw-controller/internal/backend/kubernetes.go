@@ -298,7 +298,10 @@ func (k *K8sBackend) Create(ctx context.Context, req CreateRequest) (*WorkerResu
 	defaultResources := buildDefaultResources(k.config.WorkerCPU, k.config.WorkerMemory)
 	var resourcesOverride *corev1.ResourceRequirements
 	if req.Resources != nil {
-		merged := mergeResourceOverrides(defaultResources, req.Resources)
+		merged, err := mergeResourceOverrides(defaultResources, req.Resources)
+		if err != nil {
+			return nil, fmt.Errorf("merge resource overrides: %w", err)
+		}
 		resourcesOverride = &merged
 	}
 
@@ -599,25 +602,44 @@ func buildDefaultResources(workerCPU, workerMemory string) corev1.ResourceRequir
 }
 
 // mergeResourceOverrides layers a ResourceRequirements override (from
-// CreateRequest.Resources) on top of defaults, field by field.
-func mergeResourceOverrides(defaults corev1.ResourceRequirements, override *ResourceRequirements) corev1.ResourceRequirements {
+// CreateRequest.Resources) on top of defaults, field by field. It uses
+// resource.ParseQuantity rather than resource.MustParse so that a malformed
+// user/CR-supplied override string surfaces as an error instead of panicking
+// (mirrors docker.go mergeDockerResourceOverrides).
+func mergeResourceOverrides(defaults corev1.ResourceRequirements, override *ResourceRequirements) (corev1.ResourceRequirements, error) {
 	out := *defaults.DeepCopy()
 	if override == nil {
-		return out
+		return out, nil
 	}
 	if override.CPULimit != "" {
-		out.Limits[corev1.ResourceCPU] = resource.MustParse(override.CPULimit)
+		qty, err := resource.ParseQuantity(override.CPULimit)
+		if err != nil {
+			return corev1.ResourceRequirements{}, fmt.Errorf("cpu limit: %w", err)
+		}
+		out.Limits[corev1.ResourceCPU] = qty
 	}
 	if override.MemoryLimit != "" {
-		out.Limits[corev1.ResourceMemory] = resource.MustParse(override.MemoryLimit)
+		qty, err := resource.ParseQuantity(override.MemoryLimit)
+		if err != nil {
+			return corev1.ResourceRequirements{}, fmt.Errorf("memory limit: %w", err)
+		}
+		out.Limits[corev1.ResourceMemory] = qty
 	}
 	if override.CPURequest != "" {
-		out.Requests[corev1.ResourceCPU] = resource.MustParse(override.CPURequest)
+		qty, err := resource.ParseQuantity(override.CPURequest)
+		if err != nil {
+			return corev1.ResourceRequirements{}, fmt.Errorf("cpu request: %w", err)
+		}
+		out.Requests[corev1.ResourceCPU] = qty
 	}
 	if override.MemoryRequest != "" {
-		out.Requests[corev1.ResourceMemory] = resource.MustParse(override.MemoryRequest)
+		qty, err := resource.ParseQuantity(override.MemoryRequest)
+		if err != nil {
+			return corev1.ResourceRequirements{}, fmt.Errorf("memory request: %w", err)
+		}
+		out.Requests[corev1.ResourceMemory] = qty
 	}
-	return out
+	return out, nil
 }
 
 // mergeOSSRegionFromProcessEnv sets AGENTTEAMS_FS_BUCKET and AGENTTEAMS_REGION when the client

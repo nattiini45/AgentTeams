@@ -1884,39 +1884,6 @@ class MatrixChannel(BaseChannel):
         await self._send_plain_text(room_id, "On it — working on this now.")
 
     # ------------------------------------------------------------------
-    # Direct send — bypasses the enqueue/agent-processing queue entirely
-    # ------------------------------------------------------------------
-
-    async def _send_plain_text(self, room_id: str, text: str) -> None:
-        """Send a plain Matrix text event without invoking the agent path."""
-        if not self._client:
-            logger.error("MatrixChannel: direct send called but client not ready")
-            return
-        try:
-            await self._client.room_send(
-                room_id,
-                "m.room.message",
-                {"msgtype": "m.text", "body": text},
-                ignore_unverified_devices=True,
-            )
-        except Exception as exc:
-            logger.exception(
-                "MatrixChannel: direct send failed to %s: %s", room_id, exc,
-            )
-
-    async def _send_immediate_ack(self, room_id: str) -> None:
-        """Send a short direct ack the instant a task/mention is accepted.
-
-        Bypasses the enqueue/agent-processing queue entirely (direct
-        ``room_send``, same primitive as ``_send_plain_text``) so the sender
-        gets fast feedback even if the agent itself is slow to respond.
-        Gated by ``HICLAW_CHAT_ACK`` (default on).
-        """
-        if not _chat_ack_enabled():
-            return
-        await self._send_plain_text(room_id, "On it — working on this now.")
-
-    # ------------------------------------------------------------------
     # Outgoing send — text
     # ------------------------------------------------------------------
 
