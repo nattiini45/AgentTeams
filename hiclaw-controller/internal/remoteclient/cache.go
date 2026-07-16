@@ -24,6 +24,8 @@ import (
 
 	"github.com/hiclaw/hiclaw-controller/internal/backend"
 	"github.com/hiclaw/hiclaw-controller/internal/credprovider"
+
+	v1beta1 "github.com/hiclaw/hiclaw-controller/api/v1beta1"
 )
 
 // maintenanceInterval is the interval between maintenance loop iterations.
@@ -336,12 +338,39 @@ func (c *Cache) startRemoteCache(ctx context.Context, restCfg *rest.Config, clus
 	return nil
 }
 
-// hasWorkersDeployed checks whether any Worker CR references the given cluster.
-// The open-source Worker API no longer exposes remote target clusters, so this
-// currently always returns false.
+// hasWorkersDeployed checks whether any Worker CR is deployed to a remote
+// cluster and therefore still needs the cached remote-cluster client.
+//
+// The open-source Worker API does not expose a per-Worker target-cluster
+// field (the `targetCluster` field is stripped from the public CR, see
+// api/v1beta1/types_test.go). The only signal available is Spec.DeployMode:
+// a Worker with DeployMode == "Remote" runs on a remote cluster and relies
+// on the remote client cache for SA provisioning / namespace boostrapping.
+//
+// Because we cannot map a specific Worker to a specific clusterID, any remote
+// Worker keeps every cached remote entry alive. This is intentional: the
+// alternative (the previous stub that always returned false) caused a
+// self-DoS where live remote workers lost their cached client on every
+// maintenance tick because the cache could not see the Workers that were
+// actively using it. Keeping remote entries alive while any remote Worker
+// exists is the safe direction; unreferenced entries still expire naturally
+// and are removed once no remote Workers remain.
+//
+// clusterID is currently unused for matching (kept for API stability and
+// future per-cluster targeting once the CR exposes it).
 func (c *Cache) hasWorkersDeployed(ctx context.Context, clusterID string) (bool, error) {
-	_ = ctx
-	_ = clusterID
+	_ = clusterID // no per-Worker target field available in the OSS CR
+
+	var workers v1beta1.WorkerList
+	if err := c.ctrlClient.List(ctx, &workers); err != nil {
+		return false, fmt.Errorf("list workers to check remote deployment: %w", err)
+	}
+	for i := range workers.Items {
+		w := &workers.Items[i]
+		if w.Spec.DeployMode != nil && *w.Spec.DeployMode == v1beta1.DeployModeRemote {
+			return true, nil
+		}
+	}
 	return false, nil
 }
 

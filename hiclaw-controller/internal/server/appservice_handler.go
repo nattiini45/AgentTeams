@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -18,6 +19,13 @@ import (
 
 const roleTeamWorker = "worker"
 
+// seenEventTTL is how long a processed event ID is remembered for dedup.
+// Entries older than this are evicted lazily on insert, bounding the seen
+// map's growth. Chosen well above the homeserver's transaction retry window
+// (Matrix HSes retry for ~30s-10min) so retries within that window are still
+// deduped, while long-lived handlers don't leak memory indefinitely.
+const seenEventTTL = 1 * time.Hour
+
 // AppserviceHandler handles Matrix Application Service transaction pushes
 // from the homeserver. Events arrive via HTTP push (PUT /transactions)
 // instead of the controller polling /sync.
@@ -31,7 +39,7 @@ type AppserviceHandler struct {
 	now       func() time.Time
 
 	mu   sync.Mutex
-	seen map[string]struct{} // event dedup: "roomID/eventID/userID"
+	seen map[string]time.Time // event dedup: "roomID/eventID/userID" -> first-seen time
 }
 
 // NewAppserviceHandler creates a handler for Matrix appservice transaction pushes.
@@ -41,7 +49,7 @@ func NewAppserviceHandler(hsToken string, c client.Client, namespace string) *Ap
 		client:    c,
 		namespace: namespace,
 		now:       time.Now,
-		seen:      make(map[string]struct{}),
+		seen:      make(map[string]time.Time),
 	}
 }
 
@@ -161,25 +169,42 @@ func (h *AppserviceHandler) verifyHSToken(r *http.Request) bool {
 	auth := r.Header.Get("Authorization")
 	if !strings.HasPrefix(auth, "Bearer ") {
 		// Also check query param (some homeserver implementations).
-		return r.URL.Query().Get("access_token") == h.hsToken
+		// Use constant-time compare to avoid leaking the expected token via
+		// timing side-channels.
+		return subtle.ConstantTimeCompare([]byte(r.URL.Query().Get("access_token")), []byte(h.hsToken)) == 1
 	}
-	return strings.TrimPrefix(auth, "Bearer ") == h.hsToken
+	// Constant-time compare for the Bearer header path as well.
+	return subtle.ConstantTimeCompare([]byte(strings.TrimPrefix(auth, "Bearer ")), []byte(h.hsToken)) == 1
 }
 
 func (h *AppserviceHandler) handleMention(ctx context.Context, roomID, eventID, sender, userID string) error {
 	logger := log.FromContext(ctx).WithName("appservice")
 
-	// Dedup by roomID/eventID/userID.
+	// Dedup by roomID/eventID/userID. The seen map is bounded by a TTL:
+	// entries older than seenEventTTL are evicted lazily on each insert,
+	// preventing unbounded growth in long-lived handlers while still
+	// suppressing homeserver retries within the retry window.
 	if eventID != "" {
 		key := fmt.Sprintf("%s/%s/%s", roomID, eventID, userID)
+		now := h.now()
 		h.mu.Lock()
-		if _, ok := h.seen[key]; ok {
+		if firstSeen, ok := h.seen[key]; ok && now.Sub(firstSeen) < seenEventTTL {
 			h.mu.Unlock()
 			logger.V(1).Info("mention skipped: duplicate event",
 				"roomID", roomID, "eventID", eventID, "mentionedUser", userID)
 			return nil
 		}
-		h.seen[key] = struct{}{}
+		// Lazy sweep: evict expired entries before inserting the new one.
+		// This bounds the map to roughly one TTL's worth of events without
+		// a separate goroutine. Sweeping on every insert is O(n) but n is
+		// capped by the TTL and insert rate; for a Matrix appservice this
+		// is negligible.
+		for k, ts := range h.seen {
+			if now.Sub(ts) >= seenEventTTL {
+				delete(h.seen, k)
+			}
+		}
+		h.seen[key] = now
 		h.mu.Unlock()
 	}
 
