@@ -16,6 +16,13 @@ dependencies = [
     "linkify-it-py>=2.0",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+]
+
+
 [project.urls]
 Homepage = "https://github.com/higress-group/hiclaw"
 Repository = "https://github.com/higress-group/hiclaw"
