@@ -177,6 +177,23 @@ func (m *Middleware) lookupTeamByField(ctx context.Context, field, value string)
 	return &list.Items[0], true, nil
 }
 
+// lookupTeamByField mirrors CREnricher.lookupTeamByField (duplicated rather
+// than shared to keep resolveResourceTeam self-contained within middleware.go;
+// both use the same teamLeaderNameField/teamWorkerNameField indexers).
+func (m *Middleware) lookupTeamByField(ctx context.Context, field, value string) (*v1beta1.Team, bool, error) {
+	var list v1beta1.TeamList
+	if err := m.k8s.List(ctx, &list,
+		client.InNamespace(m.namespace),
+		client.MatchingFieldsSelector{Selector: fields.OneTermEqualSelector(field, value)},
+	); err != nil {
+		return nil, false, err
+	}
+	if len(list.Items) == 0 {
+		return nil, false, nil
+	}
+	return &list.Items[0], true, nil
+}
+
 func (m *Middleware) authenticateAndEnrich(r *http.Request) (*CallerIdentity, bool) {
 	token := extractBearerToken(r)
 	if token == "" {

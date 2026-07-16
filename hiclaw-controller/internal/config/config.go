@@ -505,6 +505,14 @@ func (c *Config) ManagerStateFile() string {
 	return envOrDefault("AGENTTEAMS_MANAGER_STATE_FILE", filepath.Join(c.AgentFSDir(), "manager", "state.json"))
 }
 
+// ManagerStateFile returns the path to the Manager Agent's task-tracking
+// state.json (embedded mode), defaulting to "<AgentFSDir>/manager/state.json".
+// HICLAW_MANAGER_STATE_FILE overrides the default for testing/non-standard
+// layouts.
+func (c *Config) ManagerStateFile() string {
+	return envOrDefault("HICLAW_MANAGER_STATE_FILE", filepath.Join(c.AgentFSDir(), "manager", "state.json"))
+}
+
 // WorkerAgentDir returns the source directory for builtin worker agent files.
 func (c *Config) WorkerAgentDir() string {
 	return envOrDefault("AGENTTEAMS_WORKER_AGENT_DIR", "/opt/hiclaw/agent/worker-agent")

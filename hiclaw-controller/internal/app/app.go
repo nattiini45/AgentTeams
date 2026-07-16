@@ -716,6 +716,15 @@ func (a *App) initReconcilers(_ context.Context) error {
 		return fmt.Errorf("setup ProjectReconciler: %w", err)
 	}
 
+	if err := (&controller.ProjectReconciler{
+		Client:         a.mgr.GetClient(),
+		OSS:            a.oss,
+		Messenger:      a.provisioner,
+		ControllerName: a.cfg.ControllerName,
+	}).SetupWithManager(a.mgr); err != nil {
+		return fmt.Errorf("setup ProjectReconciler: %w", err)
+	}
+
 	return nil
 }
 
