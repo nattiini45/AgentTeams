@@ -126,11 +126,32 @@ async def _connect_and_send(adapter: MatrixAdapter, content: dict) -> list:
 
 
 @pytest.mark.asyncio
-async def test_filters_off_by_default_everything_passes(
+async def test_filters_on_by_default_tool_suppressed(
     adapter: MatrixAdapter,
 ) -> None:
-    tool_content = {"body": "ran a tool", "hermes.event_kind": "tool"}
-    sent = await _connect_and_send(adapter, tool_content)
+    """Phase 5b quiet-by-default: unset MATRIX_FILTER_* env suppresses tool events."""
+    tool_result = await _connect_and_send_return(
+        adapter, {"body": "ran a tool", "hermes.event_kind": "tool"}
+    )
+    assert adapter._client.sent == []
+    assert tool_result is not None
+    assert isinstance(tool_result, str) and tool_result
+    assert "suppress" in tool_result.lower()
+
+
+@pytest.mark.asyncio
+async def test_verbose_env_allows_tool_messages(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Explicit MATRIX_FILTER_TOOL_MESSAGES=false opts into verbose tool chatter."""
+    monkeypatch.setenv("MATRIX_FILTER_TOOL_MESSAGES", "false")
+    monkeypatch.delenv("MATRIX_FILTER_THINKING", raising=False)
+    a = MatrixAdapter(config=object())
+    a._client = _FakeClient()
+
+    sent = await _connect_and_send(
+        a, {"body": "ran a tool", "hermes.event_kind": "tool"}
+    )
     assert len(sent) == 1
     assert sent[0].content["body"] == "ran a tool"
 

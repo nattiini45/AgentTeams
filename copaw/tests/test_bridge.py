@@ -117,7 +117,7 @@ def test_create_installs_worker_agent_json_from_template():
     assert agent["system_prompt_files"] == ["AGENTS.md", "SOUL.md", "PROFILE.md"]
     # Console on by default, from template.
     assert agent["channels"]["console"]["enabled"] is True
-    assert agent["channels"]["matrix"]["filter_tool_messages"] is False
+    assert agent["channels"]["matrix"]["filter_tool_messages"] is True
     assert agent["channels"]["matrix"]["filter_thinking"] is True
     # Manager-only fields absent.
     assert "require_mention" not in agent["channels"]["matrix"]
@@ -136,7 +136,7 @@ def test_create_installs_manager_agent_json_from_template(monkeypatch):
         "AGENTS.md", "SOUL.md", "PROFILE.md", "TOOLS.md",
     ]
     assert agent["channels"]["matrix"]["require_mention"] is True
-    assert agent["channels"]["matrix"]["filter_tool_messages"] is False
+    assert agent["channels"]["matrix"]["filter_tool_messages"] is True
     assert agent["channels"]["matrix"]["filter_thinking"] is True
     assert "require_approval" not in agent.get("running", {})
     assert agent["channels"]["matrix"]["user_id"] == "@manager:matrix.example.org"
@@ -232,7 +232,7 @@ def test_remote_wins_access_token_refreshes():
 
 
 def test_remote_wins_matrix_stream_filters_use_defaults():
-    """Bridge applies default Matrix stream filter policy when unset."""
+    """Bridge applies quiet-by-default Matrix stream filter policy when unset."""
     cfg = _make_openclaw_cfg()
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -248,7 +248,7 @@ def test_remote_wins_matrix_stream_filters_use_defaults():
         _run_bridge(cfg, working_dir)
 
         matrix = _read_agent(working_dir)["channels"]["matrix"]
-        assert matrix["filter_tool_messages"] is False
+        assert matrix["filter_tool_messages"] is True
         assert matrix["filter_thinking"] is True
 
 
