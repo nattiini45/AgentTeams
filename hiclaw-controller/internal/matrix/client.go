@@ -482,6 +482,7 @@ func (c *TuwunelClient) SetDisplayName(ctx context.Context, userID, accessToken,
 func (c *TuwunelClient) CreateRoom(ctx context.Context, req CreateRoomRequest) (*RoomInfo, error) {
 	token := req.CreatorToken
 	tokenSource := "explicit"
+	usedAdminToken := token == ""
 	if token == "" {
 		tokenSource = "admin"
 		var err error
@@ -1188,6 +1189,31 @@ func (c *TuwunelClient) doJSON(ctx context.Context, method, path, token string, 
 	}
 
 	return resp.StatusCode, respBody, nil
+}
+
+// doJSONAsAdmin performs the same request as doJSON but is used by call sites
+// that authenticated with the cached admin token (via ensureAdminToken). It
+// scopes token-clearing to genuine admin-token invalidation: on an HTTP 401
+// whose body carries errcode M_UNKNOWN_TOKEN, the cached admin token is
+// invalidated so the next ensureAdminToken re-logs in. Other 401/403 responses
+// (e.g. a transient homeserver race, M_FORBIDDEN on a capability mismatch) do
+// NOT clear the token — clearing on every 401/403 caused unbounded re-login
+// growth and lost device sessions (Tier 1A finding #17).
+func (c *TuwunelClient) doJSONAsAdmin(ctx context.Context, method, path, token string, reqBody interface{}, respOut interface{}) (int, []byte, error) {
+	statusCode, respBody, err := c.doJSON(ctx, method, path, token, reqBody, respOut)
+	if err != nil {
+		return statusCode, respBody, err
+	}
+	if statusCode == http.StatusUnauthorized {
+		var probe struct {
+			ErrCode string `json:"errcode"`
+		}
+		_ = json.Unmarshal(respBody, &probe) // best-effort; body may not be JSON
+		if probe.ErrCode == "M_UNKNOWN_TOKEN" {
+			c.adminToken.Store("")
+		}
+	}
+	return statusCode, respBody, nil
 }
 
 func matrixOperation(method, path string) string {

@@ -30,6 +30,7 @@ type fakeTeamMatrix struct {
 	roomNames    []roomNameCall
 	roomStates   []roomStateCall
 	tokenInvites []roomUserCall
+	lastAdminBody string
 	created      bool
 }
 

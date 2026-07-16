@@ -656,6 +656,7 @@ func (a *App) initReconcilers(_ context.Context) error {
 		MountAuthType:               a.cfg.WorkerDepsMountAuthType,
 		MountRoleName:               a.cfg.WorkerDepsMountRoleName,
 		SystemAdminUser:             a.cfg.MatrixAdminUser,
+		SoloOperator:                a.cfg.SoloOperator,
 	}).SetupWithManager(a.mgr); err != nil {
 		return fmt.Errorf("setup TeamReconciler: %w", err)
 	}

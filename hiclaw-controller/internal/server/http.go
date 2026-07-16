@@ -31,6 +31,8 @@ type ServerDeps struct {
 	SocketPath     string               // Docker proxy (embedded only)
 	MatrixConfig   matrix.Config        // for AppService rotation endpoint
 	Provisioner    *service.Provisioner // for Matrix token refresh
+	SoloOperator   bool                 // AGENTTEAMS_SOLO_OPERATOR; forces PeerMentions + solo welcome
+	ManagerStateFile string            // AGENTTEAMS_MANAGER_STATE_FILE; path to Manager state.json
 }
 
 // HTTPServer serves the unified controller REST API.

@@ -50,6 +50,13 @@ Please log in using Element Web and change your password immediately.
 
 — AgentTeams`, displayName, matrixUserID, password, elementURL)
 
+	// Sanitize every field interpolated into a header line (or preceding the
+	// body) to strip CR/LF, preventing header/SMTP-command injection via a
+	// crafted display name, email address, or subject.
+	safeFrom := sanitizeHeaderField(cfg.From)
+	safeTo := sanitizeHeaderField(to)
+	safeSubject := sanitizeHeaderField(subject)
+
 	msg := strings.Join([]string{
 		fmt.Sprintf("From: %s", safeFrom),
 		fmt.Sprintf("To: %s", safeTo),

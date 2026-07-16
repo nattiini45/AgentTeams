@@ -41,6 +41,9 @@ spec:
                 peerMentions:
                   type: boolean
                   description: "Whether team workers can @mention each other in group rooms (default: true)"
+                modelProvider:
+                  type: string
+                  description: "APIG Model API name for the team-level LLM provider override. Empty means use the default provider."
                 channelPolicy:
                   type: object
                   description: "Team-wide communication policy overrides (applied to all members)"

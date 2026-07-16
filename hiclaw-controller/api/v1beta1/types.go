@@ -437,6 +437,12 @@ type TeamSpec struct {
 	PeerMentions  *bool              `json:"peerMentions,omitempty"`  // default true
 	ChannelPolicy *ChannelPolicySpec `json:"channelPolicy,omitempty"` // team-wide overrides
 
+	// ModelProvider is the APIG Model API name for the team-level LLM provider
+	// override. When set, the TeamReconciler forwards it to the leader and worker
+	// member contexts so all members of this team route through the named model
+	// API instead of the cluster default. Empty means "use the default provider".
+	ModelProvider string `json:"modelProvider,omitempty"`
+
 	// HeartbeatEvery configures the Team Leader agent's periodic heartbeat
 	// check interval. The TeamReconciler writes this value into the leader
 	// Worker's openclaw.json and coordination context AGENTS.md.
