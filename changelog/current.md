@@ -7,6 +7,7 @@ Record image-affecting changes to `manager/`, `worker/`, `copaw/`, `openclaw-bas
 - feat(manager): add gitea-operations worker skill + lead-review-loop reference ([a2be95a](https://github.com/nattiini45/AgentTeams/commit/a2be95a))
 - docs: add restore.md snapshot restore runbook (S-BACKUP) ([a2be95a](https://github.com/nattiini45/AgentTeams/commit/a2be95a))
 - feat(copaw/hermes): Phase 5b quiet-by-default; AGENTTEAMS_VERBOSE_ROOMS ([a2be95a](https://github.com/nattiini45/AgentTeams/commit/a2be95a))
+- fix(tests): align quiet-by-default expectations in hermes/copaw CI ([10c87f3](https://github.com/nattiini45/AgentTeams/commit/10c87f3))
 - fix(hermes): persist Matrix platforms store across recreate (S10 checkout pattern) ([a2be95a](https://github.com/nattiini45/AgentTeams/commit/a2be95a))
 - docs(copaw): remove stale team-leader ActionReady 403 gotcha ([a2be95a](https://github.com/nattiini45/AgentTeams/commit/a2be95a))
 
