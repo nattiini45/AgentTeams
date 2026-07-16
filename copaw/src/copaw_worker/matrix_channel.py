@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import html
+import time
 import httpx
 import io
 import json

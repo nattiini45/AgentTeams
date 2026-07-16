@@ -423,8 +423,8 @@ def _write_agent_json(
     matrix_ch["allow_from"] = dm_allow_from
     matrix_ch["group_allow_from"] = group_allow_from
     matrix_ch["groups"] = groups
-    matrix_ch["filter_tool_messages"] = True
-    matrix_ch["filter_thinking"] = True
+    matrix_ch["filter_tool_messages"] = matrix_raw.get("filterToolMessages", True)
+    matrix_ch["filter_thinking"] = matrix_raw.get("filterThinking", True)
 
     # Disable console channel (we use Matrix)
     agent_cfg.setdefault("channels", {}).setdefault("console", {})["enabled"] = False
