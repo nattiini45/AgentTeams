@@ -37,7 +37,7 @@ The Manager is configured via environment variables set during installation. The
 
 ### QwenPaw Manager (formerly CoPaw, `AGENTTEAMS_MANAGER_RUNTIME=copaw`)
 
-When you choose the QwenPaw Manager at install time, the controller runs the **`hiclaw-manager-copaw`** image instead of the OpenClaw-based **`hiclaw-manager`**. Behavior is the same role (coordinate Workers/Teams over Matrix, drive Higress/MCP flows); only the agent engine and config layout differ (Python QwenPaw vs Node OpenClaw). Multi-channel setup and skills follow the QwenPaw workspace conventions under `/root/manager-workspace`.
+When you choose the QwenPaw Manager at install time, the controller runs the **`agentteams-manager-copaw`** image instead of the OpenClaw-based **`agentteams-manager`**. Behavior is the same role (coordinate Workers/Teams over Matrix, drive Higress/MCP flows); only the agent engine and config layout differ (Python QwenPaw vs Node OpenClaw). Multi-channel setup and skills follow the QwenPaw workspace conventions under `/root/manager-workspace`.
 
 ### Customizing the Manager Agent
 
@@ -47,7 +47,7 @@ The Manager Agent's behavior is defined by three files stored in the **`agenttea
 2. **HEARTBEAT.md** - Periodic check routine (OpenClaw heartbeat or QwenPaw equivalent, depending on runtime)
 3. **AGENTS.md** - Available skills and task workflow
 
-If your install still exposes MinIO on localhost, use the MinIO Console; otherwise use `mc` from inside **`hiclaw-controller`** or edit the mirrored files under the workspace directory on the host.
+If your install still exposes MinIO on localhost, use the MinIO Console; otherwise use `mc` from inside **`agentteams-controller`** or edit the mirrored files under the workspace directory on the host.
 
 ### Adding Skills
 
@@ -85,7 +85,7 @@ The Manager sends proactive notifications (cross-channel escalation, etc.) to th
 
 **Setting the primary channel**: On the first DM from a new channel, the Manager will ask whether you want to make it the primary channel. Reply "yes" to confirm. You can also switch at any time by saying e.g. "switch primary channel to Discord".
 
-**Stored in**: `~/hiclaw-manager/primary-channel.json` (persists across restarts)
+**Stored in**: `~/agentteams-manager/primary-channel.json` (persists across restarts)
 
 **Fallback**: If the primary channel is unavailable or not configured, the Manager automatically falls back to Matrix DM.
 
@@ -95,7 +95,7 @@ By default, only the admin can interact with the Manager. If you want to allow a
 
 1. Ask them to send a message to the Manager on any configured channel.
 2. Tell the Manager: "you can talk to the person who just messaged me" (or similar).
-3. The Manager adds them to `~/hiclaw-manager/trusted-contacts.json`.
+3. The Manager adds them to `~/agentteams-manager/trusted-contacts.json`.
 
 Trusted Contacts can receive general responses, but the Manager will **never** share sensitive information (API keys, credentials, Worker configs) with them and will not execute any management operations on their behalf.
 
@@ -160,20 +160,20 @@ When the Manager or Human Admin asks a Worker to resume a task after a session r
 
 ### Logs
 
-**v1.1.0+ embedded install:** Higress, Tuwunel, and MinIO run inside **`hiclaw-controller`**. The **`hiclaw-manager`** container only runs the coordinator agent; infrastructure logs are on the controller.
+**v1.1.0+ embedded install:** Higress, Tuwunel, and MinIO run inside **`agentteams-controller`**. The **`agentteams-manager`** container only runs the coordinator agent; infrastructure logs are on the controller.
 
 ```bash
 # Manager Agent (stdout/stderr + startup scripts)
-docker logs hiclaw-manager -f
-docker exec hiclaw-manager cat /var/log/hiclaw/manager-agent.log
+docker logs agentteams-manager -f
+docker exec agentteams-manager cat /var/log/hiclaw/manager-agent.log
 
 # OpenClaw runtime log (agent events, tool calls, LLM interactions) — OpenClaw Manager only
-docker exec hiclaw-manager bash -c 'cat /tmp/openclaw/openclaw-*.log' | jq .
+docker exec agentteams-manager bash -c 'cat /tmp/openclaw/openclaw-*.log' | jq .
 
 # Infrastructure + Higress Console (embedded stack)
-docker logs hiclaw-controller -f
-docker exec hiclaw-controller cat /var/log/hiclaw/higress-console.log
-docker exec hiclaw-controller cat /var/log/hiclaw/tuwunel.log
+docker logs agentteams-controller -f
+docker exec agentteams-controller cat /var/log/hiclaw/higress-console.log
+docker exec agentteams-controller cat /var/log/hiclaw/tuwunel.log
 ```
 
 ### Replay Conversation Logs
@@ -191,8 +191,8 @@ make replay-log
 
 ```bash
 # Matrix / MinIO (not published on host by default — exec into controller)
-docker exec hiclaw-controller curl -sf http://127.0.0.1:6167/_matrix/client/versions
-docker exec hiclaw-controller curl -sf http://127.0.0.1:9000/minio/health/live
+docker exec agentteams-controller curl -sf http://127.0.0.1:6167/_matrix/client/versions
+docker exec agentteams-controller curl -sf http://127.0.0.1:9000/minio/health/live
 
 # Higress Console (host port)
 curl -s http://127.0.0.1:18001/
@@ -202,7 +202,7 @@ curl -s http://127.0.0.1:18001/
 
 - **Higress Console**: http://localhost:18001 — gateway routes and consumers
 - **Element Web**: http://127.0.0.1:18088 — IM (direct host port), or via gateway hostname `http://matrix-client-local.hiclaw.io:18080` when `*-local.hiclaw.io` resolves to localhost
-- **MinIO**: embedded install keeps MinIO **inside** `hiclaw-controller` (no default host publish). Use `mc` from that container, the MinIO API through internal URLs, or browse objects if you add a console route yourself
+- **MinIO**: embedded install keeps MinIO **inside** `agentteams-controller` (no default host publish). Use `mc` from that container, the MinIO API through internal URLs, or browse objects if you add a console route yourself
 - **OpenClaw control UI** (OpenClaw Manager): http://127.0.0.1:18888
 
 ## Backup and Recovery
@@ -283,7 +283,7 @@ Two ways to activate (either one is sufficient):
 docker run -e AGENTTEAMS_YOLO=1 ... agentteams/manager-agent:latest
 
 # Option 2: touch a file in the workspace (takes effect immediately, no restart needed)
-docker exec hiclaw-manager touch /root/manager-workspace/yolo-mode
+docker exec agentteams-manager touch /root/manager-workspace/yolo-mode
 ```
 
 `make test` and `make replay` both enable YOLO mode automatically.

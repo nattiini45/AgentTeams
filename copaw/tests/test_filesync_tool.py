@@ -273,10 +273,10 @@ async def test_filesync_pull_runs_blocking_sync_off_event_loop(tmp_path, monkeyp
     """Regression test for event-loop blocking: pull_shared_path must run in a worker thread."""
     working_dir = tmp_path / "worker" / ".copaw"
     monkeypatch.setenv("COPAW_WORKING_DIR", str(working_dir))
-    monkeypatch.setenv("HICLAW_WORKER_NAME", "dag-team-dev")
-    monkeypatch.setenv("HICLAW_FS_ENDPOINT", "http://minio:9000")
-    monkeypatch.setenv("HICLAW_FS_ACCESS_KEY", "minio")
-    monkeypatch.setenv("HICLAW_FS_SECRET_KEY", "password")
+    monkeypatch.setenv("AGENTTEAMS_WORKER_NAME", "dag-team-dev")
+    monkeypatch.setenv("AGENTTEAMS_FS_ENDPOINT", "http://minio:9000")
+    monkeypatch.setenv("AGENTTEAMS_FS_ACCESS_KEY", "minio")
+    monkeypatch.setenv("AGENTTEAMS_FS_SECRET_KEY", "password")
     _mock_hiclaw_worker(monkeypatch, {"name": "dag-team-dev", "team": "dag-team"})
 
     call_threads = []
@@ -302,10 +302,10 @@ async def test_filesync_push_runs_blocking_sync_off_event_loop(tmp_path, monkeyp
     """Regression test for event-loop blocking: push_shared_path must run in a worker thread."""
     working_dir = tmp_path / "worker" / ".copaw"
     monkeypatch.setenv("COPAW_WORKING_DIR", str(working_dir))
-    monkeypatch.setenv("HICLAW_WORKER_NAME", "dag-team-dev")
-    monkeypatch.setenv("HICLAW_FS_ENDPOINT", "http://minio:9000")
-    monkeypatch.setenv("HICLAW_FS_ACCESS_KEY", "minio")
-    monkeypatch.setenv("HICLAW_FS_SECRET_KEY", "password")
+    monkeypatch.setenv("AGENTTEAMS_WORKER_NAME", "dag-team-dev")
+    monkeypatch.setenv("AGENTTEAMS_FS_ENDPOINT", "http://minio:9000")
+    monkeypatch.setenv("AGENTTEAMS_FS_ACCESS_KEY", "minio")
+    monkeypatch.setenv("AGENTTEAMS_FS_SECRET_KEY", "password")
     _mock_hiclaw_worker(monkeypatch, {"name": "dag-team-dev", "team": "dag-team"})
 
     main_thread = threading.current_thread()

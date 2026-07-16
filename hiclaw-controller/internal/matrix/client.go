@@ -1202,6 +1202,11 @@ func (c *TuwunelClient) doJSON(ctx context.Context, method, path, token string, 
 func (c *TuwunelClient) doJSONAsAdmin(ctx context.Context, method, path, token string, reqBody interface{}, respOut interface{}) (int, []byte, error) {
 	statusCode, respBody, err := c.doJSON(ctx, method, path, token, reqBody, respOut)
 	if err != nil {
+		// doJSON returns a non-nil err for a decode failure (respOut set but
+		// body not JSON). On a 401 with a non-JSON body this skips the token
+		// clear below; benign in practice because a genuine M_UNKNOWN_TOKEN
+		// is JSON and decodes fine (callers' respOut structs carry ErrCode,
+		// and json.Unmarshal ignores extra fields), so the clear fires there.
 		return statusCode, respBody, err
 	}
 	if statusCode == http.StatusUnauthorized {
