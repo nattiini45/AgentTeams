@@ -74,11 +74,7 @@ class MatrixBootstrapClient:
             config_path = self._sync.local_dir / "openclaw.json"
             with open(config_path, "w", encoding="utf-8") as handle:
                 json.dump(openclaw_cfg, handle, indent=2, ensure_ascii=False)
-            logger.info(
-                "Matrix re-login OK (device: %s, token: %s...)",
-                new_device,
-                new_token[:10],
-            )
+            logger.info("Matrix re-login OK (device: %s, token refreshed)", new_device)
         except (urllib.error.URLError, OSError, json.JSONDecodeError) as exc:
             logger.warning(
                 "Matrix re-login failed: %s — using existing access token "

@@ -29,8 +29,11 @@
 #   AGENTTEAMS_INSTALL_WORKER_IMAGE        Override worker image  (e.g., local build)
 #   AGENTTEAMS_INSTALL_COPAW_WORKER_IMAGE  Override copaw worker image (e.g., local build)
 #   AGENTTEAMS_INSTALL_HERMES_WORKER_IMAGE Override hermes worker image (e.g., local build)
+#   AGENTTEAMS_INSTALL_QWENPAW_WORKER_IMAGE Override qwenpaw worker image (e.g., local build)
 #   OpenHuman runtime: not supported by this installer — use Kubernetes/Helm with
 #   `make build-openhuman-worker` and Worker CR `spec.runtime=openhuman` (see docs/quickstart.md).
+#   QwenPaw is not on the interactive runtime menu; set AGENTTEAMS_INSTALL_QWENPAW_WORKER_IMAGE
+#   (or rely on the default registry tag) so `hiclaw create worker --runtime qwenpaw` can pull it.
 #   AGENTTEAMS_NACOS_REGISTRY_URI          Default Nacos registry URI for Worker market search/import
 #                                      (default: nacos://market.agentteams.io:80/public)
 #   AGENTTEAMS_NACOS_USERNAME              Default Nacos username for nacos:// package imports (optional)
@@ -1025,6 +1028,7 @@ MANAGER_COPAW_IMAGE="${AGENTTEAMS_INSTALL_MANAGER_COPAW_IMAGE:-}"
 WORKER_IMAGE="${AGENTTEAMS_INSTALL_WORKER_IMAGE:-}"
 COPAW_WORKER_IMAGE="${AGENTTEAMS_INSTALL_COPAW_WORKER_IMAGE:-}"
 HERMES_WORKER_IMAGE="${AGENTTEAMS_INSTALL_HERMES_WORKER_IMAGE:-}"
+QWENPAW_WORKER_IMAGE="${AGENTTEAMS_INSTALL_QWENPAW_WORKER_IMAGE:-}"
 CONTROLLER_IMAGE="${AGENTTEAMS_INSTALL_CONTROLLER_IMAGE:-}"
 
 resolve_image_tags() {
@@ -1033,12 +1037,16 @@ resolve_image_tags() {
     WORKER_IMAGE="${AGENTTEAMS_INSTALL_WORKER_IMAGE:-${AGENTTEAMS_REGISTRY}/higress/${AGENTTEAMS_IMAGE_WORKER}:${AGENTTEAMS_VERSION}}"
     COPAW_WORKER_IMAGE="${AGENTTEAMS_INSTALL_COPAW_WORKER_IMAGE:-${AGENTTEAMS_REGISTRY}/higress/${AGENTTEAMS_IMAGE_COPAW_WORKER}:${AGENTTEAMS_VERSION}}"
     HERMES_WORKER_IMAGE="${AGENTTEAMS_INSTALL_HERMES_WORKER_IMAGE:-${AGENTTEAMS_REGISTRY}/higress/${AGENTTEAMS_IMAGE_HERMES_WORKER}:${AGENTTEAMS_VERSION}}"
+    QWENPAW_WORKER_IMAGE="${AGENTTEAMS_INSTALL_QWENPAW_WORKER_IMAGE:-${AGENTTEAMS_REGISTRY}/higress/${AGENTTEAMS_IMAGE_QWENPAW_WORKER}:${AGENTTEAMS_VERSION}}"
     EMBEDDED_IMAGE="${AGENTTEAMS_INSTALL_EMBEDDED_IMAGE:-${AGENTTEAMS_REGISTRY}/higress/${AGENTTEAMS_IMAGE_EMBEDDED}:${AGENTTEAMS_VERSION}}"
     if [ -z "${AGENTTEAMS_INSTALL_COPAW_WORKER_IMAGE:-}" ] && _ver_lt "${AGENTTEAMS_VERSION}" "${AGENTTEAMS_COPAW_WORKER_MIN_VERSION}"; then
         COPAW_WORKER_IMAGE=""
     fi
     if [ -z "${AGENTTEAMS_INSTALL_HERMES_WORKER_IMAGE:-}" ] && _ver_lt "${AGENTTEAMS_VERSION}" "${AGENTTEAMS_HERMES_WORKER_MIN_VERSION}"; then
         HERMES_WORKER_IMAGE=""
+    fi
+    if [ -z "${AGENTTEAMS_INSTALL_QWENPAW_WORKER_IMAGE:-}" ] && _ver_lt "${AGENTTEAMS_VERSION}" "${AGENTTEAMS_QWENPAW_WORKER_MIN_VERSION}"; then
+        QWENPAW_WORKER_IMAGE=""
     fi
 }
 
@@ -1307,7 +1315,7 @@ prompt() {
 
     # If the variable is already set in the environment, use it silently
     # In upgrade mode, show current value and let user change it
-    eval "local current_value=\"\${${var_name}}\""
+    local current_value="${!var_name}"
     if [ -n "${current_value}" ]; then
         if [ "${AGENTTEAMS_UPGRADE}" = "1" ] && [ "${AGENTTEAMS_NON_INTERACTIVE}" != "1" ]; then
             # Show masked value for secrets, full value otherwise
@@ -1330,7 +1338,7 @@ prompt() {
                 if [ "${new_value}" = "b" ]; then STEP_RESULT="back"; return 1; fi
             fi
             if [ -n "${new_value}" ]; then
-                eval "export ${var_name}='${new_value}'"
+                printf -v "${var_name}" '%s' "${new_value}"; export "${var_name}"
             fi
             return
         fi
@@ -1341,7 +1349,7 @@ prompt() {
     # Non-interactive or quickstart: use default or error
     if [ "${AGENTTEAMS_NON_INTERACTIVE}" = "1" ] || [ "${AGENTTEAMS_QUICKSTART}" = "1" ]; then
         if [ -n "${default_value}" ]; then
-            eval "export ${var_name}='${default_value}'"
+            printf -v "${var_name}" '%s' "${default_value}"; export "${var_name}"
             log "$(msg prompt.default "${prompt_text}" "${default_value}")"
             return
         elif [ "${AGENTTEAMS_NON_INTERACTIVE}" = "1" ]; then
@@ -1369,7 +1377,7 @@ prompt() {
         die "$(msg prompt.required_empty "${prompt_text}")"
     fi
 
-    eval "export ${var_name}='${value}'"
+    printf -v "${var_name}" '%s' "${value}"; export "${var_name}"
 }
 
 # Prompt for an optional value (empty string is acceptable)
@@ -1382,11 +1390,11 @@ prompt_optional() {
     local is_secret="${3:-false}"
 
     # Check if variable is defined (even if set to empty string)
-    eval "local _chk=\"\${${var_name}+x}\""
+    local _chk="${!var_name+x}"
     if [ -n "${_chk}" ]; then
         # In upgrade mode, show current value and let user change it
         if [ "${AGENTTEAMS_UPGRADE}" = "1" ] && [ "${AGENTTEAMS_NON_INTERACTIVE}" != "1" ]; then
-            eval "local current_value=\"\${${var_name}}\""
+            local current_value="${!var_name}"
             local display_value="${current_value}"
             if [ "${is_secret}" = "true" ] && [ -n "${current_value}" ]; then
                 local len=${#current_value}
@@ -1414,7 +1422,7 @@ prompt_optional() {
                 if [ "${new_value}" = "b" ]; then STEP_RESULT="back"; return 1; fi
             fi
             if [ -n "${new_value}" ]; then
-                eval "export ${var_name}='${new_value}'"
+                printf -v "${var_name}" '%s' "${new_value}"; export "${var_name}"
             fi
             return
         fi
@@ -1424,7 +1432,7 @@ prompt_optional() {
 
     # Non-interactive or quickstart: skip, leave unset
     if [ "${AGENTTEAMS_NON_INTERACTIVE}" = "1" ] || [ "${AGENTTEAMS_QUICKSTART}" = "1" ]; then
-        eval "export ${var_name}=''"
+        printf -v "${var_name}" '%s' ''; export "${var_name}"
         return
     fi
 
@@ -1437,7 +1445,7 @@ prompt_optional() {
         if [ "${value}" = "b" ]; then STEP_RESULT="back"; return 1; fi
     fi
 
-    eval "export ${var_name}='${value}'"
+    printf -v "${var_name}" '%s' "${value}"; export "${var_name}"
 }
 
 generate_key() {
@@ -1935,7 +1943,7 @@ step_existing() {
             value="${value%%#*}"
             value="${value#"${value%%[![:space:]]*}"}"
             value="${value%"${value##*[![:space:]]}"}"
-            eval "_existing_val=\"\${${key}+x}\""
+            local _existing_val="${!key+x}"
             if [ -z "${_existing_val}" ]; then export "${key}=${value}"; fi
         done < "${existing_env}"
     fi
@@ -3072,6 +3080,7 @@ AGENTTEAMS_CMS_METRICS_ENABLED=${AGENTTEAMS_CMS_METRICS_ENABLED:-false}
 AGENTTEAMS_WORKER_IMAGE=${WORKER_IMAGE}
 AGENTTEAMS_COPAW_WORKER_IMAGE=${COPAW_WORKER_IMAGE}
 AGENTTEAMS_HERMES_WORKER_IMAGE=${HERMES_WORKER_IMAGE}
+AGENTTEAMS_QWENPAW_WORKER_IMAGE=${QWENPAW_WORKER_IMAGE}
 
 # Default Worker runtime (openclaw | copaw | hermes)
 AGENTTEAMS_DEFAULT_WORKER_RUNTIME=${AGENTTEAMS_DEFAULT_WORKER_RUNTIME:-copaw}
@@ -3264,6 +3273,7 @@ EOF
     _pull_image "${WORKER_IMAGE}" "install.image.worker_exists" "install.image.pulling_worker"
     _pull_image "${COPAW_WORKER_IMAGE}" "install.image.worker_exists" "install.image.pulling_worker"
     _pull_image "${HERMES_WORKER_IMAGE}" "install.image.worker_exists" "install.image.pulling_worker"
+    _pull_image "${QWENPAW_WORKER_IMAGE}" "install.image.worker_exists" "install.image.pulling_worker"
 
     # --- Pre-upgrade: extract Matrix passwords from running old containers ---
     # Only needed when upgrading FROM old architecture (v1.0.9) TO embedded.
@@ -3489,6 +3499,7 @@ CREDEOF
             -e "AGENTTEAMS_WORKER_IMAGE=${WORKER_IMAGE}"
             -e "AGENTTEAMS_COPAW_WORKER_IMAGE=${COPAW_WORKER_IMAGE}"
             -e "AGENTTEAMS_HERMES_WORKER_IMAGE=${HERMES_WORKER_IMAGE}"
+            -e "AGENTTEAMS_QWENPAW_WORKER_IMAGE=${QWENPAW_WORKER_IMAGE}"
             -e "AGENTTEAMS_MATRIX_DOMAIN=${_matrix_domain}"
             -e "AGENTTEAMS_ELEMENT_HOMESERVER_URL=http://127.0.0.1:${AGENTTEAMS_PORT_GATEWAY}"
             -e "AGENTTEAMS_MATRIX_URL=http://127.0.0.1:6167"

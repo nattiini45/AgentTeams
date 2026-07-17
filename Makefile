@@ -135,7 +135,7 @@ LINES          ?= 50
         push-native push-native-manager push-native-manager-copaw push-native-worker push-native-copaw-worker push-native-hermes-worker push-native-openhuman-worker \
         push-native-qwenpaw-worker \
         buildx-setup \
-        test test-quick test-installed test-embedded \
+        test test-quick test-installed test-embedded test-shared \
         install install-embedded uninstall uninstall-embedded replay replay-log \
         verify wait-ready wait-ready-embedded \
         generate sync-crds check-crd-sync \
@@ -632,6 +632,9 @@ test-quick: ## Run test-01 only (quick smoke test)
 test-installed: ## Run tests against an already-installed Manager (no container lifecycle)
 	./tests/run-all-tests.sh --skip-build --use-existing $(if $(TEST_FILTER),--test-filter "$(TEST_FILTER)")
 
+test-shared: ## Run shared/lib shell unit tests
+	@set -e; for t in shared/tests/test-*.sh; do echo "=== $$t ==="; bash "$$t"; done
+
 # ---------- Install / Uninstall ----------
 
 install: ## Install Manager locally (non-interactive, set AGENTTEAMS_LLM_API_KEY)
@@ -645,6 +648,7 @@ endif
 		AGENTTEAMS_INSTALL_WORKER_IMAGE=$(LOCAL_WORKER) \
 		AGENTTEAMS_INSTALL_COPAW_WORKER_IMAGE=$(LOCAL_COPAW_WORKER) \
 		AGENTTEAMS_INSTALL_HERMES_WORKER_IMAGE=$(LOCAL_HERMES_WORKER) \
+		AGENTTEAMS_INSTALL_QWENPAW_WORKER_IMAGE=$(LOCAL_QWENPAW_WORKER) \
 		AGENTTEAMS_INSTALL_OPENHUMAN_WORKER_IMAGE=$(LOCAL_OPENHUMAN_WORKER) \
 		AGENTTEAMS_INSTALL_CONTROLLER_IMAGE=$(LOCAL_CONTROLLER) \
 		bash ./install/hiclaw-install.sh manager
@@ -659,6 +663,7 @@ endif
 		AGENTTEAMS_INSTALL_WORKER_IMAGE=$(LOCAL_WORKER) \
 		AGENTTEAMS_INSTALL_COPAW_WORKER_IMAGE=$(LOCAL_COPAW_WORKER) \
 		AGENTTEAMS_INSTALL_HERMES_WORKER_IMAGE=$(LOCAL_HERMES_WORKER) \
+		AGENTTEAMS_INSTALL_QWENPAW_WORKER_IMAGE=$(LOCAL_QWENPAW_WORKER) \
 		AGENTTEAMS_INSTALL_OPENHUMAN_WORKER_IMAGE=$(LOCAL_OPENHUMAN_WORKER) \
 		bash ./install/hiclaw-install.sh manager
 
@@ -702,7 +707,7 @@ uninstall: ## Stop and remove Manager + all Worker containers
 
 install-embedded: ## Install in embedded mode (dual-container: controller + agent)
 ifndef SKIP_BUILD
-	$(MAKE) build-embedded build-manager build-manager-copaw build-worker build-copaw-worker build-hermes-worker
+	$(MAKE) build-embedded build-manager build-manager-copaw build-worker build-copaw-worker build-hermes-worker build-qwenpaw-worker
 endif
 	@echo "==> Installing AgentTeams (embedded mode)..."
 	AGENTTEAMS_NON_INTERACTIVE=1 \
@@ -712,6 +717,7 @@ endif
 		AGENTTEAMS_INSTALL_WORKER_IMAGE=$(LOCAL_WORKER) \
 		AGENTTEAMS_INSTALL_COPAW_WORKER_IMAGE=$(LOCAL_COPAW_WORKER) \
 		AGENTTEAMS_INSTALL_HERMES_WORKER_IMAGE=$(LOCAL_HERMES_WORKER) \
+		AGENTTEAMS_INSTALL_QWENPAW_WORKER_IMAGE=$(LOCAL_QWENPAW_WORKER) \
 		AGENTTEAMS_INSTALL_OPENHUMAN_WORKER_IMAGE=$(LOCAL_OPENHUMAN_WORKER) \
 		AGENTTEAMS_MATRIX_E2EE=0 \
 		bash ./install/hiclaw-install.sh

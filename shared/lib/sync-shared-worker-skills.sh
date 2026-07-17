@@ -21,7 +21,7 @@ for skill_dir in "${SHARED_ROOT}"/*/; do
     [ -d "${skill_dir}" ] || continue
     skill_name="$(basename "${skill_dir}")"
 
-    for runtime_dir in worker-agent copaw-worker-agent hermes-worker-agent openhuman-worker-agent; do
+    for runtime_dir in worker-agent copaw-worker-agent hermes-worker-agent openhuman-worker-agent qwenpaw-worker-agent; do
         target_root="${AGENT_SRC}/${runtime_dir}/skills/${skill_name}"
         mkdir -p "${target_root}"
 

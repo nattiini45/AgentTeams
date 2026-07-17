@@ -131,7 +131,7 @@ func createWorkerCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&name, "name", "", "Worker name (required)")
 	cmd.Flags().StringVar(&model, "model", "", "LLM model ID (default: $AGENTTEAMS_DEFAULT_MODEL, else qwen3.6-plus)")
-	cmd.Flags().StringVar(&runtime, "runtime", "", "Agent runtime (openclaw|copaw|hermes|openhuman)")
+	cmd.Flags().StringVar(&runtime, "runtime", "", "Agent runtime (openclaw|copaw|hermes|openhuman|qwenpaw)")
 	cmd.Flags().StringVar(&image, "image", "", "Container image override")
 	cmd.Flags().StringVar(&identity, "identity", "", "Worker identity description")
 	cmd.Flags().StringVar(&soul, "soul", "", "Worker SOUL.md content (inline)")
@@ -272,7 +272,7 @@ func createTeamCmd() *cobra.Command {
 	cmd.Flags().StringVar(&opts.leaderChannelPolicy, "leader-channel-policy", "", "Leader ChannelPolicySpec JSON")
 	cmd.Flags().StringVar(&opts.leaderChannelPolicyFile, "leader-channel-policy-file", "", "Path to leader ChannelPolicySpec JSON")
 	cmd.Flags().StringVar(&opts.workerModels, "worker-models", "", "Comma-separated models aligned with --workers order")
-	cmd.Flags().StringVar(&opts.workerRuntimes, "worker-runtimes", "", "Comma-separated runtimes aligned with --workers order (openclaw|copaw|hermes|openhuman)")
+	cmd.Flags().StringVar(&opts.workerRuntimes, "worker-runtimes", "", "Comma-separated runtimes aligned with --workers order (openclaw|copaw|hermes|openhuman|qwenpaw)")
 	cmd.Flags().StringVar(&opts.workerSkills, "worker-skills", "", "Per-worker skills, colon-separated (skills within a worker are comma-separated)")
 	cmd.Flags().StringVar(&opts.workerMcpServers, "worker-mcp-servers", "", "Per-worker MCP server names, colon-separated (names within a worker are comma-separated)")
 	cmd.Flags().StringVar(&opts.workerChannelPolicies, "worker-channel-policies", "", "Per-worker ChannelPolicySpec JSON, pipe-separated")
@@ -394,7 +394,7 @@ func createManagerCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&name, "name", "", "Manager name (required)")
 	cmd.Flags().StringVar(&model, "model", "", "LLM model ID (required)")
-	cmd.Flags().StringVar(&runtime, "runtime", "", "Agent runtime (openclaw|copaw|hermes|openhuman)")
+	cmd.Flags().StringVar(&runtime, "runtime", "", "Agent runtime (openclaw|copaw)")
 	cmd.Flags().StringVar(&image, "image", "", "Container image override")
 	cmd.Flags().StringVar(&soul, "soul", "", "Manager SOUL.md content")
 	return cmd

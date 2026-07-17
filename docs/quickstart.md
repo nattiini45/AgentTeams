@@ -134,12 +134,14 @@ If the Manager doesn't have access to the container runtime socket, it will repl
 
 ```bash
 docker run -d --name hiclaw-worker-alice \
-  -e HICLAW_WORKER_NAME=alice \
+  -e AGENTTEAMS_WORKER_NAME=alice \
   -e HICLAW_FS_ENDPOINT=http://<MANAGER_HOST>:9000 \
   -e HICLAW_FS_ACCESS_KEY=<ACCESS_KEY> \
   -e HICLAW_FS_SECRET_KEY=<SECRET_KEY> \
   hiclaw/worker-agent:latest
 ```
+
+`AGENTTEAMS_WORKER_NAME` is required. Set `AGENTTEAMS_WORKER_CR_NAME` only when the Worker CR name differs from the runtime identity.
 
 The Manager will provide all the specific values in its reply.
 

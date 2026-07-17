@@ -809,8 +809,18 @@ func createMemberContainer(ctx context.Context, d MemberDeps, m MemberContext, s
 		}
 		createReq.AuthToken = token
 
-		if err := waitForScopedWorkerConfig(ctx, m.Name, workerEnv); err != nil {
+		runtimeName := m.RuntimeName
+		if runtimeName == "" {
+			runtimeName = m.Name
+		}
+		effectiveRuntime := backend.ResolveRuntime(m.Spec.Runtime, d.DefaultRuntime)
+		ready, err := scopedWorkerConfigReady(ctx, runtimeName, effectiveRuntime, m.DeployMode, workerEnv)
+		if err != nil {
 			return reconcile.Result{}, fmt.Errorf("worker scoped storage config is not readable: %w", err)
+		}
+		if !ready {
+			state.Message = "waiting for scoped storage config"
+			return reconcile.Result{RequeueAfter: scopedConfigRetryAfter}, nil
 		}
 	}
 
@@ -823,11 +833,43 @@ func createMemberContainer(ctx context.Context, d MemberDeps, m MemberContext, s
 	return reconcile.Result{}, nil
 }
 
-func waitForScopedWorkerConfig(ctx context.Context, workerName string, workerEnv map[string]string) error {
+// scopedWorkerConfigObjectKey returns the object-storage key that matches what
+// ReconcileMemberConfig actually wrote for this member.
+//
+// QwenPaw and Edge (remote-managed) deploy agents/<runtimeName>/runtime/runtime.yaml
+// via DeployMemberRuntimeConfig; legacy runtimes deploy agents/<runtimeName>/openclaw.json
+// via DeployWorkerConfig.
+func scopedWorkerConfigObjectKey(runtimeName, runtime, deployMode string) string {
+	if runtime == backend.RuntimeQwenPaw || deployMode == v1beta1.DeployModeEdge {
+		return "agents/" + runtimeName + "/runtime/runtime.yaml"
+	}
+	return "agents/" + runtimeName + "/openclaw.json"
+}
+
+// scopedWorkerConfigReady performs a single non-blocking probe of the worker's
+// scoped storage config, written by the controller with the worker's own
+// credentials. runtimeName is the storage identity (RuntimeName, falling back
+// to CR Name). The probe key matches ReconcileMemberConfig:
+// QwenPaw/Edge → agents/<runtimeName>/runtime/runtime.yaml; otherwise
+// agents/<runtimeName>/openclaw.json.
+//
+// It returns (true, nil) when the object is readable (or when the probe is not
+// applicable because credentials/endpoint/bucket/prefix are unset), (false, nil)
+// when the object is not yet present (caller should requeue), and (false, err)
+// on a genuine client error (outage, bad credentials) so the caller can surface
+// it. It never blocks: the reconcile loop re-enters this branch and re-probes on
+// the next requeue.
+func scopedWorkerConfigReady(ctx context.Context, runtimeName, runtime, deployMode string, workerEnv map[string]string) (bool, error) {
+	return scopedWorkerConfigReadyWithClient(ctx, runtimeName, runtime, deployMode, workerEnv, nil)
+}
+
+// scopedWorkerConfigReadyWithClient is the testable core of scopedWorkerConfigReady.
+// When client is nil a MinIO client is built from workerEnv / process env.
+func scopedWorkerConfigReadyWithClient(ctx context.Context, runtimeName, runtime, deployMode string, workerEnv map[string]string, client oss.StorageClient) (bool, error) {
 	accessKey := strings.TrimSpace(workerEnv["AGENTTEAMS_FS_ACCESS_KEY"])
 	secretKey := strings.TrimSpace(workerEnv["AGENTTEAMS_FS_SECRET_KEY"])
 	if accessKey == "" || secretKey == "" {
-		return nil
+		return true, nil
 	}
 
 	endpoint := strings.TrimSpace(os.Getenv("AGENTTEAMS_FS_ENDPOINT"))
@@ -837,39 +879,30 @@ func waitForScopedWorkerConfig(ctx context.Context, workerName string, workerEnv
 	bucket := strings.TrimSpace(workerEnv["AGENTTEAMS_FS_BUCKET"])
 	storagePrefix := strings.TrimSpace(workerEnv["AGENTTEAMS_STORAGE_PREFIX"])
 	if endpoint == "" || bucket == "" || storagePrefix == "" {
-		return nil
+		return true, nil
 	}
 
-	client := oss.NewMinIOClient(oss.Config{
-		Alias:         "worker-scoped-readiness-" + workerName,
-		Endpoint:      endpoint,
-		AccessKey:     accessKey,
-		SecretKey:     secretKey,
-		Bucket:        bucket,
-		StoragePrefix: storagePrefix,
-	})
-
-	key := "agents/" + workerName + "/openclaw.json"
-	var lastErr error
-	deadline := time.Now().Add(2 * time.Minute)
-	for {
-		if err := client.Stat(ctx, key); err == nil {
-			log.FromContext(ctx).Info("worker scoped storage config readable", "worker", workerName, "key", key)
-			return nil
-		} else {
-			lastErr = err
-		}
-
-		if time.Now().After(deadline) {
-			return fmt.Errorf("stat %s with worker credentials timed out: %w", key, lastErr)
-		}
-
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-time.After(5 * time.Second):
-		}
+	if client == nil {
+		client = oss.NewMinIOClient(oss.Config{
+			Alias:         "worker-scoped-readiness-" + runtimeName,
+			Endpoint:      endpoint,
+			AccessKey:     accessKey,
+			SecretKey:     secretKey,
+			Bucket:        bucket,
+			StoragePrefix: storagePrefix,
+		})
 	}
+
+	key := scopedWorkerConfigObjectKey(runtimeName, runtime, deployMode)
+	if err := client.Stat(ctx, key); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			// Config not projected yet — not an error; caller requeues and re-probes.
+			return false, nil
+		}
+		return false, fmt.Errorf("stat %s with worker credentials: %w", key, err)
+	}
+	log.FromContext(ctx).Info("worker scoped storage config readable", "worker", runtimeName, "key", key)
+	return true, nil
 }
 
 func refreshSandboxSetWorkerDeps(ctx context.Context, d MemberDeps, m MemberContext, prov *service.WorkerProvisionResult) (time.Duration, string, error) {
@@ -890,8 +923,6 @@ func buildMemberWorkerEnv(ctx context.Context, d MemberDeps, m MemberContext, pr
 	}
 	logger := log.FromContext(ctx)
 	workerEnv := d.EnvBuilder.Build(m.RuntimeName, prov)
-	workerEnv["AGENTTEAMS_WORKER_CR_NAME"] = m.Name
-	// Legacy runtime scripts still read this fallback while AgentTeams env adoption is in progress.
 	workerEnv["AGENTTEAMS_WORKER_CR_NAME"] = m.Name
 	if m.ModelProviderInfo != nil && m.ModelProviderInfo.IntranetURL != "" {
 		workerEnv["AGENTTEAMS_AI_GATEWAY_URL"] = m.ModelProviderInfo.IntranetURL

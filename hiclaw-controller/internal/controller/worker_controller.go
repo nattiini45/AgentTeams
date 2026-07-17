@@ -40,6 +40,10 @@ const (
 	// controller's Matrix AppService token has not been registered/verified
 	// with the homeserver yet (transient startup race, M_UNKNOWN_TOKEN).
 	appServiceNotReadyRequeue = 5 * time.Second
+	// scopedConfigRetryAfter is the requeue cadence used while a worker's scoped
+	// storage config (agents/<name>/openclaw.json) is not yet readable. Matches
+	// the original in-goroutine poll interval, but without blocking the reconcile.
+	scopedConfigRetryAfter = 5 * time.Second
 )
 
 // WorkerReconciler reconciles standalone Worker resources. Team members are
@@ -149,6 +153,11 @@ func (r *WorkerReconciler) Reconcile(ctx context.Context, req reconcile.Request)
 			return reconcile.Result{}, err
 		}
 	}
+
+	// Refresh the status patch base after the finalizer add so the deferred
+	// Status().Patch diffs against in-sync metadata. Status is still pristine
+	// here, so every status mutation made by reconcileNormal remains in the diff.
+	patchBase = client.MergeFrom(worker.DeepCopy())
 
 	return r.reconcileNormal(ctx, &worker, state)
 }

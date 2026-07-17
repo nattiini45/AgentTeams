@@ -4,6 +4,22 @@ Record image-affecting changes to `manager/`, `worker/`, `copaw/`, `openclaw-bas
 
 ---
 
+- fix(controller): populate `QwenPawWorkerImage` across Docker/K8s/Sandbox config builders and wire `AGENTTEAMS_QWENPAW_WORKER_IMAGE` through the Helm chart (values/helpers/controller env)
+- feat(install): wire `AGENTTEAMS_QWENPAW_WORKER_IMAGE` through embedded install (override/default/pull/env-file/controller `-e`), mirroring Hermes
+- feat(manager): add `qwenpaw-worker-agent` template (incl. find-skills parity); embed `openhuman-worker-agent` and `qwenpaw-worker-agent` templates in the controller image and route their builtin agent dirs; sync shared worker skills into the qwenpaw runtime tree
+- note(helm): `worker.defaultRuntime` changed from `hermes` → `openclaw` — Workers created without `spec.runtime` now default to openclaw on Helm upgrade
+- fix(controller): add `openhuman` to the Worker CRD runtime enum and `qwenpaw` to the Team member CRD runtime enum (config/crd + helm/crds mirror)
+- fix(hiclaw): align advertised `--runtime` help with CRD-accepted sets (managers `openclaw|copaw`; workers/team members `openclaw|copaw|hermes|openhuman|qwenpaw`) across create/update/apply and Helm values comment
+- fix(controller): requeue (5s) instead of blocking in-goroutine for scoped worker storage config; single-shot non-blocking probe with clear waiting status; probe key matches deploy path (QwenPaw/Edge → `runtime/runtime.yaml`, legacy → `openclaw.json`) using RuntimeName
+- fix(controller): refresh the status patch base after finalizer add so the deferred status patch diffs against in-sync metadata
+- fix(controller): remove duplicate `AGENTTEAMS_WORKER_CR_NAME` dead-store in member reconcile
+- fix(install): remove `eval` from installer prompt/config helpers (shell-injection vector); use `printf -v` and `${!var}` indirect expansion
+- fix(shared): parse the STS credential file and validate the controller env file instead of dot-sourcing untrusted content
+- fix(copaw): stop logging a partial Matrix access token on re-login
+- fix(controller): remove the phantom `projects.hiclaw.io` CRD (reconciled group is `agentteams.io`); legacy clusters may run `kubectl delete crd projects.hiclaw.io`
+- docs: fix broken design links in `AGENTS.md`; restore required `AGENTTEAMS_WORKER_NAME` in quickstart/worker guides (en + zh-cn); document `AGENTTEAMS_WORKER_CR_NAME` only as optional CR override
+- test: add QwenPaw config-builder, `builtinAgentDir`, non-blocking scoped-config, OpenHuman image-routing, and shell (installer prompt / env-file / credential-file) coverage; hook `shared/tests/test-*.sh` via `make test-shared` and remediation-gates `shared-shell`
+
 - fix(controller): parallel ListWorkers health probes with shared 5s list budget; GetWorker attaches healthChecks on CR and synthesized paths; teamMember responses copy lastHeartbeat/lastActiveAt from TeamMemberStatus
 - fix(controller): worker `/ready` ignores negative llmCallsSinceLastHeartbeat; retries status update up to 2 times on conflict (still 204 when persistence fails)
 
