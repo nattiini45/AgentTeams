@@ -207,6 +207,8 @@ curl -s http://127.0.0.1:18001/
 
 ## Backup and Recovery
 
+For the full snapshot restore runbook (S-BACKUP) — lifecycle-mcp `ops.db`, volume tar, env files, selective MinIO import, and security notes — see **[restore.md](restore.md)**.
+
 ### Data Volume
 
 All persistent data is stored in the `hiclaw-data` Docker volume:

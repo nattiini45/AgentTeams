@@ -114,6 +114,9 @@ def test_worker_metadata_query_uses_cr_name_while_storage_uses_runtime_name(tmp_
 
     def fake_mc(*args, **_kwargs):
         commands.append(args)
+        if args[0] == "mirror" and str(args[2]).startswith(str(sync.local_dir)):
+            sync.local_dir.mkdir(parents=True, exist_ok=True)
+            (sync.local_dir / "openclaw.json").write_text("{}")
         return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
 
     monkeypatch.setattr("copaw_worker.sync._mc", fake_mc)

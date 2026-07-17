@@ -80,4 +80,4 @@ jobs:
         run: helm repo add higress.io https://higress.io/helm-charts
       - run: helm dependency build helm/hiclaw
       - run: helm lint helm/hiclaw --set credentials.llmApiKey=dummy
-      - run: helm template test helm/hiclaw --set credentials.llmApiKey=dummy --set dashboard.enabled=true > /dev/null
+      - run: helm template test helm/hiclaw --set credentials.llmApiKey=dummy --set gateway.publicURL=https://matrix.example.com --set dashboard.enabled=true > /dev/null

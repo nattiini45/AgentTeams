@@ -65,6 +65,9 @@ cat ~/workers-registry.json
 | `project-participation` | 多 Worker 项目协作 |
 | `mcporter` | MCP Server 工具调用 |
 | `find-skills` | 从 Agent Skills 生态系统发现和安装技能 |
+| `gitea-operations` | Gitea forge CRUD via per-worker `mcp-gitea-*` (Hermes coding Workers) |
+| `github-operations` | GitHub PR/Issue CRUD via shared `mcp-github` (CoPaw / GitHub Workers) |
+| `git-delegation` | CoPaw Workers 无本地 git 凭证时的 clone/push 委托 |
 
 ### find-skills 配置
 

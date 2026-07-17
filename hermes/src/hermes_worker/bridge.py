@@ -44,12 +44,21 @@ def _is_in_container() -> bool:
     return Path("/.dockerenv").exists() or Path("/run/.containerenv").exists()
 
 
-def _truthy_env(name: str, default: bool = False) -> bool:
-    """Parse a boolean-ish env var the same way the overlay adapter does."""
-    raw = os.environ.get(name)
-    if raw is None:
-        return default
-    return raw.strip().lower() in ("true", "1", "yes", "on")
+def _verbose_rooms_enabled() -> bool:
+    """Mirror copaw_worker.bridge Phase 5b verbose-room env precedence."""
+    verbose_raw = os.environ.get("AGENTTEAMS_VERBOSE_ROOMS")
+    if verbose_raw is not None:
+        return verbose_raw.strip().lower() in ("true", "1", "yes", "on")
+
+    quiet_raw = os.environ.get("AGENTTEAMS_QUIET_ROOMS")
+    if quiet_raw is not None:
+        logger.warning(
+            "AGENTTEAMS_QUIET_ROOMS is deprecated; use AGENTTEAMS_VERBOSE_ROOMS "
+            "(semantics inverted: unset=quiet, truthy=verbose)"
+        )
+        return quiet_raw.strip().lower() not in ("true", "1", "yes", "on")
+
+    return False
 
 
 def _port_remap(url: str, is_container: bool) -> str:
@@ -258,15 +267,14 @@ def _matrix_env(cfg: Dict[str, Any]) -> Dict[str, str]:
         # hermes_matrix.overlay_adapter.MatrixAdapter directly (constructor +
         # _wrap_send_message_event / _handle_media_message).
         "MATRIX_VISION_ENABLED": "true" if _resolve_vision_enabled(cfg) else "false",
-        # Phase 5b "quiet rooms": derived from AGENTTEAMS_QUIET_ROOMS, default
-        # false. Mechanism-only, env-gated — flipping AGENTTEAMS_QUIET_ROOMS on
-        # is what makes should_suppress_outbound() actually drop tool-call /
-        # thinking chatter in the overlay's send_message_event wrapper.
+        # Phase 5b "quiet rooms" (default quiet): derive filter flags from
+        # AGENTTEAMS_VERBOSE_ROOMS (AGENTTEAMS_QUIET_ROOMS deprecated).
+        # Filters "true" = suppress tool/thinking chatter in overlay adapter.
         "MATRIX_FILTER_TOOL_MESSAGES": (
-            "true" if _truthy_env("AGENTTEAMS_QUIET_ROOMS") else "false"
+            "false" if _verbose_rooms_enabled() else "true"
         ),
         "MATRIX_FILTER_THINKING": (
-            "true" if _truthy_env("AGENTTEAMS_QUIET_ROOMS") else "false"
+            "false" if _verbose_rooms_enabled() else "true"
         ),
     }
 

@@ -113,10 +113,10 @@ class MatrixAdapter(_NativeMatrixAdapter):
         self._history = HistoryBuffer.from_env()
         self._vision_enabled = _truthy_env("MATRIX_VISION_ENABLED", default=False)
         self._filter_tool_messages = _truthy_env(
-            "MATRIX_FILTER_TOOL_MESSAGES", default=False
+            "MATRIX_FILTER_TOOL_MESSAGES", default=True
         )
         self._filter_thinking = _truthy_env(
-            "MATRIX_FILTER_THINKING", default=False
+            "MATRIX_FILTER_THINKING", default=True
         )
 
     async def connect(self) -> bool:
@@ -127,7 +127,7 @@ class MatrixAdapter(_NativeMatrixAdapter):
 
     def _wrap_send_message_event(self) -> None:
         """Inject MSC3952 ``m.mentions`` into every outgoing Matrix event and
-        enforce quiet-rooms suppression (Phase 5b, env-gated default-off).
+        enforce quiet-rooms suppression (Phase 5b, quiet-by-default).
         """
         if self._client is None:
             return

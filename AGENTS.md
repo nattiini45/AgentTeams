@@ -279,3 +279,20 @@ All technical assumptions have been verified in POC. See [design/poc-tech-verifi
 - MCP Server created via `PUT` (not `POST`)
 - Auth plugin takes ~40s to activate after first configuration
 - OpenClaw Skills auto-load from `workspace/skills/<name>/SKILL.md`
+
+## Learned User Preferences
+
+- Open pull requests against the user's fork `nattiini45/AgentTeams`, not upstream `agentscope-ai/AgentTeams`, unless explicitly directed otherwise
+- For large-repo verification or exploration, prefer parallel subagents over a single agent doing exhaustive grep/read passes
+- When starting follow-on work from an open PR, branch from that feature branch tip rather than from `main`
+- Author MCP worker skills against exact live-enumerated tool names; defer full per-tool JSON schemas to follow-up batches
+- Split review-loop documentation: `gitea-mcp` for forge CRUD, `lifecycle-mcp` for verdict/state orchestration
+
+## Learned Workspace Facts
+
+- Git remote `origin` points at the user's fork: `github.com/nattiini45/AgentTeams`
+- `lifecycle-mcp` is external to this repo (private-network MCP service, bearer-authed); orchestration state lives in SQLite `ops.db`
+- `gitea-mcp` (53 tools) is the stateless forge proxy per worker via Higress; `lifecycle-mcp` (18 tools) owns fix-job, verdict, await, and merge orchestration
+- Embedded solo-operator deployments should use a Docker socket proxy before shared-host or multi-tenant use
+- Manager container hardening (non-root) is tracked separately in `manager/Dockerfile*` work
+- Backup units: AgentTeams data volume (Tuwunel + MinIO + kine + Higress), install env files, and `lifecycle-mcp:/data/ops.db` (`gitea-mcp` is stateless)

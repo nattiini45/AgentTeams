@@ -6,6 +6,7 @@ import asyncio
 from dataclasses import asdict
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 from agentscope.tool import ToolResponse
@@ -16,7 +17,9 @@ from copaw_worker.hooks.tools._toolhelpers import (
     _ok,
     _optional_str,
     _required_str,
+    _response,
     _store,
+    _workspace_dir,
 )
 from copaw_worker.hooks.tools.filesync import create_sync
 from copaw_worker.task import (
@@ -33,42 +36,6 @@ from copaw_worker.task import (
     submit_task,
     validate_task_result,
 )
-
-
-def _response(payload: dict[str, Any]) -> ToolResponse:
-    return ToolResponse(
-        content=[
-            TextBlock(
-                type="text",
-                text=json.dumps(payload, ensure_ascii=False),
-            ),
-        ],
-    )
-
-
-def _ok(**payload: Any) -> ToolResponse:
-    return _response({"ok": True, **payload})
-
-
-def _error(message: str, **payload: Any) -> ToolResponse:
-    return _response({"ok": False, "error": message, **payload})
-
-
-def _workspace_dir() -> Path:
-    configured = os.getenv("COPAW_WORKING_DIR")
-    if configured:
-        return Path(configured) / "workspaces" / "default"
-
-    cwd = Path.cwd()
-    if cwd.name == "default" and cwd.parent.name == "workspaces":
-        return cwd
-    if cwd.name == ".copaw":
-        return cwd / "workspaces" / "default"
-    return cwd
-
-
-def _store() -> FileSystemTaskStore:
-    return FileSystemTaskStore(_workspace_dir())
 
 
 def _runtime_root() -> Path:

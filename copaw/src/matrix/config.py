@@ -1161,7 +1161,7 @@ class Config(BaseModel):
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
     last_dispatch: Optional[LastDispatchConfig] = None
     security: SecurityConfig = Field(default_factory=SecurityConfig)
-    show_tool_details: bool = True
+    show_tool_details: bool = False
     user_timezone: str = Field(
         default_factory=detect_system_timezone,
         description="User IANA timezone (e.g. Asia/Shanghai). "

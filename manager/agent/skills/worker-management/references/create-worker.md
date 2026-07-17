@@ -63,7 +63,8 @@ Quick lookup:
 
 | Worker Type | Skills |
 |-------------|--------|
-| Development (coding, DevOps, review) | `github-operations,git-delegation` |
+| Development (Hermes / Gitea coding) | `gitea-operations` (+ own PAT for native checkout; skip `git-delegation`) |
+| Development (CoPaw / GitHub) | `github-operations,git-delegation` |
 | Data / Analysis | _(default)_ |
 | General Purpose | _(default)_ |
 

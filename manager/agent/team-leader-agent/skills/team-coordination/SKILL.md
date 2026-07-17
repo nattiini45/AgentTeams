@@ -21,6 +21,8 @@ Use this skill to decide:
 
 Do not put tool payload mechanics here. Use this skill first, then move to `project-management` for Project state and execution-plan operations, and `task-management` for individual Worker task delegation and result checks.
 
+For Gitea PR review and merge orchestration (gitea-mcp + lifecycle-mcp two-layer loop), read `references/lead-review-loop.md` before delegating review or merge work.
+
 ## Leader Mindset
 
 You are not a message router. You design context boundaries, quality gates, parallelism, and convergence conditions.

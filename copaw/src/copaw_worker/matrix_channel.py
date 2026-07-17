@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import html
+import time
 import httpx
 import io
 import json
@@ -372,7 +373,7 @@ class MatrixChannel(BaseChannel):
         process: Callable,
         config: MatrixChannelConfig,
         on_reply_sent: Optional[Callable] = None,
-        show_tool_details: bool = True,
+        show_tool_details: bool = False,
         filter_tool_messages: bool = False,
         filter_thinking: bool = False,
     ) -> None:
@@ -459,7 +460,7 @@ class MatrixChannel(BaseChannel):
         process: Callable,
         config: Any,
         on_reply_sent: Optional[Callable] = None,
-        show_tool_details: bool = True,
+        show_tool_details: bool = False,
         filter_tool_messages: bool = False,
         filter_thinking: bool = False,
     ) -> "MatrixChannel":

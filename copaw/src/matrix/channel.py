@@ -300,6 +300,19 @@ def _matrix_localpart(user_id: str | None) -> str:
     return text.split(":", 1)[0]
 
 
+def _extract_matrix_user_ids(text: str) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for match in _TEAM_LEADER_MATRIX_USER_ID_RE.finditer(text or ""):
+        mxid = match.group(0)
+        key = mxid.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(mxid)
+    return result
+
+
 def _is_team_leader_identity(user_id: str | None) -> bool:
     localpart = _matrix_localpart(user_id)
     return localpart.endswith("-lead") or localpart.endswith("-leader")
@@ -448,7 +461,7 @@ class MatrixChannel(BaseChannel):
         process: Callable,
         config: MatrixChannelConfig,
         on_reply_sent: Optional[Callable] = None,
-        show_tool_details: bool = True,
+        show_tool_details: bool = False,
         filter_tool_messages: bool = False,
         filter_thinking: bool = False,
     ) -> None:
@@ -513,7 +526,7 @@ class MatrixChannel(BaseChannel):
         process: Callable,
         config: Any,
         on_reply_sent: Optional[Callable] = None,
-        show_tool_details: bool = True,
+        show_tool_details: bool = False,
         filter_tool_messages: bool = False,
         filter_thinking: bool = False,
     ) -> "MatrixChannel":
@@ -2775,6 +2788,26 @@ class MatrixChannel(BaseChannel):
                     )
         return user_id.split(":")[0].lstrip("@") or user_id
 
+    def _team_assignment_room(self, current_room_id: str, text: str) -> str:
+        if _runtime_config_field("member", "role") != "team_leader":
+            return current_room_id
+
+        team_room_id = _runtime_config_field("team", "teamRoomId")
+        leader_dm_room_id = _runtime_config_field("team", "leaderDmRoomId")
+        team_name = _runtime_config_field("team", "name")
+        if not team_room_id or not leader_dm_room_id:
+            return current_room_id
+        if current_room_id != leader_dm_room_id:
+            return current_room_id
+
+        for mxid in _extract_matrix_user_ids(text):
+            localpart = mxid.removeprefix("@").split(":", 1)[0]
+            if localpart.endswith("-lead"):
+                continue
+            if not team_name or localpart.startswith(f"{team_name}-"):
+                return team_room_id
+        return current_room_id
+
     def _should_suppress_team_leader_internal_preamble(
         self,
         room_id: str,
@@ -3184,6 +3217,14 @@ class MatrixChannel(BaseChannel):
             )
             await self._send_typing(room_id, False)
             return
+
+        room_id = self._team_assignment_room(room_id, text)
+        if room_id != to_handle:
+            logger.info(
+                "MatrixChannel: rerouting team assignment from Leader DM %s to Team Room %s",
+                to_handle,
+                room_id,
+            )
 
         text = _clean_control_response_text(text)
 

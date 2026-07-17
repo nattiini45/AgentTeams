@@ -4,6 +4,13 @@ Record image-affecting changes to `manager/`, `worker/`, `copaw/`, `openclaw-bas
 
 ---
 
+- feat(manager): add gitea-operations worker skill + lead-review-loop reference ([a2be95a](https://github.com/nattiini45/AgentTeams/commit/a2be95a))
+- docs: add restore.md snapshot restore runbook (S-BACKUP) ([a2be95a](https://github.com/nattiini45/AgentTeams/commit/a2be95a))
+- feat(copaw/hermes): Phase 5b quiet-by-default; AGENTTEAMS_VERBOSE_ROOMS ([a2be95a](https://github.com/nattiini45/AgentTeams/commit/a2be95a))
+- fix(tests): align quiet-by-default expectations in hermes/copaw CI ([10c87f3](https://github.com/nattiini45/AgentTeams/commit/10c87f3))
+- fix(hermes): persist Matrix platforms store across recreate (S10 checkout pattern) ([a2be95a](https://github.com/nattiini45/AgentTeams/commit/a2be95a))
+- docs(copaw): remove stale team-leader ActionReady 403 gotcha ([a2be95a](https://github.com/nattiini45/AgentTeams/commit/a2be95a))
+
 - fix(integration): integrate fork code-review remediation (Tier 0–2C) onto the renamed AgentTeams upstream baseline. Replays the `manager/` / `copaw/` / `hermes/` / `hiclaw-controller/` / `install/` / `plugins/` / `dashboard/` remediation (security/data-loss, correctness, cleanup/dedup) onto `upstream/main` @ `06d75c6` including the `a7b707e` hard-cut AgentTeams contracts rename. Reconciles the `AGENTTEAMS_*` env-var rename end-to-end: fixes the dead Manager heartbeat override (controller emitted `AGENTTEAMS_MANAGER_HEARTBEAT_INTERVAL` but CoPaw/OpenClaw read `HICLAW_`), the dead `CMS_SERVICE_NAME` worker propagation, and the unwired `AGENTTEAMS_SOLO_OPERATOR` config field; renames the fork-internal `MANAGER_HEARTBEAT_INTERVAL`/`CMS_SERVICE_NAME`/`MANAGER_STATE_FILE`/`QUIET_ROOMS`/`CHAT_ACK`/`SOLO_OPERATOR` stragglers. Ports the Tier 0 #8 `oss-credentials.sh` cached-cred-before-refresh fallback onto the dynamic `MC_HOST_*` alias machinery, the Tier 1D openhuman `find-skill` test coverage, and the `buildDesiredMembers` team-controller member builder + helpers. Adds `.gitattributes` (LF hygiene), `.github/workflows/remediation-gates.yml` (CI: go test + pytest + dashboard npm + helm lint), and the `docs/upstream-integration-migration.md` operator cutover runbook. Also captures previously-unrecorded image-affecting changes from `faa8874` (provider-management skill) and `915653d` (11 Kilo review fixes on PR #2).
 - feat(qwenpaw): add the QwenPaw worker runtime Python package baseline with runtime config sync, storage sync, heartbeat reporting, Matrix channel overlay, and focused unit tests.
 - fix(controller): surface Kubernetes Pod container failures in Worker backend status and status API responses.
@@ -12,7 +19,7 @@ Record image-affecting changes to `manager/`, `worker/`, `copaw/`, `openclaw-bas
 - fix(agent): update file-sharing path guidance for CoPaw and Team Leader agents to use `/root/hiclaw-fs/agents/...` instead of the retired `/root/.hiclaw-worker/...` path.
 - feat(helm): add a Helm LLM preflight hook and reusable `hiclaw llm-preflight` command to validate API key/base URL/model before controller startup.
 
-- fix(copaw): harden Matrix channel control-command handling, task-thread routing, NO_REPLY suppression, and cancellation noise handling.
+- fix(copaw): repair taskflow/toolhelpers response shadowing, add missing `import time`, honor openclaw Matrix filter overrides in bridge, and sync Team Leader assignment routing in the vendored Matrix channel
 - feat(controller): add OpenKruise Sandbox backend support for Workers via `spec.backendRuntime=sandbox`, including SandboxClaim lifecycle, status watches, CRD schema, and Helm RBAC/env wiring.
 - fix(controller): materialize sandbox Worker runtime env/auth material into worker-deps storage before creating SandboxClaim deps and block legacy pod-to-sandbox runtime switches until the Worker is stopped.
 - feat(controller): add per-agent `spec.resources` support for Manager, Worker, Team Leader, and Team Worker CRDs.
