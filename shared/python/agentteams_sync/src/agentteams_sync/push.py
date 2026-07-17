@@ -90,6 +90,6 @@ def push_local(
             pushed.append(rel.as_posix())
             logger.debug("Pushed %s -> %s", rel, dest)
         except Exception as exc:
-            logger.debug("push_local: failed for %s: %s", rel, exc)
+            logger.warning("push_local: failed for %s: %s", rel, exc)
 
     return pushed

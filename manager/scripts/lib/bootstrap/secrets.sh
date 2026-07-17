@@ -19,10 +19,11 @@ bootstrap_manage_secrets() {
     fi
 
     mkdir -p /data
-    cat > "${SECRETS_FILE}" <<EOF
-export AGENTTEAMS_MANAGER_GATEWAY_KEY="${AGENTTEAMS_MANAGER_GATEWAY_KEY}"
-export AGENTTEAMS_MANAGER_PASSWORD="${AGENTTEAMS_MANAGER_PASSWORD}"
-EOF
+    # Use printf %q so secret values cannot trigger $() / backtick expansion on write.
+    {
+        printf 'export AGENTTEAMS_MANAGER_GATEWAY_KEY=%q\n' "${AGENTTEAMS_MANAGER_GATEWAY_KEY}"
+        printf 'export AGENTTEAMS_MANAGER_PASSWORD=%q\n' "${AGENTTEAMS_MANAGER_PASSWORD}"
+    } > "${SECRETS_FILE}"
     chmod 600 "${SECRETS_FILE}"
 }
 

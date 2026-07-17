@@ -2,6 +2,16 @@ package v1beta1
 
 import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+// +genclient
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Team",type=string,JSONPath=`.spec.team`
+// +kubebuilder:printcolumn:name="Repos",type=integer,JSONPath=`.status.repoCount`
+// +kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.phase`
+// +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// Worker represents an AI agent worker in AgentTeams.
 type Worker struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -166,7 +176,7 @@ func (s WorkerSpec) EffectiveWorkerName(metadataName string) string {
 	return metadataName
 }
 
-// ExposePort defines a container port to expose via the Higress gateway.
+// WorkerStatus holds the observed runtime state of a Worker.
 type WorkerStatus struct {
 	ObservedGeneration int64               `json:"observedGeneration,omitempty"`
 	SpecHash           string              `json:"specHash,omitempty"`
@@ -192,15 +202,12 @@ type WorkerStatus struct {
 	DeployMode string `json:"deployMode,omitempty"`
 }
 
-// ExposedPortStatus records a port that has been exposed via Higress.
+// +kubebuilder:object:root=true
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// WorkerList is a list of Worker resources.
 type WorkerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []Worker `json:"items"`
 }
-
-// +genclient
-// +kubebuilder:subresource:status
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-// Team represents a group of workers led by a Team Leader.

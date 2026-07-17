@@ -18,6 +18,7 @@ from agentteams_sync import mc as mc_ops
 from agentteams_sync.mc import (
     looks_like_missing_object_error,
     looks_like_remote_directory_error,
+    redact_url_userinfo,
     storage_alias,
 )
 from agentteams_sync.types import SharedPath
@@ -89,18 +90,23 @@ class FileSync:
         self._push_content_cache: dict[str, tuple[float, str]] = {}
 
     def _refresh_cloud_credentials(self) -> None:
+        # Pass alias via env so shell metacharacters in AGENTTEAMS_STORAGE_ALIAS
+        # cannot break out of the bash -c string.
+        env = os.environ.copy()
+        env["AGENTTEAMS_MC_ALIAS"] = _MC_ALIAS
         result = subprocess.run(
             [
                 "bash",
                 "-c",
                 "source /opt/hiclaw/scripts/lib/hiclaw-env.sh && "
                 "ensure_mc_credentials && "
-                f"_mc_host_var=MC_HOST_{_MC_ALIAS} && "
+                '_mc_host_var=MC_HOST_"${AGENTTEAMS_MC_ALIAS}" && '
                 'printf "%s" "${!_mc_host_var}"',
             ],
             capture_output=True,
             text=True,
             check=True,
+            env=env,
         )
         mc_host = result.stdout.strip()
         if mc_host:
@@ -117,7 +123,7 @@ class FileSync:
             runtime,
             self._cloud_mode,
             self._k8s_mode,
-            self.endpoint,
+            redact_url_userinfo(self.endpoint),
             self.bucket,
             self.worker_name,
             "<redacted>",

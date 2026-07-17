@@ -196,7 +196,7 @@ function renderHealthStrip(checks) {
   const dots = HEALTH_PROBE_ORDER.map(([key, label]) => {
     const check = checks[key] || {};
     const status = check.status || 'unknown';
-    const detail = check.detail ? ` — ${check.detail}` : '';
+    const detail = check.detail ? ` — ${escapeHtml(check.detail)}` : '';
     const title = `${label}: ${status}${detail}`.replace(/"/g, '&quot;');
     return `<span class="health-dot ${healthDotClass(status)}" title="${title}" aria-label="${label} ${status}"></span>`;
   }).join('');

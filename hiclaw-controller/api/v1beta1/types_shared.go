@@ -158,15 +158,7 @@ const (
 	WorkerVolumeTypeOSS = "OSS"
 )
 
-// +genclient
-// +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name="Team",type=string,JSONPath=`.spec.team`
-// +kubebuilder:printcolumn:name="Repos",type=integer,JSONPath=`.status.repoCount`
-// +kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.phase`
-// +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-// Worker represents an AI agent worker in AgentTeams.
+// ExposePort defines a container port to expose via the Higress gateway.
 type ExposePort struct {
 	Port     int    `json:"port"`
 	Protocol string `json:"protocol,omitempty"` // http (default) | grpc
@@ -195,9 +187,8 @@ type DingTalkChannelSpec struct {
 	MessageType      string `json:"messageType,omitempty"`
 	CardTemplateID   string `json:"cardTemplateId,omitempty"`
 }
+// ExposedPortStatus records a port that has been exposed via Higress.
 type ExposedPortStatus struct {
 	Port   int    `json:"port"`
 	Domain string `json:"domain"`
 }
-
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
