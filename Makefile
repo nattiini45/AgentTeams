@@ -756,6 +756,11 @@ else
 	# pull_request_target runs the base-branch workflow before this PR's
 	# workflow env rename lands, so map legacy CI env names only at the test
 	# harness boundary. Runtime/install scripts still consume AGENTTEAMS_*.
+	@if [ -z "$${AGENTTEAMS_LLM_API_KEY:-$${HICLAW_LLM_API_KEY:-}}" ]; then \
+		echo "==> Skipping embedded integration tests: AGENTTEAMS_LLM_API_KEY is unset"; \
+		echo "    Configure the repo secret to enable these shards."; \
+		exit 0; \
+	fi
 	AGENTTEAMS_YOLO=1 \
 		AGENTTEAMS_LLM_API_KEY="$${AGENTTEAMS_LLM_API_KEY:-$${HICLAW_LLM_API_KEY:-}}" \
 		AGENTTEAMS_LLM_PROVIDER="$${AGENTTEAMS_LLM_PROVIDER:-$${HICLAW_LLM_PROVIDER:-}}" \
