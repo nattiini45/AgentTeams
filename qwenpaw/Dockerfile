@@ -52,6 +52,7 @@ COPY --from=mc /usr/bin/mc /usr/local/bin/mc.bin
 
 # Stage qwenpaw-worker dependency metadata only (src/ copied later for layer caching).
 COPY qwenpaw/pyproject.toml qwenpaw/README.md /tmp/qwenpaw-worker/
+COPY --from=agentteams-openclaw-merge . /tmp/agentteams-openclaw-merge/
 COPY --from=agentteams-sync . /tmp/agentteams-sync/
 COPY --from=agentteams-matrix-format . /tmp/agentteams-matrix-format/
 RUN mkdir -p /tmp/qwenpaw-worker/src/qwenpaw_worker && \
@@ -71,7 +72,7 @@ RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
         --timeout "${PIP_TIMEOUT}" \
         --index-url "${PIP_INDEX_URL}" \
         --trusted-host "$(echo ${PIP_INDEX_URL} | sed -E 's|^https?://||;s|/.*||')" \
-        /tmp/agentteams-sync/ /tmp/agentteams-matrix-format/ \
+        /tmp/agentteams-openclaw-merge/ /tmp/agentteams-sync/ /tmp/agentteams-matrix-format/ \
     && /opt/venv/qwenpaw/bin/pip install \
         --retries 5 \
         --timeout "${PIP_TIMEOUT}" \
