@@ -32,6 +32,7 @@ from copaw_worker.task import (
     is_effective_result,
     submit_task,
     validate_task_result,
+    verify_task_artifacts,
 )
 
 
@@ -174,6 +175,25 @@ def _require_ack_preconditions(meta: TaskMeta, actor: str | None) -> None:
         raise TaskflowError(f"task {meta.task_id} is missing room_id")
 
 
+def _artifact_paths_to_stat(task_id: str, result: TaskResult) -> list[str]:
+    prefix = f"shared/tasks/{task_id}/"
+    paths = [f"{prefix}result.md"]
+    seen = set(paths)
+    for path in result.deliverables:
+        if path not in seen:
+            paths.append(path)
+            seen.add(path)
+    return paths
+
+
+def _format_verification_failure(report) -> str:
+    failed = [claim for claim in report.claims if claim.required and not claim.passed]
+    details = ", ".join(
+        f"{claim.path} ({claim.detail or claim.check})" for claim in failed
+    )
+    return f"artifact verification failed: {details}"
+
+
 async def taskflow(
     action: str,
     payload: dict[str, Any] | str | None = None,
@@ -256,19 +276,39 @@ async def taskflow(
                 if result is not None:
                     dry_run_payload["result"] = asdict(result)
                 return _ok(**dry_run_payload)
-            meta = submit_task(store, task_id=task_id, result=result, actor=_current_actor())
+            actor = _current_actor()
+            task_meta = store.read_task_meta(task_id)
+            _require_ack_preconditions(task_meta, actor)
+            if result is not None:
+                store.write_task_result(task_id, result)
+                submitted_result = result
+            else:
+                submitted_result = store.read_task_result(task_id)
+            verification = verify_task_artifacts(
+                store,
+                task_id=task_id,
+                result=submitted_result,
+                meta=task_meta,
+            )
+            if not verification.verified:
+                raise TaskflowError(_format_verification_failure(verification))
+            meta = submit_task(store, task_id=task_id, result=None, actor=actor)
             task_path = f"shared/tasks/{task_id}/"
-            result_path = f"shared/tasks/{task_id}/result.md"
             sync = create_sync()
             await asyncio.to_thread(
                 sync.push_shared_path, task_path, exclude=["spec.md", "base/"]
             )
-            await asyncio.to_thread(sync.stat_shared_path, result_path)
+            for artifact_path in _artifact_paths_to_stat(task_id, submitted_result):
+                await asyncio.to_thread(sync.stat_shared_path, artifact_path)
             response_payload: dict[str, Any] = {
                 "action": action,
                 "task": asdict(meta),
                 "synced": True,
                 "verified": True,
+                "verification": {
+                    "verified": verification.verified,
+                    "claims": [asdict(claim) for claim in verification.claims],
+                },
             }
             if result is not None:
                 response_payload["result"] = asdict(result)

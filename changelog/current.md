@@ -4,8 +4,29 @@ Record image-affecting changes to `manager/`, `worker/`, `copaw/`, `openclaw-bas
 
 ---
 
+- fix(controller): parallel ListWorkers health probes with shared 5s list budget; GetWorker attaches healthChecks on CR and synthesized paths; teamMember responses copy lastHeartbeat/lastActiveAt from TeamMemberStatus
+- fix(controller): worker `/ready` ignores negative llmCallsSinceLastHeartbeat; retries status update up to 2 times on conflict (still 204 when persistence fails)
+
+- docs(manager): AGENTS/HEARTBEAT completion flow requires verify-output before meta/state updates; Leader completions use same verify gate as Step 2
+- test(manager): extend test-verify-output.sh for ## Deliverables, task-relative paths, and exists claims
+- refactor(dashboard): extract overview freshness/health helpers to overview-health.js; add node --test coverage
+
+- feat(controller): five-point worker health probes (container/heartbeat/LLM/git/sync) on worker status + list API with 30s cache; `GET /v1/models` + Higress MCP inventory probes
+- feat(dashboard): worker overview cards show 5-dot health strip alongside Phase 2/3 freshness + LLM call counts
+
+- feat(copaw): count Higress gateway LLM HTTP calls and report `llmCallsSinceLastHeartbeat` on worker `/ready` heartbeat loop
+- feat(controller): persist `llmCallsLastHeartbeat` / `llmCallsTotal` on Worker status; expose on worker API responses
+- feat(dashboard): worker overview cards show last-window LLM call count alongside heartbeat freshness badges
+
+- feat(controller): Project CR `spec.dependsOn` with reconciled `status.dependencies` for cross-project visibility; dashboard cross-project graph; Manager project-management skill + HEARTBEAT gate unsatisfied deps before assignment
+
+- feat(controller): persist `LastHeartbeat` on worker `/ready`; expose `lastHeartbeat` and `lastActiveAt` on worker API responses
+- feat(dashboard): worker overview cards show heartbeat/active freshness (healthy &lt;10m, degraded &lt;30m, down ≥30m)
+- docs(copaw): remove stale Team Leader `ActionReady` 403 gotcha (authorizer now allows it)
+
 - fix(controller): desiredPodRevision applies resolved runtime in standard pod hash path; dedupe team-member lookup via WorkerResourceService; hiclaw manager-state rejects unknown flags; create team accepts --leader alias
 - fix(manager): create-team.sh removes duplicate hiclaw create call
+- feat(manager): add verify-output.sh and manage-state verify action for task deliverable checks; update finite-tasks/HEARTBEAT completion flow and verifiable_claims schema
 
 - fix(copaw): manager DM room bootstrap uses `AGENTTEAMS_MATRIX_URL`/bridged homeserver and env token fallback; deferred refresh after Matrix auto-join (`manager_bootstrap`, `run_manager_app`)
 - fix(manager): CoPaw worker builtin notify waits for runtime via `--wait-runtime` in bootstrap `workers.sh`
@@ -31,7 +52,8 @@ Record image-affecting changes to `manager/`, `worker/`, `copaw/`, `openclaw-bas
 - docs(sync): Phase 6 Y6.1 — `design/sync-contract.md` + `agentteams_sync.contract` presets document per-runtime sync semantics (preserve Hermes 300s vs CoPaw 60s, shared-in-pull_all divergence)
 - refactor(copaw): Phase 8 bridge/workspace — add WorkspaceLayout (materialize/rebridge/persist_edits), split bridge_config vs bootstrap_copaw_runtime, extract MatrixBootstrapClient, ensure skills symlink, wire quiet_rooms to MatrixChannel, replace Dockerfile sed with fail-fast matrix sync_loop patch script
 
-- fix(copaw): Phase 1 latent bug fixes — remove broken re-bridge `get_soul`/`get_agents_md` fallbacks; stop deriving `AGENTTEAMS_PORT_GATEWAY` from MinIO endpoint; wire `worker_cr_name` into `FileSync`; propagate prompts to `workspaces/default/`; align `filter_tool_messages` defaults via bridge SSOT; fail bridge when `agent.json` cannot be materialized; use `profile=worker` on worker startup bridge.
+- feat(copaw): taskflow submit_task verifies deliverable artifacts locally and stats each path on storage after push; TeamHarness check_task runs artifact verification and returns failedClaims
+- fix(protocol): align claim path resolution with verify-output.sh; parse `## Deliverables` in result.md; fail-closed verify when filesystem unavailable; CoPaw submit_task verifies before marking submitted
 - refactor(controller): Phase 10 soft refactors — split team reconciler by concern; unify `buildMemberRuntimeConfigReq`, channel policy builder, and `NewMemberDeps`; extract `ProvisionWorker` phases and `RoomMembershipOptions` room-membership API
 - refactor(controller): Phase 10 continued — split `gateway.Client` into focused interfaces; extract deployer openclaw merge helpers to `deployer_merge.go`; move worker-deps manifest builders to `internal/workerdeps`; add `WorkerResourceService` for standalone worker create domain rules; golden spec-hash vector test (DesiredPodRevision deferred); clarify Manager `RefreshManagerCredentials` vs legacy `RefreshCredentials`
 - refactor(controller): Phase 10 soft items — consolidate pod-recreate hashing behind `desiredPodRevision` with locked golden vectors; mechanical splits for `provisioner`/`deployer`/`matrix` client, `config` load/types, and `api/v1beta1` types by kind; document LegacyCompat deprecation path and member reconcile non-fatal/Observed semantics (C10.10–12 docs only)

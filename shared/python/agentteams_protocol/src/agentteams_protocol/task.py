@@ -76,6 +76,7 @@ class TaskMeta:
     assigned_at: str | None = None
     acknowledged_at: str | None = None
     submitted_at: str | None = None
+    verifiable_claims: list[VerifiableClaim] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -84,6 +85,28 @@ class TaskResult:
     summary: str
     deliverables: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class VerifiableClaim:
+    path: str
+    check: str = "nonempty"
+    required: bool = True
+
+
+@dataclass(frozen=True)
+class VerificationClaimReport:
+    path: str
+    check: str
+    passed: bool
+    required: bool
+    detail: str = ""
+
+
+@dataclass(frozen=True)
+class VerificationReport:
+    verified: bool
+    claims: list[VerificationClaimReport] = field(default_factory=list)
 
 
 class TaskStore(Protocol):
@@ -156,6 +179,7 @@ class FileSystemTaskStore:
             assigned_at=data.get("assigned_at"),
             acknowledged_at=data.get("acknowledged_at"),
             submitted_at=data.get("submitted_at"),
+            verifiable_claims=_parse_verifiable_claims(data.get("verifiable_claims")),
         )
 
     def write_task_meta(self, meta: TaskMeta) -> None:
@@ -817,11 +841,14 @@ def parse_task_result(text: str) -> TaskResult:
             summary = line[len("SUMMARY:") :].strip()
             section = ""
             continue
-        if line == "DELIVERABLES:":
+        if line == "DELIVERABLES:" or line == "## Deliverables":
             section = "deliverables"
             continue
-        if line == "NOTES:":
+        if line == "NOTES:" or line == "## Notes":
             section = "notes"
+            continue
+        if line.startswith("## ") and section:
+            section = ""
             continue
         if line.startswith("- "):
             item = line[2:].strip()
@@ -867,6 +894,76 @@ def validate_task_result(task_id: str, result: TaskResult) -> None:
         parts = Path(path).parts
         if any(part in ("", ".", "..") for part in parts):
             raise TaskflowError(f"invalid deliverable path: {path}")
+
+
+def verify_task_artifacts(
+    store_or_root: TaskStore | Path | str,
+    *,
+    task_id: str,
+    result: TaskResult | None = None,
+    meta: TaskMeta | None = None,
+) -> VerificationReport:
+    """Verify task deliverables exist on the local filesystem when available.
+
+    Path resolution matches ``verify-output.sh`` ``_resolve_path``: absolute paths
+    are used as-is; ``shared/*`` is under ``workspace_root``; any other relative
+    path is resolved under ``shared/tasks/{task_id}/``. ``..`` traversal is rejected.
+
+    The ``nonempty`` check requires a non-empty **file**; directories fail even when
+    present. The ``exists`` check accepts files or directories.
+    """
+    safe_id = _safe_id(task_id)
+    workspace_root = _resolve_workspace_root(store_or_root)
+
+    if result is None:
+        if isinstance(store_or_root, FileSystemTaskStore) or _uses_task_store_api(store_or_root):
+            result = store_or_root.read_task_result(safe_id)  # type: ignore[union-attr]
+        elif workspace_root is not None:
+            result_path = workspace_root / "shared" / "tasks" / safe_id / "result.md"
+            if not result_path.exists():
+                return VerificationReport(
+                    verified=False,
+                    claims=[
+                        VerificationClaimReport(
+                            path=f"shared/tasks/{safe_id}/result.md",
+                            check="nonempty",
+                            passed=False,
+                            required=True,
+                            detail="path does not exist",
+                        ),
+                    ],
+                )
+            result = parse_task_result(result_path.read_text())
+            validate_task_result(safe_id, result)
+        else:
+            raise TaskflowError("result is required when filesystem root is unavailable")
+    else:
+        validate_task_result(safe_id, result)
+
+    if meta is None:
+        meta = _read_task_meta_optional(store_or_root, safe_id, workspace_root)
+
+    claims = _artifact_claims(safe_id, result, meta)
+    if workspace_root is None:
+        if any(claim.required for claim in claims):
+            reports = [
+                VerificationClaimReport(
+                    path=claim.path,
+                    check=claim.check,
+                    passed=False,
+                    required=claim.required,
+                    detail="filesystem unavailable",
+                )
+                for claim in claims
+            ]
+            return VerificationReport(verified=False, claims=reports)
+        return VerificationReport(verified=True, claims=[])
+
+    reports = [
+        _evaluate_verifiable_claim(workspace_root, safe_id, claim) for claim in claims
+    ]
+    verified = all(report.passed or not report.required for report in reports)
+    return VerificationReport(verified=verified, claims=reports)
 
 
 def _parse_dag_line(line: str) -> DagTask | None:
@@ -1054,6 +1151,150 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
 
 def _drop_none(data: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in data.items() if value is not None}
+
+
+def _parse_verifiable_claims(raw: Any) -> list[VerifiableClaim]:
+    if not raw:
+        return []
+    if not isinstance(raw, list):
+        raise TaskflowError("verifiable_claims must be a list")
+    claims: list[VerifiableClaim] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            raise TaskflowError("verifiable_claims item must be an object")
+        path = str(item.get("path") or "").strip()
+        if not path:
+            raise TaskflowError("verifiable_claims path is required")
+        check = str(item.get("check") or "nonempty").strip().lower()
+        if check not in {"exists", "nonempty"}:
+            raise TaskflowError(f"invalid verifiable_claims check: {check}")
+        required = item.get("required", True)
+        if not isinstance(required, bool):
+            required = str(required).strip().lower() not in {"false", "0", "no", "n"}
+        claims.append(VerifiableClaim(path=path, check=check, required=required))
+    return claims
+
+
+def _resolve_workspace_root(store_or_root: TaskStore | Path | str) -> Path | None:
+    if isinstance(store_or_root, FileSystemTaskStore):
+        return store_or_root.workspace_dir
+    if isinstance(store_or_root, (Path, str)):
+        text = str(store_or_root).strip()
+        return Path(text).expanduser() if text else None
+    return None
+
+
+def _uses_task_store_api(store_or_root: TaskStore | Path | str) -> bool:
+    if isinstance(store_or_root, (FileSystemTaskStore, Path, str)):
+        return False
+    return hasattr(store_or_root, "read_task_result")
+
+
+def _read_task_meta_optional(
+    store_or_root: TaskStore | Path | str,
+    task_id: str,
+    workspace_root: Path | None,
+) -> TaskMeta:
+    if isinstance(store_or_root, FileSystemTaskStore) or _uses_task_store_api(store_or_root):
+        try:
+            return store_or_root.read_task_meta(task_id)  # type: ignore[union-attr]
+        except TaskflowError:
+            pass
+    if workspace_root is not None:
+        meta_path = workspace_root / "shared" / "tasks" / task_id / "meta.json"
+        if meta_path.exists():
+            data = json.loads(meta_path.read_text())
+            return TaskMeta(
+                task_id=str(data["task_id"]),
+                project_id=str(data.get("project_id") or ""),
+                task_title=str(data.get("task_title") or task_id),
+                assigned_to=str(data.get("assigned_to") or ""),
+                room_id=data.get("room_id"),
+                status=str(data.get("status") or "assigned"),
+                depends_on=list(data.get("depends_on") or []),
+                assigned_at=data.get("assigned_at"),
+                acknowledged_at=data.get("acknowledged_at"),
+                submitted_at=data.get("submitted_at"),
+                verifiable_claims=_parse_verifiable_claims(data.get("verifiable_claims")),
+            )
+    return TaskMeta(
+        task_id=task_id,
+        project_id="",
+        task_title=task_id,
+        assigned_to="",
+    )
+
+
+def _artifact_claims(task_id: str, result: TaskResult, meta: TaskMeta) -> list[VerifiableClaim]:
+    prefix = f"shared/tasks/{task_id}/"
+    defaults: list[VerifiableClaim] = [
+        VerifiableClaim(path=f"{prefix}result.md", check="nonempty", required=True),
+    ]
+    seen = {defaults[0].path}
+    for path in result.deliverables:
+        if path not in seen:
+            defaults.append(VerifiableClaim(path=path, check="nonempty", required=True))
+            seen.add(path)
+    if not meta.verifiable_claims:
+        return defaults
+    merged = {claim.path: claim for claim in defaults}
+    for claim in meta.verifiable_claims:
+        merged[claim.path] = claim
+    return list(merged.values())
+
+
+def _claim_local_path(workspace_root: Path, task_id: str, claim_path: str) -> Path:
+    """Resolve a claim path like verify-output.sh ``_resolve_path``."""
+    raw = claim_path.strip()
+    if not raw:
+        raise TaskflowError("claim path is required")
+    if ".." in Path(raw).parts:
+        raise TaskflowError(f"invalid claim path: {claim_path}")
+    if raw.startswith("/"):
+        return Path(raw)
+    if raw.startswith("shared/"):
+        return workspace_root / raw
+    task_dir = workspace_root / "shared" / "tasks" / task_id
+    return task_dir / raw
+
+
+def _evaluate_verifiable_claim(
+    workspace_root: Path,
+    task_id: str,
+    claim: VerifiableClaim,
+) -> VerificationClaimReport:
+    try:
+        local = _claim_local_path(workspace_root, task_id, claim.path)
+    except TaskflowError as exc:
+        return VerificationClaimReport(
+            path=claim.path,
+            check=claim.check,
+            passed=False,
+            required=claim.required,
+            detail=str(exc),
+        )
+    detail = ""
+    passed = False
+    if claim.check == "exists":
+        passed = local.exists()
+        if not passed:
+            detail = "path does not exist"
+    else:
+        if not local.exists():
+            detail = "path does not exist"
+        elif not local.is_file():
+            detail = "path is not a file"
+        elif local.stat().st_size == 0:
+            detail = "file is empty"
+        else:
+            passed = True
+    return VerificationClaimReport(
+        path=claim.path,
+        check=claim.check,
+        passed=passed,
+        required=claim.required,
+        detail=detail,
+    )
 
 
 def _project_exists(store: TaskStore, project_id: str) -> bool:

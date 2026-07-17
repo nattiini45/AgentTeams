@@ -19,6 +19,16 @@ type ProjectSpec struct {
 	ProjectName string        `json:"projectName,omitempty"` // runtime/storage identity; defaults to metadata.name
 	Repos       []ProjectRepo `json:"repos"`                 // >=1; exactly one SHOULD be access=rw
 	Workers     []string      `json:"workers,omitempty"`     // runtime-names; empty = all members of spec.team
+	// DependsOn lists other Project metadata names in the same namespace that
+	// must reach a satisfied phase before operators assign work on this project.
+	DependsOn []string `json:"dependsOn,omitempty"`
+}
+
+// ProjectDependency records resolved cross-project dependency state on status.
+type ProjectDependency struct {
+	Project   string `json:"project"`
+	Phase     string `json:"phase,omitempty"`
+	Satisfied bool   `json:"satisfied"`
 }
 
 // ProjectRepo binds one repo at a given access level.
@@ -49,8 +59,9 @@ type ProjectStatus struct {
 	Phase           string             `json:"phase,omitempty"`
 	Message         string             `json:"message,omitempty"`
 	RepoCount       int                `json:"repoCount,omitempty"`       // backs the Repos printer column
-	RecordedWorkers []string           `json:"recordedWorkers,omitempty"` // workers recorded in the manifest; operator helper (#12) provisions Gitea user/mcp-gitea-<worker>/collaborator role from it
-	Conditions      []ProjectCondition `json:"conditions,omitempty"`
+	RecordedWorkers []string             `json:"recordedWorkers,omitempty"` // workers recorded in the manifest; operator helper (#12) provisions Gitea user/mcp-gitea-<worker>/collaborator role from it
+	Dependencies    []ProjectDependency  `json:"dependencies,omitempty"`
+	Conditions      []ProjectCondition   `json:"conditions,omitempty"`
 }
 
 // ProjectCondition mirrors the standard condition idiom.

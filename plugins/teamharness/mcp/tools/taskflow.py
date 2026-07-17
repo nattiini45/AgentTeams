@@ -193,7 +193,19 @@ def taskflow(arguments: dict[str, Any]) -> dict[str, Any]:
             pulled = common._pull_task(arguments, task_id)
             task = common._load_task(arguments, task_id)
             result, validation_errors = common._task_result_from_meta(task)
-            effective = task.get("status") == "submitted" and not validation_errors
+            verification = common._verify_task_artifacts(arguments, task_id, result=result)
+            failed_claims = common._failed_required_claims(verification)
+            if failed_claims and not validation_errors:
+                for claim in failed_claims:
+                    detail = claim.get("detail") or claim.get("check")
+                    validation_errors.append(
+                        f"artifact verification failed for {claim.get('path')}: {detail}",
+                    )
+            effective = (
+                task.get("status") == "submitted"
+                and not validation_errors
+                and verification.get("verified") is True
+            )
             return {
                 "ok": True,
                 "tool": "taskflow",
@@ -201,6 +213,8 @@ def taskflow(arguments: dict[str, Any]) -> dict[str, Any]:
                 "task": task,
                 "result": result,
                 "validationErrors": validation_errors,
+                "verification": verification,
+                "failedClaims": failed_claims,
                 "effective": effective,
                 "pulled": pulled,
             }

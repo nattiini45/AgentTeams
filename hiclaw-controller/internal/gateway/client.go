@@ -72,6 +72,19 @@ type HealthClient interface {
 	Healthy(ctx context.Context) error
 }
 
+// MCPAdminClient lists MCP servers registered in the gateway console.
+type MCPAdminClient interface {
+	// ListMCPServers returns MCP server inventory for health probes.
+	// Returns ErrUnsupportedOp on providers without a console MCP API.
+	ListMCPServers(ctx context.Context) ([]MCPServerInfo, error)
+}
+
+// MCPServerInfo describes one MCP server entry from the gateway console.
+type MCPServerInfo struct {
+	Name             string
+	AllowedConsumers []string
+}
+
 // Client abstracts AI gateway operations (consumer management, route authorization).
 // Implementations: HigressClient (self-hosted), AIGatewayClient (Alibaba Cloud).
 //
@@ -83,4 +96,5 @@ type Client interface {
 	InfrastructureClient
 	ModelProviderClient
 	HealthClient
+	MCPAdminClient
 }

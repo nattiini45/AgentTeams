@@ -329,6 +329,14 @@ spec:
                 lastActiveAt:
                   type: string
                   format: date-time
+                llmCallsLastHeartbeat:
+                  type: integer
+                  format: int64
+                  description: LLM HTTP calls reported in the last worker heartbeat window
+                llmCallsTotal:
+                  type: integer
+                  format: int64
+                  description: Cumulative LLM HTTP calls reported by the worker since creation
                 message:
                   type: string
                 exposedPorts:

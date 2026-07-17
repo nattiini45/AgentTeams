@@ -22,6 +22,8 @@ from rich.console import Console
 from rich.panel import Panel
 
 from copaw_worker.config import WorkerConfig
+from copaw_worker.controller_report import ControllerReadyReporter, run_controller_ready_loop
+from copaw_worker.llm_usage import configure_llm_usage_from_openclaw, install_llm_usage_hooks
 from copaw_worker.sync import FileSync, sync_loop, push_loop
 from copaw_worker.matrix_bootstrap import MatrixBootstrapClient
 from copaw_worker.workspace_layout import WorkspaceLayout
@@ -158,6 +160,9 @@ class Worker:
             console.print(f"[red]Config bridge failed: {exc}[/red]")
             return False
 
+        install_llm_usage_hooks()
+        configure_llm_usage_from_openclaw(openclaw_cfg)
+
         self._spawn_bg_task(
             sync_loop(
                 self.sync,
@@ -214,6 +219,7 @@ class Worker:
         from copaw_worker.hooks import install_tool_hooks
 
         install_tool_hooks()
+        self._spawn_controller_ready_loop()
         if self.config.console_port:
             await self._run_copaw_with_console(self.config.console_port)
         else:
@@ -390,6 +396,18 @@ class Worker:
     # File sync callback
     # ------------------------------------------------------------------
 
+    def _spawn_controller_ready_loop(self) -> None:
+        reporter = ControllerReadyReporter.from_env(self.config.worker_cr_name)
+        if not reporter.enabled():
+            return
+        self._spawn_bg_task(
+            run_controller_ready_loop(
+                worker_name=self.config.worker_cr_name,
+                reporter=reporter,
+            ),
+            name="controller_ready_loop",
+        )
+
     async def _on_files_pulled(self, pulled_files: list[str]) -> None:
         """Re-bridge config when Manager-managed files change (openclaw.json)."""
         if self._layout is None:
@@ -411,6 +429,7 @@ class Worker:
         try:
             openclaw_cfg = self.sync.get_config()
             self._layout.rebridge(openclaw_cfg)
+            configure_llm_usage_from_openclaw(openclaw_cfg)
             console.print("[green]Config re-bridged.[/green]")
         except Exception as exc:
             console.print(f"[red]Re-bridge failed: {exc}[/red]")

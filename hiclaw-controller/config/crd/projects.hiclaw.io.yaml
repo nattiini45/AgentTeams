@@ -47,6 +47,11 @@ spec:
                   description: "Optional. Worker runtime-names (Matrix localpart / OSS path key) assigned to this Project. When empty the controller assigns the creds to all current members of spec.team."
                   items:
                     type: string
+                dependsOn:
+                  type: array
+                  description: "Other Project metadata names in the same namespace that must reach a satisfied phase before operators assign work on this project."
+                  items:
+                    type: string
             status:
               type: object
               properties:
@@ -67,6 +72,20 @@ spec:
                   description: "Workers recorded in the manifest (with their per-repo access) on the last successful reconcile; the operator helper (#12) provisions each one's Gitea user / mcp-gitea-<worker> / collaborator role from it."
                   items:
                     type: string
+                dependencies:
+                  type: array
+                  description: "Resolved cross-project dependency state from spec.dependsOn."
+                  items:
+                    type: object
+                    required: [project, satisfied]
+                    properties:
+                      project:
+                        type: string
+                      phase:
+                        type: string
+                      satisfied:
+                        type: boolean
+                        description: "True when dependency phase is Ready, Completed, or Archived."
                 conditions:
                   type: array
                   items:

@@ -176,6 +176,8 @@ type WorkerStatus struct {
 	ContainerState     string              `json:"containerState,omitempty"`
 	LastHeartbeat      string              `json:"lastHeartbeat,omitempty"`
 	LastActiveAt       string              `json:"lastActiveAt,omitempty"`
+	LLMCallsLastHeartbeat int              `json:"llmCallsLastHeartbeat,omitempty"`
+	LLMCallsTotal         int              `json:"llmCallsTotal,omitempty"`
 	Message            string              `json:"message,omitempty"`
 	ExposedPorts       []ExposedPortStatus `json:"exposedPorts,omitempty"`
 

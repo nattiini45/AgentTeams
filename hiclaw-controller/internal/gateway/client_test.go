@@ -715,6 +715,7 @@ var (
 	_ InfrastructureClient  = (*HigressClient)(nil)
 	_ ModelProviderClient   = (*HigressClient)(nil)
 	_ HealthClient          = (*HigressClient)(nil)
+	_ MCPAdminClient        = (*HigressClient)(nil)
 	_ Client                = (*HigressClient)(nil)
 
 	_ ConsumerClient       = (*AIGatewayClient)(nil)
@@ -722,5 +723,6 @@ var (
 	_ InfrastructureClient = (*AIGatewayClient)(nil)
 	_ ModelProviderClient  = (*AIGatewayClient)(nil)
 	_ HealthClient         = (*AIGatewayClient)(nil)
+	_ MCPAdminClient       = (*AIGatewayClient)(nil)
 	_ Client               = (*AIGatewayClient)(nil)
 )

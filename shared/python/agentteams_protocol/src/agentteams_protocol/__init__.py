@@ -13,6 +13,9 @@ from agentteams_protocol.task import (
     TaskResult,
     TaskStore,
     TaskflowError,
+    VerifiableClaim,
+    VerificationClaimReport,
+    VerificationReport,
     ack_task,
     add_tasks,
     canonical_worker_id,
@@ -40,6 +43,7 @@ from agentteams_protocol.task import (
     submit_task,
     validate_dag,
     validate_task_result,
+    verify_task_artifacts,
 )
 
 __all__ = [
@@ -55,6 +59,9 @@ __all__ = [
     "TaskResult",
     "TaskStore",
     "TaskflowError",
+    "VerifiableClaim",
+    "VerificationClaimReport",
+    "VerificationReport",
     "ack_task",
     "add_tasks",
     "canonical_worker_id",
@@ -82,4 +89,5 @@ __all__ = [
     "submit_task",
     "validate_dag",
     "validate_task_result",
+    "verify_task_artifacts",
 ]

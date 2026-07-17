@@ -145,6 +145,9 @@ func (g *workerTestGateway) ResolveModelProvider(context.Context, string) (*gate
 	return g.modelInfo, g.modelErr
 }
 func (g *workerTestGateway) Healthy(context.Context) error { return nil }
+func (g *workerTestGateway) ListMCPServers(context.Context) ([]gateway.MCPServerInfo, error) {
+	return nil, gateway.ErrUnsupportedOp
+}
 
 type workerTestAuthCacheInvalidator struct {
 	calls int

@@ -883,6 +883,46 @@ def _validate_task_deliverables(task_id: str, deliverables: list[Any]) -> list[s
         normalized_deliverables.append(normalized)
     return normalized_deliverables
 
+
+def _verify_task_artifacts(
+    arguments: dict[str, Any],
+    task_id: str,
+    *,
+    result: dict[str, Any],
+) -> dict[str, Any]:
+    """Run filesystem existence checks for task deliverables."""
+    from agentteams_protocol.task import TaskResult, verify_task_artifacts
+
+    task_result = TaskResult(
+        status=str(result.get("status") or ""),
+        summary=str(result.get("summary") or ""),
+        deliverables=[str(item) for item in (result.get("deliverables") or [])],
+    )
+    workspace = _workspace_dir(arguments)
+    report = verify_task_artifacts(workspace, task_id=task_id, result=task_result)
+    return {
+        "verified": report.verified,
+        "claims": [
+            {
+                "path": claim.path,
+                "check": claim.check,
+                "passed": claim.passed,
+                "required": claim.required,
+                "detail": claim.detail,
+            }
+            for claim in report.claims
+        ],
+    }
+
+
+def _failed_required_claims(verification: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        claim
+        for claim in verification.get("claims", [])
+        if claim.get("required") and not claim.get("passed")
+    ]
+
+
 def _validate_task_graph(tasks: list[dict[str, Any]]) -> None:
     _protocol_validate_task_graph(tasks)
 

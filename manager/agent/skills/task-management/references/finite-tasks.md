@@ -78,6 +78,25 @@ Rules:
    ```bash
    mc mirror ${AGENTTEAMS_STORAGE_PREFIX}/shared/tasks/{task-id}/ /root/hiclaw-fs/shared/tasks/{task-id}/ --overwrite
    ```
+
+1.5. **VERIFY** — before you mark the task complete, check that claimed deliverables exist locally:
+   ```bash
+   bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh \
+     --action verify --task-id {task-id}
+   ```
+   The command prints JSON with `verified` and per-claim results. Exit code `0` means all **required** claims passed.
+
+   - If `verified` is **true**: continue to step 2.
+   - If `verified` is **false**: do **not** set `meta.json` to completed and do **not** call `--action complete`. Instead:
+     1. Mark the task blocked:
+        ```bash
+        bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh \
+          --action mark-blocked --task-id {task-id} \
+          --reason "output verification failed: {summarize failed required claims from JSON}"
+        ```
+     2. @mention the Worker in their room (or project room) with the failed claim paths/details and ask them to fix deliverables and push again.
+     3. Stop the completion flow until verification passes on a later pull.
+
 2. Update `meta.json`: status=completed, fill completed_at. Push back to MinIO.
 3. Remove from state.json:
    ```bash
@@ -104,10 +123,45 @@ Rules:
 
 ```
 shared/tasks/{task-id}/
-├── meta.json     # Manager-maintained
+├── meta.json     # Manager-maintained (optional verifiable_claims — see below)
 ├── spec.md       # Manager-written
 ├── base/         # Manager-maintained reference files (Workers must not overwrite)
 ├── plan.md       # Worker-written execution plan
 ├── result.md     # Worker-written final result
 └── *             # Intermediate artifacts
 ```
+
+### verifiable_claims (optional, in meta.json)
+
+When you assign a task, you may add `verifiable_claims` to `meta.json` to extend or override default verification checks. If omitted, verification still requires a non-empty `result.md` and every path listed in the `Deliverables` section of `result.md` (protocol `DELIVERABLES:` block or `## Deliverables` heading).
+
+Each claim:
+
+| Field | Required | Values | Meaning |
+|-------|----------|--------|---------|
+| `path` | yes | string | Path under the task, e.g. `shared/tasks/{task-id}/auth.py` or a filename relative to the task directory |
+| `check` | no (default `nonempty`) | `nonempty`, `exists` | `nonempty` = regular file exists with size &gt; 0 (directories fail); `exists` = path exists (file or directory) |
+| `required` | no (default `true`) | boolean | When `false`, a failed check is reported but does **not** fail verification overall |
+
+Example:
+
+```json
+{
+  "task_id": "task-20260716-143022",
+  "type": "finite",
+  "status": "assigned",
+  "verifiable_claims": [
+    {"path": "shared/tasks/task-20260716-143022/result.md", "check": "nonempty"},
+    {"path": "shared/tasks/task-20260716-143022/auth.py", "check": "exists"},
+    {"path": "shared/tasks/task-20260716-143022/BUILD_VERIFICATION.md", "check": "nonempty", "required": false}
+  ]
+}
+```
+
+Run verification after pulling the task directory:
+
+```bash
+bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh --action verify --task-id {task-id}
+```
+
+This action is **shell-only** (sibling to `hiclaw manager-state`); it does not mutate `state.json`.

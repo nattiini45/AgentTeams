@@ -37,6 +37,7 @@ type ResourceHandler struct {
 	namespace string
 	backend   *backend.Registry
 	workers   *WorkerResourceService
+	health    *WorkerHealthProber
 
 	// controllerName is stamped as agentteams.io/controller on every CR this
 	// handler creates, overwriting any value supplied by the client. This
@@ -63,6 +64,10 @@ type ResourceHandler struct {
 // call sites for a single narrow behavior change.
 func (h *ResourceHandler) SetSoloOperator(solo bool) {
 	h.soloOperator = solo
+}
+
+func (h *ResourceHandler) SetWorkerHealthProber(health *WorkerHealthProber) {
+	h.health = health
 }
 
 // NewResourceHandler creates a handler. backend may be nil, in which case
@@ -141,6 +146,7 @@ func (h *ResourceHandler) GetWorker(w http.ResponseWriter, r *http.Request) {
 		} else if ok {
 			h.applyTeamMember(&resp, team, member)
 		}
+		h.health.AttachHealthChecks(r.Context(), &resp, &worker)
 		httputil.WriteJSON(w, http.StatusOK, resp)
 		return
 	case !apierrors.IsNotFound(err):
@@ -158,13 +164,19 @@ func (h *ResourceHandler) GetWorker(w http.ResponseWriter, r *http.Request) {
 		httputil.WriteError(w, http.StatusNotFound, "get worker: not found")
 		return
 	}
-	httputil.WriteJSON(w, http.StatusOK, h.teamMemberToResponse(r.Context(), team, member))
+	resp := h.teamMemberToResponse(r.Context(), team, member)
+	h.health.AttachHealthChecks(r.Context(), &resp, nil)
+	httputil.WriteJSON(w, http.StatusOK, resp)
 }
 
 func (h *ResourceHandler) ListWorkers(w http.ResponseWriter, r *http.Request) {
 	teamFilter := r.URL.Query().Get("team")
 
-	workers := make([]WorkerResponse, 0)
+	type listEntry struct {
+		resp   WorkerResponse
+		worker *v1beta1.Worker
+	}
+	entries := make([]listEntry, 0)
 
 	seen := make(map[string]struct{})
 	var list v1beta1.WorkerList
@@ -187,7 +199,7 @@ func (h *ResourceHandler) ListWorkers(w http.ResponseWriter, r *http.Request) {
 		if teamFilter != "" && resp.Team != teamFilter {
 			continue
 		}
-		workers = append(workers, resp)
+		entries = append(entries, listEntry{resp: resp, worker: &list.Items[i]})
 		seen[resp.Name] = struct{}{}
 	}
 
@@ -204,7 +216,8 @@ func (h *ResourceHandler) ListWorkers(w http.ResponseWriter, r *http.Request) {
 		}
 		if team.Spec.Leader.Name != "" {
 			if _, ok := seen[team.Spec.Leader.Name]; !ok {
-				workers = append(workers, h.teamMemberToResponse(r.Context(), team, team.Spec.Leader.Name))
+				resp := h.teamMemberToResponse(r.Context(), team, team.Spec.Leader.Name)
+				entries = append(entries, listEntry{resp: resp, worker: nil})
 				seen[team.Spec.Leader.Name] = struct{}{}
 			}
 		}
@@ -212,16 +225,31 @@ func (h *ResourceHandler) ListWorkers(w http.ResponseWriter, r *http.Request) {
 			if _, ok := seen[worker.Name]; ok {
 				continue
 			}
-			workers = append(workers, h.teamMemberToResponse(r.Context(), team, worker.Name))
+			resp := h.teamMemberToResponse(r.Context(), team, worker.Name)
+			entries = append(entries, listEntry{resp: resp, worker: nil})
 			seen[worker.Name] = struct{}{}
 		}
 		for _, ref := range team.Spec.WorkerMembers {
 			if _, ok := seen[ref.Name]; ok {
 				continue
 			}
-			workers = append(workers, h.teamMemberToResponse(r.Context(), team, ref.Name))
+			resp := h.teamMemberToResponse(r.Context(), team, ref.Name)
+			entries = append(entries, listEntry{resp: resp, worker: nil})
 			seen[ref.Name] = struct{}{}
 		}
+	}
+
+	if h.health != nil && len(entries) > 0 {
+		items := make([]healthAttachItem, len(entries))
+		for i := range entries {
+			items[i] = healthAttachItem{Resp: &entries[i].resp, Worker: entries[i].worker}
+		}
+		h.health.AttachHealthChecksBatch(r.Context(), items)
+	}
+
+	workers := make([]WorkerResponse, len(entries))
+	for i := range entries {
+		workers[i] = entries[i].resp
 	}
 
 	httputil.WriteJSON(w, http.StatusOK, WorkerListResponse{Workers: workers, Total: len(workers)})
@@ -944,6 +972,7 @@ func (h *ResourceHandler) CreateProject(w http.ResponseWriter, r *http.Request) 
 			ProjectName: req.ProjectName,
 			Repos:       req.Repos,
 			Workers:     req.Workers,
+			DependsOn:   req.DependsOn,
 		},
 	}
 
@@ -1044,6 +1073,9 @@ func (h *ResourceHandler) UpdateProject(w http.ResponseWriter, r *http.Request) 
 		if req.Workers != nil {
 			proj.Spec.Workers = req.Workers
 		}
+		if req.DependsOn != nil {
+			proj.Spec.DependsOn = req.DependsOn
+		}
 
 		if err := h.client.Update(ctx, &proj); err != nil {
 			if apierrors.IsConflict(err) && attempt+1 < k8sUpdateMaxRetries {
@@ -1102,6 +1134,10 @@ func workerToResponse(w *v1beta1.Worker) WorkerResponse {
 		MatrixUserID:   w.Status.MatrixUserID,
 		RoomID:         w.Status.RoomID,
 		Message:        w.Status.Message,
+		LastHeartbeat:  w.Status.LastHeartbeat,
+		LastActiveAt:   w.Status.LastActiveAt,
+		LLMCallsLastHeartbeat: w.Status.LLMCallsLastHeartbeat,
+		LLMCallsTotal:         w.Status.LLMCallsTotal,
 	}
 	if w.Spec.ContainerManaged != nil {
 		resp.ContainerManaged = *w.Spec.ContainerManaged
@@ -1203,10 +1239,12 @@ func projectToResponse(p *v1beta1.Project) ProjectResponse {
 		ProjectName:     p.Spec.EffectiveProjectName(p.Name),
 		Repos:           p.Spec.Repos,
 		Workers:         p.Spec.Workers,
+		DependsOn:       p.Spec.DependsOn,
 		Phase:           p.Status.Phase,
 		Message:         p.Status.Message,
 		RepoCount:       p.Status.RepoCount,
 		RecordedWorkers: p.Status.RecordedWorkers,
+		Dependencies:    p.Status.Dependencies,
 		Conditions:      p.Status.Conditions,
 	}
 	if resp.Phase == "" {
@@ -1285,6 +1323,8 @@ func (h *ResourceHandler) teamMemberToResponse(ctx context.Context, t *v1beta1.T
 	if ms != nil {
 		resp.RoomID = ms.RoomID
 		resp.MatrixUserID = ms.MatrixUserID
+		resp.LastHeartbeat = ms.LastHeartbeat
+		resp.LastActiveAt = ms.LastActiveAt
 	}
 	if isLeader {
 		resp.Role = "team_leader"

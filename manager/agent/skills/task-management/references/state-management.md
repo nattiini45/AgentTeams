@@ -23,6 +23,11 @@ STATE_SCRIPT=/opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh
 | Infinite task executed | `bash $STATE_SCRIPT --action executed --task-id T --next-scheduled-at ISO` |
 | Cache admin DM room | `bash $STATE_SCRIPT --action set-admin-dm --room-id R` |
 | View active tasks | `bash $STATE_SCRIPT --action list` |
+| Verify deliverables | `bash $STATE_SCRIPT --action verify --task-id T` |
+
+`verify` is shell-only: it runs `verify-output.sh` against the local task directory and prints JSON. It does not modify `state.json` (unlike other actions, it is not implemented in `hiclaw manager-state`).
+
+See `references/finite-tasks.md` for default checks and the optional `verifiable_claims` schema in task `meta.json`.
 
 `admin_dm_room_id`: cached room ID for Manager-Admin DM. Set once via `set-admin-dm`, used by heartbeat to report to admin.
 
