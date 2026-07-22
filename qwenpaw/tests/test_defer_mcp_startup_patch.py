@@ -23,7 +23,7 @@ def test_defer_mcp_startup_patch_is_applied_during_image_build() -> None:
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
 
     assert "patch-qwenpaw-defer-mcp-startup.py" in dockerfile
-    assert "/opt/venv/qwenpaw/bin/python /tmp/patch-qwenpaw-defer-mcp-startup.py" in dockerfile
+    assert "/opt/venv/qwenpaw/bin/python /tmp/qwenpaw-gate/patch-qwenpaw-defer-mcp-startup.py" in dockerfile
     assert dockerfile.index("install-builtin-qwenpaw-plugins.py") < dockerfile.index(
         "patch-qwenpaw-defer-mcp-startup.py",
     )

@@ -139,6 +139,7 @@ LINES          ?= 50
         install install-embedded uninstall uninstall-embedded replay replay-log \
         verify wait-ready wait-ready-embedded \
         generate sync-crds check-crd-sync \
+        check \
         status logs \
         mirror-images clean help
 
@@ -265,6 +266,7 @@ endif
 # ---------- Push (multi-arch, default) ----------
 # Default push always builds multi-arch manifests to avoid overwriting
 # existing multi-arch images with a single-arch image.
+# Recovery: see docs/delivery-recovery.md for partial-push failure handling.
 # Automatically detects Docker vs Podman and uses the appropriate strategy:
 #   Docker  -> docker buildx build --platform ... --push
 #   Podman  -> podman build --platform X --manifest M (per-platform) + manifest push
@@ -904,6 +906,39 @@ helm-template: ## Render Helm templates locally (dry-run validation)
 		--set credentials.adminPassword=test \
 		--set credentials.llmApiKey=test \
 		--set gateway.publicURL=http://localhost:18080
+
+# ---------- Local CI Gates ----------
+
+check: ## Run CI remediation-gates locally (controller + python + shared + shell + CRD)
+	@echo "==> [1/5] Controller (go test)"
+	cd hiclaw-controller && go test -timeout=5m ./internal/... ./cmd/...
+	@echo ""
+	@echo "==> [2/5] Python runtimes"
+	@set -e; \
+	for pkg in shared/python/agentteams_*; do \
+		[ -f "$$pkg/pyproject.toml" ] || continue; \
+		python -m pip install -q -e "./$$pkg"; \
+	done; \
+	for rt in copaw hermes qwenpaw openhuman; do \
+		echo "  pytest $$rt"; \
+		python -m pip install -q -e "./$$rt[test]"; \
+		python -m pytest -q "$$rt/tests"; \
+	done
+	@echo ""
+	@echo "==> [3/5] Shared Python"
+	@set -e; for pkg in shared/python/agentteams_*; do \
+		[ -d "$$pkg/tests" ] || continue; \
+		echo "  pytest $$pkg"; \
+		python -m pytest -q "$$pkg/tests"; \
+	done
+	@echo ""
+	@echo "==> [4/5] Shared shell"
+	@set -e; for t in shared/tests/test-*.sh; do echo "  $$t"; bash "$$t"; done
+	@echo ""
+	@echo "==> [5/5] CRD sync"
+	@$(MAKE) check-crd-sync
+	@echo ""
+	@echo "==> All local checks passed"
 
 # ---------- Help ----------
 

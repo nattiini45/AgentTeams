@@ -545,7 +545,7 @@ def test_install_teamharness_plugin_unpacks_zip_before_qwenpaw_install(
     monkeypatch.setattr("qwenpaw_worker.plugin_bootstrap.shutil.which", lambda _name: "/usr/bin/qwenpaw")
     monkeypatch.setattr("qwenpaw_worker.plugin_install.subprocess.run", fake_run)
 
-    Worker(_config(tmp_path))._install_teamharness_plugin()
+    Worker(_config(tmp_path))._plugins.install_teamharness_plugin()
 
     assert len(calls) == 1
     assert calls[0][:3] == ["/usr/bin/qwenpaw", "plugin", "install"]
@@ -569,7 +569,7 @@ def test_plugin_install_logs_package_summary_without_sensitive_values(
     monkeypatch.setattr("qwenpaw_worker.plugin_install.subprocess.run", fake_run)
     caplog.set_level(logging.INFO, logger="qwenpaw_worker.worker")
 
-    Worker(config)._install_qwenpaw_plugin_package("teamharness", zip_path, "teamharness-qwenpaw-plugin-")
+    Worker(config)._plugins._install_plugin_package("teamharness", zip_path, "teamharness-qwenpaw-plugin-")
 
     assert "component=plugin plugin=teamharness step=install event=begin" in caplog.text
     assert "component=plugin plugin=teamharness step=install event=complete" in caplog.text

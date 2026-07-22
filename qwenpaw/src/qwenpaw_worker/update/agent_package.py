@@ -20,12 +20,13 @@ from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from qwenpaw_worker.update.constants import (
+    DEFAULT_AGENT_ID,
     PACKAGE_PROMPT_FILES,
     PACKAGE_RUNTIME_OWNED_CONFIG_FILES,
     TEAMS_PROMPT_FILE,
 )
 from qwenpaw_worker.update.runtime_config import MemberRuntimeConfig
-from qwenpaw_worker.update.utils import _download_path_part, _string, _string_list
+from qwenpaw_worker.update.utils import _download_path_part, _strip_json_line_comments, _string, _string_list
 
 logger = logging.getLogger(__name__)
 
