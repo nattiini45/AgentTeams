@@ -20,6 +20,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from qwenpaw_worker.update.constants import (
+    DEFAULT_AGENT_ID,
     PACKAGE_PROMPT_FILES,
     PACKAGE_RUNTIME_OWNED_CONFIG_FILES,
     TEAMS_PROMPT_FILE,
