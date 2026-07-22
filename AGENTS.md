@@ -288,3 +288,13 @@ All technical assumptions have been verified in POC. See [design/poc-tech-verifi
 - MCP Server created via `PUT` (not `POST`)
 - Auth plugin takes ~40s to activate after first configuration
 - OpenClaw Skills auto-load from `workspace/skills/<name>/SKILL.md`
+
+<!-- OPENWIKI:START -->
+
+## OpenWiki
+
+This repository uses OpenWiki for recurring code documentation. Start with `openwiki/quickstart.md`, then follow its links to architecture, workflows, domain concepts, operations, integrations, testing guidance, and source maps.
+
+The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do not hand-edit generated OpenWiki pages unless explicitly asked; prefer updating source code/docs and letting OpenWiki regenerate.
+
+<!-- OPENWIKI:END -->
