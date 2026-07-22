@@ -25,7 +25,7 @@ from qwenpaw_worker.update.constants import (
     TEAMS_PROMPT_FILE,
 )
 from qwenpaw_worker.update.runtime_config import MemberRuntimeConfig
-from qwenpaw_worker.update.utils import _download_path_part, _string, _string_list
+from qwenpaw_worker.update.utils import _download_path_part, _strip_json_line_comments, _string, _string_list
 
 logger = logging.getLogger(__name__)
 
