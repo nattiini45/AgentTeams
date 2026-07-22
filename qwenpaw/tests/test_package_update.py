@@ -11,7 +11,8 @@ import sys
 import types
 from urllib.parse import parse_qs, urlparse
 
-from qwenpaw_worker.update import AgentPackageManager, MemberRuntimeConfig, _strip_json_line_comments
+from qwenpaw_worker.update import AgentPackageManager, MemberRuntimeConfig
+from qwenpaw_worker.update.utils import _strip_json_line_comments
 
 
 def _package(
@@ -799,7 +800,7 @@ def test_agent_package_manager_fetches_nacos_agentspec_with_sts_agentteams_url_q
         (config_dir / "AGENTS.md").write_text("agent package nacos sts\n", encoding="utf-8")
         return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
 
-    monkeypatch.setattr("qwenpaw_worker.update.subprocess.run", fake_run)
+    monkeypatch.setattr("qwenpaw_worker.update.agent_package.subprocess.run", fake_run)
 
     manager = AgentPackageManager(tmp_path / "packages", workspace_dir=workspace_dir)
     monkeypatch.setattr(
