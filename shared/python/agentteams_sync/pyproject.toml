@@ -11,5 +11,8 @@ dependencies = [
     "agentteams-openclaw-merge>=0.1.0",
 ]
 
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
 [tool.setuptools.packages.find]
 where = ["src"]

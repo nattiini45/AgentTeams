@@ -12,6 +12,9 @@ dependencies = [
     "linkify-it-py>=2.0",
 ]
 
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

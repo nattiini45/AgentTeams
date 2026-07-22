@@ -8,5 +8,8 @@ version = "0.1.0"
 description = "Shared Matrix policy helpers for AgentTeams worker runtimes"
 requires-python = ">=3.10"
 
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
