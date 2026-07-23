@@ -1,4 +1,4 @@
-# HiClaw Dashboard
+# AgentTeams Dashboard
 
 Milestone 2, Step 3 — dashboard **v1 (read-only)** + **v1.1** wake/sleep/ensure-ready,
 served behind a same-origin proxy. See
@@ -42,9 +42,9 @@ The controller's REST API sets **no CORS headers** and **requires a Bearer
 admin token on every request** — the SPA cannot call it directly from the
 browser without exposing that token client-side. The proxy:
 
-1. Reads the admin token from a file (`HICLAW_AUTH_TOKEN_FILE`, minted by the
-   embedded controller at startup — see `hiclaw-controller/internal/app/app.go`
-   `bootstrapAdminCLIToken` and `hiclaw-controller/Dockerfile`) and injects it
+1. Reads the admin token from a file (`AGENTTEAMS_AUTH_TOKEN_FILE`, minted by the
+   embedded controller at startup — see `agentteams-controller/internal/app/app.go`
+   `bootstrapAdminCLIToken` and `agentteams-controller/Dockerfile`) and injects it
    as `Authorization: Bearer <token>` on every upstream controller call. The
    browser never holds this token, and it is stripped from any response
    headers before being relayed back (see `server/src/controller-client.js`
@@ -100,12 +100,12 @@ browser without exposing that token client-side. The proxy:
 | Variable | Default | Purpose |
 |---|---|---|
 | `PORT` | `8090` | Port the proxy listens on. |
-| `HICLAW_CONTROLLER_URL` | `http://127.0.0.1:8080` | Base URL of the hiclaw-controller REST API. |
-| `HICLAW_AUTH_TOKEN_FILE` | `/var/run/hiclaw/cli-token` | Path to the admin Bearer token (read fresh on every request; never cached to survive rotation). |
+| `AGENTTEAMS_CONTROLLER_URL` | `http://127.0.0.1:8080` | Base URL of the agentteams-controller REST API. |
+| `AGENTTEAMS_AUTH_TOKEN_FILE` | `/var/run/agentteams/cli-token` | Path to the admin Bearer token (read fresh on every request; never cached to survive rotation). |
 | `MINIO_ENDPOINT` | `http://127.0.0.1:9000` | MinIO S3 API endpoint (**not** the Higress port 8080). |
 | `MINIO_ACCESS_KEY` (or `MINIO_ACCESS`) | _(none)_ | MinIO access key. |
 | `MINIO_SECRET_KEY` (or `MINIO_SECRET`) | _(none)_ | MinIO secret key. |
-| `HICLAW_FS_BUCKET` | `hiclaw-storage` | Bucket holding `shared/` and `agents/` (same convention as the controller — see `hiclaw-controller/internal/config/config.go`). Never hard-coded. |
+| `AGENTTEAMS_FS_BUCKET` | `agentteams-storage` | Bucket holding `shared/` and `agents/` (same convention as the controller — see `agentteams-controller/internal/config/config.go`). Never hard-coded. |
 
 ## Build & test locally
 
@@ -116,7 +116,7 @@ cd dashboard/web    && npm install && npm test && npm run build   # node --test 
 
 ```powershell
 # PowerShell only -- Docker on this box mangles paths under Git Bash.
-docker build -t hiclaw-dashboard dashboard/
+docker build -t agentteams-dashboard dashboard/
 ```
 
 ## Deploy notes (Traefik + real controller/MinIO) — deferred-to-deploy
@@ -128,31 +128,31 @@ environment):
 ```yaml
 labels:
   - "traefik.enable=true"
-  - "traefik.http.routers.hiclaw-dashboard.rule=Host(`dashboard.example.com`)"
-  - "traefik.http.routers.hiclaw-dashboard.entrypoints=websecure"
-  - "traefik.http.routers.hiclaw-dashboard.tls.certresolver=letsencrypt"
-  - "traefik.http.services.hiclaw-dashboard.loadbalancer.server.port=8090"
+  - "traefik.http.routers.agentteams-dashboard.rule=Host(`dashboard.example.com`)"
+  - "traefik.http.routers.agentteams-dashboard.entrypoints=websecure"
+  - "traefik.http.routers.agentteams-dashboard.tls.certresolver=letsencrypt"
+  - "traefik.http.services.agentteams-dashboard.loadbalancer.server.port=8090"
 ```
 
 Run the container with:
 
 ```bash
 docker run -d \
-  --name hiclaw-dashboard \
-  -e HICLAW_CONTROLLER_URL=http://hiclaw-controller:8080 \
-  -e HICLAW_AUTH_TOKEN_FILE=/var/run/hiclaw/cli-token \
+  --name agentteams-dashboard \
+  -e AGENTTEAMS_CONTROLLER_URL=http://agentteams-controller:8080 \
+  -e AGENTTEAMS_AUTH_TOKEN_FILE=/var/run/agentteams/cli-token \
   -e MINIO_ENDPOINT=http://minio:9000 \
   -e MINIO_ACCESS_KEY=... \
   -e MINIO_SECRET_KEY=... \
-  -e HICLAW_FS_BUCKET=hiclaw-storage \
-  -v /var/run/hiclaw:/var/run/hiclaw:ro \
-  hiclaw-dashboard
+  -e AGENTTEAMS_FS_BUCKET=agentteams-storage \
+  -v /var/run/agentteams:/var/run/agentteams:ro \
+  agentteams-dashboard
 ```
 
 The token file must be readable from inside this container (bind-mount the
 same path the controller writes to, read-only). If the controller and
 dashboard run in the same embedded-mode host, this is the same directory the
-controller's own Dockerfile writes `HICLAW_AUTH_TOKEN_FILE` to.
+controller's own Dockerfile writes `AGENTTEAMS_AUTH_TOKEN_FILE` to.
 
 **Explicitly deferred to the first live checkpoint** (per
 `docs/implementation-milestone-2.md`'s Step 3 acceptance criteria): live

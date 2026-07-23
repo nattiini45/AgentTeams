@@ -1,11 +1,11 @@
 # Upstream integration: rename acceptance + fork overlay
 
 This document describes how the fork absorbs `agentscope-ai/AgentTeams` after the
-upstream hard-cut rename (`hiclaw-controller` → `agentteams-controller`,
-`helm/hiclaw` → `helm/agentteams`, CLI `hiclaw` → `agt`).
+upstream hard-cut rename (`agentteams-controller` → `agentteams-controller`,
+`helm/agentteams` → `helm/agentteams`, CLI `agt` → `agt`).
 
-**Stale claims removed:** dual `hiclaw.io` + `agentteams.io` CRDs and live
-`HICLAW_*` runtime aliases are **not** the current DoD. Upstream hard-cut
+**Stale claims removed:** dual `agentteams.io` + `agentteams.io` CRDs and live
+`AGENTTEAMS_*` runtime aliases are **not** the current DoD. Upstream hard-cut
 removed those aliases; both sides of this merge are `agentteams.io` /
 `AGENTTEAMS_*` only.
 
@@ -22,19 +22,19 @@ upstream path layout first, then replaying fork-only product value.
 ## Operator notes (existing clusters)
 
 Fresh installs use AgentTeams names end-to-end. Clusters that still carry
-historical `hiclaw.io` objects from older forks should treat conversion as a
+historical `agentteams.io` objects from older forks should treat conversion as a
 one-time ops exercise outside this branch’s default path — do not reintroduce
 dual-CRD templates into `helm/agentteams/crds/`.
 
-CLI: use `agt` (not `hiclaw`). Environment: `AGENTTEAMS_*` only.
+CLI: use `agt` (not `agt`). Environment: `AGENTTEAMS_*` only.
 
 ## Developer definition of done
 
 Before merging the sync branch, every item below must hold:
 
 - **Rename acceptance**: canonical trees are `agentteams-controller/` and
-  `helm/agentteams/`. No active source path depends on `hiclaw-controller/` or
-  `helm/hiclaw/`. CLI binary and agent-facing skill docs use `agt`.
+  `helm/agentteams/`. No active source path depends on `agentteams-controller/` or
+  `helm/agentteams/`. CLI binary and agent-facing skill docs use `agt`.
 - **Fork overlay present**:
   - `dashboard/` + `helm/agentteams/templates/dashboard/`
   - Project CRD (`projects.agentteams.io`) + reconciler + REST routes

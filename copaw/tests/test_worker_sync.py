@@ -104,7 +104,7 @@ def test_pull_all_skips_local_skill_absent_from_minio(monkeypatch, tmp_path, cap
         endpoint="minio:9000",
         access_key="tt",
         secret_key="secret",
-        bucket="hiclaw",
+        bucket="agentteams-storage",
         worker_name="tt",
         local_dir=tmp_path,
     )

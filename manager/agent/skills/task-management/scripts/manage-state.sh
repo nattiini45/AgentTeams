@@ -39,7 +39,7 @@ for _arg in "$@"; do
 done
 
 # verify stays in shell — it does not mutate state.json and is not implemented in agt manager-state.
-if [ "${HICLAW_MANAGER_STATE_IMPL:-auto}" != "shell" ] && [ "$_pre_action" != "verify" ]; then
+if [ "${AGENTTEAMS_MANAGER_STATE_IMPL:-auto}" != "shell" ] && [ "$_pre_action" != "verify" ]; then
     if command -v agt >/dev/null 2>&1; then
         exec agt manager-state "$@"
     fi

@@ -28,7 +28,7 @@
 # Prerequisites (env):
 #   GITEA_URL            Gitea base URL, e.g. https://git.pawcommit.com
 #   GITEA_ADMIN_TOKEN    Gitea admin API token (this script's own credential)
-#   HICLAW_AI_GATEWAY_DOMAIN, HIGRESS_COOKIE_FILE  (forwarded to setup-mcp-proxy.sh)
+#   AGENTTEAMS_AI_GATEWAY_DOMAIN, HIGRESS_COOKIE_FILE  (forwarded to setup-mcp-proxy.sh)
 #
 # Decisions honored:
 #   #12 — all Gitea-admin + gateway calls live in THIS script, never the controller.
@@ -38,10 +38,10 @@
 #   #18 — --deprovision reverses grants/registration on operator-set project completion.
 
 set -euo pipefail
-source /opt/hiclaw/scripts/lib/hiclaw-env.sh 2>/dev/null || true
+source /opt/agentteams/scripts/lib/agentteams-env.sh 2>/dev/null || true
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SETUP_MCP_PROXY="${SETUP_MCP_PROXY_SCRIPT:-/opt/hiclaw/scripts/skills/mcp-server-management/setup-mcp-proxy.sh}"
+SETUP_MCP_PROXY="${SETUP_MCP_PROXY_SCRIPT:-/opt/agentteams/scripts/skills/mcp-server-management/setup-mcp-proxy.sh}"
 # Repo-local fallback so this script also works from a checked-out worktree.
 if [ ! -f "${SETUP_MCP_PROXY}" ]; then
     SETUP_MCP_PROXY="${SCRIPT_DIR}/../manager/agent/skills/mcp-server-management/scripts/setup-mcp-proxy.sh"
@@ -202,10 +202,10 @@ read_manifest_repos() {
     local manifest_path="${TMPDIR:-/tmp}/provision-worker-gitea-manifest-${pid}.json"
     ensure_mc_credentials 2>/dev/null || true
     if command -v mc > /dev/null 2>&1; then
-        mc cat "${HICLAW_STORAGE_PREFIX:-hiclaw/hiclaw-storage}/shared/projects/${pid}/manifest.json" > "${manifest_path}" 2>/dev/null || true
+        mc cat "${AGENTTEAMS_STORAGE_PREFIX:-agt/agentteams-storage}/shared/projects/${pid}/manifest.json" > "${manifest_path}" 2>/dev/null || true
     fi
-    if [ ! -s "${manifest_path}" ] && [ -f "/root/hiclaw-fs/shared/projects/${pid}/manifest.json" ]; then
-        cp "/root/hiclaw-fs/shared/projects/${pid}/manifest.json" "${manifest_path}"
+    if [ ! -s "${manifest_path}" ] && [ -f "/root/agentteams-fs/shared/projects/${pid}/manifest.json" ]; then
+        cp "/root/agentteams-fs/shared/projects/${pid}/manifest.json" "${manifest_path}"
     fi
     if [ ! -s "${manifest_path}" ]; then
         log "ERROR: could not read manifest.json for project ${pid}"
@@ -221,10 +221,10 @@ read_manifest_repos() {
 update_worker_mcporter() {
     # NOTE: deliberately takes no PAT — mcporter.json carries only the worker's
     # gateway key; the Gitea PAT lives solely in the Higress server registration.
-    local worker_agent_dir="/root/hiclaw-fs/agents/${WORKER}"
+    local worker_agent_dir="/root/agentteams-fs/agents/${WORKER}"
     local mcporter_dir="${worker_agent_dir}/config"
     local mcporter_file="${mcporter_dir}/mcporter.json"
-    local domain="${HICLAW_AI_GATEWAY_DOMAIN:-aigw-local.hiclaw.io}"
+    local domain="${AGENTTEAMS_AI_GATEWAY_DOMAIN:-aigw-local.agentteams.io}"
     local worker_creds="/data/worker-creds/${WORKER}.env"
     local worker_key=""
     if [ -f "${worker_creds}" ]; then
@@ -258,7 +258,7 @@ update_worker_mcporter() {
     ln -sfn "${mcporter_file}" "${worker_agent_dir}/mcporter-servers.json"
     log "  Updated config/mcporter.json for ${WORKER} (this worker ONLY)"
     ensure_mc_credentials 2>/dev/null || true
-    mc cp "${mcporter_file}" "${HICLAW_STORAGE_PREFIX:-hiclaw/hiclaw-storage}/agents/${WORKER}/config/mcporter.json" 2>/dev/null \
+    mc cp "${mcporter_file}" "${AGENTTEAMS_STORAGE_PREFIX:-agt/agentteams-storage}/agents/${WORKER}/config/mcporter.json" 2>/dev/null \
         && log "  Pushed config/mcporter.json to MinIO for ${WORKER}" \
         || log "  WARNING: Failed to push config/mcporter.json to MinIO for ${WORKER}"
 }

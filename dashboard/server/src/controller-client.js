@@ -1,6 +1,6 @@
 'use strict';
 
-// Thin client for the hiclaw-controller REST API. Injects the admin Bearer
+// Thin client for the agentteams-controller REST API. Injects the admin Bearer
 // token server-side; the browser never sees it, and this module never
 // echoes the Authorization header (or any token material) back out.
 

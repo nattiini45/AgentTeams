@@ -30,7 +30,7 @@ These align with the AGENTS.md guidance: "Worker 30-minute timeout — be patien
 
 ```bash
 # Custom thresholds
-bash /opt/hiclaw/agent/skills/worker-management/scripts/worker-health-report.sh \
+bash /opt/agentteams/agent/skills/worker-management/scripts/worker-health-report.sh \
   --stalled-threshold-min 90 --zombie-threshold-min 20
 ```
 
@@ -39,7 +39,7 @@ bash /opt/hiclaw/agent/skills/worker-management/scripts/worker-health-report.sh 
 During heartbeat, after capacity assessment (Step 5):
 
 ```bash
-bash /opt/hiclaw/agent/skills/worker-management/scripts/worker-health-report.sh
+bash /opt/agentteams/agent/skills/worker-management/scripts/worker-health-report.sh
 ```
 
 Parse the JSON output and act on each state:
@@ -49,7 +49,7 @@ Parse the JSON output and act on each state:
 1. Check if already nudged this heartbeat cycle (avoid duplicate nudges)
 2. Ensure container is running:
    ```bash
-   bash /opt/hiclaw/agent/skills/worker-management/scripts/lifecycle-worker.sh \
+   bash /opt/agentteams/agent/skills/worker-management/scripts/lifecycle-worker.sh \
      --action ensure-ready --worker {worker}
    ```
 3. Send nudge message to Worker's room:

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Security regression test for install/hiclaw-install.sh prompt helpers.
+# Security regression test for install/agentteams-install.sh prompt helpers.
 #
 # The prompt/prompt_optional helpers used to assign values via `eval`, which
 # executed any shell metacharacters in a preset or default value. They now use
@@ -11,7 +11,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-INSTALLER="${REPO_ROOT}/install/hiclaw-install.sh"
+INSTALLER="${REPO_ROOT}/install/agentteams-install.sh"
 
 fail() { echo "FAIL: $1" >&2; exit 1; }
 

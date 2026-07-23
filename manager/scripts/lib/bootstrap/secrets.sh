@@ -2,7 +2,7 @@
 # bootstrap/secrets.sh - Auto-generate and persist Manager secrets
 
 bootstrap_manage_secrets() {
-    SECRETS_FILE="/data/hiclaw-secrets.env"
+    SECRETS_FILE="/data/agentteams-secrets.env"
     if [ -f "${SECRETS_FILE}" ]; then
         # shellcheck disable=SC1090
         source "${SECRETS_FILE}"
@@ -29,25 +29,25 @@ bootstrap_manage_secrets() {
 
 bootstrap_pull_cloud_workspace() {
     if [ "${AGENTTEAMS_RUNTIME}" = "aliyun" ]; then
-        AGENTTEAMS_FS="/root/hiclaw-fs"
+        AGENTTEAMS_FS="/root/agentteams-fs"
         mkdir -p "${AGENTTEAMS_FS}/shared" "${AGENTTEAMS_FS}/agents"
         log "Pulling workspace from OSS..."
         ensure_mc_credentials
         mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/manager/" /root/manager-workspace/ --overwrite 2>/dev/null || true
         mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/shared/" "${AGENTTEAMS_FS}/shared/" --overwrite 2>/dev/null || true
         mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/agents/" "${AGENTTEAMS_FS}/agents/" --overwrite 2>/dev/null || true
-        ln -sfn "${AGENTTEAMS_FS}" /root/manager-workspace/hiclaw-fs
+        ln -sfn "${AGENTTEAMS_FS}" /root/manager-workspace/agentteams-fs
     fi
 
     if [ "${AGENTTEAMS_RUNTIME}" = "k8s" ]; then
-        AGENTTEAMS_FS="/root/hiclaw-fs"
+        AGENTTEAMS_FS="/root/agentteams-fs"
         mkdir -p "${AGENTTEAMS_FS}/shared" "${AGENTTEAMS_FS}/agents" "${AGENTTEAMS_FS}/agentteams-config"
         log "Configuring mc alias for cluster MinIO..."
         mc alias set agentteams "${AGENTTEAMS_FS_ENDPOINT}" "${AGENTTEAMS_FS_ACCESS_KEY}" "${AGENTTEAMS_FS_SECRET_KEY}"
         log "Syncing workspace from MinIO..."
         mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/manager/" /root/manager-workspace/ --overwrite 2>/dev/null || true
         mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/" "${AGENTTEAMS_FS}/" --overwrite 2>/dev/null || true
-        ln -sfn "${AGENTTEAMS_FS}" /root/manager-workspace/hiclaw-fs
+        ln -sfn "${AGENTTEAMS_FS}" /root/manager-workspace/agentteams-fs
         touch "${AGENTTEAMS_FS}/.initialized"
     fi
 }

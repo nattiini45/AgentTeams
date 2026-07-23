@@ -17,7 +17,7 @@ shared/projects/{project-id}/
 
 This skill's `meta.json`/`plan.md` are the **execution layer** — chat-flow tracking of phases,
 tasks, and assignments, always created by `create-project.sh`. There is a **second, federated
-layer**: the `Project` CRD (`hiclaw-controller`'s `/api/v1/projects`), which is **repo/access
+layer**: the `Project` CRD (`agentteams-controller`'s `/api/v1/projects`), which is **repo/access
 provisioning** — which team owns the project, which Gitea repos are attached, and at what access
 level (`rw`/`ro`). The two are linked only by the shared project id; there is no schema merge
 between them.

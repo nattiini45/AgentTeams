@@ -1,7 +1,7 @@
 {
-  "name": "hiclaw-dashboard-web",
+  "name": "agentteams-dashboard-web",
   "version": "1.0.0",
-  "description": "HiClaw dashboard v1 SPA (read-only) + v1.1 wake/sleep -- talks only to the same-origin proxy in dashboard/server.",
+  "description": "AgentTeams dashboard v1 SPA (read-only) + v1.1 wake/sleep -- talks only to the same-origin proxy in dashboard/server.",
   "private": true,
   "type": "module",
   "scripts": {

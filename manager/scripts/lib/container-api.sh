@@ -228,7 +228,7 @@ container_get_manager_ip() {
 # Usage:
 #   send_matrix_message <matrix_url> <token> <room_id> <body> [mention_user_id ...]
 #
-# - matrix_url: base Matrix server URL (e.g. "${HICLAW_MATRIX_URL}")
+# - matrix_url: base Matrix server URL (e.g. "${AGENTTEAMS_MATRIX_URL}")
 # - token:      bearer token to authenticate as (caller resolves this —
 #               token-resolution fallbacks vary per caller and are NOT
 #               duplicated here)

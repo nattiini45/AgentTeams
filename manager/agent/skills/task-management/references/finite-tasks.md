@@ -14,7 +14,7 @@
 Before assigning, check if dispatch is allowed:
 
 ```bash
-bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh \
+bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh \
   --action check --worker {worker-name}
 ```
 

@@ -18,7 +18,7 @@ MANAGER_RUNTIME="${AGENTTEAMS_MANAGER_RUNTIME:-openclaw}"
 source /opt/agentteams/scripts/lib/agentteams-env.sh
 source /opt/agentteams/scripts/lib/builtin-merge.sh
 
-bash /opt/hiclaw/scripts/lib/sync-shared-worker-skills.sh "${AGENT_SRC}"
+bash /opt/agentteams/scripts/lib/sync-shared-worker-skills.sh "${AGENT_SRC}"
 
 log() {
     echo "[upgrade-builtins $(date '+%Y-%m-%d %H:%M:%S')] $1"
@@ -27,9 +27,9 @@ log() {
 # ============================================================
 # Step 0: Render manager prompts from fragments (when present)
 # ============================================================
-if [ -d "${AGENT_SRC}/fragments/AGENTS" ] && [ -f /opt/hiclaw/scripts/lib/render-manager-prompts.sh ]; then
+if [ -d "${AGENT_SRC}/fragments/AGENTS" ] && [ -f /opt/agentteams/scripts/lib/render-manager-prompts.sh ]; then
     log "Step 0: Rendering manager prompts from fragments..."
-    bash /opt/hiclaw/scripts/lib/render-manager-prompts.sh all "${AGENT_SRC}"
+    bash /opt/agentteams/scripts/lib/render-manager-prompts.sh all "${AGENT_SRC}"
 fi
 
 # ============================================================

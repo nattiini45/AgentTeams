@@ -260,7 +260,7 @@ class FileSync:
         elif configured_working_dir:
             self.local_dir = Path(configured_working_dir).parent
         else:
-            self.local_dir = Path.home() / ".copaw-worker" / worker_name
+            self.local_dir = Path.home() / ".agentteams-worker" / worker_name
         self.local_dir.mkdir(parents=True, exist_ok=True)
         self.shared_dir = shared_dir or self.local_dir / "shared"
         self.global_shared_dir = global_shared_dir or self.local_dir / "global-shared"
@@ -270,6 +270,7 @@ class FileSync:
         self._cloud_mode = runtime == "aliyun"
         self._k8s_mode = runtime == "k8s"
         self._worker_info: dict[str, Any] | None = None
+        self._skipped_local_skills_logged: set[str] = set()
 
     # ------------------------------------------------------------------
     # mc alias management
@@ -762,9 +763,13 @@ class FileSync:
             minio_skill_set = set(minio_skills)
             for child in list(local_skills_dir.iterdir()):
                 if child.is_dir() and child.name not in minio_skill_set:
-                    shutil.rmtree(child)
-                    changed.append(f"skills/{child.name}/ (removed)")
-                    logger.info("Removed local skill no longer in MinIO: %s", child.name)
+                    # Keep self-installed / local-only skills; do not prune on pull.
+                    if child.name not in self._skipped_local_skills_logged:
+                        self._skipped_local_skills_logged.add(child.name)
+                        logger.info(
+                            "Skipping local skill not in MinIO (not pruned): %s",
+                            child.name,
+                        )
 
         return changed
 

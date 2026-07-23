@@ -85,5 +85,5 @@ bootstrap_init_higress() {
     export HIGRESS_COOKIE_FILE="${COOKIE_FILE}"
     export HIGRESS_CONSOLE_URL="${_HIGRESS_CONSOLE_URL}"
 
-    /opt/hiclaw/scripts/init/setup-higress.sh
+    /opt/agentteams/scripts/init/setup-higress.sh
 }

@@ -23,7 +23,7 @@ SAMPLE_OPENCLAW = {
     },
     "models": {
         "providers": {
-            "hiclaw-gateway": {
+            "agentteams-gateway": {
                 "baseUrl": "http://gateway:8080/v1",
                 "apiKey": "gw-key-123",
                 "models": [{"id": "qwen-plus"}],
@@ -32,7 +32,7 @@ SAMPLE_OPENCLAW = {
     },
     "agents": {
         "defaults": {
-            "model": {"primary": "hiclaw-gateway/qwen-plus"},
+            "model": {"primary": "agentteams-gateway/qwen-plus"},
         }
     },
 }
@@ -91,13 +91,13 @@ def test_bridge_port_remap_on_host_dev() -> None:
             "channels": {"matrix": {"homeserver": "http://172.17.0.2:8080"}},
             "models": {
                 "providers": {
-                    "hiclaw-gateway": {
+                    "agentteams-gateway": {
                         "baseUrl": "http://172.17.0.2:8080/v1",
                         "apiKey": "k",
                     }
                 }
             },
-            "agents": {"defaults": {"model": {"primary": "hiclaw-gateway/qwen-plus"}}},
+            "agents": {"defaults": {"model": {"primary": "agentteams-gateway/qwen-plus"}}},
         },
         env={"AGENTTEAMS_PORT_GATEWAY": "18080"},
     )

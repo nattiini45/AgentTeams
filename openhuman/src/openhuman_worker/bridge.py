@@ -2,7 +2,7 @@
 
 Mirrors the semantics previously implemented in openhuman-worker-entrypoint.sh:
 Matrix settings from ``channels.matrix`` with env-var fallbacks, and LLM routing
-through the HiClaw AI gateway (``models.providers["hiclaw-gateway"]``).
+through the AgentTeams AI gateway (``models.providers["agentteams-gateway"]``).
 """
 from __future__ import annotations
 
@@ -16,8 +16,8 @@ from typing import Any, Dict, List, Mapping, Optional
 
 logger = logging.getLogger(__name__)
 
-_HICLAW_GATEWAY_PROVIDER = "hiclaw-gateway"
-_PRIMARY_MODEL_RE = re.compile(rf"^{re.escape(_HICLAW_GATEWAY_PROVIDER)}/")
+_AGENTTEAMS_GATEWAY_PROVIDER = "agentteams-gateway"
+_PRIMARY_MODEL_RE = re.compile(rf"^{re.escape(_AGENTTEAMS_GATEWAY_PROVIDER)}/")
 
 
 @dataclass(frozen=True)
@@ -131,7 +131,7 @@ def _llm_from_openclaw(
 ) -> Optional[LlmConfig]:
     in_container = _is_in_container()
     providers = (cfg.get("models") or {}).get("providers") or {}
-    gateway = providers.get(_HICLAW_GATEWAY_PROVIDER) or {}
+    gateway = providers.get(_AGENTTEAMS_GATEWAY_PROVIDER) or {}
 
     base_url = _port_remap(gateway.get("baseUrl") or "", in_container, env)
     api_key = gateway.get("apiKey") or ""

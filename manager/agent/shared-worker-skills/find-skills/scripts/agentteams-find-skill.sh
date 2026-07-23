@@ -96,7 +96,7 @@ ensure_nacos_sts_credentials() {
     if [ -n "${AGENTTEAMS_CLUSTER_ID:-}" ]; then
         resp="$(curl -s -w "\n%{http_code}" -X POST "${controller_url%/}/api/v1/credentials/sts" \
             -H "Authorization: Bearer ${bearer}" \
-            -H "X-HiClaw-Cluster-ID: ${AGENTTEAMS_CLUSTER_ID}" \
+            -H "X-AgentTeams-Cluster-ID: ${AGENTTEAMS_CLUSTER_ID}" \
             --connect-timeout 10 --max-time 30 2>&1)"
     else
         resp="$(curl -s -w "\n%{http_code}" -X POST "${controller_url%/}/api/v1/credentials/sts" \

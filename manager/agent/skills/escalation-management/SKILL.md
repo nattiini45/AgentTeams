@@ -57,19 +57,19 @@ Read the relevant doc **before** executing. Do not load all of them.
 
 ```bash
 # Raise escalation
-bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh \
+bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh \
   --action raise --task-id T --severity HIGH --category technical \
   --worker W --summary "..." --question "..."
 
 # Check stale (for heartbeat)
-bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh \
+bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh \
   --action check-stale
 
 # Resolve
-bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh \
+bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh \
   --action resolve --id esc-YYYYMMDD-HHMMSS
 
 # List open
-bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh \
+bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh \
   --action list
 ```

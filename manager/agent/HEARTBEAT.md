@@ -88,14 +88,14 @@ Iterate over entries in `active_tasks` that have a `delegated_to_team` field:
 Run the escalation staleness check:
 
 ```bash
-bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh --action check-stale
+bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh --action check-stale
 ```
 
 - For each stale item with `stale_reason: "threshold_exceeded"`: re-notify admin with `[RE-ESCALATION] [{severity}] {summary}` using the resolved notification channel
 - For each stale item with `stale_reason: "max_re_escalations_reached"`: flag as critical finding for Step 7 report
 - Scan Step 2 Worker replies for `[BLOCKED:...]` patterns — if a Worker reported a blocker but no escalation exists for that task, raise one now:
   ```bash
-  bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh \
+  bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh \
     --action raise --task-id {task-id} --severity {parsed-severity} \
     --category {infer} --worker {worker} --summary "{from reply}"
   ```
@@ -172,7 +172,7 @@ done
 Run the health classification script:
 
 ```bash
-bash /opt/hiclaw/agent/skills/worker-management/scripts/worker-health-report.sh
+bash /opt/agentteams/agent/skills/worker-management/scripts/worker-health-report.sh
 ```
 
 Parse the JSON output and act on each health state:
@@ -191,7 +191,7 @@ If any tasks were deferred due to dispatch gating (Step 0 in finite-tasks workfl
 
 1. For each deferred task, run the dispatch gate check:
    ```bash
-   bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh \
+   bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh \
      --action check --worker {worker}
    ```
 2. If `allowed: true`, proceed with the original assignment flow (notify Worker, update state.json)
@@ -244,7 +244,7 @@ If the output is `available`, proceed with the following steps:
 **Include escalation summary** — before composing the report, get the escalation state:
 
 ```bash
-bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh --action summary
+bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh --action summary
 ```
 
 If `open > 0`, include in the report: `[Escalations: {open} open, highest: {highest_severity}]`. List CRITICAL escalations individually with their summary and question.

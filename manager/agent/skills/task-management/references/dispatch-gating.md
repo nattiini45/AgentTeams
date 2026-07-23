@@ -33,7 +33,7 @@ Config file: `~/dispatch-config.json` (created on first use with defaults):
 **Before every task assignment** in the finite-tasks workflow (Step 0):
 
 ```bash
-bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh \
+bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh \
   --action check --worker {worker-name}
 ```
 
@@ -69,11 +69,11 @@ Reset failures when:
 
 ```bash
 # Record a failure
-bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh \
+bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh \
   --action record-failure --worker {worker}
 
 # Reset after success
-bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh \
+bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh \
   --action reset-failures --worker {worker}
 ```
 
@@ -83,7 +83,7 @@ When dispatch is denied, defer the task:
 
 1. Add to `state.json` with `"deferred": true`:
    ```bash
-   bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh \
+   bash /opt/agentteams/agent/skills/task-management/scripts/manage-state.sh \
      --action add-finite --task-id {task-id} --title "{title}" \
      --assigned-to {worker} --room-id {room-id}
    # Then manually add "deferred": true to the entry (or track in memory)
@@ -91,7 +91,7 @@ When dispatch is denied, defer the task:
 
 2. During heartbeat Step 5c, check if deferred tasks can now be dispatched:
    ```bash
-   bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh \
+   bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh \
      --action check --worker {worker}
    ```
    If now allowed, proceed with the original assignment flow.
@@ -101,7 +101,7 @@ When dispatch is denied, defer the task:
 View current dispatch state:
 
 ```bash
-bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh --action status
+bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh --action status
 ```
 
 Output:
@@ -127,14 +127,14 @@ Output:
 
 ```bash
 # View current config
-bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh --action config --show
+bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh --action config --show
 
 # Set max concurrent workers
-bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh \
+bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh \
   --action config --set-max-concurrent 5
 
 # Set max tasks per worker
-bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh \
+bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh \
   --action config --set-max-per-worker 3
 ```
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # create-team-legacy.sh - Legacy Manager-side team creation (shell implementation)
 #
-# Invoked only when HICLAW_TEAM_CREATE_IMPL=shell (via create-team.sh).
+# Invoked only when AGENTTEAMS_TEAM_CREATE_IMPL=shell (via create-team.sh).
 # Prefer `agt create team` / the default create-team.sh wrapper instead.
 #
 # This path performs Manager-side Matrix room pre-creation, direct create-worker.sh
@@ -15,14 +15,14 @@
 #     [--leader-model <MODEL>] [--worker-models <m1,m2,...>]
 #
 # Prerequisites:
-#   - SOUL.md must exist for leader and each worker at /root/hiclaw-fs/agents/<NAME>/SOUL.md
+#   - SOUL.md must exist for leader and each worker at /root/agentteams-fs/agents/<NAME>/SOUL.md
 
 set -e
-source /opt/hiclaw/scripts/lib/hiclaw-env.sh
-source /opt/hiclaw/scripts/lib/gateway-api.sh
+source /opt/agentteams/scripts/lib/agentteams-env.sh
+source /opt/agentteams/scripts/lib/gateway-api.sh
 
 log() {
-    local msg="[hiclaw $(date '+%Y-%m-%d %H:%M:%S')] $1"
+    local msg="[agt $(date '+%Y-%m-%d %H:%M:%S')] $1"
     echo "${msg}"
     if [ -w /proc/1/fd/1 ]; then
         echo "${msg}" > /proc/1/fd/1
@@ -95,7 +95,7 @@ log "  Team Admin: ${TEAM_ADMIN:-none}"
 # ============================================================
 # Ensure credentials
 # ============================================================
-SECRETS_FILE="/data/hiclaw-secrets.env"
+SECRETS_FILE="/data/agentteams-secrets.env"
 if [ -f "${SECRETS_FILE}" ]; then
     source "${SECRETS_FILE}"
 fi
@@ -285,7 +285,7 @@ if [ -n "${LEADER_MERGED_POLICY}" ] && [ "${LEADER_MERGED_POLICY}" != "{}" ]; th
 fi
 
 log "  Leader channel-policy: ${LEADER_MERGED_POLICY:-none}"
-LEADER_RESULT=$(bash /opt/hiclaw/agent/skills/worker-management/scripts/create-worker.sh "${LEADER_ARGS[@]}" 2>&1)
+LEADER_RESULT=$(bash /opt/agentteams/agent/skills/worker-management/scripts/create-worker.sh "${LEADER_ARGS[@]}" 2>&1)
 LEADER_JSON=$(echo "${LEADER_RESULT}" | sed -n '/---RESULT---/,$ p' | tail -n +2)
 LEADER_ROOM_ID=$(echo "${LEADER_JSON}" | jq -r '.room_id // empty')
 
@@ -355,7 +355,7 @@ for i in "${!WORKER_NAMES[@]}"; do
         W_ARGS+=(--channel-policy "${W_MERGED_POLICY}")
     fi
 
-    W_RESULT=$(bash /opt/hiclaw/agent/skills/worker-management/scripts/create-worker.sh "${W_ARGS[@]}" 2>&1)
+    W_RESULT=$(bash /opt/agentteams/agent/skills/worker-management/scripts/create-worker.sh "${W_ARGS[@]}" 2>&1)
     W_JSON=$(echo "${W_RESULT}" | sed -n '/---RESULT---/,$ p' | tail -n +2)
     W_ROOM_ID=$(echo "${W_JSON}" | jq -r '.room_id // empty')
     WORKER_ROOM_IDS+=("${W_ROOM_ID}")
@@ -448,7 +448,7 @@ fi
 # Each team gets an isolated storage prefix: teams/{team-name}/
 # ============================================================
 log "Step 5: Initializing team storage space..."
-TEAM_STORAGE_DIR="/root/hiclaw-fs/teams/${TEAM_NAME}"
+TEAM_STORAGE_DIR="/root/agentteams-fs/teams/${TEAM_NAME}"
 mkdir -p "${TEAM_STORAGE_DIR}/shared/tasks"
 mkdir -p "${TEAM_STORAGE_DIR}/shared/projects"
 mkdir -p "${TEAM_STORAGE_DIR}/shared/knowledge"
@@ -479,7 +479,7 @@ fi
 if [ -n "${LEADER_DM_ROOM_ID}" ]; then
     REGISTRY_ARGS+=(--leader-dm-room-id "${LEADER_DM_ROOM_ID}")
 fi
-bash /opt/hiclaw/agent/skills/team-management/scripts/manage-teams-registry.sh "${REGISTRY_ARGS[@]}"
+bash /opt/agentteams/agent/skills/team-management/scripts/manage-teams-registry.sh "${REGISTRY_ARGS[@]}"
 
 # ============================================================
 # Step 6b: Re-inject Leader's team-context with worker room IDs
@@ -504,7 +504,7 @@ done
 
 {
     echo ""
-    echo "<!-- hiclaw-team-context-start -->"
+    echo "<!-- agentteams-team-context-start -->"
     echo "## Coordination"
     echo ""
     echo "- **Upstream coordinator**: @manager:${MATRIX_DOMAIN} (Manager) — you receive tasks from Manager"
@@ -518,19 +518,19 @@ done
     echo "- This Coordination block is already loaded into your system prompt; use these room IDs and worker Matrix IDs directly, without narrating topology checks or AGENTS.md reads"
     echo "- Report results to Manager (in Leader Room) or Team Admin (in Leader DM) based on task source"
     echo "- @mention Manager only for: task completion, blockers, escalations"
-    echo "<!-- hiclaw-team-context-end -->"
+    echo "<!-- agentteams-team-context-end -->"
 } > "${_leader_ctx_tmp}"
 
 if mc cp "${_leader_agents_minio}" "${_leader_agents_tmp}" 2>/dev/null; then
     _leader_clean=$(mktemp /tmp/leader-clean-XXXXXX.md)
-    awk '/<!-- hiclaw-team-context-start -->/{skip=1; next} /<!-- hiclaw-team-context-end -->/{skip=0; next} !skip' \
+    awk '/<!-- agentteams-team-context-start -->/{skip=1; next} /<!-- agentteams-team-context-end -->/{skip=0; next} !skip' \
         "${_leader_agents_tmp}" > "${_leader_clean}"
 
     _leader_final=$(mktemp /tmp/leader-final-XXXXXX.md)
-    if grep -q '^<!-- hiclaw-builtin-end -->' "${_leader_clean}"; then
+    if grep -q '^<!-- agentteams-builtin-end -->' "${_leader_clean}"; then
         awk -v ctx_file="${_leader_ctx_tmp}" '
             {print}
-            /^<!-- hiclaw-builtin-end -->$/ {
+            /^<!-- agentteams-builtin-end -->$/ {
                 while ((getline line < ctx_file) > 0) print line
                 close(ctx_file)
             }
@@ -581,7 +581,7 @@ if [ -f "${HUMANS_REGISTRY}" ]; then
             log "  Configuring permissions for human: ${_human_name} (${_human_mid})"
 
             # Add human to Leader's groupAllowFrom
-            LEADER_CONFIG="/root/hiclaw-fs/agents/${LEADER_NAME}/openclaw.json"
+            LEADER_CONFIG="/root/agentteams-fs/agents/${LEADER_NAME}/openclaw.json"
             if [ -f "${LEADER_CONFIG}" ]; then
                 jq --arg h "${_human_mid}" \
                     'if (.channels.matrix.groupAllowFrom | index($h)) then .
@@ -596,7 +596,7 @@ if [ -f "${HUMANS_REGISTRY}" ]; then
             for w_name in "${WORKER_NAMES[@]}"; do
                 w_name=$(echo "${w_name}" | tr -d ' ')
                 [ -z "${w_name}" ] && continue
-                W_CONFIG="/root/hiclaw-fs/agents/${w_name}/openclaw.json"
+                W_CONFIG="/root/agentteams-fs/agents/${w_name}/openclaw.json"
                 if [ -f "${W_CONFIG}" ]; then
                     jq --arg h "${_human_mid}" \
                         'if (.channels.matrix.groupAllowFrom | index($h)) then .

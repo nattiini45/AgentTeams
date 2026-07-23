@@ -352,7 +352,7 @@ if [ -n "${AGENTTEAMS_EXTRA_LLM_PROVIDERS:-}" ]; then
         fi
 
         # Provider: GET -> PUT if exists, POST if not
-        EXTRA_PROVIDER_BODY='{"type":"openai","name":"'"${_provider_name}"'","tokens":["'"${_provider_key}"'"],"version":0,"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"openaiCustomUrl":"'"${_provider_url}"'","openaiCustomServiceName":"'"${_provider_name}"'.dns","openaiCustomServicePort":'"${_ep_port}"',"hiclawMode":true}}'
+        EXTRA_PROVIDER_BODY='{"type":"openai","name":"'"${_provider_name}"'","tokens":["'"${_provider_key}"'"],"version":0,"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"openaiCustomUrl":"'"${_provider_url}"'","openaiCustomServiceName":"'"${_provider_name}"'.dns","openaiCustomServicePort":'"${_ep_port}"',"agentteamsMode":true}}'
         existing_extra_provider=$(higress_get "/v1/ai/providers/${_provider_name}")
         if [ -n "${existing_extra_provider}" ]; then
             higress_api PUT "/v1/ai/providers/${_provider_name}" "Updating LLM provider (${_provider_name})" "${EXTRA_PROVIDER_BODY}"

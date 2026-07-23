@@ -6,7 +6,7 @@
 # loop (manager/scripts/init/setup-higress.sh:288-386), driven interactively
 # from the Manager's chat session instead of an env-gated boot loop. Registers
 # (or deletes) a DNS service-source, an `openai`-type provider, and the
-# provider's OWN AI route named `hiclaw-<name>-route`. This script NEVER reads
+# provider's OWN AI route named `agt-<name>-route`. This script NEVER reads
 # or writes `default-ai-route` — the boot-time rewrite of that route
 # (setup-higress.sh:253-281) would clobber any edits made here.
 #
@@ -39,7 +39,7 @@
 #   - HIGRESS_COOKIE_FILE env var (session cookie for Higress Console;
 #     minted at manager init, start-manager-agent.sh:316,344,382-383)
 #   - AGENTTEAMS_ADMIN_USER / AGENTTEAMS_ADMIN_PASSWORD env vars (re-login fallback,
-#     injected via hiclaw-controller config.go:727-728 ManagerAgentEnv)
+#     injected via agentteams-controller config.go:727-728 ManagerAgentEnv)
 #   - AGENTTEAMS_AI_GATEWAY_DOMAIN env var (falls back to aigw-local.agentteams.io)
 #
 # Examples:
@@ -48,8 +48,8 @@
 #   bash register-provider.sh ollama --delete
 
 set -uo pipefail
-source /opt/hiclaw/scripts/lib/base.sh
-source /opt/hiclaw/scripts/lib/gateway-api.sh
+source /opt/agentteams/scripts/lib/base.sh
+source /opt/agentteams/scripts/lib/gateway-api.sh
 
 CONSOLE_URL="http://127.0.0.1:8001"
 AI_GATEWAY_DOMAIN="${AGENTTEAMS_AI_GATEWAY_DOMAIN:-aigw-local.agentteams.io}"
@@ -139,7 +139,7 @@ if [ -z "${HIGRESS_COOKIE_FILE:-}" ]; then
     exit 1
 fi
 
-_ROUTE_NAME="hiclaw-${PROVIDER_NAME}-route"
+_ROUTE_NAME="agt-${PROVIDER_NAME}-route"
 
 # ============================================================
 # Session helpers: cookie auth with ONE re-login on stale/expired session.
@@ -292,7 +292,7 @@ fi
 # (body shape verbatim from setup-higress.sh:355-361; key is interpolated
 #  directly into the body and is NEVER echoed separately)
 # ============================================================
-PROVIDER_BODY='{"type":"openai","name":"'"${PROVIDER_NAME}"'","tokens":["'"${PROVIDER_KEY}"'"],"version":0,"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"openaiCustomUrl":"'"${PROVIDER_URL}"'","openaiCustomServiceName":"'"${PROVIDER_NAME}"'.dns","openaiCustomServicePort":'"${_ep_port}"',"hiclawMode":true}}'
+PROVIDER_BODY='{"type":"openai","name":"'"${PROVIDER_NAME}"'","tokens":["'"${PROVIDER_KEY}"'"],"version":0,"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"openaiCustomUrl":"'"${PROVIDER_URL}"'","openaiCustomServiceName":"'"${PROVIDER_NAME}"'.dns","openaiCustomServicePort":'"${_ep_port}"',"agentteamsMode":true}}'
 existing_provider=$(higress_get "/v1/ai/providers/${PROVIDER_NAME}") || exit 1
 if [ -n "${existing_provider}" ]; then
     higress_api PUT "/v1/ai/providers/${PROVIDER_NAME}" "Updating LLM provider (${PROVIDER_NAME})" "${PROVIDER_BODY}" || exit 1
@@ -301,7 +301,7 @@ else
 fi
 
 # ============================================================
-# Step 3: own AI route hiclaw-<name>-route, model-prefix "<name>/".
+# Step 3: own AI route agt-<name>-route, model-prefix "<name>/".
 # NEVER default-ai-route (setup-higress.sh:364-386 idiom).
 # ============================================================
 ROUTE_BODY='{"name":"'"${_ROUTE_NAME}"'","domains":'"${AI_ROUTE_DOMAINS}"',"pathPredicate":{"matchType":"PRE","matchValue":"/","caseSensitive":false},"modelPredicate":{"matchType":"PRE","matchValue":"'"${PROVIDER_NAME}"'/"},"upstreams":[{"provider":"'"${PROVIDER_NAME}"'","weight":100,"modelMapping":{}}],"authConfig":{"enabled":true,"allowedCredentialTypes":["key-auth"],"allowedConsumers":["manager"]}}'

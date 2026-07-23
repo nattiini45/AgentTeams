@@ -6,11 +6,11 @@
 #
 # Usage:
 #   sync-shared-worker-skills.sh [AGENT_SRC]
-# Default AGENT_SRC: /opt/hiclaw/agent
+# Default AGENT_SRC: /opt/agentteams/agent
 
 set -e
 
-AGENT_SRC="${1:-/opt/hiclaw/agent}"
+AGENT_SRC="${1:-/opt/agentteams/agent}"
 SHARED_ROOT="${AGENT_SRC}/shared-worker-skills"
 
 if [ ! -d "${SHARED_ROOT}" ]; then

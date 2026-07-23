@@ -58,10 +58,10 @@ bootstrap_start_cloud_sync() {
             if [ "${AGENTTEAMS_RUNTIME}" = "aliyun" ]; then
                 ensure_mc_credentials 2>/dev/null || true
             fi
-            mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/shared/" /root/hiclaw-fs/shared/ --overwrite --newer-than "1m" 2>/dev/null || true
-            mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/agents/" /root/hiclaw-fs/agents/ --overwrite --newer-than "1m" 2>/dev/null || true
+            mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/shared/" /root/agentteams-fs/shared/ --overwrite --newer-than "1m" 2>/dev/null || true
+            mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/agents/" /root/agentteams-fs/agents/ --overwrite --newer-than "1m" 2>/dev/null || true
             if [ "${AGENTTEAMS_RUNTIME}" = "k8s" ]; then
-                mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/agentteams-config/" /root/hiclaw-fs/agentteams-config/ --overwrite --newer-than "1m" 2>/dev/null || true
+                mc mirror "${AGENTTEAMS_STORAGE_PREFIX}/agentteams-config/" /root/agentteams-fs/agentteams-config/ --overwrite --newer-than "1m" 2>/dev/null || true
             fi
             mc cp "${AGENTTEAMS_STORAGE_PREFIX}/manager/openclaw.json" /root/manager-workspace/openclaw.json 2>/dev/null || true
         done

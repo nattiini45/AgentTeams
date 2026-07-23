@@ -13,6 +13,10 @@ changes here before the next release.
 - **Pinned OpenClaw source fetch**: Fetch the pinned OpenClaw commit directly so the base image build does not depend on a retired-brand external branch name. ([b0081c2](https://github.com/agentscope-ai/AgentTeams/commit/b0081c2))
 - **Higress extra providers**: Restore OPT-IN `AGENTTEAMS_EXTRA_LLM_PROVIDERS` registration with `modelMapping` that strips the `<provider>/` prefix before upstream calls.
 - **CoPaw quiet rooms**: Restore `AGENTTEAMS_QUIET_ROOMS` → `config.json` `show_tool_details: false` bridge and MatrixChannel read path.
+- **CoPaw bridge/worker restore**: Restore fork `bridge_config` / `bootstrap_copaw_runtime` / `propagate_prompts` APIs and WorkspaceLayout-based worker startup so runtime re-bridge keeps local prompts and skips pruning self-installed skills.
+- **Hermes sync semantics**: Restore thin `agentteams_sync` wrapper with byte-accurate push compare and keep local-only skills across pull.
+- **Installer prompt safety**: Use `printf -v` for installer prompt helpers so preset/default values are never eval-executed.
+- **OpenHuman gateway id**: Rename provider id to `agentteams-gateway` consistently in bridge and tests.
 
 **Branding and Compatibility**
 

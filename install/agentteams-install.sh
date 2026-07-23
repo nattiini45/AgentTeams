@@ -1304,7 +1304,7 @@ prompt() {
 
     # If the variable is already set in the environment, use it silently
     # In upgrade mode, show current value and let user change it
-    eval "local current_value=\"\${${var_name}}\""
+    local current_value="${!var_name}"
     if [ -n "${current_value}" ]; then
         if [ "${AGENTTEAMS_UPGRADE}" = "1" ] && [ "${AGENTTEAMS_NON_INTERACTIVE}" != "1" ]; then
             # Show masked value for secrets, full value otherwise
@@ -1327,7 +1327,7 @@ prompt() {
                 if [ "${new_value}" = "b" ]; then STEP_RESULT="back"; return 1; fi
             fi
             if [ -n "${new_value}" ]; then
-                eval "export ${var_name}='${new_value}'"
+                printf -v "${var_name}" '%s' "${new_value}"; export "${var_name}"
             fi
             return
         fi
@@ -1338,7 +1338,7 @@ prompt() {
     # Non-interactive or quickstart: use default or error
     if [ "${AGENTTEAMS_NON_INTERACTIVE}" = "1" ] || [ "${AGENTTEAMS_QUICKSTART}" = "1" ]; then
         if [ -n "${default_value}" ]; then
-            eval "export ${var_name}='${default_value}'"
+            printf -v "${var_name}" '%s' "${default_value}"; export "${var_name}"
             log "$(msg prompt.default "${prompt_text}" "${default_value}")"
             return
         elif [ "${AGENTTEAMS_NON_INTERACTIVE}" = "1" ]; then
@@ -1366,7 +1366,7 @@ prompt() {
         die "$(msg prompt.required_empty "${prompt_text}")"
     fi
 
-    eval "export ${var_name}='${value}'"
+    printf -v "${var_name}" '%s' "${value}"; export "${var_name}"
 }
 
 # Prompt for an optional value (empty string is acceptable)
@@ -1379,11 +1379,11 @@ prompt_optional() {
     local is_secret="${3:-false}"
 
     # Check if variable is defined (even if set to empty string)
-    eval "local _chk=\"\${${var_name}+x}\""
+    local _chk="${!var_name+x}"
     if [ -n "${_chk}" ]; then
         # In upgrade mode, show current value and let user change it
         if [ "${AGENTTEAMS_UPGRADE}" = "1" ] && [ "${AGENTTEAMS_NON_INTERACTIVE}" != "1" ]; then
-            eval "local current_value=\"\${${var_name}}\""
+            local current_value="${!var_name}"
             local display_value="${current_value}"
             if [ "${is_secret}" = "true" ] && [ -n "${current_value}" ]; then
                 local len=${#current_value}
@@ -1411,7 +1411,7 @@ prompt_optional() {
                 if [ "${new_value}" = "b" ]; then STEP_RESULT="back"; return 1; fi
             fi
             if [ -n "${new_value}" ]; then
-                eval "export ${var_name}='${new_value}'"
+                printf -v "${var_name}" '%s' "${new_value}"; export "${var_name}"
             fi
             return
         fi
@@ -1421,7 +1421,7 @@ prompt_optional() {
 
     # Non-interactive or quickstart: skip, leave unset
     if [ "${AGENTTEAMS_NON_INTERACTIVE}" = "1" ] || [ "${AGENTTEAMS_QUICKSTART}" = "1" ]; then
-        eval "export ${var_name}=''"
+        printf -v "${var_name}" '%s' ''; export "${var_name}"
         return
     fi
 
@@ -1434,7 +1434,7 @@ prompt_optional() {
         if [ "${value}" = "b" ]; then STEP_RESULT="back"; return 1; fi
     fi
 
-    eval "export ${var_name}='${value}'"
+    printf -v "${var_name}" '%s' "${value}"; export "${var_name}"
 }
 
 generate_key() {

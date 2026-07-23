@@ -3,7 +3,7 @@
 
 bootstrap_start_manager_runtime() {
     if [ "${MANAGER_RUNTIME}" = "copaw" ]; then
-        exec /opt/hiclaw/scripts/init/start-copaw-manager.sh
+        exec /opt/agentteams/scripts/init/start-copaw-manager.sh
     fi
 
     log "Starting OpenClaw Manager..."

@@ -21,12 +21,12 @@ def _install_gateway_stubs() -> None:
     surface that hermes_matrix.overlay_adapter imports at module scope.
     """
     if "gateway" in sys.modules and getattr(
-        sys.modules["gateway"], "_hiclaw_test_stub", False
+        sys.modules["gateway"], "_agentteams_test_stub", False
     ):
         return  # already installed by an earlier test in this session
 
     gateway_mod = types.ModuleType("gateway")
-    gateway_mod._hiclaw_test_stub = True  # type: ignore[attr-defined]
+    gateway_mod._agentteams_test_stub = True  # type: ignore[attr-defined]
 
     config_mod = types.ModuleType("gateway.config")
 

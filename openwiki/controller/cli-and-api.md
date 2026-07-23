@@ -1,6 +1,6 @@
 # Controller: CLI & API
 
-The `hiclaw` CLI and REST API are the primary interfaces for managing AgentTeams resources. The CLI is baked into Manager and Worker images. The REST API runs on the controller at port 8090.
+The `agt` CLI and REST API are the primary interfaces for managing AgentTeams resources. The CLI is baked into Manager and Worker images. The REST API runs on the controller at port 8090.
 
 ## CLI Commands
 
@@ -22,8 +22,8 @@ agt get humans
 agt get managers
 
 # Update resources
-hiclaw update worker my-worker --model gpt-5
-hiclaw update team my-team --add-worker worker-c
+agt update worker my-worker --model gpt-5
+agt update team my-team --add-worker worker-c
 
 # Delete resources
 agt delete worker my-worker
@@ -37,19 +37,19 @@ agt apply -f worker.yaml
 
 ```bash
 # Wake a sleeping worker
-hiclaw worker wake my-worker
+agt worker wake my-worker
 
 # Sleep a running worker
-hiclaw worker sleep my-worker
+agt worker sleep my-worker
 
 # Ensure worker is ready (wait for provisioning)
-hiclaw worker ensure-ready my-worker
+agt worker ensure-ready my-worker
 
 # Report worker ready (called by worker itself)
-hiclaw worker report-ready my-worker
+agt worker report-ready my-worker
 
 # Get worker runtime status
-hiclaw worker status my-worker
+agt worker status my-worker
 ```
 
 ### Status & Monitoring
@@ -66,23 +66,23 @@ agt status --watch
 
 ```bash
 # Rotate Matrix AppService token
-hiclaw rotate appservice-token
+agt rotate appservice-token
 
 # Test LLM provider connectivity
-hiclaw llm-preflight
+agt llm-preflight
 ```
 
 ### Manager State
 
 ```bash
 # Initialize task board
-hiclaw manager-state --action init
+agt manager-state --action init
 
 # Add finite task
-hiclaw manager-state --action add-finite --task "Deploy service X"
+agt manager-state --action add-finite --task "Deploy service X"
 
 # List tasks
-hiclaw manager-state --action list
+agt manager-state --action list
 ```
 
 ## REST API

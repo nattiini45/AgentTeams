@@ -1,10 +1,25 @@
 """
 Bridge: translate openclaw.json (AgentTeams Worker config) into CoPaw's
-config.json + providers.json, then set COPAW_WORKING_DIR so CoPaw
-picks up the right workspace.
+config.json + providers.json + workspaces/default/agent.json.
 
-Root ``show_tool_details`` lives only in config.json (global UI knob); when
-``AGENTTEAMS_QUIET_ROOMS`` is set, bridge writes it and MatrixChannel reads it.
+Two phases (W8.2):
+  ``bridge_config`` — pure JSON writes; safe to call on every openclaw.json change.
+  ``bootstrap_copaw_runtime`` — env vars + copaw module path patches; once per process.
+
+AgentTeams Matrix stream-filter defaults (SSOT for workers):
+  filter_tool_messages = True  — hide tool-call chatter from synced history
+  filter_thinking = True       — hide thinking blocks from synced history
+Templates under templates/agent.*.json and bridge overlay both use these values.
+
+Matrix fields in config.json vs agent.json (W8.3, CoPaw 1.0.2+):
+  - ``workspaces/default/agent.json`` is the per-agent SSOT for the agent loop
+    (Matrix homeserver/token/allowlists, running.max_input_length, heartbeat).
+  - ``config.json`` → ``channels.matrix`` is still written for ChannelManager /
+    global config load paths and backward compatibility with older CoPaw reads.
+  - Both receive the same controller-owned Matrix scalars today; deduplicating
+    config.json is deferred until ChannelManager is verified to read agent.json only.
+  - Root ``show_tool_details`` lives only in config.json (global UI knob); when
+    ``AGENTTEAMS_QUIET_ROOMS`` is set, bridge writes it and MatrixChannel reads it.
 """
 from __future__ import annotations
 
@@ -18,6 +33,23 @@ import shutil
 from importlib import resources
 from pathlib import Path
 from typing import Any
+
+# AgentTeams worker Matrix channel defaults — bridge overlay is authoritative.
+MATRIX_FILTER_TOOL_MESSAGES = True
+MATRIX_FILTER_THINKING = True
+
+_PROMPT_FILES = ("SOUL.md", "AGENTS.md", "HEARTBEAT.md")
+
+
+def propagate_prompts(local_dir: Path, copaw_working_dir: Path) -> None:
+    """Copy L2 prompt files into CoPaw workspaces/default/ (agent read path)."""
+    workspace_dir = copaw_working_dir / "workspaces" / "default"
+    workspace_dir.mkdir(parents=True, exist_ok=True)
+    for name in _PROMPT_FILES:
+        src = Path(local_dir) / name
+        if not src.is_file():
+            continue
+        (workspace_dir / name).write_text(src.read_text(errors="replace"))
 
 
 def _port_remap(url: str, is_container: bool) -> str:
@@ -47,6 +79,10 @@ def quiet_rooms_enabled() -> bool:
 def _quiet_rooms_enabled() -> bool:
     """Backward-compatible alias for quiet_rooms_enabled()."""
     return quiet_rooms_enabled()
+
+
+# Process-wide guard: bootstrap_copaw_runtime is idempotent per resolved path.
+_BOOTSTRAPPED_WORKING_DIRS: set[str] = set()
 
 
 def _secret_dir(working_dir: Path) -> Path:
@@ -101,7 +137,7 @@ def _patch_copaw_paths(working_dir: Path) -> None:
     # _discover_custom_channels() / register_custom_channel_routes() read this
     # module global at CALL time, so rebinding it here (before ChannelManager
     # starts) makes them see our working_dir/custom_channels regardless of
-    # import order. Without this the patched matrix_channel.py is never
+    # import order. Without this the custom_channels shim is never
     # discovered and copaw falls back to its builtin (broken) Matrix channel.
     try:
         import copaw.app.channels.registry as _channels_registry
@@ -114,23 +150,16 @@ def _patch_copaw_paths(working_dir: Path) -> None:
         pass
 
 
-def bridge_controller_to_copaw(
+def bridge_config(
     openclaw_cfg: dict[str, Any],
     working_dir: Path,
     *,
     profile: str = "manager",
 ) -> None:
-    """
-    Read openclaw_cfg (parsed openclaw.json) and write:
-      - <working_dir>/config.json          (global config)
-      - <working_dir>/workspaces/default/agent.json (per-agent config)
-      - <working_dir>/providers.json       (LLM credentials, for reference)
-      - <working_dir>.secret/providers.json (where copaw actually reads from)
+    """Write CoPaw JSON artifacts from openclaw.json (no runtime side effects)."""
+    if profile not in ("worker", "manager"):
+        raise ValueError(f"unknown bridge profile: {profile!r}")
 
-    Also sets COPAW_WORKING_DIR env var and patches copaw's module-level
-    path constants so the running process uses the correct directory.
-
-    """
     working_dir.mkdir(parents=True, exist_ok=True)
     in_container = _is_in_container()
 
@@ -138,20 +167,49 @@ def bridge_controller_to_copaw(
     _write_agent_json(openclaw_cfg, working_dir, in_container, profile=profile)
     _write_providers_json(openclaw_cfg, working_dir, in_container)
 
-    os.environ["COPAW_WORKING_DIR"] = str(working_dir)
 
-    # Patch module-level constants (import-time values won't reflect env change)
+def bootstrap_copaw_runtime(working_dir: Path, *, force: bool = False) -> None:
+    """Patch copaw path constants and secret providers (once per process/path)."""
+    working_dir.mkdir(parents=True, exist_ok=True)
+    key = str(working_dir.resolve())
+    if not force and key in _BOOTSTRAPPED_WORKING_DIRS:
+        logger.debug("bootstrap_copaw_runtime skipped (already bootstrapped): %s", key)
+        return
+
+    os.environ["COPAW_WORKING_DIR"] = str(working_dir)
     _patch_copaw_paths(working_dir)
 
-    # Copy providers.json into secret_dir — that's where copaw actually reads it
     secret_dir = _secret_dir(working_dir)
+    secret_dir.mkdir(parents=True, exist_ok=True)
     providers_src = working_dir / "providers.json"
     if providers_src.exists():
         shutil.copy2(providers_src, secret_dir / "providers.json")
 
+    _BOOTSTRAPPED_WORKING_DIRS.add(key)
 
-# Fork / test alias — same full bridge entrypoint under the historical name.
-bridge_openclaw_to_copaw = bridge_controller_to_copaw
+
+def reset_bootstrap_state() -> None:
+    """Clear bootstrap guard (for unit tests simulating multiple workers)."""
+    _BOOTSTRAPPED_WORKING_DIRS.clear()
+
+
+def bridge_openclaw_to_copaw(
+    openclaw_cfg: dict[str, Any],
+    working_dir: Path,
+    *,
+    profile: str = "manager",
+) -> None:
+    """
+    Full bridge: write JSON configs then bootstrap CoPaw runtime paths.
+
+    Re-bridge on openclaw.json changes should call ``bridge_config`` only.
+    """
+    bridge_config(openclaw_cfg, working_dir, profile=profile)
+    bootstrap_copaw_runtime(working_dir)
+
+
+# Upstream-shaped alias used by worker.py and some tests.
+bridge_controller_to_copaw = bridge_openclaw_to_copaw
 
 
 # ---------------------------------------------------------------------------
@@ -194,9 +252,12 @@ def _resolve_active_model(cfg: dict[str, Any]) -> dict[str, Any] | None:
 def _resolve_context_window(cfg: dict[str, Any]) -> int | None:
     """Return the contextWindow of the active (or first) model, or None."""
     m = _resolve_active_model(cfg)
-    if m and "contextWindow" in m:
+    if not m or "contextWindow" not in m:
+        return None
+    try:
         return int(m["contextWindow"])
-    return None
+    except (TypeError, ValueError):
+        return None
 
 
 def _resolve_vision_enabled(cfg: dict[str, Any]) -> bool:
@@ -225,14 +286,19 @@ def _resolve_matrix_user_id(
 
     env_user_id = (
         os.environ.get("AGENTTEAMS_MATRIX_USER_ID")
+        or os.environ.get("AGENTTEAMS_MATRIX_USER_ID")
         or os.environ.get("COPAW_MATRIX_USER_ID")
     )
     if env_user_id:
         return env_user_id
 
-    matrix_domain = os.environ.get("AGENTTEAMS_MATRIX_DOMAIN")
+    matrix_domain = (
+        os.environ.get("AGENTTEAMS_MATRIX_DOMAIN")
+        or os.environ.get("AGENTTEAMS_MATRIX_DOMAIN")
+    )
     localpart = (
         os.environ.get("AGENTTEAMS_WORKER_NAME")
+        or os.environ.get("AGENTTEAMS_WORKER_NAME")
         or ("manager" if profile == "manager" else "")
     )
     if matrix_domain and localpart:
@@ -286,8 +352,8 @@ def _write_config_json(
         "group_policy": group_policy,
         "group_allow_from": group_allow_from,
         "groups": groups,
-        "filter_tool_messages": True,
-        "filter_thinking": True,
+        "filter_tool_messages": MATRIX_FILTER_TOOL_MESSAGES,
+        "filter_thinking": MATRIX_FILTER_THINKING,
         "vision_enabled": _resolve_vision_enabled(cfg),
     }
     if history_limit is not None:
@@ -318,9 +384,10 @@ def _write_config_json(
 
     # Phase 5b "quiet rooms" (env-gated, default off): root-level
     # show_tool_details is a separate knob from channels.matrix.* above
-    # (copaw/src/matrix/config.py defaults True). Only touch it when the
-    # operator opts in — leaving the env unset must produce byte-identical
-    # config.json output to before this flag existed.
+    # (copaw/src/matrix/config.py:1164, defaults True, never set anywhere
+    # today). Only touch it when the operator opts in — leaving the env
+    # unset must produce byte-identical config.json output to before this
+    # flag existed.
     if quiet_rooms_enabled():
         existing["show_tool_details"] = False
     else:
@@ -337,6 +404,48 @@ def _write_config_json(
 # ---------------------------------------------------------------------------
 # agent.json — per-agent config (CoPaw 1.0.2+ reads this, not config.json)
 # ---------------------------------------------------------------------------
+
+def _minimal_agent_json(profile: str) -> dict[str, Any]:
+    """Minimal agent.json when an in-tree template file is unavailable."""
+    return {
+        "id": "default",
+        "name": "Manager" if profile == "manager" else "Default Agent",
+        "language": "zh",
+        "channels": {
+            "console": {"enabled": True},
+            "matrix": {
+                "enabled": True,
+                "filter_tool_messages": MATRIX_FILTER_TOOL_MESSAGES,
+                "filter_thinking": MATRIX_FILTER_THINKING,
+                "allow_from": [],
+                "group_allow_from": [],
+                "groups": {},
+            },
+        },
+        "running": {"max_iters": 200},
+    }
+
+
+def _materialize_agent_json(agent_path: Path, profile: str) -> None:
+    """Install agent.json from in-tree template."""
+    template_name = f"agent.{profile}.json"
+    tmpl_path = Path(__file__).resolve().parent / "templates" / template_name
+    if tmpl_path.is_file():
+        try:
+            shutil.copy2(tmpl_path, agent_path)
+            return
+        except OSError as exc:
+            logger.warning(
+                "failed to copy agent.json template %s: %s", tmpl_path, exc
+            )
+            raise RuntimeError(
+                f"cannot materialize agent.json from template {template_name}"
+            ) from exc
+
+    raise RuntimeError(
+        f"agent.json template {template_name} not found at {tmpl_path}"
+    )
+
 
 def _write_agent_json(
     cfg: dict[str, Any],
@@ -357,43 +466,20 @@ def _write_agent_json(
 
     # Install from template if missing
     if not agent_path.exists():
-        template_name = f"agent.{profile}.json"
-        try:
-            # Try loading from package templates directory
-            tmpl_dir = Path(__file__).resolve().parent / "templates"
-            tmpl_path = tmpl_dir / template_name
-            if tmpl_path.exists():
-                shutil.copy2(str(tmpl_path), str(agent_path))
-            else:
-                # Fallback: create minimal agent.json
-                minimal = {
-                    "id": "default",
-                    "name": "Manager" if profile == "manager" else "Default Agent",
-                    "language": "zh",
-                    "channels": {
-                        "console": {"enabled": True},
-                        "matrix": {
-                            "enabled": True,
-                            "filter_tool_messages": False,
-                            "filter_thinking": True,
-                            "allow_from": [],
-                            "group_allow_from": [],
-                            "groups": {},
-                        },
-                    },
-                    "running": {"max_iters": 200},
-                }
-                with open(agent_path, "w") as f:
-                    json.dump(minimal, f, indent=2)
-        except Exception:
-            pass
+        _materialize_agent_json(agent_path, profile)
 
-    # Load existing agent.json
     try:
         with open(agent_path) as f:
             agent_cfg = json.load(f)
-    except Exception:
-        agent_cfg = {"id": "default", "channels": {}, "running": {}}
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(
+            f"cannot read agent.json at {agent_path} for profile {profile!r}: {exc}"
+        ) from exc
+
+    if not isinstance(agent_cfg, dict):
+        raise RuntimeError(
+            f"agent.json at {agent_path} must be a JSON object for profile {profile!r}"
+        )
 
     # Overlay Matrix channel config from openclaw.json
     matrix_raw = cfg.get("channels", {}).get("matrix", {})
@@ -417,8 +503,8 @@ def _write_agent_json(
     matrix_ch["allow_from"] = dm_allow_from
     matrix_ch["group_allow_from"] = group_allow_from
     matrix_ch["groups"] = groups
-    matrix_ch["filter_tool_messages"] = True
-    matrix_ch["filter_thinking"] = True
+    matrix_ch["filter_tool_messages"] = MATRIX_FILTER_TOOL_MESSAGES
+    matrix_ch["filter_thinking"] = MATRIX_FILTER_THINKING
 
     # Disable console channel (we use Matrix)
     agent_cfg.setdefault("channels", {}).setdefault("console", {})["enabled"] = False
@@ -427,6 +513,17 @@ def _write_agent_json(
     context_window = _resolve_context_window(cfg)
     if context_window is not None:
         agent_cfg.setdefault("running", {})["max_input_length"] = context_window
+
+    # Manager heartbeat interval — AGENTTEAMS_MANAGER_HEARTBEAT_INTERVAL flows from
+    # the controller (see agentteams-controller/internal/service/worker_env.go) and
+    # overrides the template-seeded heartbeat.every (hardcoded "30m" in
+    # templates/agent.manager.json). Only the manager profile reads this env
+    # var; the worker template already defaults to 10m on its own.
+    if profile == "manager":
+        heartbeat_every = os.environ.get(
+            "AGENTTEAMS_MANAGER_HEARTBEAT_INTERVAL", "10m"
+        ).strip() or "10m"
+        agent_cfg.setdefault("heartbeat", {})["every"] = heartbeat_every
 
     # Set workspace_dir
     agent_cfg.setdefault("workspace_dir", str(workspace_dir))
@@ -575,7 +672,7 @@ def _main_cli(argv=None):
     with open(openclaw_path) as f:
         controller_config = _json.load(f)
 
-    bridge_controller_to_copaw(
+    bridge_openclaw_to_copaw(
         controller_config,
         working_dir,
         profile=args.profile,
@@ -586,3 +683,6 @@ def _main_cli(argv=None):
 if __name__ == "__main__":
     import sys as _sys
     _sys.exit(_main_cli())
+
+
+sync_outer_prompt_files_to_inner = propagate_prompts

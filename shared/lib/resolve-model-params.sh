@@ -6,7 +6,7 @@
 # through this helper.
 #
 # Usage (source and call):
-#   source /opt/hiclaw/scripts/lib/resolve-model-params.sh
+#   source /opt/agentteams/scripts/lib/resolve-model-params.sh
 #   resolve_model_params claude-sonnet-4-6
 #   echo "${MODEL_CONTEXT_WINDOW} ${MODEL_MAX_TOKENS} ${MODEL_REASONING} ${MODEL_INPUT}"
 #
@@ -15,7 +15,7 @@
 
 resolve_model_params() {
     local model_id="${1:-}"
-    local known_models_file="${KNOWN_MODELS_FILE:-/opt/hiclaw/configs/known-models.json}"
+    local known_models_file="${KNOWN_MODELS_FILE:-/opt/agentteams/configs/known-models.json}"
 
     model_id="${model_id#agentteams-gateway/}"
 

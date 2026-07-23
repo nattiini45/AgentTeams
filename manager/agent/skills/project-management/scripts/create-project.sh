@@ -363,7 +363,7 @@ if [ -n "${PROJECT_TEAM}" ]; then
 
     PROJECT_CR_FILE="${PROJECT_DIR}/project-cr.yaml"
     {
-        echo "apiVersion: hiclaw.io/v1beta1"
+        echo "apiVersion: agentteams.io/v1beta1"
         echo "kind: Project"
         echo "metadata:"
         echo "  name: $(yaml_dq "${PROJECT_ID}")"

@@ -31,7 +31,7 @@
 
 ## 1. What we're building
 
-Reshape this AgentTeams (formerly HiClaw) fork into a **personal AI coworking system**: a
+Reshape this AgentTeams (formerly AgentTeams) fork into a **personal AI coworking system**: a
 **Manager** over several **functional Teams** (engineering, design, marketing/social, gamedev…),
 each with a **Team Lead**, executing real work against **Gitea**, managed through a **web
 dashboard** — with Matrix demoted to pure conversation.
@@ -63,7 +63,7 @@ dashboard** — with Matrix demoted to pure conversation.
         matrix.pawcommit.com (Tuwunel) ── Matrix ──┤
                           │                        │ REST :8090 / MinIO / Gitea API
             ┌─────────────┴─────────────┐          │
-            │   hiclaw-controller        │◄─────────┘
+            │   agentteams-controller        │◄─────────┘
             │   (embedded: Higress +     │
             │    Tuwunel + MinIO + ctrl) │── proxy net ──► gitea-mcp:8080 ──► Gitea
             └─────────────┬──────────────┘
@@ -99,14 +99,14 @@ Host `PawCommit-pawtner-1` — **8 vCPU / 16 GB / 301 GB** Ubuntu 24.04. Busy mu
 (Tuwunel CS API), `console.pawcommit.com` (Higress console). **New:** `hq.pawcommit.com`
 (or similar) for the dashboard.
 
-**Networks:** `proxy` (external — Traefik + gitea-mcp), `hiclaw-net` (AgentTeams). The controller
+**Networks:** `proxy` (external — Traefik + gitea-mcp), `agentteams-net` (AgentTeams). The controller
 container must join **both**.
 
 **Prior config (from the stopped stack):** CoPaw manager, default worker runtime `copaw`,
-Matrix domain `matrix-local.hiclaw.io:18080`, MinIO `:9000` bucket `hiclaw-storage`
-(**creds are weak defaults — rotate**), workspace `/root/hiclaw-manager`. **14 existing CoPaw
+Matrix domain `matrix-local.agentteams.io:18080`, MinIO `:9000` bucket `agentteams-storage`
+(**creds are weak defaults — rotate**), workspace `/root/agentteams-manager`. **14 existing CoPaw
 workers** (godot-*, game-*, narrative-writer, engineer-backend-architect, …) — standalone, to be
-restructured into Teams. **Daily snapshots** at `/root/backups/hiclaw-snapshot-*` (data is safe).
+restructured into Teams. **Daily snapshots** at `/root/backups/agentteams-snapshot-*` (data is safe).
 
 ---
 
@@ -146,16 +146,16 @@ tear-down/rebuild at will.
 1. **Build images from the fork** with bumped runtime pins (see §6): controller/embedded, manager
    (copaw), copaw-worker, hermes-worker. Build on the VPS (Claude Code) or locally and push to a
    registry the box can pull.
-2. **Deploy shape:** run the embedded `hiclaw-controller` container, joined to **both** `hiclaw-net`
+2. **Deploy shape:** run the embedded `agentteams-controller` container, joined to **both** `agentteams-net`
    and `proxy`, with **Traefik labels** instead of raw host-port binding:
    - `studio.pawcommit.com` → Element (internal `:18088`)
    - `matrix.pawcommit.com` → Tuwunel CS API (internal `:18080`/`:6167`)
    - `console.pawcommit.com` → Higress console (internal `:8001`) — keep behind Traefik auth
-3. **Env config:** `HICLAW_MANAGER_RUNTIME=copaw`, `HICLAW_DEFAULT_WORKER_RUNTIME=hermes`,
+3. **Env config:** `AGENTTEAMS_MANAGER_RUNTIME=copaw`, `AGENTTEAMS_DEFAULT_WORKER_RUNTIME=hermes`,
    DeepSeek `openai-compat` key/model, **rotated MinIO creds**, Matrix domain set to
-   `matrix.pawcommit.com`, `HICLAW_ELEMENT_HOMESERVER_URL=https://matrix.pawcommit.com`.
+   `matrix.pawcommit.com`, `AGENTTEAMS_ELEMENT_HOMESERVER_URL=https://matrix.pawcommit.com`.
 4. **Selective data import:** restore only the workspaces/personas you want from
-   `/root/backups/hiclaw-snapshot-2026-06-29` (don't blanket-restore the old DB).
+   `/root/backups/agentteams-snapshot-2026-06-29` (don't blanket-restore the old DB).
 5. **Smoke test:** Manager comes up, joins the admin DM, LLM-auth probe passes, you can chat.
 6. **Backend hardening (v2.3):** *(Done on `main` — M1 `35a4412`)* make the Docker backend honor the resource limits the CRDs already
    carry end-to-end — `buildCreatePayload` (`internal/backend/docker.go:517-599`) never reads
@@ -166,10 +166,10 @@ tear-down/rebuild at will.
    so a VPS/dockerd restart brings the Manager back and leaves every lead/worker dark until the next
    reconcile. Unit-test both (assert HostConfig.Memory/NanoCpus set from req.Resources and from defaults).
 
-**Files/components:** `install/hiclaw-install.sh` (or a new compose with Traefik labels),
-`hiclaw-controller/Dockerfile.embedded`, `hiclaw-controller/supervisord.embedded.conf`,
+**Files/components:** `install/agentteams-install.sh` (or a new compose with Traefik labels),
+`agentteams-controller/Dockerfile.embedded`, `agentteams-controller/supervisord.embedded.conf`,
 `manager/scripts/init/start-manager-agent.sh` + `start-copaw-manager.sh`,
-`manager/scripts/init/setup-higress.sh`, `helm/hiclaw/values.yaml` (image tags).
+`manager/scripts/init/setup-higress.sh`, `helm/agentteams/values.yaml` (image tags).
 
 **Acceptance:** open `studio.pawcommit.com`, log in, message the Manager, get a reply over TLS.
 Rebuild from scratch in one command/script.
@@ -182,11 +182,11 @@ sharing the VPS's **Gitea** + DeepSeek key, but keeping its **own** embedded Mat
 This is the "just a second *team set*" idea — same externals, different teams.
 
 **What a local bring-up actually is (verified)**
-- ONE embedded `hiclaw-controller` container (Higress + Tuwunel + MinIO + Element + controller under
+- ONE embedded `agentteams-controller` container (Higress + Tuwunel + MinIO + Element + controller under
   `supervisord`) that spawns **separate** manager/worker containers via the mounted Docker socket
   (`member_reconcile.go:414-425`). The Manager is **not** inside the embedded image.
 - Differs from the VPS: **no Traefik/TLS**, ports bound to `127.0.0.1` (`18080`/`18001`/`18088`,
-  `install/hiclaw-install.ps1:3174-3176`), `*-local.hiclaw.io` network aliases (`LOCAL_ONLY`,
+  `install/agentteams-install.ps1:3174-3176`), `*-local.agentteams.io` network aliases (`LOCAL_ONLY`,
   `ps1:3076-3079`; legacy non-embedded path `:2727-2730`).
 - ⚠️ **The Docker backend sets NO per-container memory/CPU limits** — `buildCreatePayload` never reads
   `req.Resources`; limits are k8s-only (`internal/backend/docker.go:491-599` vs `kubernetes.go:433-479`).
@@ -199,11 +199,11 @@ This is the "just a second *team set*" idea — same externals, different teams.
 
 **Steps**
 1. Set a generous `.wslconfig` `memory=` (the only RAM cap), start Docker Desktop.
-2. Bring up the embedded controller. ⚠️ `make install-embedded` runs **`bash ./install/hiclaw-install.sh`**
+2. Bring up the embedded controller. ⚠️ `make install-embedded` runs **`bash ./install/agentteams-install.sh`**
    (`Makefile:633`) — **not** the PowerShell installer — so on Windows it needs Git Bash/WSL + `make`;
-   it sets `HICLAW_NON_INTERACTIVE=1`, the `HICLAW_INSTALL_*_IMAGE` overrides, `HICLAW_MATRIX_E2EE=0`,
-   and builds/overrides **6–7 images**. Pure-PowerShell path: run `install/hiclaw-install.ps1` directly
-   with `HICLAW_INSTALL_*_IMAGE` set.
+   it sets `AGENTTEAMS_NON_INTERACTIVE=1`, the `AGENTTEAMS_INSTALL_*_IMAGE` overrides, `AGENTTEAMS_MATRIX_E2EE=0`,
+   and builds/overrides **6–7 images**. Pure-PowerShell path: run `install/agentteams-install.ps1` directly
+   with `AGENTTEAMS_INSTALL_*_IMAGE` set.
 3. Reach it at `http://127.0.0.1:18088` (local Element). ⚠️ E2EE is forced off (`Makefile:632`) — don't
    create encrypted Private rooms locally or agents can't read them.
 
@@ -213,12 +213,12 @@ What collides and what doesn't (track verified **solid**):
   apiserver + kine (`app.go:627-646`) and its own local `docker.sock`; containers are name-prefixed.
 - ❌ **No instance discriminator exists today.** Matrix localparts/aliases are raw names (worker
   localpart = CR name; manager = literal `"manager"`, `provisioner.go:308-311`; alias
-  `hiclaw-<kind>-<name>`, `:211-213`). `EnsureUser`/`CreateRoom` silently log into / return an existing
+  `agt-<kind>-<name>`, `:211-213`). `EnsureUser`/`CreateRoom` silently log into / return an existing
   account/alias (`client.go:225-273` EnsureUser; CreateRoom's `M_ROOM_IN_USE` alias-reuse `:481-496`)
   → silent hijack on a shared homeserver.
 - ❌ Matrix **AppService defaults ON and claims an exclusive `@.*:<domain>` namespace** (`config.go:319`,
   `appservice.go:33-45`) → two AppServices on one homeserver = hard conflict.
-- ❌ Single MinIO bucket `hiclaw-storage`; `hiclaw-config/` is mirrored and **ingested as CRs**
+- ❌ Single MinIO bucket `agentteams-storage`; `agentteams-config/` is mirrored and **ingested as CRs**
   (`app.go:658-667`) → a shared bucket cross-feeds both controllers.
 - ℹ️ Embedded mode rewrites worker-facing Matrix/FS/AIGateway URLs to the controller container
   (`config.go:379-385`), but `MatrixDomain`/`MatrixServerURL` are **independent and can be external**.
@@ -226,21 +226,21 @@ What collides and what doesn't (track verified **solid**):
 **Two designs for "one place to see all agents":**
 - **Option A — separate Matrix per instance (recommended; matches your read that Tuwunel is embedded).**
   Each instance keeps its own embedded Tuwunel + MinIO + Higress. **Share only Gitea + the DeepSeek key.**
-  No homeserver/bucket collision because they're distinct. Set `HICLAW_FS_BUCKET=hiclaw-storage-home`
+  No homeserver/bucket collision because they're distinct. Set `AGENTTEAMS_FS_BUCKET=agentteams-storage-home`
   on the local box so the two don't share the config-watched bucket. You get **two Elements**; the
   **dashboard (Phase 5) aggregates both controllers' REST `:8090`** → one pane for tracking. Lowest risk.
 - **Option B — shared homeserver (one Element).** Technically possible: point the local controller at
   the VPS `matrix.pawcommit.com` (those URLs aren't rewritten) and run **no** embedded Tuwunel. But you
-  must avoid collisions — either run local with `HICLAW_MATRIX_APPSERVICE_ENABLED=false`
+  must avoid collisions — either run local with `AGENTTEAMS_MATRIX_APPSERVICE_ENABLED=false`
   (password/registration-token mode) to dodge the exclusive `@.*` namespace, **and** prefix
-  localparts/aliases/consumers; or add a net-new `HICLAW_INSTANCE_ID` threaded into `provisioner.go:211`
+  localparts/aliases/consumers; or add a net-new `AGENTTEAMS_INSTANCE_ID` threaded into `provisioner.go:211`
   + `:308-311`, `docker.go:162`, the consumer names, and the AppService user-namespace regex. Also patch
   the embedded host-rewrite to skip the external Matrix URL, and beware Tuwunel
   `DELETE_ROOMS_AFTER_LEAVE=true` (`start-tuwunel.sh:26-27`) pruning a shared-alias room.
 
 **✓ DECIDED (2026-06-30): Option A.** Matrix stays per-instance; the dashboard is the cross-instance
 unifier. Option B is parked — revisit only if a single Element across both boxes proves worth the
-namespace surgery. (So `HICLAW_INSTANCE_ID` / namespace prefixing is **not needed now** — open decision #9
+namespace surgery. (So `AGENTTEAMS_INSTANCE_ID` / namespace prefixing is **not needed now** — open decision #9
 is deferred with it.)
 
 **Caveats**
@@ -248,9 +248,9 @@ is deferred with it.)
   verbatim — register the Gitea MCP for the local instance via `host.docker.internal` (workers get
   `host.docker.internal:host-gateway` on the docker backend, `member_reconcile.go:443-448`) or the tailnet.
 - The embedded image **build** pulls Higress base layers from Aliyun (`Dockerfile.embedded:15-34`) — mirror
-  those for a fully offline home build; the `HICLAW_INSTALL_*` overrides only skip *run-time* pulls.
+  those for a fully offline home build; the `AGENTTEAMS_INSTALL_*` overrides only skip *run-time* pulls.
 - Verify the manager-workspace mount target: embedded controller binds host workspace →
-  `/root/hiclaw-fs/agents/manager` (`ps1:3168`) while the spawned manager binds → `/root/manager-workspace`
+  `/root/agentteams-fs/agents/manager` (`ps1:3168`) while the spawned manager binds → `/root/manager-workspace`
   (`manager_reconcile_container.go:209-213`).
 
 **Acceptance:** local Element at `127.0.0.1:18088`; message a local Manager; it spawns workers locally
@@ -279,9 +279,9 @@ that push to the **shared VPS Gitea**; the (future) dashboard shows both VPS and
    instead of dropping them. *(Both files per #15 — overlay `_sync_loop` `channel.py:750-798` for the
    Manager, standalone `copaw_worker/matrix_channel.py:537-569` for leads/workers; near-duplicate
    "catch-up sync (messages suppressed)" logic in each — add `catch_up_replay` to both.)*
-5. **Solo mode** (`HICLAW_SOLO_OPERATOR`): drop `PermissionLevel`, auto-resolve the operator as sole
+5. **Solo mode** (`AGENTTEAMS_SOLO_OPERATOR`): drop `PermissionLevel`, auto-resolve the operator as sole
    admin, force `PeerMentions=true`, skip the onboarding interview.
-   *(`hiclaw-controller/api/v1beta1/types.go`, `internal/controller/{team,manager}_controller.go`,
+   *(`agentteams-controller/api/v1beta1/types.go`, `internal/controller/{team,manager}_controller.go`,
    `internal/config/config.go`. **The interview itself lives elsewhere:** the 4-question Q&A prompt is
    rendered by `internal/service/provisioner.go` `renderManagerWelcomeBody` `:1540-1568` and sent via
    `internal/controller/manager_reconcile_welcome.go` — that's where the solo-mode skip goes.)*
@@ -402,7 +402,7 @@ single-LLM lock-in. Track verified **solid**.
    `manager-openclaw.json.tmpl`, **and** the `update-manager-model.sh` ctx/max case table (4 spots — keep
    consistent or the Manager self-switch pre-flight uses wrong context windows). Unknowns default to
    150k ctx / 128k max (`generator.go:402`).
-3. **Select per agent** — model via `spec.model` (or `hiclaw update worker --name X --model ollama/<model>`);
+3. **Select per agent** — model via `spec.model` (or `agt update worker --name X --model ollama/<model>`);
    **pin every agent's upstream with `spec.modelProvider`** (decided policy — e.g. gamedev team on `ollama`,
    engineering on `deepseek`). Both already implemented + unit-tested (`team_controller_test.go:308`,
    `manager_container_test.go:240`) — **no new controller plumbing**.
@@ -425,7 +425,7 @@ team-wide default per Team (the Team CRD has no team-wide field today — only p
 every agent is scoped to one upstream; an autonomous Hermes worker can't silently jump to a pricier model.
 
 **Acceptance:** one worker on DeepSeek, one on MiMo, one on Ollama Cloud in the same team — all routing to
-their own upstream simultaneously; `hiclaw update worker --model` and the model-switch skill move an agent
+their own upstream simultaneously; `agt update worker --model` and the model-switch skill move an agent
 between providers; revoking a pinned agent's route cuts its provider.
 
 ---
@@ -437,8 +437,8 @@ between providers; revoking a pinned agent's route cuts its provider.
 **Steps**
 1. **Define Team CRs** — one per function, each with a (CoPaw) Leader + member workers.
    *Note: Team Leader runtime is hard-coded to CoPaw (`team_controller.go:972`) — exactly what we want.*
-2. **Switch workers to Hermes** — `HICLAW_DEFAULT_WORKER_RUNTIME=hermes` (image already wired via
-   `HICLAW_HERMES_WORKER_IMAGE`), or per-member `runtime: hermes` in the Team spec.
+2. **Switch workers to Hermes** — `AGENTTEAMS_DEFAULT_WORKER_RUNTIME=hermes` (image already wired via
+   `AGENTTEAMS_HERMES_WORKER_IMAGE`), or per-member `runtime: hermes` in the Team spec.
 3. **Migrate personas:** map godot-* / game-* / narrative-writer / engineer-backend-architect / … into
    the right teams as Hermes workers.
 4. **⚠️ Validate interop (the one real risk):** confirm a **CoPaw lead ↔ Hermes worker** round-trip
@@ -467,8 +467,8 @@ one Team** (✓ decided #2).
 controller, consistent with the Worker/Team/Manager CRs (not the original storage-only path).
 
 **Steps**
-1. **Define the `Project` CRD** — `hiclaw-controller/api/v1beta1/` + `config/crd/projects.agentteams.io.yaml`
-   **and the Helm copy `helm/hiclaw/crds/` (keep both in sync** — the multi-provider track flagged Helm/CRD
+1. **Define the `Project` CRD** — `agentteams-controller/api/v1beta1/` + `config/crd/projects.agentteams.io.yaml`
+   **and the Helm copy `helm/agentteams/crds/` (keep both in sync** — the multi-provider track flagged Helm/CRD
    drift). Spec: `team` (required — team-scoped), `repos[] { url, access: rw|ro }`, optional `workers[]`.
 2. **Add a reconciler** `internal/controller/project_controller.go` mirroring the worker/team controllers
    (periodic reconcile, same ~5-min cadence).
@@ -483,9 +483,9 @@ controller, consistent with the Worker/Team/Manager CRs (not the original storag
 5. **MinIO projection** at `shared/projects/{id}/` (manifest mirrored from the CR) so the dashboard +
    workers get a flat read path — **the CR is source of truth, MinIO the cache.**
 6. Update `project-management/SKILL.md` + `references/create-project.md`; `create-project.sh` creates the CR
-   via `hiclaw apply` instead of a bare manifest.
+   via `agt apply` instead of a bare manifest.
 
-**Acceptance:** `hiclaw apply` a Project (team + 1 RW working repo + 1 RO source repo) → the controller
+**Acceptance:** `agt apply` a Project (team + 1 RW working repo + 1 RO source repo) → the controller
 projects the manifest to MinIO (recording the assigned Hermes workers + per-repo access); the operator helper
 (#12) provisions each worker's Gitea user/PAT + `mcp-gitea-<worker>` + collaborator role from it; those
 workers can reach **both** repos as their **own Gitea user** — pushing to the RW repo but not the RO one
@@ -497,7 +497,7 @@ the Project shows in the dashboard.
 ---
 
 ### Phase 4.5 — Harness enrichment: skills + CLIs on every worker  · effort S–M · risk L
-**Goal:** author a skill once (or pull one from `market.hiclaw.io/skills`) → it reaches **every** worker;
+**Goal:** author a skill once (or pull one from `market.agentteams.io/skills`) → it reaches **every** worker;
 and bring CLI tooling to parity across runtimes. This is the "enhance every worker image" ask — answered
 below by *which layer* each enhancement belongs in.
 
@@ -514,7 +514,7 @@ below by *which layer* each enhancement belongs in.
   `@nacos-group/cli`). The lone exception is OpenHuman, which COPYs its skill template at build
   (`openhuman/Dockerfile:165`).
 - **Builtin** skills are baked into the **manager + controller** images (`manager/Dockerfile.copaw:119`
-  `COPY manager/agent/ /opt/hiclaw/agent/`); the controller mirrors `builtinAgentDir(role,runtime)/skills/*`
+  `COPY manager/agent/ /opt/agentteams/agent/`); the controller mirrors `builtinAgentDir(role,runtime)/skills/*`
   → each worker's MinIO prefix with `Overwrite:true` (`deployer.go:835-857`; runtime map `:882-898`, incl.
   `openhuman`).
 - ⚠️ **This push runs on EVERY ~5-min reconcile, not just at create** (`worker_controller.go:29,151,171` →
@@ -524,8 +524,8 @@ below by *which layer* each enhancement belongs in.
 - **On-demand** skills: manager pool `~/worker-skills/` via `push-worker-skills.sh` (per-worker; `--skill`
   only re-pushes to workers that *already* list it, `:281-294`); declarative `remoteSkills` is **nacos://
   only** (`deployer.go:596-619`), also re-applied + overwritten every reconcile.
-- The `find-skills` CLI's **effective default registry is `nacos://market.hiclaw.io:80/public`**
-  (`install/hiclaw-install.sh:3059` → `config.go:371` → `worker_env.go:147`); `https://skills.sh` is only
+- The `find-skills` CLI's **effective default registry is `nacos://market.agentteams.io:80/public`**
+  (`install/agentteams-install.sh:3059` → `config.go:371` → `worker_env.go:147`); `https://skills.sh` is only
   the fallback if both env vars are unset.
 
 **Recommended approach — skills**
@@ -537,7 +537,7 @@ below by *which layer* each enhancement belongs in.
    image** → it reaches every worker (incl. the 14 migrated) within ~5 min. The real constraint is
    "controller rebuild + redeploy," not "create-only."
 2. **Market skills → pre-fetch at build time** (`@nacos-group/cli skill-get`) into a builtin dir rather than
-   relying on a runtime nacos fetch; point `HICLAW_SKILLS_API_URL` at your registry. ⚠️ `market.hiclaw.io`
+   relying on a runtime nacos fetch; point `AGENTTEAMS_SKILLS_API_URL` at your registry. ⚠️ `market.agentteams.io`
    reachability from your boxes is unverified — self-host Nacos or switch to a `skills.sh`-style HTTP
    registry if it's not reachable.
 3. ✓ **Workers self-install skills (DECIDED 2026-06-30).** So **stop `pull_all` from pruning local skills
@@ -555,7 +555,7 @@ below by *which layer* each enhancement belongs in.
   **CoPaw lacks** `ripgrep`/`ffmpeg`/`@nacos-group/cli`; OpenHuman has no node/mcporter/skills (Rust binary).
 - Prefer **per-role images on a shared enriched base** + a CLI-parity layer per Dockerfile (e.g. CoPaw
   `+= ripgrep ffmpeg @nacos-group/cli`) over **one fat multi-GB image**. Bump tags in
-  `helm/hiclaw/values.yaml:268-281` + the `Makefile` `*_IMAGE` vars.
+  `helm/agentteams/values.yaml:268-281` + the `Makefile` `*_IMAGE` vars.
 - ⚠️ A baked **baseline skill set must be runtime-aware** — only `find-skills` + `mcporter` are common to
   all three runtimes; CoPaw's builtin set differs entirely (communication/file-sharing/organization/
   task-management). There is no single "universal worker skills" list.
@@ -565,9 +565,9 @@ The **IMAGE** (chosen by `spec.runtime`; `spec.image` overrides) carries the eng
 skills. The **CONFIG** (persona/role/model/skills/MCP/env) is per-worker data in the CR / himarket template.
 A himarket "worker template" is a **CONFIG package only — it carries no image**. So: persona/skills/MCP/model
 = config (fast path, no rebuild); **new CLIs/runtimes = image** (rare rebuild). ⚠️ Note the image default
-basenames differ (`hiclaw/copaw-worker:latest` etc.), and the installer never sets
-`HICLAW_OPENHUMAN_WORKER_IMAGE`. ✓ **Default worker runtime DECIDED (2026-06-30): `hermes`** — make the
-three sources agree: update the installer (`copaw`) and `helm/hiclaw/values.yaml:282` (`openclaw`) to
+basenames differ (`agt/copaw-worker:latest` etc.), and the installer never sets
+`AGENTTEAMS_OPENHUMAN_WORKER_IMAGE`. ✓ **Default worker runtime DECIDED (2026-06-30): `hermes`** — make the
+three sources agree: update the installer (`copaw`) and `helm/agentteams/values.yaml:282` (`openclaw`) to
 `hermes` (the plan + locked-in table already say Hermes).
 
 **Acceptance:** drop one operator skill in the builtin dir + redeploy the controller → every worker has it
@@ -658,7 +658,7 @@ keep the Manager's event-level pings.
 **Recommended default**
 1. **CoPaw:** inject `"show_tool_details": false` into the bridge-written **`config.json`** matrix dict
    (`bridge.py:226-239` — the runtime-effective one; also the agent.json overlay), behind an env gate
-   `HICLAW_QUIET_ROOMS`. Keep typing/read-receipts as the heartbeat-of-life. ⚠️ **Efficacy is UNCERTAIN** —
+   `AGENTTEAMS_QUIET_ROOMS`. Keep typing/read-receipts as the heartbeat-of-life. ⚠️ **Efficacy is UNCERTAIN** —
    the stream lives in the external `BaseChannel`; validate on a live worker before committing (do this in
    the §7 spike).
 2. **Hermes:** wire the already-planted (dead) `MATRIX_FILTER_*` flags into the overlay. Add a
@@ -759,12 +759,12 @@ Both runtimes are pinned old and carry version-sensitive patches.
   `_resolve_message_context`'s implicit 6-tuple return `(body, is_dm, chat_type, thread_id,
   display_name, source)` (`:134-177`) incl. `_is_dm_room`/`_get_display_name` (`:144,158`), and
   `_handle_media_message`/`_handle_text_message` (`:179-239`). Rebuild
-  `hiclaw-hermes-worker`.
+  `agentteams-hermes-worker`.
 
 ### Where image tags live
-`helm/hiclaw/values.yaml` (`worker.defaultImage` per runtime, manager image) and the `Makefile`
-image version vars. Bumping the runtime means rebuilding the corresponding `hiclaw-*-worker` /
-`hiclaw-manager-copaw` images and updating tags.
+`helm/agentteams/values.yaml` (`worker.defaultImage` per runtime, manager image) and the `Makefile`
+image version vars. Bumping the runtime means rebuilding the corresponding `agt-*-worker` /
+`agentteams-manager-copaw` images and updating tags.
 
 ---
 
@@ -786,7 +786,7 @@ the overlay has no generic inbound-media hook.
   the install env file, not in image layers.
 - **Per-worker Gitea PATs (post-#4):** give the #12 helper a `--rotate` mode and set a rotation cadence.
   Note the **Higress config store now holds every worker's PAT** (as `mcp-gitea-<worker>`
-  `defaultCredential`s) — confirm whether the daily `hiclaw-snapshot` archives capture it, and
+  `defaultCredential`s) — confirm whether the daily `agentteams-snapshot` archives capture it, and
   encrypt/exclude those archives accordingly, or every PAT lands in plaintext backups.
 - **Embedded-container health (v2.3):** add a Docker `HEALTHCHECK` to `Dockerfile.embedded` — one
   composite CMD hitting the controller `/healthz`, MinIO `/minio/health/live`, and Tuwunel
@@ -794,7 +794,7 @@ the overlay has no generic inbound-media hook.
   supervisord/PID-1 liveness. Plus a startup pre-flight `PRAGMA integrity_check` on the kine SQLite DB
   before `StartKine` (log loudly and refuse a silent fallback-to-empty on corruption — that file is the
   source of truth for all CRs).
-- **Docker socket (solo-operator, v2.3+):** embedded installs mount `docker.sock` on the controller only (not the Manager). Full Engine API access is an **accepted solo-operator risk**; use a filtered sidecar (`AGENTTEAMS_PROXY_SOCKET`) before shared-host/multi-tenant. Documented in [development.md](development.md). The v1.0.x `hiclaw-docker-proxy` image is removed — uninstall still cleans leftover containers.
+- **Docker socket (solo-operator, v2.3+):** embedded installs mount `docker.sock` on the controller only (not the Manager). Full Engine API access is an **accepted solo-operator risk**; use a filtered sidecar (`AGENTTEAMS_PROXY_SOCKET`) before shared-host/multi-tenant. Documented in [development.md](development.md). The v1.0.x `agentteams-docker-proxy` image is removed — uninstall still cleans leftover containers.
 - **Non-root Manager/Worker UIDs (deferred):** default installs run as root. Forcing `USER 1000` without refactoring `manager/Dockerfile.copaw`, `manager/Dockerfile`, and entrypoints (`/data`, `/root/manager-workspace`, volume mounts) will crash CoPaw Manager at startup. A `copaw/Dockerfile` change alone is the wrong target and insufficient. Track as a separate hardening milestone — see [upstream-integration-migration.md](upstream-integration-migration.md).
 - **Capacity budget (v2.3):** worst-case hot-burst RAM — Manager + 4 CoPaw leads at ~150–500 MB each,
   14 Hermes workers at ~150–500 MB each (`windows-deploy.md:50,294-305`) ≈ **3–9.5 GB for agents alone**,
@@ -805,7 +805,7 @@ the overlay has no generic inbound-media hook.
   `coordination.go:87-90`, the controller enforces nothing), and running heavy teams on the local
   satellite. Spot-check real tenant usage with `docker stats` / `free -h` on the VPS before Phase 3.
 - Keep `console.pawcommit.com` and any MinIO console behind Traefik auth.
-- Continue the daily `hiclaw-snapshot` backups; snapshot before each phase's deploy.
+- Continue the daily `agentteams-snapshot` backups; snapshot before each phase's deploy.
 
 **Execution:** the **Claude Code on the VPS** can run the build/deploy/debug steps directly on-box.
 Prefer building images there (or pull from a registry the box can reach — note the default registry is
@@ -830,11 +830,11 @@ the Aliyun CN one; mirror or build locally).
 8. ✓ **Local satellite & Matrix (Phase 0b) — DECIDED 2026-06-30: Option A** — Matrix stays per-instance;
    the dashboard is the cross-instance pane.
 9. ⏸ **Instance discriminator (Phase 0b) — deferred** with the Option A decision; not needed unless you
-   later share one homeserver (Option B). `HICLAW_INSTANCE_ID` prefixing stays unbuilt for now.
+   later share one homeserver (Option B). `AGENTTEAMS_INSTANCE_ID` prefixing stays unbuilt for now.
 10. ✓ **Skills source-of-truth (Phase 4.5) — DECIDED 2026-06-30: allow worker self-install** — stop
     `pull_all` pruning local skills absent from MinIO (`sync.py:709-716`) so `find-skills install` persists.
 11. ✓ **Default worker runtime (Phase 4.5) — DECIDED 2026-06-30: standardize on `hermes`** — update the
-    installer (`copaw`) and `helm/hiclaw/values.yaml:282` (`openclaw`) to match.
+    installer (`copaw`) and `helm/agentteams/values.yaml:282` (`openclaw`) to match.
 12. ✓ **Per-worker Gitea provisioning (#4/Phase 4) — DECIDED 2026-06-30: operator-run helper script.**
     `scripts/provision-worker-gitea.sh` (operator-run, not the controller) creates each worker's Gitea user +
     scoped PAT, registers the per-worker `mcp-gitea-<worker>` Higress server, and sets repo-collaborator
@@ -884,15 +884,15 @@ the Aliyun CN one; mirror or build locally).
 `manager/agent/skills/` + `worker-skills/` · `copaw/src/matrix/channel.py` +
 `copaw/src/copaw_worker/matrix_channel.py` (✓ #15 — Manager vs leads/workers) ·
 `hermes/src/hermes_matrix/{_shim.py,overlay_adapter.py}` ·
-`hiclaw-controller/internal/controller/{member_reconcile,team_controller,manager_controller}.go` ·
-`hiclaw-controller/internal/service/provisioner.go` · `hiclaw-controller/internal/gateway/higress.go` ·
-`hiclaw-controller/internal/server/http.go` (REST :8090) · `install/hiclaw-install.sh` ·
-`hiclaw-controller/supervisord.embedded.conf`.
+`agentteams-controller/internal/controller/{member_reconcile,team_controller,manager_controller}.go` ·
+`agentteams-controller/internal/service/provisioner.go` · `agentteams-controller/internal/gateway/higress.go` ·
+`agentteams-controller/internal/server/http.go` (REST :8090) · `install/agentteams-install.sh` ·
+`agentteams-controller/supervisord.embedded.conf`.
 
-**v2.1 net-new (from §10.1 Project CRD):** `hiclaw-controller/internal/controller/project_controller.go` ·
-`hiclaw-controller/internal/service/project_provisioner.go` (MinIO projection **only** — **no** Gitea client,
+**v2.1 net-new (from §10.1 Project CRD):** `agentteams-controller/internal/controller/project_controller.go` ·
+`agentteams-controller/internal/service/project_provisioner.go` (MinIO projection **only** — **no** Gitea client,
 **no** gateway calls) · `config/crd/projects.agentteams.io.yaml` +
-the Helm copy `helm/hiclaw/crds/projects.agentteams.io.yaml` · `api/v1beta1/types.go` (append `Project*` types) +
+the Helm copy `helm/agentteams/crds/projects.agentteams.io.yaml` · `api/v1beta1/types.go` (append `Project*` types) +
 `internal/config/config.go` (additions).
 
 **v2.1 net-new (operator-side, NOT controller — decisions #12/#13):**
@@ -903,19 +903,19 @@ the per-worker `mcp-gitea-<worker>` Higress MCP-server registrations (via `setup
 each carrying that worker's PAT as the upstream `defaultCredential`).
 
 **v2 hot-spots (new tracks):**
-- *Multi-provider (2b):* `hiclaw-controller/internal/gateway/higress.go` (`ResolveModelProvider:564-643`,
+- *Multi-provider (2b):* `agentteams-controller/internal/gateway/higress.go` (`ResolveModelProvider:564-643`,
   `AuthorizeAIRoutes:181-323`) · `internal/initializer/initializer.go:299-438` ·
   `manager/scripts/init/setup-higress.sh` · `internal/agentconfig/generator.go:126-144,451-494` ·
   `manager/configs/{known-models.json,manager-openclaw.json.tmpl}` ·
   `manager/agent/skills/{model-switch,worker-model-switch}/` · `docs/faq.md:540-566` (multi-vendor pattern).
-- *Harness enrichment (4.5):* `hiclaw-controller/internal/service/deployer.go:486-567,833-898`
+- *Harness enrichment (4.5):* `agentteams-controller/internal/service/deployer.go:486-567,833-898`
   (`pushBuiltinSkills`/`pushRemoteSkills`/`builtinAgentDir`) · `internal/controller/worker_controller.go:29,151,171`
   (reconcile cadence) · `manager/agent/skills/worker-management/scripts/push-worker-skills.sh` ·
-  `copaw/src/copaw_worker/sync.py:709-749` · the worker Dockerfiles + `helm/hiclaw/values.yaml:268-282`.
-- *Local satellite (0b):* `hiclaw-controller/internal/backend/docker.go:85-95,491-599` (no resource caps) ·
+  `copaw/src/copaw_worker/sync.py:709-749` · the worker Dockerfiles + `helm/agentteams/values.yaml:268-282`.
+- *Local satellite (0b):* `agentteams-controller/internal/backend/docker.go:85-95,491-599` (no resource caps) ·
   `internal/controller/member_reconcile.go:414-448` · `internal/config/config.go:319,379-385` ·
   `internal/initializer`/`appservice.go` (exclusive `@.*` namespace) · `internal/service/provisioner.go:211-213,308-311`
-  (Matrix naming) · `internal/minio/minio_admin.go:124-162` (bucket) · `install/hiclaw-install.ps1` ·
+  (Matrix naming) · `internal/minio/minio_admin.go:124-162` (bucket) · `install/agentteams-install.ps1` ·
   `Makefile:632-633` · `manager/scripts/init/start-tuwunel.sh:26-27` · `docs/windows-deploy.md`.
 - *Matrix verbosity (5b):* `copaw/src/matrix/channel.py` + `copaw/src/copaw_worker/matrix_channel.py`
   (✓ #15) + CoPaw `config.py:1164` (`show_tool_details`) ·
@@ -953,7 +953,7 @@ left uncertain is fixed or clearly marked ⚠️ rather than asserted as fact.
 > Builds decision #6 (real CRD, not a JSON manifest) + #2 (team-scoped) + #4 (per-worker Gitea identity via
 > the existing gitea-mcp — no controller Gitea client) + #12/#13 (operator helper, enforced RW/RO).
 > Mirrors the Worker/Team controllers. New files:
-> `api/v1beta1/types.go` (append), `config/crd/projects.agentteams.io.yaml` **+ `helm/hiclaw/crds/projects.agentteams.io.yaml` (keep in sync)**,
+> `api/v1beta1/types.go` (append), `config/crd/projects.agentteams.io.yaml` **+ `helm/agentteams/crds/projects.agentteams.io.yaml` (keep in sync)**,
 > `internal/controller/project_controller.go`,
 > `internal/service/project_provisioner.go` (MinIO projection only — **no** Gitea client, **no** gateway calls; the per-worker Gitea identity / `mcp-gitea-<worker>` registration / collaborator role are applied by the operator helper #12).
 > Register in `api/v1beta1/register.go:19-29` (the unexported `addKnownTypes`, which calls `scheme.AddKnownTypes`) and `internal/app/app.go:530-597`.
@@ -961,9 +961,9 @@ left uncertain is fixed or clearly marked ⚠️ rather than asserted as fact.
 #### 0. Critical context found in the code (read before building)
 
 - **Git access reuses the existing gitea-mcp — no controller Gitea client, per-worker identity.** Each worker reaches Gitea as its **own Gitea user + scoped PAT** through a per-worker `mcp-gitea-<worker>` Higress server (Higress holds the PAT; the worker presents only its consumer key — plan §3, Git MCP row). The Project controller does **only** two things: project the CR → MinIO manifest, and record assigned workers + per-repo `access`. **No Gitea REST client, no per-repo deploy keys, no scoped tokens, no PAT handling, no project credential storage** — the per-worker Gitea user/PAT, `mcp-gitea-<worker>` registration, and collaborator role are applied by the operator helper (#12) from the manifest. (high confidence)
-- **Workers are stateless; gateway/FS secrets reach them via container env**, built in `service/worker_env.go:21-37` (`Build`) — keys like `HICLAW_WORKER_GATEWAY_KEY`, `HICLAW_FS_SECRET_KEY`. The worker presents its gateway consumer key to its own `mcp-gitea-<worker>` server (which carries the worker's PAT upstream) — no per-project secret and no PAT is injected into the worker. (high confidence)
+- **Workers are stateless; gateway/FS secrets reach them via container env**, built in `service/worker_env.go:21-37` (`Build`) — keys like `AGENTTEAMS_WORKER_GATEWAY_KEY`, `AGENTTEAMS_FS_SECRET_KEY`. The worker presents its gateway consumer key to its own `mcp-gitea-<worker>` server (which carries the worker's PAT upstream) — no per-project secret and no PAT is injected into the worker. (high confidence)
 - **OSS interface** (`oss/client.go:7-33`) gives `PutObject`, `GetObject`, `DeleteObject`, `DeletePrefix`, `Mirror` — exactly what the MinIO projection + cleanup need. Deployer already uses `d.oss.PutObject` / `d.oss.Mirror` (`deployer.go:826,852`). (high confidence)
-- **Finalizer constant is shared**: `finalizerName = "hiclaw.io/cleanup"` (`worker_controller.go:28`), reconcile cadence `reconcileInterval = 5*time.Minute`, retry `30*time.Second` (`:29-30`). Reuse all three. (high confidence)
+- **Finalizer constant is shared**: `finalizerName = "agentteams.io/cleanup"` (`worker_controller.go:28`), reconcile cadence `reconcileInterval = 5*time.Minute`, retry `30*time.Second` (`:29-30`). Reuse all three. (high confidence)
 - **Two finalizer idioms exist** — Worker uses `client.MergeFrom` patch + deferred status patch (`worker_controller.go:95-110`); Team/Human use `r.Update` (`team_controller.go:96-118`). Mirror the **Worker** idiom (status subresource + deferred merge-patch) since Project has a rich status. (high confidence)
 - **Per-worker gitea-mcp registration reuses the Higress proxy path** — `setup-mcp-proxy.sh` registers one `mcp-gitea-<worker>` per worker, each carrying that worker's PAT as the upstream `defaultCredential` and gated by `allowedConsumers` to that worker's consumer (`internal/gateway/higress.go` for the consumer/route mechanics). Higress holds the PATs; the operator helper (#12) runs the per-worker registration, not the controller. (high confidence)
 - **The runtime already has its own Project system (✓ #16 — v2.3).** The CoPaw lead's `projectflow`/`taskflow` MCP tools (`copaw/src/copaw_worker/hooks/tools/projectflow.py`, `copaw/src/copaw_worker/task.py:36-44,191-214,496-541`) implement `create_project`/`plan_dag`/`pause_project`/`resume_project`/`complete_project` with their **own** `meta.json` schema (`source`/`requester`/`parent_task_id` — no `team`, no `repos`). The CRD is a **second, federated concept**: CRD = repo/access provisioning ("infra project"); projectflow = work execution — linked by project id, **not** schema-merged. Mid-flight steering (pause/resume/reprioritize) therefore needs **no CRD field**: it's a message to the lead (#17 tier v1.5), and the lead's existing tool actions do the rest. (high confidence)
@@ -1084,7 +1084,7 @@ spec:
     shortNames: [proj]
 ```
 
-Shape mirrors `workers.hiclaw.io.yaml` exactly: `subresources.status: {}` (`workers…yaml:260-261`), `additionalPrinterColumns` (`:262-274`), `scope: Namespaced` + `names` block (`:275-281`). The `enum`/`required`/`pattern` validation idiom is copied from the Worker spec. **The Helm copy is automatic:** `make generate` already runs `cp config/crd/*.yaml ../helm/hiclaw/crds/` after deepcopy (`hiclaw-controller/Makefile:50-53`) — so write the CRD to `config/crd/` and run `make generate`; no manual copy to forget. (The four existing CRDs are duplicated at `helm/hiclaw/crds/{workers,teams,managers,humans}.hiclaw.io.yaml` by exactly this mechanism.)
+Shape mirrors `workers.agentteams.io.yaml` exactly: `subresources.status: {}` (`workers…yaml:260-261`), `additionalPrinterColumns` (`:262-274`), `scope: Namespaced` + `names` block (`:275-281`). The `enum`/`required`/`pattern` validation idiom is copied from the Worker spec. **The Helm copy is automatic:** `make generate` already runs `cp config/crd/*.yaml ../helm/agentteams/crds/` after deepcopy (`agentteams-controller/Makefile:50-53`) — so write the CRD to `config/crd/` and run `make generate`; no manual copy to forget. (The four existing CRDs are duplicated at `helm/agentteams/crds/{workers,teams,managers,humans}.agentteams.io.yaml` by exactly this mechanism.)
 
 ---
 
@@ -1201,7 +1201,7 @@ The controller only deletes the MinIO projection — **no Gitea-side calls, no g
 
 **Status transitions:** `"" → Pending` (created, finalizer added) → `Provisioning` (recording/projection in flight) → `Ready` (all conditions True) → `Degraded` (team missing or partial recording failure) → `Failed` (only when nothing could be recorded/projected and MinIO is unreachable). Mirror `computeWorkerPhase` semantics: on transient error keep the prior non-empty Phase rather than flapping to Failed (`worker_controller.go:325-338`).
 
-**Completion lifecycle (✓ #18 — v2.3):** `Completed`/`Archived` are **operator-set** phases (dashboard button or `hiclaw` patch), never reconciler-computed — the *signal* that work is done is the lead running `projectflow(complete_project)` (`task.py:496-541`, already implemented today). On `Completed` the reconciler raises condition `DeprovisionPending=True`, which the dashboard surfaces as "run `provision-worker-gitea.sh --deprovision <id>`" — #12's helper gains that flag; **the controller still makes no Gitea calls.** `Archived` additionally moves the MinIO projection to a cold prefix. CR delete stays the hard-cleanup path, unchanged. Without this lifecycle, finished projects hold live Gitea collaborator grants indefinitely — a real hygiene problem for a solo operator who won't remember manual cleanup.
+**Completion lifecycle (✓ #18 — v2.3):** `Completed`/`Archived` are **operator-set** phases (dashboard button or `agt` patch), never reconciler-computed — the *signal* that work is done is the lead running `projectflow(complete_project)` (`task.py:496-541`, already implemented today). On `Completed` the reconciler raises condition `DeprovisionPending=True`, which the dashboard surfaces as "run `provision-worker-gitea.sh --deprovision <id>`" — #12's helper gains that flag; **the controller still makes no Gitea calls.** `Archived` additionally moves the MinIO projection to a cold prefix. CR delete stays the hard-cleanup path, unchanged. Without this lifecycle, finished projects hold live Gitea collaborator grants indefinitely — a real hygiene problem for a solo operator who won't remember manual cleanup.
 
 **SetupWithManager:** `ctrl.NewControllerManagedBy(mgr).For(&v1beta1.Project{}).Complete(r)`. **Add a `Watches` on Team** (enqueue Projects whose `spec.team` changed membership) so adding a worker to a team re-records it in the manifest (the operator helper then provisions its Gitea user / `mcp-gitea-<worker>` / collaborator role) — mirror the Pod-watch wiring in `worker_controller.go:340-371` but keyed on Team. (TODO-CRD-4: a `spec.team` field indexer like `TeamLeaderNameField` at `team_controller.go:34-37`.)
 
@@ -1254,7 +1254,7 @@ Uses the exact `oss.StorageClient.PutObject(ctx, key, []byte)` signature (`oss/c
 - **✓ NET-NEW OPERATOR HELPER (#12)**: `scripts/provision-worker-gitea.sh` is net-new and **owns all Gitea-admin + per-worker-mcp-registration work** — it creates each worker's Gitea user + scoped PAT (`POST /users`, `POST /users/:name/tokens`), registers the per-worker `mcp-gitea-<worker>` Higress server (via `setup-mcp-proxy.sh`), and sets repo-collaborator membership from the manifest. **Keeps the controller Gitea-free** (no Gitea client, no PAT handling, no gateway calls for the Gitea leg).
 - **BUILD**: construct `ProjectReconciler` in `initReconcilers` (`app.go:530-597`); the reconciler needs no gitea-mcp route config (it makes no gateway calls — the operator helper owns the `mcp-gitea-<worker>` registrations).
 - **BUILD**: add `&Project{}/&ProjectList{}` to the `scheme.AddKnownTypes` call inside `addKnownTypes` (`register.go:19-29`) and run `make generate` for `zz_generated.deepcopy.go`.
-- **BUILD**: write `projects.agentteams.io.yaml` to `config/crd/` and run `make generate` — it deepcopies AND syncs `config/crd/*.yaml` → `helm/hiclaw/crds/` (`Makefile:50-53`), preventing drift by construction; add the `status.repoCount` field that backs the Repos printer column (the `.length` jsonPath is invalid).
+- **BUILD**: write `projects.agentteams.io.yaml` to `config/crd/` and run `make generate` — it deepcopies AND syncs `config/crd/*.yaml` → `helm/agentteams/crds/` (`Makefile:50-53`), preventing drift by construction; add the `status.repoCount` field that backs the Repos printer column (the `.length` jsonPath is invalid).
 - **BUILD**: `project_provisioner.go` does **only** MinIO projection — no Gitea client, no gateway calls. Update the `gitea-operations` skill to read repo URLs + access from the Project manifest (not inline paths) per Phase 4 step 4.
 
 ---
@@ -1279,11 +1279,11 @@ Uses the exact `oss.StorageClient.PutObject(ctx, key, []byte)` signature (`oss/c
 | B | Controller REST | `GET :8090/api/v1/teams` | `TeamListResponse` | `http.go:77`, struct `types.go:154-177` |
 | C | Controller REST | `GET :8090/api/v1/workers[?team=NAME]` | `WorkerListResponse` (aggregated: standalone CRs **+** synthesized team members) | `http.go:70`, list logic `resource_handler.go:181-222`, struct `types.go:61-86` |
 | D | Manager `state.json` | `GET :8090/api/v1/manager-tasks` (exposes host-mounted `~/state.json`) | active-task registry — see (2) | implemented `d960c68`; file at `manage-state.sh:24` (`${HOME}/state.json`) |
-| E | MinIO task store | bucket `hiclaw-storage`, prefix `shared/tasks/{id}/` (`meta.json`, `spec.md`, `result.md`, `plan.md`, `progress/YYYY-MM-DD.md`, `base/`) | see (1.E) | layout `task-lifecycle.md:99-109` + `worker-agent/AGENTS.md:138-144`; `meta.json` `task-lifecycle.md:34-45`; `progress/` `task-progress/SKILL.md:18-20` |
+| E | MinIO task store | bucket `agentteams-storage`, prefix `shared/tasks/{id}/` (`meta.json`, `spec.md`, `result.md`, `plan.md`, `progress/YYYY-MM-DD.md`, `base/`) | see (1.E) | layout `task-lifecycle.md:99-109` + `worker-agent/AGENTS.md:138-144`; `meta.json` `task-lifecycle.md:34-45`; `progress/` `task-progress/SKILL.md:18-20` |
 | F | MinIO project store | prefix `shared/projects/{id}/` (`meta.json`, `plan.md`) | see (1.F) | `create-project.sh:57,64-74` |
 | G | Gitea API | `git.pawcommit.com` (repo/PR/issue context per Project) — **v2, out of v1 scope** | upstream Gitea REST | plan §3 |
 
-Bucket name `hiclaw-storage` is the install default — it is **env-driven**: `OSSBucket = envOrDefault(HICLAW_FS_BUCKET, "hiclaw-storage")` (`config.go:287`; also worker `FSBucket :354`, propagated `:707`). The local satellite sets `HICLAW_FS_BUCKET=hiclaw-storage-home` (plan line 204) — the proxy/dashboard must read `HICLAW_FS_BUCKET` per-instance, not hard-code it.
+Bucket name `agentteams-storage` is the install default — it is **env-driven**: `OSSBucket = envOrDefault(AGENTTEAMS_FS_BUCKET, "agentteams-storage")` (`config.go:287`; also worker `FSBucket :354`, propagated `:707`). The local satellite sets `AGENTTEAMS_FS_BUCKET=agentteams-storage-home` (plan line 204) — the proxy/dashboard must read `AGENTTEAMS_FS_BUCKET` per-instance, not hard-code it.
 
 ##### A. `GET /api/v1/managers` → `ManagerListResponse` (`types.go:257-260` wrapping `ManagerResponse` `:239-255`)
 ```jsonc
@@ -1440,13 +1440,13 @@ This is the **task board's primary feed** (it's the registry the Manager heartbe
 | `/api/teams` | `:8090/api/v1/teams` | same | |
 | `/api/workers` | `:8090/api/v1/workers[?team=]` | same | passthrough query string |
 | `/api/manager-tasks` | `:8090/api/v1/manager-tasks` (2) | same | implemented `d960c68` (M2) |
-| `/api/tasks`, `/api/tasks/{id}/*` | MinIO `s3://$HICLAW_FS_BUCKET/shared/tasks/...` | MinIO creds | list + read `meta.json`/`result.md`/`progress/*` |
-| `/api/projects`, `/api/projects/{id}/*` | MinIO `s3://$HICLAW_FS_BUCKET/shared/projects/...` | MinIO creds | |
+| `/api/tasks`, `/api/tasks/{id}/*` | MinIO `s3://$AGENTTEAMS_FS_BUCKET/shared/tasks/...` | MinIO creds | list + read `meta.json`/`result.md`/`progress/*` |
+| `/api/projects`, `/api/projects/{id}/*` | MinIO `s3://$AGENTTEAMS_FS_BUCKET/shared/projects/...` | MinIO creds | |
 | `/api/files/*` | MinIO browse/download | MinIO creds | the file browser (Phase 6 overlap) |
 
 **Auth boundary:** the **only** external auth is Traefik forward/basic-auth on `hq.pawcommit.com` (✓ decided #1/#3, Phase 5 build step 3) — same pattern as `git-mcp.pawcommit.com`. No app-level auth code. The proxy is read-only for v1 (GET only); reject all other methods — **v1.1+ grows a scoped write allowlist** (wake/sleep, then message-injection) per decision #17 / Phase 5 step 4.
 
-**Cross-instance (Phase 0b Option A):** the dashboard aggregates **both** controllers' `:8090` (§0b Option A). The proxy fans out to `vps-controller:8090` and `home-controller:8090` (over the tailnet), tagging each response with an `instance` field client-side. **TODO (live-VPS):** confirm the home controller's `:8090` is reachable from the proxy host (tailnet/`host.docker.internal`), and that the home MinIO bucket is `hiclaw-storage-home`.
+**Cross-instance (Phase 0b Option A):** the dashboard aggregates **both** controllers' `:8090` (§0b Option A). The proxy fans out to `vps-controller:8090` and `home-controller:8090` (over the tailnet), tagging each response with an `instance` field client-side. **TODO (live-VPS):** confirm the home controller's `:8090` is reachable from the proxy host (tailnet/`host.docker.internal`), and that the home MinIO bucket is `agentteams-storage-home`.
 
 #### (4) SPA polling model
 
@@ -1467,7 +1467,7 @@ No websockets/SSE exist server-side — the v1 SPA **polls** (Phase 5 build step
 
 - **DONE (`d960c68`, M2):** `GET /api/v1/manager-tasks` shipped controller-side (Option 1, reads local/host-mounted `state.json`). Option 2 (proxy-reads-MinIO) remains future work if mirroring is added later.
 - **LIVE-VPS CONFIRM**: the bootstrapped admin SA token location/lifetime the proxy will use (`app.go:211-220`) and whether it auto-renews across controller restarts.
-- **LIVE-VPS CONFIRM (Phase 0b)**: home controller `:8090` reachable from the proxy host (tailnet / `host.docker.internal`) and home MinIO bucket = `hiclaw-storage-home`, for cross-instance fan-out.
+- **LIVE-VPS CONFIRM (Phase 0b)**: home controller `:8090` reachable from the proxy host (tailnet / `host.docker.internal`) and home MinIO bucket = `agentteams-storage-home`, for cross-instance fan-out.
 - **DECISION**: per-feed poll intervals — confirm 15s for cards/board is acceptable given `/api/v1/workers` does live backend `Status()` calls; consider 30s for the workers feed.
 - **CONFIRM** the full `meta.json` `status` enum for tasks beyond `assigned`/`completed` (revision/blocked are referenced in `task-lifecycle.md:83-94` but are **result.md Outcomes / workflow states, not confirmed `meta.json` status literals**).
 
@@ -1490,18 +1490,18 @@ No websockets/SSE exist server-side — the v1 SPA **polls** (Phase 5 build step
 | **S4** | **Hermes FileSync pruning parity** (§4.5 / decision #10; gates worker self-install — plan asks "⚠️ Verify Hermes FileSync has no equivalent pruning"). **Answer found in-repo (no live spike needed to confirm existence):** Hermes prunes in **TWO** places — periodic sync `hermes/src/hermes_worker/sync.py:448-452` (`minio_skill_set` / `rmtree`, identical to CoPaw `sync.py:709-716`) **and** at startup-install `hermes/src/hermes_worker/worker.py:368-375` (`keep = installed ∪ {file-sync}`, `rmtree` the rest). | Static: already verified — both sites prune local skills absent from MinIO/the manager pool. Live confirm: `find-skills install <x>` inside a Hermes worker, wait one ~5-min reconcile, `docker exec <hermes-worker> ls skills/` — observe `<x>` removed and a log line `"Removed local skill no longer in MinIO"` (`sync.py:453-455`, multi-line) or `"Removed stale hermes skill"` (`worker.py:373`). | Live behavior matches static reading: a self-installed skill is pruned on the next sync (and at next startup) **before** the fix. After patching **both** loops (skip dirs not in MinIO instead of `rmtree`; mirror the CoPaw `sync.py:709-716` patch), `<x>` **survives** a reconcile and a worker restart. | If a third prune path exists (e.g. the `_install_skills` copy at `worker.py:350-361` overwriting), patch it too. Keep the builtin set as the floor either way. | 4.5 | **P1** (decided #10 can't ship correctly without both sites patched) |
 | **S5** | **Higress route ordering — model-prefix route vs path-only `default-ai-route`** (§2b step 1; `default-ai-route` uses `pathPredicate matchType=PRE matchValue="/"`, `setup-higress.sh:248`, which prefix-matches every path). Risk: a new `^ollama/.*$` / `^mimo` model-name route is shadowed by the catch-all "/". | On the VPS Higress: add `mimo` + `ollama` providers + their own AI routes with model-name match rules (per `docs/faq.md:548-563`, service name no `/`), route name **≠ `default-ai-route`**. Then from a worker's gateway key, fire 3 chat-completions with `model` = a DeepSeek id, `ollama/<model>`, and `mimo/<model>`. Inspect Higress access logs / response `x-higress-*` headers (or upstream-served model) to see **which provider** served each. Confirm `AuthorizeAIRoutes` empty-`providerFilter` semantics at `higress.go:181-194` and that `default-ai-route` rewrite each boot (`setup-higress.sh:253-281`) doesn't clobber the new routes. | Each request lands on its **model-matched** provider (DeepSeek→openai-compat, `ollama/*`→ollama, `mimo*`→mimo); the path-only `default-ai-route` does **not** shadow the prefix routes. | If "/" shadows: model-name routing in Higress AI is route-config ordering/priority-sensitive — set explicit route priority, or constrain `default-ai-route`'s match so it's the genuine fallback (lowest priority / most-specific-wins). Document the required priority field in §2b step 1. | 2b | **P1** |
 | **S6** | **Xiaomi MiMo hosted base URL + current model IDs** (§2b "Provider compatibility"; "⚠️ confirm the exact hosted base URL at provision time", models **MiMo-V2.5 / V2.5-Pro**, route by `^mimo`). | Web: confirm the live OpenAI-compatible base URL (candidates: `platform.xiaomimimo.com`, WaveSpeedAI, OpenRouter, or self-host vLLM) and the **exact current model IDs**. Then live probe: `curl -s <BASE>/v1/chat/completions -H "Authorization: Bearer $MIMO_KEY" -H 'Content-Type: application/json' -d '{"model":"<MIMO_MODEL_ID>","messages":[{"role":"user","content":"ping"}]}'`. | A 200 with a valid completion from a known model ID over an OpenAI-compatible `/v1/chat/completions`; base URL + model IDs recorded for `setup-higress.sh`/catalog (`generator.go:451-494`, `known-models.json`, `manager-openclaw.json.tmpl`, `update-manager-model.sh`). | If no stable hosted OpenAI-compatible endpoint exists for the operator's account, route MiMo via OpenRouter (`openrouter/...` prefix) or self-host vLLM and point `openaiCustomUrl` at it. **TODO (human/live):** which MiMo hosting the operator actually has access to. | 2b | **P2** |
-| **S7** | **market.hiclaw.io reachability** (§4.5 step 2; default `find-skills` registry = `nacos://market.hiclaw.io:80/public`, `install/hiclaw-install.sh:3059` → `config.go:371` → `worker_env.go:146-148` sets `SKILLS_API_URL`). | From the VPS **and** the local box: `curl -sv -m 10 http://market.hiclaw.io:80/ ; echo exit=$?` and a real `@nacos-group/cli skill-get` / `find-skills` list against `nacos://market.hiclaw.io:80/public` from inside a worker container. | Both boxes resolve + connect and a skill list/get returns from the nacos registry. | If unreachable: self-host Nacos (mirror the public skill set) or switch to a `skills.sh`-style HTTP registry; set `HICLAW_SKILLS_API_URL` to it. Decide before pre-fetching market skills at build time (§4.5 step 2). | 4.5 | **P2** |
-| **S8** | **manager-workspace mount-target "mismatch"** (§0b Caveats; controller binds host ws → `/root/hiclaw-fs/agents/manager` `ps1:3168`, spawned manager binds → `/root/manager-workspace` `manager_reconcile_container.go:209-213`). **Static finding:** likely **benign** — both derive from the same host `HICLAW_WORKSPACE_DIR` (`config.go:306` → `EmbeddedConfig.WorkspaceDir` `app.go:587` → HostPath of the spawned-manager mount). `/root/hiclaw-fs/agents/manager` is only the *controller's own* view; the spawned manager (host docker.sock) mounts the host path at `/root/manager-workspace` and `HOME=/root/manager-workspace` (`worker_env.go:61`). | Local box, embedded bring-up: after the manager spawns, `docker inspect <manager-container> --format '{{json .Mounts}}'` and confirm its `/root/manager-workspace` HostPath == the host `HICLAW_WORKSPACE_DIR`. `docker exec <manager> sh -c 'ls -la /root/manager-workspace && cat /root/manager-workspace/AGENTS.md \| head -3'` to confirm persona/state are present. | Spawned manager's `/root/manager-workspace` is backed by the real host workspace dir and contains its persona/`state.json`/registry — i.e. no actual mismatch. | If the manager comes up with an empty workspace, the two paths are genuinely crossed: align `EmbeddedConfig.WorkspaceDir` (host path) with whatever the spawned-manager HostPath should be, or fix the ps1 controller-bind target. | 0b | **P2** |
+| **S7** | **market.agentteams.io reachability** (§4.5 step 2; default `find-skills` registry = `nacos://market.agentteams.io:80/public`, `install/agentteams-install.sh:3059` → `config.go:371` → `worker_env.go:146-148` sets `SKILLS_API_URL`). | From the VPS **and** the local box: `curl -sv -m 10 http://market.agentteams.io:80/ ; echo exit=$?` and a real `@nacos-group/cli skill-get` / `find-skills` list against `nacos://market.agentteams.io:80/public` from inside a worker container. | Both boxes resolve + connect and a skill list/get returns from the nacos registry. | If unreachable: self-host Nacos (mirror the public skill set) or switch to a `skills.sh`-style HTTP registry; set `AGENTTEAMS_SKILLS_API_URL` to it. Decide before pre-fetching market skills at build time (§4.5 step 2). | 4.5 | **P2** |
+| **S8** | **manager-workspace mount-target "mismatch"** (§0b Caveats; controller binds host ws → `/root/agentteams-fs/agents/manager` `ps1:3168`, spawned manager binds → `/root/manager-workspace` `manager_reconcile_container.go:209-213`). **Static finding:** likely **benign** — both derive from the same host `AGENTTEAMS_WORKSPACE_DIR` (`config.go:306` → `EmbeddedConfig.WorkspaceDir` `app.go:587` → HostPath of the spawned-manager mount). `/root/agentteams-fs/agents/manager` is only the *controller's own* view; the spawned manager (host docker.sock) mounts the host path at `/root/manager-workspace` and `HOME=/root/manager-workspace` (`worker_env.go:61`). | Local box, embedded bring-up: after the manager spawns, `docker inspect <manager-container> --format '{{json .Mounts}}'` and confirm its `/root/manager-workspace` HostPath == the host `AGENTTEAMS_WORKSPACE_DIR`. `docker exec <manager> sh -c 'ls -la /root/manager-workspace && cat /root/manager-workspace/AGENTS.md \| head -3'` to confirm persona/state are present. | Spawned manager's `/root/manager-workspace` is backed by the real host workspace dir and contains its persona/`state.json`/registry — i.e. no actual mismatch. | If the manager comes up with an empty workspace, the two paths are genuinely crossed: align `EmbeddedConfig.WorkspaceDir` (host path) with whatever the spawned-manager HostPath should be, or fix the ps1 controller-bind target. | 0b | **P2** |
 | **S-GIT** | **Per-worker Gitea identity (source-verified) + own-PAT native checkout** (§2 step 4 / §4 decision #4 / §10.1 #4 / decisions #12,#13). The per-request `Authorization: Bearer <PAT>` override of gitea-mcp's env token is **source-verified** (gitea-mcp cloned, `operation.go:72-84` → `pkg/gitea/gitea.go:76-81` → `rest.go`; header > flag > env) — no longer the uncertainty. The **live** unknown is whether **Higress per-server `defaultCredential`** attaches that Bearer to the upstream gitea-mcp on the VPS Higress version. Sub-test: does a worker's **own scoped PAT** via a git credential helper work for clone+push (gitea-mcp is API-only, no working tree)? | Register **two** `mcp-gitea-<worker>` servers with **two different PATs** (two Gitea users) via `setup-mcp-proxy.sh`; from each worker's consumer, open a PR. Inspect the PR author in Gitea. **Sub-test:** from a Hermes sandbox, configure the **worker's own PAT** via a git credential helper (`store`/`cache` or `https://<user>:<token>@git.pawcommit.com`), `git clone` a test repo, edit, `git push`. **Also (v2.3): enumerate the live tool list/names/schemas exposed through `mcp-gitea-<worker>`** — the input to authoring the `gitea-operations` SKILL (Phase 2 step 3); don't assume GitHub parity. | PRs are attributed to **two different Gitea users** (Higress per-server `defaultCredential` → upstream Bearer overrides gitea-mcp's env token); the own-PAT clone+edit+push succeeds; **AND isolation holds (✓ #14):** worker A's consumer key gets 401/403 on worker B's `mcp-gitea-<worker>` after the helper has provisioned both (i.e. Step-5's all-workers broadcast was successfully avoided). | Higress **per-consumer request-transform** to inject the Bearer, or **per-worker gitea-mcp instances** (one process per PAT). ⚠️ The **Sudo-impersonation** variant is **non-viable** — gitea-mcp strips Sudo headers (zero source matches). | 2, 4 | **P1** |
 | **S9** | **Hermes inbound media path** (Phase 6 step 1, added v2.2; `overlay_adapter.py:179-239` `_handle_media_message` only intercepts `msgtype == "m.image"` — generic `m.file`/`m.audio`/`m.video` pass through to the **un-vendored** native adapter (`_matrix_native.py`, created only at Docker build), so there is no in-repo hook for the drag-drop-a-file case). | In the throwaway team, send an `m.file` attachment to the Hermes worker's room. Read worker logs + `docker exec` the container FS to see where (if anywhere) the native adapter downloads it. Then locate the native-adapter method that handles media (mirror the S3 chokepoint hunt) and prototype an overlay override that diverts the bytes / mxc URL into MinIO `shared/tasks/<id>/`. | A concrete overridable native-adapter method is identified and a prototype diverts one attached file into the MinIO task dir. | Route attachments through the **CoPaw lead** instead — its standalone channel's `_on_room_media_event` (`copaw_worker/matrix_channel.py:395-396` registration, `:1210` handler; generic for Image/File/Audio/Video) pushes to MinIO, and Hermes workers read from there. | 6 | **P2** |
 | **S10** | **Hermes Matrix sync-token persistence across recreate** (v2.3; the native mautrix adapter `_matrix_native.py` is created at Docker build time, not vendored — where does it persist its `next_batch`/sync token, and does that path fall inside `hermes_worker/sync.py`'s MinIO mirror scope?). | Locate the token path inside a running Hermes worker (`docker exec`, grep for next_batch / sync-token files under the agent home); check whether the sync mirror covers it. Then destroy+recreate the worker container while a message is sent to its room; observe whether the message is processed after restart or silently skipped. | Token survives recreate (or is safely re-derived) and the in-between message reaches the agent. | Add the token path to the MinIO mirror set (persist under `agents/<name>/`); if the adapter can't point at a persisted path, document that recreate = missed-message window and add a Hermes catch-up equivalent to Phase 1 step 4. | 3, 0b | **P1** |
-| **S-BACKUP** | **Snapshot restore path is unvalidated** (v2.3; `/root/backups/hiclaw-snapshot-*` exist, but no restore script or doc exists in-repo, and Tuwunel+MinIO+kine+Higress state co-mingle in one `hiclaw-data` volume). | On the VPS: inspect one snapshot's contents/format; hand-restore into a THROWAWAY embedded instance (fresh container, restored volume); verify Manager identity, rooms, MinIO task/project data, and Higress config (incl. worker PATs, #14) survive. Time it; write it down as `docs/restore.md`. | A documented, tested restore procedure exists; the snapshot demonstrably contains (or explicitly excludes) the Higress PAT config. | If snapshots are partial/unrestorable: fix the snapshot script scope (whole `hiclaw-data` volume + env file) **before** Phase 0 step 4's selective data import relies on them. | 0 | **P1** |
+| **S-BACKUP** | **Snapshot restore path is unvalidated** (v2.3; `/root/backups/agentteams-snapshot-*` exist, but no restore script or doc exists in-repo, and Tuwunel+MinIO+kine+Higress state co-mingle in one `agentteams-data` volume). | On the VPS: inspect one snapshot's contents/format; hand-restore into a THROWAWAY embedded instance (fresh container, restored volume); verify Manager identity, rooms, MinIO task/project data, and Higress config (incl. worker PATs, #14) survive. Time it; write it down as `docs/restore.md`. | A documented, tested restore procedure exists; the snapshot demonstrably contains (or explicitly excludes) the Higress PAT config. | If snapshots are partial/unrestorable: fix the snapshot script scope (whole `agentteams-data` volume + env file) **before** Phase 0 step 4's selective data import relies on them. | 0 | **P1** |
 
 #### Open TODOs
 
 - **S-GIT (live worker)**: confirm two `mcp-gitea-<worker>` servers with two different PATs yield PRs attributed to two different Gitea users (Higress per-server `defaultCredential` → upstream Bearer overrides gitea-mcp's env token) on the VPS Higress version; and that a Hermes sandbox can clone+push against `git.pawcommit.com` using the **worker's own PAT** via a git credential helper. If the per-server credential doesn't attach, fall back to per-consumer request-transform or per-worker gitea-mcp instances (Sudo impersonation is non-viable — gitea-mcp strips Sudo headers).
 - **S6 (human/live)**: confirm which MiMo hosting the operator's account actually has — `platform.xiaomimimo.com` vs OpenRouter vs WaveSpeedAI vs self-host vLLM — plus exact current model IDs (MiMo-V2.5 / V2.5-Pro candidates).
-- **S7 (live, both boxes)**: confirm `market.hiclaw.io:80` reachability from VPS and local before committing to nacos-based market-skill pre-fetch.
+- **S7 (live, both boxes)**: confirm `market.agentteams.io:80` reachability from VPS and local before committing to nacos-based market-skill pre-fetch.
 - **S2/S3 (live worker)**: both require the throwaway CoPaw-lead+Hermes-worker team standing up first; they cannot be pre-decided from this repo because the streaming lives in external packages.
 - **S9 (live worker)**: same throwaway team — the Hermes inbound-media hook hunt; if no clean override exists, fall back to lead-mediated attachment ingest (see row).
 - **Decision-log update**: record PASS/FAIL of each spike in §8 once run; S4's two-site finding should be folded into decision #10's implementation note.
@@ -1528,7 +1528,7 @@ Four functional Teams (the plan's set; the code implies no others — there is n
 | `marketing-social` | `copaw` (forced) | `hermes` | Copy, social content, campaign assets, scheduling/publishing. |
 | `gamedev` | `copaw` (forced) | `hermes` | Game implementation + narrative: Godot projects, gameplay, level/asset work, story/dialogue. |
 
-Per Phase 2b decision #7, set `spec.modelProvider` on the leader **and** every member (no team-wide field exists — `teams.hiclaw.io.yaml:85-87` leader, `:262-264` worker only). Suggested pins from the plan: `engineering` → `deepseek`; `gamedev` → `ollama`; `design`/`marketing-social` → **TODO (operator decision)**.
+Per Phase 2b decision #7, set `spec.modelProvider` on the leader **and** every member (no team-wide field exists — `teams.agentteams.io.yaml:85-87` leader, `:262-264` worker only). Suggested pins from the plan: `engineering` → `deepseek`; `gamedev` → `ollama`; `design`/`marketing-social` → **TODO (operator decision)**.
 
 #### (2) Migration table (existing persona → target team)
 
@@ -1549,9 +1549,9 @@ Built-ins are runtime-fixed and need **no** row: a `hermes` worker auto-gets `fi
 
 For each persona row above:
 
-1. **Add the member to its Team CR** (create the Team first if it doesn't exist). Use **YAML + `hiclaw apply -f`**, *not* the `hiclaw create team` CLI — the CLI forces `runtime: copaw` on all members (`create-team.md:21`) and assigns `copaw-worker-agent` skills (`create-team.md:62`); only YAML lets you set `runtime: hermes` per member:
+1. **Add the member to its Team CR** (create the Team first if it doesn't exist). Use **YAML + `agt apply -f`**, *not* the `agt create team` CLI — the CLI forces `runtime: copaw` on all members (`create-team.md:21`) and assigns `copaw-worker-agent` skills (`create-team.md:62`); only YAML lets you set `runtime: hermes` per member:
    ```yaml
-   apiVersion: hiclaw.io/v1beta1
+   apiVersion: agentteams.io/v1beta1
    kind: Team
    metadata:
      name: gamedev
@@ -1567,14 +1567,14 @@ For each persona row above:
          soul: "…"                  # carry over SOUL/role text
          agents: "…"                # carry over AGENTS rules
    ```
-   Carry `identity`/`soul`/`agents` from the old standalone Worker CR (these generate IDENTITY.md/SOUL.md/AGENTS.md — `workers.hiclaw.io.yaml:38-46`). `runtime`, `modelProvider`, `model`, `image`, `skills` are all per-member fields on `Team.spec.workers[]` (`teams.hiclaw.io.yaml:255-282`).
+   Carry `identity`/`soul`/`agents` from the old standalone Worker CR (these generate IDENTITY.md/SOUL.md/AGENTS.md — `workers.agentteams.io.yaml:38-46`). `runtime`, `modelProvider`, `model`, `image`, `skills` are all per-member fields on `Team.spec.workers[]` (`teams.agentteams.io.yaml:255-282`).
 2. **Map persona → skills.** Built-ins arrive via the `hermes` image automatically. Attach on-demand skills after the worker exists:
    ```bash
-   bash /opt/hiclaw/agent/skills/worker-management/scripts/push-worker-skills.sh \
+   bash /opt/agentteams/agent/skills/worker-management/scripts/push-worker-skills.sh \
      --worker narrative-writer --add-skill gitea-operations
    ```
-   (Skills can also be declared in `workers[].skills` for built-in HiClaw skills, or `workers[].remoteSkills` for `nacos://` registry skills — `teams.hiclaw.io.yaml:276-311`.)
-3. **`hiclaw apply -f team.yaml`.** The Team reconciler provisions the Matrix Team Room + Leader DM, creates the member Worker CR, injects coordination context into the Leader's AGENTS.md, and sets up shared team MinIO storage (`create-team.md:58-66`).
+   (Skills can also be declared in `workers[].skills` for built-in AgentTeams skills, or `workers[].remoteSkills` for `nacos://` registry skills — `teams.agentteams.io.yaml:276-311`.)
+3. **`agt apply -f team.yaml`.** The Team reconciler provisions the Matrix Team Room + Leader DM, creates the member Worker CR, injects coordination context into the Leader's AGENTS.md, and sets up shared team MinIO storage (`create-team.md:58-66`).
 4. **Validate interop (Phase 3 step 4 / §7 spike / §10.3 S2-S3).** Confirm the CoPaw lead ↔ Hermes worker round-trip over Matrix (`@mention` → task → result) and that the Hermes worker reads the `gitea-operations` skill. Run this on **one** throwaway team before migrating all 14.
 
 #### ⚠️ Destructive runtime-switch caveat

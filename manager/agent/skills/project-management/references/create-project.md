@@ -44,7 +44,7 @@ execution: phases, tasks, assignments). If the project also needs one or more **
 provisioned** for the team, add `--team` and repeatable `--repo`:
 
 ```bash
-bash /opt/hiclaw/agent/skills/project-management/scripts/create-project.sh \
+bash /opt/agentteams/agent/skills/project-management/scripts/create-project.sh \
   --id "${PROJECT_ID}" \
   --title "<title>" \
   --workers "worker1,worker2,worker3" \
@@ -56,8 +56,8 @@ bash /opt/hiclaw/agent/skills/project-management/scripts/create-project.sh \
 
 Repeat `--depends-on` for each upstream Project CR metadata name in the same namespace. Dependencies are recorded on the Project CR only; they do not modify `plan.md`.
 
-This additionally emits a `Project` CR YAML (`apiVersion: hiclaw.io/v1beta1`, `kind: Project` —
-see `hiclaw-controller/api/v1beta1/types.go` `ProjectSpec` for the exact schema) and runs
+This additionally emits a `Project` CR YAML (`apiVersion: agentteams.io/v1beta1`, `kind: Project` —
+see `agentteams-controller/api/v1beta1/types.go` `ProjectSpec` for the exact schema) and runs
 `agt apply -f` against it — a **second, federated document** (repo/access provisioning),
 sharing the same project id as `meta.json` but never merged into it (decision #16). `--team` and
 `--repo` are optional; every `access` value must be `rw` or `ro`; omitting both flags is a no-op

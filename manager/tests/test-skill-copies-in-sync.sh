@@ -1,7 +1,7 @@
 #!/bin/bash
 # test-skill-copies-in-sync.sh
-# Drift guard: hiclaw-find-skill.sh and push-shared.sh are duplicated across
-# multiple worker-agent runtimes (and, for hiclaw-find-skill.sh, the plugin
+# Drift guard: agentteams-find-skill.sh and push-shared.sh are duplicated across
+# multiple worker-agent runtimes (and, for agentteams-find-skill.sh, the plugin
 # skill copy). These copies must stay byte-identical to their canonical
 # source. This test hashes every copy in each set and fails, printing which
 # files differ, if any copy has drifted from the canonical file.
@@ -16,13 +16,13 @@ FAIL=0
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-# hiclaw-find-skill.sh: canonical + copies
-FIND_SKILL_CANONICAL="${PROJECT_ROOT}/manager/agent/worker-agent/skills/find-skills/scripts/hiclaw-find-skill.sh"
+# agentteams-find-skill.sh: canonical + copies
+FIND_SKILL_CANONICAL="${PROJECT_ROOT}/manager/agent/worker-agent/skills/find-skills/scripts/agentteams-find-skill.sh"
 FIND_SKILL_COPIES=(
-    "${PROJECT_ROOT}/manager/agent/copaw-worker-agent/skills/find-skills/scripts/hiclaw-find-skill.sh"
-    "${PROJECT_ROOT}/manager/agent/hermes-worker-agent/skills/find-skills/scripts/hiclaw-find-skill.sh"
-    "${PROJECT_ROOT}/manager/agent/openhuman-worker-agent/skills/find-skills/scripts/hiclaw-find-skill.sh"
-    "${PROJECT_ROOT}/plugins/teamharness/skills/agent/find-skills/scripts/hiclaw-find-skill.sh"
+    "${PROJECT_ROOT}/manager/agent/copaw-worker-agent/skills/find-skills/scripts/agentteams-find-skill.sh"
+    "${PROJECT_ROOT}/manager/agent/hermes-worker-agent/skills/find-skills/scripts/agentteams-find-skill.sh"
+    "${PROJECT_ROOT}/manager/agent/openhuman-worker-agent/skills/find-skills/scripts/agentteams-find-skill.sh"
+    "${PROJECT_ROOT}/plugins/teamharness/skills/agent/find-skills/scripts/agentteams-find-skill.sh"
 )
 
 # push-shared.sh: canonical + copies
@@ -83,7 +83,7 @@ check_set() {
 echo "=== Skill-copy drift guard ==="
 echo ""
 
-check_set "hiclaw-find-skill.sh" "${FIND_SKILL_CANONICAL}" "${FIND_SKILL_COPIES[@]}"
+check_set "agentteams-find-skill.sh" "${FIND_SKILL_CANONICAL}" "${FIND_SKILL_COPIES[@]}"
 check_set "push-shared.sh" "${PUSH_SHARED_CANONICAL}" "${PUSH_SHARED_COPIES[@]}"
 
 echo ""

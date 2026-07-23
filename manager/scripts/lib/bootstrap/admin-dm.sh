@@ -1,7 +1,7 @@
 #!/bin/bash
 # bootstrap/admin-dm.sh - Admin DM room creation and welcome message
 
-SEND_MANAGER_MESSAGE="/opt/hiclaw/scripts/lib/send-manager-message.sh"
+SEND_MANAGER_MESSAGE="/opt/agentteams/scripts/lib/send-manager-message.sh"
 
 bootstrap_setup_admin_dm() {
     if [ "${AGENTTEAMS_RUNTIME}" = "k8s" ]; then
@@ -62,7 +62,7 @@ bootstrap_setup_admin_dm() {
     fi
 
     if [ -n "${DM_ROOM_ID}" ]; then
-        local STATE_SCRIPT="/opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh"
+        local STATE_SCRIPT="/opt/agentteams/agent/skills/task-management/scripts/manage-state.sh"
         if [ -f "${STATE_SCRIPT}" ]; then
             bash "${STATE_SCRIPT}" --action init 2>/dev/null || true
             bash "${STATE_SCRIPT}" --action set-admin-dm --room-id "${DM_ROOM_ID}" 2>/dev/null || true

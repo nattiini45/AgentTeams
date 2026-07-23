@@ -11,7 +11,7 @@ set -euo pipefail
 
 TASK_ID=""
 TASK_DIR=""
-TASK_ROOT="${HICLAW_TASK_ROOT:-/root/hiclaw-fs}"
+TASK_ROOT="${AGENTTEAMS_TASK_ROOT:-/root/agentteams-fs}"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in

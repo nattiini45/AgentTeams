@@ -21,7 +21,7 @@ def _make_sync(tmp_path):
         endpoint="minio:9000",
         access_key="tt",
         secret_key="secret",
-        bucket="hiclaw",
+        bucket="agt",
         worker_name="tt",
         local_dir=tmp_path / "worker",
     )

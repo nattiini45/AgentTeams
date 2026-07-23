@@ -35,12 +35,12 @@ test('loadConfig reads every documented env var, never hardcoding secrets/bucket
       PORT: '9999',
       AGENTTEAMS_DASHBOARD_USERNAME: 'admin',
       AGENTTEAMS_DASHBOARD_PASSWORD_FILE: pwFile,
-      HICLAW_CONTROLLER_URL: 'http://controller.internal:8080',
-      HICLAW_AUTH_TOKEN_FILE: '/tmp/tok',
+      AGENTTEAMS_CONTROLLER_URL: 'http://controller.internal:8080',
+      AGENTTEAMS_AUTH_TOKEN_FILE: '/tmp/tok',
       MINIO_ENDPOINT: 'http://minio.internal:9000',
       MINIO_ACCESS_KEY: 'ak',
       MINIO_SECRET_KEY: 'sk',
-      HICLAW_FS_BUCKET: 'custom-bucket',
+      AGENTTEAMS_FS_BUCKET: 'custom-bucket',
     };
     const cfg = loadConfig(env);
     assert.equal(cfg.port, 9999);

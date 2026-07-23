@@ -32,7 +32,7 @@ def resolve_workspace() -> Path:
     if home:
         return Path(home)
     worker_name = os.environ.get("AGENTTEAMS_WORKER_NAME", "")
-    root = Path(os.environ.get("AGENTTEAMS_ROOT", "/root/hiclaw-fs"))
+    root = Path(os.environ.get("AGENTTEAMS_ROOT", "/root/agentteams-fs"))
     return root / "agents" / worker_name
 
 

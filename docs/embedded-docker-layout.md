@@ -4,17 +4,17 @@ AgentTeams supports several local deployment shapes. This document clarifies whi
 
 ## Current supported local install (embedded stack)
 
-**Installer:** `install/hiclaw-install.sh` / `install/hiclaw-install.ps1`
+**Installer:** `install/agentteams-install.sh` / `install/agentteams-install.ps1`
 
 **Architecture since v1.1.0:**
 
 | Component | Image | Process model |
 |-----------|-------|---------------|
-| Infrastructure + controller | `agentteams-embedded` (`hiclaw/hiclaw-embedded`) | `supervisord` via `hiclaw-controller/Dockerfile.embedded` + `hiclaw-controller/supervisord.embedded.conf` |
+| Infrastructure + controller | `agentteams-embedded` (`agt/agt-embedded`) | `supervisord` via `agentteams-controller/Dockerfile.embedded` + `agentteams-controller/supervisord.embedded.conf` |
 | Manager agent | `agentteams-manager` or `agentteams-manager-copaw` | Single process (`start-manager-agent.sh`); **no** manager supervisord |
 | Workers | `agentteams-worker`, `agentteams-copaw-worker`, etc. | Created by controller via Docker socket |
 
-The embedded controller container runs Higress, Tuwunel, MinIO, Element Web, and `hiclaw-controller` under **one** supervisord config (`supervisord.embedded.conf`). The Manager is a **separate slim container** that talks to infrastructure over the Docker network.
+The embedded controller container runs Higress, Tuwunel, MinIO, Element Web, and `agentteams-controller` under **one** supervisord config (`supervisord.embedded.conf`). The Manager is a **separate slim container** that talks to infrastructure over the Docker network.
 
 Shared install defaults (ports, image names, version gates) live in [`install/defaults.env`](../install/defaults.env).
 

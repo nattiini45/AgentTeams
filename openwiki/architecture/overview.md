@@ -91,7 +91,7 @@ One **embedded** controller container bundles Higress, Tuwunel, MinIO, Element W
        (lightweight)                      (lightweight)
 ```
 
-Install via: `bash <(curl -sSL https://higress.ai/hiclaw/install.sh)`
+Install via: `bash <(curl -sSL https://higress.ai/agentteams/install.sh)`
 
 ### Kubernetes (Helm)
 
@@ -105,7 +105,7 @@ Each component runs as its own Pod. The controller reconciles Custom Resources t
 - **Manager** — Pod created from Manager CR
 - **Workers** — Pods created from Worker CRs
 
-Install via: `helm install hiclaw higress.io/hiclaw -n hiclaw-system`
+Install via: `helm install agt higress.io/agentteams -n agentteams-system`
 
 ## Custom Resource Definitions (CRDs)
 

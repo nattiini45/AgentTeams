@@ -3,8 +3,8 @@
 **CRITICAL**: When creating, deleting, or otherwise managing Workers / Teams / Projects / Humans:
 
 - ✅ **ALWAYS USE**: the `agt` CLI (`agt create worker`, `agt get workers`, `agt delete worker`, `agt create team`, `agt manager-state`, etc.) and the helper scripts under `~/skills/*/scripts/`
-- **OpenClaw Manager task board**: prefer `agt manager-state` (or `manage-state.sh`, which delegates to it). Set `HICLAW_MANAGER_STATE_IMPL=shell` to force the legacy shell implementation.
-- ❌ **NEVER USE**: direct `curl` to `${AGENTTEAMS_CONTROLLER_URL}/api/v1/...` (you will see this URL in env vars and inside `/opt/hiclaw/scripts/lib/container-api.sh` — those are for internal supervisord / startup use only, **NOT** for your turn)
+- **OpenClaw Manager task board**: prefer `agt manager-state` (or `manage-state.sh`, which delegates to it). Set `AGENTTEAMS_MANAGER_STATE_IMPL=shell` to force the legacy shell implementation.
+- ❌ **NEVER USE**: direct `curl` to `${AGENTTEAMS_CONTROLLER_URL}/api/v1/...` (you will see this URL in env vars and inside `/opt/agentteams/scripts/lib/container-api.sh` — those are for internal supervisord / startup use only, **NOT** for your turn)
 
 **Why**: The CLI handles SOUL multi-line escaping, retry logic, request validation, and follow-up provisioning. Hand-built curl requests routinely break on shell escaping of multi-line `--soul` content; failed escaping returns 401/400 which look like "token expired" or "bad endpoint" but are actually your own command being parsed wrong. If `agt create worker` appears slow or stuck, run `agt get workers -o json` to confirm the actual worker phase — do **NOT** bypass the CLI.
 

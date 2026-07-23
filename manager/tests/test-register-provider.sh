@@ -8,7 +8,7 @@
 # needed), then asserts:
 #
 #   1. Fresh name -> POST source+provider+route with the 5c body shapes and
-#      route name hiclaw-<name>-route.
+#      route name agt-<name>-route.
 #   2. Existing name -> PUTs (idempotent upsert), same shapes.
 #   3. Name with a slash, or missing key, is a hard error before any call.
 #   4. Stale cookie (shim returns the session-expired HTML page) -> exactly
@@ -64,8 +64,8 @@ assert_not_contains() {
 TMPDIR_ROOT=$(mktemp -d)
 trap 'rm -rf "${TMPDIR_ROOT}"' EXIT
 
-# ── Fake /opt/hiclaw tree the script sources from ────────────────────────────
-FAKE_ROOT="${TMPDIR_ROOT}/fake-opt-hiclaw"
+# ── Fake /opt/agentteams tree the script sources from ────────────────────────────
+FAKE_ROOT="${TMPDIR_ROOT}/fake-opt-agentteams"
 mkdir -p "${FAKE_ROOT}/scripts/lib"
 cp "${PROJECT_ROOT}/manager/scripts/lib/base.sh" "${FAKE_ROOT}/scripts/lib/base.sh"
 sed -i 's/\r$//' "${FAKE_ROOT}/scripts/lib/base.sh"
@@ -76,8 +76,8 @@ sed -i 's/\r$//' "${FAKE_ROOT}/scripts/lib/gateway-api.sh"
 # and rewrite the two hardcoded source paths so they resolve inside FAKE_ROOT.
 RUN_SCRIPT="${TMPDIR_ROOT}/register-provider.sh"
 sed 's/\r$//' "${TARGET_SCRIPT}" > "${RUN_SCRIPT}"
-sed -i "s#source /opt/hiclaw/scripts/lib/base.sh#source ${FAKE_ROOT}/scripts/lib/base.sh#" "${RUN_SCRIPT}"
-sed -i "s#source /opt/hiclaw/scripts/lib/gateway-api.sh#source ${FAKE_ROOT}/scripts/lib/gateway-api.sh#" "${RUN_SCRIPT}"
+sed -i "s#source /opt/agentteams/scripts/lib/base.sh#source ${FAKE_ROOT}/scripts/lib/base.sh#" "${RUN_SCRIPT}"
+sed -i "s#source /opt/agentteams/scripts/lib/gateway-api.sh#source ${FAKE_ROOT}/scripts/lib/gateway-api.sh#" "${RUN_SCRIPT}"
 chmod +x "${RUN_SCRIPT}"
 
 # bash -n sanity check up front (also covered at the milestone level, but
@@ -230,7 +230,7 @@ assert_contains "provider body is openai type" '"type":"openai","name":"ollama"'
 assert_contains "provider body carries the key" '"tokens":["ollama-test-key"]' "${log1}"
 assert_contains "provider body carries openaiCustomUrl" '"openaiCustomUrl":"https://ollama.com/v1"' "${log1}"
 assert_contains "route POSTed" "path=http://127.0.0.1:8001/v1/ai/routes" "${log1}"
-assert_contains "route uses hiclaw-<name>-route naming" '"name":"hiclaw-ollama-route"' "${log1}"
+assert_contains "route uses agt-<name>-route naming" '"name":"agentteams-ollama-route"' "${log1}"
 assert_contains "route matches model prefix name/" '"modelPredicate":{"matchType":"PRE","matchValue":"ollama/"}' "${log1}"
 assert_contains "route consumers start manager-only" '"allowedConsumers":["manager"]' "${log1}"
 
@@ -276,7 +276,7 @@ home5=$(new_home)
 rc=$(run_register_provider "${home5}" 0 -- ollama --delete)
 log5=$(cat "${CALL_LOG}")
 assert_eq "--delete exits 0" "0" "${rc}"
-assert_contains "delete removes the route" "method=DELETE path=http://127.0.0.1:8001/v1/ai/routes/hiclaw-ollama-route" "${log5}"
+assert_contains "delete removes the route" "method=DELETE path=http://127.0.0.1:8001/v1/ai/routes/agentteams-ollama-route" "${log5}"
 assert_contains "delete removes the provider" "method=DELETE path=http://127.0.0.1:8001/v1/ai/providers/ollama" "${log5}"
 assert_contains "delete removes the service-source" "method=DELETE path=http://127.0.0.1:8001/v1/service-sources/ollama" "${log5}"
 
@@ -292,7 +292,7 @@ stdout5b=$(cat "${home5b}/stdout.log")
 relogin_count5b=$(printf '%s\n' "${log5b}" | grep -c 'path=http://127.0.0.1:8001/session/login' || true)
 assert_eq "--delete with stale cookie still exits 0" "0" "${rc}"
 assert_eq "--delete with stale cookie does exactly one re-login" "1" "${relogin_count5b}"
-assert_contains "delete removes the route after re-login" "method=DELETE path=http://127.0.0.1:8001/v1/ai/routes/hiclaw-ollama-route" "${log5b}"
+assert_contains "delete removes the route after re-login" "method=DELETE path=http://127.0.0.1:8001/v1/ai/routes/agentteams-ollama-route" "${log5b}"
 assert_contains "delete removes the provider after re-login" "method=DELETE path=http://127.0.0.1:8001/v1/ai/providers/ollama" "${log5b}"
 assert_contains "delete removes the service-source after re-login" "method=DELETE path=http://127.0.0.1:8001/v1/service-sources/ollama" "${log5b}"
 assert_contains "--delete with stale cookie reports final success" "Provider 'ollama' removed." "${stdout5b}"

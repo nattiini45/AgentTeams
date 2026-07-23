@@ -24,7 +24,6 @@ class WorkerConfig:
         self.worker_cr_name = (
             worker_cr_name
             or os.environ.get("AGENTTEAMS_WORKER_CR_NAME")
-            or os.environ.get("HICLAW_WORKER_CR_NAME")
             or os.environ.get("COPAW_WORKER_CR_NAME")
             or worker_name
         )
@@ -43,4 +42,6 @@ def _default_install_dir() -> Path:
     if configured := os.environ.get("COPAW_INSTALL_DIR"):
         return Path(configured)
 
-    return Path.home() / ".agentteams-worker"
+    # Prefer HOME so tests (and Unix shells) can override the install root.
+    home = os.environ.get("HOME") or os.environ.get("USERPROFILE")
+    return (Path(home) if home else Path.home()) / ".agentteams-worker"

@@ -50,8 +50,8 @@ HEALTH_SUMMARY='{"total": 0, "working": 0, "stalled": 0, "zombie": 0, "idle": 0,
 HEALTH_SCRIPT="${HOME}/skills/worker-management/scripts/worker-health-report.sh"
 if [ -f "$HEALTH_SCRIPT" ]; then
     HEALTH_SUMMARY=$(bash "$HEALTH_SCRIPT" 2>/dev/null | jq -c '.summary' 2>/dev/null || echo "$HEALTH_SUMMARY")
-elif [ -f "/opt/hiclaw/agent/skills/worker-management/scripts/worker-health-report.sh" ]; then
-    HEALTH_SUMMARY=$(bash /opt/hiclaw/agent/skills/worker-management/scripts/worker-health-report.sh 2>/dev/null | jq -c '.summary' 2>/dev/null || echo "$HEALTH_SUMMARY")
+elif [ -f "/opt/agentteams/agent/skills/worker-management/scripts/worker-health-report.sh" ]; then
+    HEALTH_SUMMARY=$(bash /opt/agentteams/agent/skills/worker-management/scripts/worker-health-report.sh 2>/dev/null | jq -c '.summary' 2>/dev/null || echo "$HEALTH_SUMMARY")
 fi
 
 # Deferred tasks (tasks with "deferred": true in state.json)

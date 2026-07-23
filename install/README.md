@@ -2,7 +2,7 @@
 
 One-click installation script for AgentTeams Manager and Worker Agents.
 
-Shared defaults (ports, image names, version gates) are defined in [`defaults.env`](defaults.env). Both `hiclaw-install.sh` and `hiclaw-install.ps1` source/read that file; override any value via environment variable before running the installer.
+Shared defaults (ports, image names, version gates) are defined in [`defaults.env`](defaults.env). Both `agentteams-install.sh` and `agentteams-install.ps1` source/read that file; override any value via environment variable before running the installer.
 
 For Docker layout (embedded controller vs legacy all-in-one), see [`docs/embedded-docker-layout.md`](../docs/embedded-docker-layout.md).
 

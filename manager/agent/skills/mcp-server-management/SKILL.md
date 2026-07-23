@@ -5,7 +5,7 @@ description: Use when admin asks to configure an MCP tool server (e.g., GitHub, 
 
 # MCP Server Management
 
-MCP Servers expose REST APIs as tools on the Higress AI Gateway, or proxy existing MCP servers (SSE/StreamableHTTP). Use `setup-mcp-server.sh` to create/update from YAML templates (`/opt/hiclaw/configs/mcp-templates/mcp-*.yaml`), or `setup-mcp-proxy.sh` to proxy existing MCP servers.
+MCP Servers expose REST APIs as tools on the Higress AI Gateway, or proxy existing MCP servers (SSE/StreamableHTTP). Use `setup-mcp-server.sh` to create/update from YAML templates (`/opt/agentteams/configs/mcp-templates/mcp-*.yaml`), or `setup-mcp-proxy.sh` to proxy existing MCP servers.
 
 ## Gotchas
 
@@ -29,4 +29,4 @@ Read the relevant doc **before** executing. Do not load all of them.
 | Generate YAML for a custom API integration | `references/custom-yaml-guide.md` |
 | List, inspect, delete servers, or manage consumer access manually | `references/api-commands.md` |
 | Proxy an existing MCP server (SSE/HTTP) | `references/setup-mcp-proxy.md` |
-| Need the GitHub MCP tool definitions | `/opt/hiclaw/configs/mcp-templates/mcp-github.yaml` (developer reference; use `setup-mcp-server.sh github <token>` to install) |
+| Need the GitHub MCP tool definitions | `/opt/agentteams/configs/mcp-templates/mcp-github.yaml` (developer reference; use `setup-mcp-server.sh github <token>` to install) |

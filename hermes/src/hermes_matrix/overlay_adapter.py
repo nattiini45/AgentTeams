@@ -39,7 +39,7 @@ except Exception:  # pragma: no cover - defensive fallback if mautrix isn't impo
 # mautrix's ``EventID`` (a ``str`` subtype); returning ``None`` here would
 # break callers that treat the result as an event id (e.g. building an
 # ``m.replace`` ``relates_to`` for streaming edits).
-_SUPPRESSED_EVENT_ID = _EventID("$hiclaw-suppressed")
+_SUPPRESSED_EVENT_ID = _EventID("$agentteams-suppressed")
 
 logger = logging.getLogger(__name__)
 _IMAGE_FILENAME_EXTENSIONS = frozenset({

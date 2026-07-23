@@ -119,9 +119,9 @@ Actually, simplest viable approach: **Prometheus metrics already exist** (upstre
 
 ### Insertion points
 
-**1. Existing metrics** — `hiclaw-controller/internal/server/app.go:651`
+**1. Existing metrics** — `agentteams-controller/internal/server/app.go:651`
 The plan says: `BindAddress:"0"` → `":8091"` to enable the Prometheus endpoint.
-Check `hiclaw-controller/internal/server/metrics.go` (if it exists) or wherever the Prometheus
+Check `agentteams-controller/internal/server/metrics.go` (if it exists) or wherever the Prometheus
 registry is registered. Add per-consumer counters:
 
 ```go
@@ -135,7 +135,7 @@ var LLMAuthorizationTotal = prometheus.NewCounterVec(
 )
 ```
 
-**2. Count in `modifyAIRoutes`** — `hiclaw-controller/internal/gateway/higress.go:189`
+**2. Count in `modifyAIRoutes`** — `agentteams-controller/internal/gateway/higress.go:189`
 Inside `modifyAIRoutes`, when `add=true` and a route is successfully modified, increment the counter:
 ```go
 // After successful route authorization:
@@ -147,7 +147,7 @@ The dashboard proxy already polls the controller. Add a `/api/v1/metrics` proxy 
 forwards to the controller's `:8091/metrics` endpoint, then parse the `agentteams_llm_authorizations_total`
 series in the dashboard's poll loop and display per-worker activity counts.
 
-**4. WorkerResponse extension** — `hiclaw-controller/internal/server/types.go:61`
+**4. WorkerResponse extension** — `agentteams-controller/internal/server/types.go:61`
 Add optional fields to what the dashboard already receives:
 ```go
 type WorkerResponse struct {
@@ -156,14 +156,14 @@ type WorkerResponse struct {
 }
 ```
 
-**5. Populate in `workerToResponse`** — `hiclaw-controller/internal/server/resource_handler.go:1147`
+**5. Populate in `workerToResponse`** — `agentteams-controller/internal/server/resource_handler.go:1147`
 Query the Prometheus registry for the worker's consumer counter and fill the field. Or simpler:
 maintain an in-memory `map[consumer]map[route]int` in the LifecycleHandler (like `h.ready`),
 reset on each reconcile cycle, and expose the running total.
 
 ### Simpler alternative (no Go changes)
 Add a **heartbeat field** to the CoPaw worker's heartbeat report. The worker already calls
-`hiclaw worker report-ready` / heartbeat. Add `llm_calls_since_last_heartbeat` to the heartbeat
+`agt worker report-ready` / heartbeat. Add `llm_calls_since_last_heartbeat` to the heartbeat
 payload — the worker knows how many LLM calls it made since last heartbeat (it's the one making them).
 The controller stores it in `WorkerStatus` and the dashboard displays it.
 
@@ -199,7 +199,7 @@ extends to render cross-project edges.
 
 ### Insertion points
 
-**1. `ProjectSpec`** — `hiclaw-controller/api/v1beta1/types.go:863`
+**1. `ProjectSpec`** — `agentteams-controller/api/v1beta1/types.go:863`
 ```go
 type ProjectSpec struct {
     Team        string        `json:"team"`
@@ -212,7 +212,7 @@ type ProjectSpec struct {
 }
 ```
 
-**2. `ProjectStatus`** — `hiclaw-controller/api/v1beta1/types.go:895`
+**2. `ProjectStatus`** — `agentteams-controller/api/v1beta1/types.go:895`
 ```go
 type ProjectStatus struct {
     // ... existing fields ...
@@ -227,7 +227,7 @@ type ProjectDependency struct {
 }
 ```
 
-**3. Reconciler** — `hiclaw-controller/internal/controller/project_controller.go:60`
+**3. Reconciler** — `agentteams-controller/internal/controller/project_controller.go:60`
 In `Reconcile`, after the existing storage/manifest logic, resolve `spec.dependsOn`:
 ```go
 // After existing reconcile logic:
@@ -293,7 +293,7 @@ Add a `Health` summary to `WorkerResponse` with a 5-point check:
 
 ### Insertion points
 
-**1. `WorkerStatus`** — `hiclaw-controller/api/v1beta1/types.go:376`
+**1. `WorkerStatus`** — `agentteams-controller/api/v1beta1/types.go:376`
 Add health fields:
 ```go
 type WorkerStatus struct {
@@ -319,7 +319,7 @@ type HealthCheck struct {
 }
 ```
 
-**2. Populate in `GetWorkerRuntimeStatus`** — `hiclaw-controller/internal/server/lifecycle_handler.go:177`
+**2. Populate in `GetWorkerRuntimeStatus`** — `agentteams-controller/internal/server/lifecycle_handler.go:177`
 After the existing backend status check, run health probes:
 
 ```go
@@ -378,7 +378,7 @@ Replace the single "Phase: Running" badge with a 5-dot health strip:
 ```
 Color-coded: green (healthy), yellow (degraded), red (down), gray (unknown).
 
-**6. The team-leader readiness 403 bug** — `hiclaw-controller/internal/auth/authorizer.go:90`
+**6. The team-leader readiness 403 bug** — `agentteams-controller/internal/auth/authorizer.go:90`
 `authorizeTeamLeaderWorkerAction` already lists `ActionReady` (line 98):
 ```go
 case ActionWake, ActionSleep, ActionEnsureReady, ActionReady, ActionStatus:
