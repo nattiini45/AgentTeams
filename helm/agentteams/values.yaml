@@ -101,9 +101,9 @@ gateway:
 storage:
   provider: minio             # minio | oss
   mode: managed               # managed | existing
-  # Canonical bucket name after the AgentTeams rename (was hiclaw-fs in older installs).
-  # Existing clusters that still use hiclaw-fs must override storage.bucket; this chart
-  # does not auto-migrate bucket contents.
+  # Canonical AgentTeams bucket name. Older pre-rename installs used a different
+  # default bucket; override storage.bucket to keep those clusters working — this
+  # chart does not auto-migrate bucket contents.
   bucket: "agentteams-storage"
   # Required when provider=oss:
   oss:
