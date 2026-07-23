@@ -31,6 +31,9 @@ type ServerDeps struct {
 	SocketPath     string               // Docker proxy (embedded only)
 	MatrixConfig   matrix.Config        // for AppService rotation endpoint
 	Provisioner    *service.Provisioner // for Matrix token refresh
+	SoloOperator   bool                 // AGENTTEAMS_SOLO_OPERATOR; forces PeerMentions + solo welcome
+	GatewayDataPlaneURL string          // gateway data-plane URL for LLM health probes
+	ManagerStateFile    string          // AGENTTEAMS_MANAGER_STATE_FILE; path to Manager state.json
 }
 
 // HTTPServer serves the unified controller REST API.
@@ -62,7 +65,10 @@ func NewHTTPServer(addr string, deps ServerDeps) *HTTPServer {
 	mux.Handle("GET /api/v1/version", mw.Authenticate(http.HandlerFunc(sh.Version)))
 
 	// --- Declarative resource CRUD ---
+	workerHealth := NewWorkerHealthProber(deps.Client, deps.Namespace, deps.Gateway, deps.GatewayDataPlaneURL)
 	rh := NewResourceHandler(deps.Client, deps.Namespace, deps.Backend, deps.ControllerName)
+	rh.SetWorkerHealthProber(workerHealth)
+	rh.SetSoloOperator(deps.SoloOperator)
 	nameFn := authpkg.NameFromPath
 
 	// Workers
@@ -92,12 +98,28 @@ func NewHTTPServer(addr string, deps ServerDeps) *HTTPServer {
 	mux.Handle("PUT /api/v1/managers/{name}", mw.RequireAuthz(authpkg.ActionUpdate, "manager", nameFn)(http.HandlerFunc(rh.UpdateManager)))
 	mux.Handle("DELETE /api/v1/managers/{name}", mw.RequireAuthz(authpkg.ActionDelete, "manager", nameFn)(http.HandlerFunc(rh.DeleteManager)))
 
+	// Projects
+	mux.Handle("POST /api/v1/projects", mw.RequireAuthz(authpkg.ActionCreate, "project", nil)(http.HandlerFunc(rh.CreateProject)))
+	mux.Handle("GET /api/v1/projects", mw.RequireAuthz(authpkg.ActionList, "project", nil)(http.HandlerFunc(rh.ListProjects)))
+	mux.Handle("GET /api/v1/projects/{name}", mw.RequireAuthz(authpkg.ActionGet, "project", nameFn)(http.HandlerFunc(rh.GetProject)))
+	mux.Handle("PUT /api/v1/projects/{name}", mw.RequireAuthz(authpkg.ActionUpdate, "project", nameFn)(http.HandlerFunc(rh.UpdateProject)))
+	mux.Handle("DELETE /api/v1/projects/{name}", mw.RequireAuthz(authpkg.ActionDelete, "project", nameFn)(http.HandlerFunc(rh.DeleteProject)))
+
+	// --- Manager tasks (state.json passthrough) ---
+	mth := NewManagerTasksHandler(func() string { return deps.ManagerStateFile })
+	mux.Handle("GET /api/v1/manager-tasks", mw.RequireAuthz(authpkg.ActionGet, "manager", nil)(http.HandlerFunc(mth.GetManagerTasks)))
+
+	// --- Message injection ---
+	msgh := NewMessageHandler(deps.Client, deps.Provisioner, deps.Namespace)
+	mux.Handle("POST /api/v1/managers/{name}/message", mw.RequireAuthz(authpkg.ActionUpdate, "manager", nameFn)(http.HandlerFunc(msgh.SendManagerMessage)))
+	mux.Handle("POST /api/v1/teams/{name}/message", mw.RequireAuthz(authpkg.ActionUpdate, "team", nameFn)(http.HandlerFunc(msgh.SendTeamMessage)))
+
 	// --- Package upload ---
 	ph := NewPackageHandler(deps.OSS)
 	mux.Handle("POST /api/v1/packages", mw.RequireAuthz(authpkg.ActionCreate, "worker", nil)(http.HandlerFunc(ph.Upload)))
 
 	// --- Imperative lifecycle ---
-	lh := NewLifecycleHandler(deps.Client, deps.Backend, deps.Namespace)
+	lh := NewLifecycleHandler(deps.Client, deps.Backend, deps.Namespace, workerHealth)
 	mux.Handle("POST /api/v1/workers/{name}/wake", mw.RequireAuthz(authpkg.ActionWake, "worker", nameFn)(http.HandlerFunc(lh.Wake)))
 	mux.Handle("POST /api/v1/workers/{name}/sleep", mw.RequireAuthz(authpkg.ActionSleep, "worker", nameFn)(http.HandlerFunc(lh.Sleep)))
 	mux.Handle("POST /api/v1/workers/{name}/ensure-ready", mw.RequireAuthz(authpkg.ActionEnsureReady, "worker", nameFn)(http.HandlerFunc(lh.EnsureReady)))

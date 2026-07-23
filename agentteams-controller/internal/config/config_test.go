@@ -297,3 +297,76 @@ func TestLoadConfigAutoPrefixDisabledKeepsExplicitContainerPrefix(t *testing.T) 
 		t.Fatalf("ContainerPrefix = %q, want %q", cfg.ContainerPrefix, "custom-worker-")
 	}
 }
+
+func TestLoadConfigSoloOperatorDefaultsFalse(t *testing.T) {
+	t.Setenv("AGENTTEAMS_SOLO_OPERATOR", "")
+	cfg := LoadConfig()
+	if cfg.SoloOperator {
+		t.Fatal("SoloOperator = true, want false when AGENTTEAMS_SOLO_OPERATOR is unset")
+	}
+}
+
+func TestLoadConfigSoloOperatorParsesTruthyValues(t *testing.T) {
+	for _, v := range []string{"1", "true", "True", "TRUE"} {
+		t.Run(v, func(t *testing.T) {
+			t.Setenv("AGENTTEAMS_SOLO_OPERATOR", v)
+			cfg := LoadConfig()
+			if !cfg.SoloOperator {
+				t.Fatalf("SoloOperator = false, want true for AGENTTEAMS_SOLO_OPERATOR=%q", v)
+			}
+		})
+	}
+}
+
+func TestLoadConfigSoloOperatorFalseForOtherValues(t *testing.T) {
+	t.Setenv("AGENTTEAMS_SOLO_OPERATOR", "0")
+	cfg := LoadConfig()
+	if cfg.SoloOperator {
+		t.Fatal("SoloOperator = true, want false for AGENTTEAMS_SOLO_OPERATOR=0")
+	}
+}
+
+func TestConfigBuildersPopulateQwenPawWorkerImage(t *testing.T) {
+	const defaultImage = "agentteams/agentteams-qwenpaw-worker:latest"
+	t.Setenv("AGENTTEAMS_QWENPAW_WORKER_IMAGE", "")
+
+	c := &Config{}
+
+	if got := c.DockerConfig().QwenPawWorkerImage; got != defaultImage {
+		t.Errorf("DockerConfig().QwenPawWorkerImage = %q, want %q", got, defaultImage)
+	}
+	if got := c.K8sConfig().QwenPawWorkerImage; got != defaultImage {
+		t.Errorf("K8sConfig().QwenPawWorkerImage = %q, want %q", got, defaultImage)
+	}
+	if got := c.SandboxConfig().QwenPawWorkerImage; got != defaultImage {
+		t.Errorf("SandboxConfig().QwenPawWorkerImage = %q, want %q", got, defaultImage)
+	}
+}
+
+func TestConfigBuildersQwenPawWorkerImageOverride(t *testing.T) {
+	const override = "registry.example.com/custom-qwenpaw:v9"
+	t.Setenv("AGENTTEAMS_QWENPAW_WORKER_IMAGE", override)
+
+	c := &Config{}
+
+	if got := c.DockerConfig().QwenPawWorkerImage; got != override {
+		t.Errorf("DockerConfig().QwenPawWorkerImage = %q, want %q", got, override)
+	}
+	if got := c.K8sConfig().QwenPawWorkerImage; got != override {
+		t.Errorf("K8sConfig().QwenPawWorkerImage = %q, want %q", got, override)
+	}
+	if got := c.SandboxConfig().QwenPawWorkerImage; got != override {
+		t.Errorf("SandboxConfig().QwenPawWorkerImage = %q, want %q", got, override)
+	}
+}
+
+func TestDockerConfigWiresWorkerResourceDefaults(t *testing.T) {
+	c := &Config{
+		K8sWorkerCPU:    "750m",
+		K8sWorkerMemory: "1536Mi",
+	}
+	dc := c.DockerConfig()
+	if dc.WorkerCPU != "750m" || dc.WorkerMemory != "1536Mi" {
+		t.Fatalf("DockerConfig resources = %q/%q, want 750m/1536Mi", dc.WorkerCPU, dc.WorkerMemory)
+	}
+}

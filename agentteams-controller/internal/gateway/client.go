@@ -58,6 +58,16 @@ type Client interface {
 	// the ai-gateway provider; Higress returns ErrUnsupportedOp.
 	ResolveModelProvider(ctx context.Context, name string) (*ModelProviderInfo, error)
 
+	// ListMCPServers returns MCP server inventory for health probes.
+	// Returns ErrUnsupportedOp on providers without a console MCP API.
+	ListMCPServers(ctx context.Context) ([]MCPServerInfo, error)
+
 	// Healthy returns nil if the gateway console is reachable and authenticated.
 	Healthy(ctx context.Context) error
+}
+
+// MCPServerInfo describes one MCP server entry from the gateway console.
+type MCPServerInfo struct {
+	Name             string
+	AllowedConsumers []string
 }

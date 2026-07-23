@@ -58,21 +58,51 @@ type UpdateWorkerRequest struct {
 	State            *string `json:"state,omitempty"` // desired lifecycle state: Running, Sleeping, Stopped
 }
 
+// HealthCheckStatus is the normalized outcome of a single worker health probe.
+type HealthCheckStatus string
+
+const (
+	HealthHealthy  HealthCheckStatus = "healthy"
+	HealthDegraded HealthCheckStatus = "degraded"
+	HealthDown     HealthCheckStatus = "down"
+	HealthUnknown  HealthCheckStatus = "unknown"
+)
+
+type HealthCheck struct {
+	Status    HealthCheckStatus `json:"status"`
+	Detail    string            `json:"detail,omitempty"`
+	CheckedAt string            `json:"checkedAt,omitempty"`
+}
+
+type WorkerHealthChecks struct {
+	Container HealthCheck `json:"container"`
+	Heartbeat HealthCheck `json:"heartbeat"`
+	LLM       HealthCheck `json:"llm"`
+	Git       HealthCheck `json:"git"`
+	Sync      HealthCheck `json:"sync"`
+}
+
 type WorkerResponse struct {
-	Name             string            `json:"name"`
-	Phase            string            `json:"phase"`
-	ContainerManaged bool              `json:"containerManaged,omitempty"`
-	State            string            `json:"state,omitempty"` // desired lifecycle state
-	Model            string            `json:"model,omitempty"`
-	Runtime          string            `json:"runtime,omitempty"`
-	Image            string            `json:"image,omitempty"`
-	ContainerState   string            `json:"containerState,omitempty"`
-	MatrixUserID     string            `json:"matrixUserID,omitempty"`
-	RoomID           string            `json:"roomID,omitempty"`
-	Message          string            `json:"message,omitempty"`
-	ExposedPorts     []ExposedPortInfo `json:"exposedPorts,omitempty"`
-	Team             string            `json:"team,omitempty"`
-	Role             string            `json:"role,omitempty"`
+	Name                  string              `json:"name"`
+	Phase                 string              `json:"phase"`
+	ContainerManaged      bool                `json:"containerManaged,omitempty"`
+	State                 string              `json:"state,omitempty"` // desired lifecycle state
+	Model                 string              `json:"model,omitempty"`
+	Runtime               string              `json:"runtime,omitempty"`
+	Image                 string              `json:"image,omitempty"`
+	ContainerState        string              `json:"containerState,omitempty"`
+	MatrixUserID          string              `json:"matrixUserID,omitempty"`
+	RoomID                string              `json:"roomID,omitempty"`
+	Message               string              `json:"message,omitempty"`
+	ExposedPorts          []ExposedPortInfo   `json:"exposedPorts,omitempty"`
+	Team                  string              `json:"team,omitempty"`
+	Role                  string              `json:"role,omitempty"`
+	LastHeartbeat         string              `json:"lastHeartbeat,omitempty"`
+	LastActiveAt          string              `json:"lastActiveAt,omitempty"`
+	LLMCallsLastHeartbeat int                 `json:"llmCallsLastHeartbeat,omitempty"`
+	LLMCallsTotal         int                 `json:"llmCallsTotal,omitempty"`
+	HealthChecks          *WorkerHealthChecks `json:"healthChecks,omitempty"`
+	HealthState           string              `json:"healthState,omitempty"` // controller-derived health classification
 }
 
 type ExposedPortInfo struct {
@@ -256,6 +286,51 @@ type ManagerResponse struct {
 
 type ManagerListResponse struct {
 	Managers []ManagerResponse `json:"managers"`
+	Total    int               `json:"total"`
+}
+
+// --- Project API types ---
+
+type CreateProjectRequest struct {
+	Name        string                `json:"name"`
+	Team        string                `json:"team"`
+	Description string                `json:"description,omitempty"`
+	ProjectName string                `json:"projectName,omitempty"`
+	Repos       []v1beta1.ProjectRepo `json:"repos"`
+	Workers     []string              `json:"workers,omitempty"`
+	DependsOn   []string              `json:"dependsOn,omitempty"`
+}
+
+type UpdateProjectRequest struct {
+	Description string                `json:"description,omitempty"`
+	ProjectName string                `json:"projectName,omitempty"`
+	Repos       []v1beta1.ProjectRepo `json:"repos,omitempty"`
+	Workers     []string              `json:"workers,omitempty"`
+	DependsOn   []string              `json:"dependsOn,omitempty"`
+	// Phase allows the operator to set Completed/Archived (decision #18).
+	// Any other value is rejected — reconciler-computed phases (Pending,
+	// Provisioning, Ready, Degraded, Failed) cannot be set via the API.
+	Phase string `json:"phase,omitempty"`
+}
+
+type ProjectResponse struct {
+	Name            string                      `json:"name"`
+	Team            string                      `json:"team"`
+	Description     string                      `json:"description,omitempty"`
+	ProjectName     string                      `json:"projectName,omitempty"`
+	Repos           []v1beta1.ProjectRepo       `json:"repos"`
+	Workers         []string                    `json:"workers,omitempty"`
+	DependsOn       []string                    `json:"dependsOn,omitempty"`
+	Phase           string                      `json:"phase"`
+	Message         string                      `json:"message,omitempty"`
+	RepoCount       int                         `json:"repoCount"`
+	RecordedWorkers []string                    `json:"recordedWorkers,omitempty"`
+	Dependencies    []v1beta1.ProjectDependency `json:"dependencies,omitempty"`
+	Conditions      []v1beta1.ProjectCondition  `json:"conditions,omitempty"`
+}
+
+type ProjectListResponse struct {
+	Projects []ProjectResponse `json:"projects"`
 	Total    int               `json:"total"`
 }
 

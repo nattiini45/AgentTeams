@@ -376,10 +376,20 @@ type WorkerStatus struct {
 	MatrixUserID       string              `json:"matrixUserID,omitempty"`
 	RoomID             string              `json:"roomID,omitempty"`
 	ContainerState     string              `json:"containerState,omitempty"`
-	LastHeartbeat      string              `json:"lastHeartbeat,omitempty"`
-	LastActiveAt       string              `json:"lastActiveAt,omitempty"`
-	Message            string              `json:"message,omitempty"`
-	ExposedPorts       []ExposedPortStatus `json:"exposedPorts,omitempty"`
+	LastHeartbeat         string              `json:"lastHeartbeat,omitempty"`
+	LastActiveAt          string              `json:"lastActiveAt,omitempty"`
+	LLMCallsLastHeartbeat int                 `json:"llmCallsLastHeartbeat,omitempty"`
+	LLMCallsTotal         int                 `json:"llmCallsTotal,omitempty"`
+	Message               string              `json:"message,omitempty"`
+	ExposedPorts          []ExposedPortStatus `json:"exposedPorts,omitempty"`
+
+	// HealthState is the controller-derived health classification for this worker.
+	// Values: "" (unknown), "healthy", "stalled", "zombie", "idle".
+	// Set by the HealthMonitorController based on heartbeat/activity staleness.
+	HealthState string `json:"healthState,omitempty"`
+
+	// LastHealthTransition records when HealthState last changed (RFC3339).
+	LastHealthTransition string `json:"lastHealthTransition,omitempty"`
 
 	// BackendRuntime records the backend type currently used for this worker's container.
 	// Set after successful creation or backend switch.

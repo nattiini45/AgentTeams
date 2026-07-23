@@ -85,6 +85,14 @@ func (c *CRCountCollector) refresh(ctx context.Context) error {
 		}
 	}
 
+	var projects v1beta1.ProjectList
+	if err := c.Client.List(ctx, &projects, opts...); err != nil {
+		return fmt.Errorf("list projects: %w", err)
+	}
+	for i := range projects.Items {
+		counts["project"][boundedCRStatus("project", projects.Items[i].Status.Phase)]++
+	}
+
 	for kind, statuses := range counts {
 		for status, count := range statuses {
 			ControllerCRCount.WithLabelValues(kind, status).Set(count)

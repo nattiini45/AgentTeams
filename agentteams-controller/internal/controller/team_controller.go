@@ -99,6 +99,11 @@ type TeamReconciler struct {
 	// included in every worker's allowlist so the operator admin retains
 	// visibility regardless of team membership.
 	SystemAdminUser string
+
+	// SoloOperator (AGENTTEAMS_SOLO_OPERATOR), when true, forces every Team's
+	// PeerMentions to true so workers can @mention each other. There is only
+	// one human in solo mode, so cross-worker mentions cannot leak to strangers.
+	SoloOperator bool
 }
 
 type teamAdminActor struct {
@@ -1603,7 +1608,7 @@ func (r *TeamReconciler) decoupledChannelPolicy(t *v1beta1.Team, members []decou
 		leaderMatrixID := resolve(leaderRuntimeName)
 		groupAllow = append(groupAllow, leaderMatrixID, systemAdminID)
 		groupAllow = appendResolved(groupAllow, resolve, coordinatorIDs...)
-		if t.Spec.PeerMentions == nil || *t.Spec.PeerMentions {
+		if r.effectivePeerMentions(t) {
 			for _, member := range members {
 				if member.ref.Name == leaderName || member.ref.Name == current.ref.Name {
 					continue
@@ -1674,7 +1679,7 @@ func (r *TeamReconciler) legacyChannelPolicy(t *v1beta1.Team, members []MemberCo
 		leaderMatrixID := resolve(leaderRuntimeName)
 		groupAllow = append(groupAllow, leaderMatrixID, systemAdminID)
 		groupAllow = appendResolved(groupAllow, resolve, coordinatorIDs...)
-		if t.Spec.PeerMentions == nil || *t.Spec.PeerMentions {
+		if r.effectivePeerMentions(t) {
 			for _, member := range members {
 				if member.Role == RoleTeamLeader || member.Name == current.Name {
 					continue
@@ -2363,4 +2368,27 @@ func teamMemberRegistryEntries(members []v1beta1.TeamMemberSpec) []service.TeamM
 		})
 	}
 	return entries
+}
+
+// effectivePeerMentions reports whether workers on this team may @mention
+// each other. SoloOperator always forces true; otherwise the Team.Spec
+// PeerMentions pointer is honored (nil defaults to true).
+func (r *TeamReconciler) effectivePeerMentions(t *v1beta1.Team) bool {
+	if r.SoloOperator {
+		return true
+	}
+	return t.Spec.PeerMentions == nil || *t.Spec.PeerMentions
+}
+
+// forceSoloPeerMentions returns a DeepCopy of t with PeerMentions forced to
+// true when solo is set. Used by tests and any path that needs a mutated
+// Team object rather than a runtime boolean check.
+func forceSoloPeerMentions(t *v1beta1.Team, solo bool) *v1beta1.Team {
+	if t == nil || !solo {
+		return t
+	}
+	clone := t.DeepCopy()
+	tr := true
+	clone.Spec.PeerMentions = &tr
+	return clone
 }

@@ -17,16 +17,18 @@ type LifecycleHandler struct {
 	k8s       client.Client
 	registry  *backend.Registry
 	namespace string
+	health    *WorkerHealthProber
 
 	readyMu sync.RWMutex
 	ready   map[string]bool
 }
 
-func NewLifecycleHandler(k8s client.Client, registry *backend.Registry, namespace string) *LifecycleHandler {
+func NewLifecycleHandler(k8s client.Client, registry *backend.Registry, namespace string, health *WorkerHealthProber) *LifecycleHandler {
 	return &LifecycleHandler{
 		k8s:       k8s,
 		registry:  registry,
 		namespace: namespace,
+		health:    health,
 		ready:     make(map[string]bool),
 	}
 }
@@ -203,6 +205,8 @@ func (h *LifecycleHandler) GetWorkerRuntimeStatus(w http.ResponseWriter, r *http
 			}
 		}
 	}
+
+	h.health.AttachHealthChecks(r.Context(), &resp, &worker)
 
 	httputil.WriteJSON(w, http.StatusOK, resp)
 }

@@ -29,7 +29,7 @@ var ErrDecodeResponse = errors.New("decode response")
 var ErrInvalidUpstreamResponse = errors.New("invalid upstream response")
 
 var (
-	reconcileKinds   = []string{"worker", "team", "human", "manager"}
+	reconcileKinds   = []string{"worker", "team", "human", "manager", "project"}
 	reconcileResults = []string{"success", "error"}
 	crStatusesByKind = map[string][]string{
 		"human": {
@@ -44,6 +44,16 @@ var (
 			"Running",
 			"Updating",
 			"Failed",
+		},
+		"project": {
+			"unknown",
+			"Pending",
+			"Provisioning",
+			"Ready",
+			"Degraded",
+			"Failed",
+			"Completed",
+			"Archived",
 		},
 		"team": {
 			"unknown",
@@ -68,6 +78,7 @@ var (
 			"/api/v1/gateway/consumers/{id}",
 			"/api/v1/humans/{name}",
 			"/api/v1/managers/{name}",
+			"/api/v1/projects/{name}",
 			"/api/v1/teams/{name}",
 			"/api/v1/workers/{name}",
 		},
@@ -76,8 +87,11 @@ var (
 			"/_matrix/app/v1/users/{userId}",
 			"/api/v1/humans",
 			"/api/v1/humans/{name}",
+			"/api/v1/manager-tasks",
 			"/api/v1/managers",
 			"/api/v1/managers/{name}",
+			"/api/v1/projects",
+			"/api/v1/projects/{name}",
 			"/api/v1/status",
 			"/api/v1/teams",
 			"/api/v1/teams/{name}",
@@ -95,8 +109,11 @@ var (
 			"/api/v1/gateway/consumers/{id}/bind",
 			"/api/v1/humans",
 			"/api/v1/managers",
+			"/api/v1/managers/{name}/message",
 			"/api/v1/packages",
+			"/api/v1/projects",
 			"/api/v1/teams",
+			"/api/v1/teams/{name}/message",
 			"/api/v1/workers",
 			"/api/v1/workers/{name}/ensure-ready",
 			"/api/v1/workers/{name}/heartbeat",
@@ -108,6 +125,7 @@ var (
 		"PUT": {
 			"/_matrix/app/v1/transactions/{txnId}",
 			"/api/v1/managers/{name}",
+			"/api/v1/projects/{name}",
 			"/api/v1/teams/{name}",
 			"/api/v1/workers/{name}",
 			"unmatched",
@@ -258,7 +276,32 @@ var (
 		},
 		[]string{"upstream", "operation", "error_class"},
 	)
+
+	// WorkerHealthState reports the current health classification for each
+	// worker. The state label is a bounded enum: healthy, stalled, zombie, idle.
+	// A value of 1 means the worker is in that state; 0 means it is not.
+	WorkerHealthState = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "worker_health_state",
+			Help:      "Current health state for each worker (1 = in this state, 0 = not).",
+		},
+		[]string{"worker", "state"},
+	)
+
+	// WorkerHealthTransitions counts health state transitions for workers.
+	WorkerHealthTransitions = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "worker_health_transitions_total",
+			Help:      "Number of worker health state transitions, partitioned by from and to state.",
+		},
+		[]string{"from_state", "to_state"},
+	)
 )
+
+// Health state label values for bounded cardinality.
+var healthStates = []string{"", "healthy", "stalled", "zombie", "idle"}
 
 func init() {
 	metrics.Registry.MustRegister(
@@ -272,6 +315,8 @@ func init() {
 		UpstreamRequestDuration,
 		UpstreamRequests,
 		UpstreamRequestErrors,
+		WorkerHealthState,
+		WorkerHealthTransitions,
 	)
 	initializeSeries()
 }
@@ -406,4 +451,24 @@ func classifyUpstreamError(err error) string {
 		return "invalid_response"
 	}
 	return "unknown"
+}
+
+// SetWorkerHealthState updates the health state gauge for a worker.
+// It sets the current state to 1 and all other states to 0.
+func SetWorkerHealthState(worker, state string) {
+	for _, s := range healthStates {
+		if s == "" {
+			continue // skip empty state
+		}
+		val := float64(0)
+		if s == state {
+			val = 1
+		}
+		WorkerHealthState.WithLabelValues(worker, s).Set(val)
+	}
+}
+
+// ObserveWorkerHealthTransition records a health state transition.
+func ObserveWorkerHealthTransition(fromState, toState string) {
+	WorkerHealthTransitions.WithLabelValues(fromState, toState).Inc()
 }

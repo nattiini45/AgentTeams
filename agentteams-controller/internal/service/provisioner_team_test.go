@@ -261,6 +261,9 @@ func (fakeGateway) EnsureAIRoute(context.Context, gateway.AIRouteRequest) error 
 func (fakeGateway) ResolveModelProvider(context.Context, string) (*gateway.ModelProviderInfo, error) {
 	return nil, gateway.ErrUnsupportedOp
 }
+func (fakeGateway) ListMCPServers(context.Context) ([]gateway.MCPServerInfo, error) {
+	return nil, gateway.ErrUnsupportedOp
+}
 func (fakeGateway) Healthy(context.Context) error { return nil }
 
 type fakeStorageAdmin struct {

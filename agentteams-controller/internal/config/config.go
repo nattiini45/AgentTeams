@@ -199,6 +199,17 @@ type Config struct {
 
 	// Pre-resolved worker environment defaults (passed to worker containers)
 	WorkerEnv WorkerEnvDefaults
+
+	// SoloOperator, when true, tailors the first-boot experience for a
+	// single human running AgentTeams alone rather than a multi-person org:
+	// the Manager welcome prompt skips the 4-question identity interview
+	// (renderManagerWelcomeBodySolo), every Team's PeerMentions is forced
+	// to true regardless of Team.Spec.PeerMentions (there is only one
+	// human to loop in, so cross-mentions can't leak to strangers), and
+	// the sole Human created via the HTTP API defaults to Admin
+	// (PermissionLevel=1) when the request omits one. Sourced from
+	// AGENTTEAMS_SOLO_OPERATOR. Default false (unchanged multi-user behavior).
+	SoloOperator bool
 }
 
 // WorkerEnvDefaults holds environment variable defaults injected into worker and manager containers.
@@ -400,6 +411,7 @@ func LoadConfig() *Config {
 		CMSProject:        os.Getenv("AGENTTEAMS_CMS_PROJECT"),
 		CMSWorkspace:      os.Getenv("AGENTTEAMS_CMS_WORKSPACE"),
 		CMSServiceName:    envOrDefault("AGENTTEAMS_CMS_SERVICE_NAME", "agentteams-manager"),
+		SoloOperator:      envBool("AGENTTEAMS_SOLO_OPERATOR"),
 
 		WorkerEnv: WorkerEnvDefaults{
 			MatrixDomain:         envOrDefault("AGENTTEAMS_MATRIX_DOMAIN", "matrix-local.agentteams.io:8080"),
@@ -486,6 +498,14 @@ func (c *Config) AgentFSDir() string {
 	return envOrDefault("AGENTTEAMS_AGENT_FS_DIR", "/root/agentteams-fs/agents")
 }
 
+// ManagerStateFile returns the path to the Manager Agent's task-tracking
+// state.json (embedded mode), defaulting to "<AgentFSDir>/manager/state.json".
+// AGENTTEAMS_MANAGER_STATE_FILE overrides the default for testing/non-standard
+// layouts.
+func (c *Config) ManagerStateFile() string {
+	return envOrDefault("AGENTTEAMS_MANAGER_STATE_FILE", filepath.Join(c.AgentFSDir(), "manager", "state.json"))
+}
+
 // WorkerAgentDir returns the source directory for builtin worker agent files.
 func (c *Config) WorkerAgentDir() string {
 	return envOrDefault("AGENTTEAMS_WORKER_AGENT_DIR", "/opt/agentteams/agent/worker-agent")
@@ -518,7 +538,10 @@ func (c *Config) DockerConfig() backend.DockerConfig {
 		CopawWorkerImage:     envOrDefault("AGENTTEAMS_COPAW_WORKER_IMAGE", "agentteams/agentteams-copaw-worker:latest"),
 		HermesWorkerImage:    envOrDefault("AGENTTEAMS_HERMES_WORKER_IMAGE", "agentteams/agentteams-hermes-worker:latest"),
 		OpenHumanWorkerImage: envOrDefault("AGENTTEAMS_OPENHUMAN_WORKER_IMAGE", "agentteams/agentteams-openhuman-worker:latest"),
+		QwenPawWorkerImage:   envOrDefault("AGENTTEAMS_QWENPAW_WORKER_IMAGE", "agentteams/agentteams-qwenpaw-worker:latest"),
 		DefaultNetwork:       envOrDefault("AGENTTEAMS_DOCKER_NETWORK", "agentteams-net"),
+		WorkerCPU:            c.K8sWorkerCPU,
+		WorkerMemory:         c.K8sWorkerMemory,
 	}
 }
 
@@ -560,6 +583,7 @@ func (c *Config) K8sConfig() backend.K8sConfig {
 		CopawWorkerImage:     envOrDefault("AGENTTEAMS_COPAW_WORKER_IMAGE", "agentteams/agentteams-copaw-worker:latest"),
 		HermesWorkerImage:    envOrDefault("AGENTTEAMS_HERMES_WORKER_IMAGE", "agentteams/agentteams-hermes-worker:latest"),
 		OpenHumanWorkerImage: envOrDefault("AGENTTEAMS_OPENHUMAN_WORKER_IMAGE", "agentteams/agentteams-openhuman-worker:latest"),
+		QwenPawWorkerImage:   envOrDefault("AGENTTEAMS_QWENPAW_WORKER_IMAGE", "agentteams/agentteams-qwenpaw-worker:latest"),
 		WorkerCPU:            c.K8sWorkerCPU,
 		WorkerMemory:         c.K8sWorkerMemory,
 		ControllerName:       c.ControllerName,
@@ -576,6 +600,7 @@ func (c *Config) SandboxConfig() backend.SandboxConfig {
 		CopawWorkerImage:             envOrDefault("AGENTTEAMS_COPAW_WORKER_IMAGE", "agentteams/agentteams-copaw-worker:latest"),
 		HermesWorkerImage:            envOrDefault("AGENTTEAMS_HERMES_WORKER_IMAGE", "agentteams/agentteams-hermes-worker:latest"),
 		OpenHumanWorkerImage:         envOrDefault("AGENTTEAMS_OPENHUMAN_WORKER_IMAGE", "agentteams/agentteams-openhuman-worker:latest"),
+		QwenPawWorkerImage:           envOrDefault("AGENTTEAMS_QWENPAW_WORKER_IMAGE", "agentteams/agentteams-qwenpaw-worker:latest"),
 		WorkerCPU:                    c.K8sWorkerCPU,
 		WorkerMemory:                 c.K8sWorkerMemory,
 		SandboxPrewarmSize:           c.SandboxPrewarmSize,

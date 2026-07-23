@@ -635,6 +635,7 @@ func (a *App) initReconcilers(_ context.Context) error {
 		MountAuthType:               a.cfg.WorkerDepsMountAuthType,
 		MountRoleName:               a.cfg.WorkerDepsMountRoleName,
 		SystemAdminUser:             a.cfg.MatrixAdminUser,
+		SoloOperator:                a.cfg.SoloOperator,
 	}).SetupWithManager(a.mgr); err != nil {
 		return fmt.Errorf("setup TeamReconciler: %w", err)
 	}
@@ -660,6 +661,7 @@ func (a *App) initReconcilers(_ context.Context) error {
 			ControllerName:   a.cfg.ControllerName,
 			UserLanguage:     a.cfg.UserLanguage,
 			UserTimezone:     a.cfg.UserTimezone,
+			SoloOperator:     a.cfg.SoloOperator,
 			GatewayClient:    a.gateway,
 		}
 		if a.cfg.KubeMode == "embedded" {
@@ -685,23 +687,44 @@ func (a *App) initReconcilers(_ context.Context) error {
 		return fmt.Errorf("setup CR count collector: %w", err)
 	}
 
+	// HealthMonitorController classifies worker health states based on
+	// heartbeat and activity staleness.
+	if err := a.mgr.Add(&controller.HealthMonitorController{
+		Client:    a.mgr.GetClient(),
+		Namespace: a.namespace,
+	}); err != nil {
+		return fmt.Errorf("setup HealthMonitorController: %w", err)
+	}
+
+	if err := (&controller.ProjectReconciler{
+		Client:         a.mgr.GetClient(),
+		OSS:            a.oss,
+		Messenger:      a.provisioner,
+		ControllerName: a.cfg.ControllerName,
+	}).SetupWithManager(a.mgr); err != nil {
+		return fmt.Errorf("setup ProjectReconciler: %w", err)
+	}
+
 	return nil
 }
 
 func (a *App) initHTTPServer(_ context.Context) error {
 	a.httpServer = server.NewHTTPServer(a.cfg.HTTPAddr, server.ServerDeps{
-		Client:         a.mgr.GetClient(),
-		Backend:        a.registry,
-		Gateway:        a.gateway,
-		OSS:            a.oss,
-		STS:            a.stsService,
-		AuthMw:         a.authMw,
-		KubeMode:       a.cfg.KubeMode,
-		Namespace:      a.namespace,
-		ControllerName: a.cfg.ControllerName,
-		SocketPath:     a.cfg.SocketPath,
-		MatrixConfig:   a.cfg.MatrixConfig(),
-		Provisioner:    a.provisioner,
+		Client:              a.mgr.GetClient(),
+		Backend:             a.registry,
+		Gateway:             a.gateway,
+		GatewayDataPlaneURL: a.cfg.GatewayConfig().DataPlaneURL,
+		OSS:                 a.oss,
+		STS:                 a.stsService,
+		AuthMw:              a.authMw,
+		KubeMode:            a.cfg.KubeMode,
+		Namespace:           a.namespace,
+		ControllerName:      a.cfg.ControllerName,
+		SocketPath:          a.cfg.SocketPath,
+		MatrixConfig:        a.cfg.MatrixConfig(),
+		Provisioner:         a.provisioner,
+		SoloOperator:        a.cfg.SoloOperator,
+		ManagerStateFile:    a.cfg.ManagerStateFile(),
 	})
 	return nil
 }

@@ -166,6 +166,10 @@ func (c *MinIOClient) DeletePrefix(ctx context.Context, prefix string) error {
 	return err
 }
 
+func (c *MinIOClient) MovePrefix(ctx context.Context, srcPrefix, dstPrefix string) error {
+	return MovePrefixVerified(ctx, c, srcPrefix, dstPrefix)
+}
+
 func (c *MinIOClient) ListObjects(ctx context.Context, prefix string) ([]string, error) {
 	if err := c.ensureAlias(ctx); err != nil {
 		return nil, err

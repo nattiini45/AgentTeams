@@ -10,6 +10,7 @@ import (
 	authpkg "github.com/agentscope-ai/AgentTeams/agentteams-controller/internal/auth"
 	"github.com/agentscope-ai/AgentTeams/agentteams-controller/internal/backend"
 	"github.com/agentscope-ai/AgentTeams/agentteams-controller/internal/httputil"
+	"github.com/agentscope-ai/AgentTeams/agentteams-controller/internal/validation"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -35,6 +36,8 @@ type ResourceHandler struct {
 	client    client.Client
 	namespace string
 	backend   *backend.Registry
+	workers   *WorkerResourceService
+	health    *WorkerHealthProber
 
 	// controllerName is stamped as agentteams.io/controller on every CR this
 	// handler creates, overwriting any value supplied by the client. This
@@ -42,6 +45,24 @@ type ResourceHandler struct {
 	// controller instance, regardless of what the caller attempts to set.
 	// Empty string means no enforcement (embedded mode).
 	controllerName string
+
+	// soloOperator, when true, makes CreateHuman default PermissionLevel
+	// to 1 (Admin) when the request omits one (zero value). There is only
+	// one human in solo mode, so requiring an explicit admin grant on
+	// every install is unnecessary friction. Set via SetSoloOperator;
+	// defaults to false (unchanged multi-user behavior).
+	soloOperator bool
+}
+
+// SetSoloOperator configures whether this handler runs in single-operator
+// mode. Kept as a post-construction setter rather than a NewResourceHandler
+// parameter to avoid rippling a signature change across existing call sites.
+func (h *ResourceHandler) SetSoloOperator(solo bool) {
+	h.soloOperator = solo
+}
+
+func (h *ResourceHandler) SetWorkerHealthProber(health *WorkerHealthProber) {
+	h.health = health
 }
 
 // NewResourceHandler creates a handler. backend may be nil, in which case
@@ -54,6 +75,7 @@ func NewResourceHandler(c client.Client, namespace string, b *backend.Registry, 
 		client:         c,
 		namespace:      namespace,
 		backend:        b,
+		workers:        NewWorkerResourceService(c, namespace),
 		controllerName: controllerName,
 	}
 }
@@ -79,67 +101,15 @@ func (h *ResourceHandler) CreateWorker(w http.ResponseWriter, r *http.Request) {
 		httputil.WriteError(w, http.StatusBadRequest, "invalid JSON: "+err.Error())
 		return
 	}
-	if req.Name == "" {
-		httputil.WriteError(w, http.StatusBadRequest, "name is required")
-		return
-	}
 
-	if team, ok, err := h.findTeamForMember(r.Context(), req.Name); err != nil {
-		writeK8sError(w, "create worker", err)
-		return
-	} else if ok {
-		httputil.WriteError(w, http.StatusConflict,
-			"worker name is a member of team "+team+"; manage via PUT /api/v1/teams/"+team)
-		return
-	}
-
-	// containerManaged default is true (controller manages container).
-	containerManaged := true
-	if req.ContainerManaged != nil {
-		containerManaged = *req.ContainerManaged
-	}
-	runtime := req.Runtime
-	if runtime == "" {
-		runtime = backend.RuntimeOpenClaw
-	}
-
-	worker := &v1beta1.Worker{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      req.Name,
-			Namespace: h.namespace,
-		},
-		Spec: v1beta1.WorkerSpec{
-			Model:            req.Model,
-			ModelProvider:    req.ModelProvider,
-			WorkerName:       req.WorkerName,
-			Runtime:          runtime,
-			Image:            req.Image,
-			Identity:         req.Identity,
-			Soul:             req.Soul,
-			Agents:           req.Agents,
-			Skills:           req.Skills,
-			McpServers:       req.McpServers,
-			Package:          req.Package,
-			Expose:           req.Expose,
-			ChannelPolicy:    req.ChannelPolicy,
-			Resources:        req.Resources,
-			ContainerManaged: &containerManaged,
-			State:            req.State,
-		},
-	}
-
-	// Team leaders managing team members must use /api/v1/teams — they can no
-	// longer back-door-create team workers through the standalone /workers
-	// API. (Historical annotation-forcing path removed in the team-refactor.)
 	caller := authpkg.CallerFromContext(r.Context())
-	if caller != nil && caller.Role == authpkg.RoleTeamLeader {
-		httputil.WriteError(w, http.StatusConflict,
-			"team leaders must manage members via PUT /api/v1/teams/"+caller.Team)
-		return
-	}
-	if req.Team != "" || req.Role != "" || req.TeamLeader != "" {
-		httputil.WriteError(w, http.StatusBadRequest,
-			"worker.team / worker.role / worker.teamLeader are reserved for team members; use /api/v1/teams")
+	worker, derr := h.workers.ValidateCreateStandaloneWorker(r.Context(), req, caller)
+	if derr != nil {
+		if derr.K8sErr != nil {
+			writeK8sError(w, "create worker", derr.K8sErr)
+			return
+		}
+		httputil.WriteError(w, derr.Status, derr.Message)
 		return
 	}
 
@@ -171,6 +141,7 @@ func (h *ResourceHandler) GetWorker(w http.ResponseWriter, r *http.Request) {
 		} else if ok {
 			h.applyTeamMember(&resp, team, member)
 		}
+		h.health.AttachHealthChecks(r.Context(), &resp, &worker)
 		httputil.WriteJSON(w, http.StatusOK, resp)
 		return
 	case !apierrors.IsNotFound(err):
@@ -188,13 +159,19 @@ func (h *ResourceHandler) GetWorker(w http.ResponseWriter, r *http.Request) {
 		httputil.WriteError(w, http.StatusNotFound, "get worker: not found")
 		return
 	}
-	httputil.WriteJSON(w, http.StatusOK, h.teamMemberToResponse(r.Context(), team, member))
+	resp := h.teamMemberToResponse(r.Context(), team, member)
+	h.health.AttachHealthChecks(r.Context(), &resp, nil)
+	httputil.WriteJSON(w, http.StatusOK, resp)
 }
 
 func (h *ResourceHandler) ListWorkers(w http.ResponseWriter, r *http.Request) {
 	teamFilter := r.URL.Query().Get("team")
 
-	workers := make([]WorkerResponse, 0)
+	type listEntry struct {
+		resp   WorkerResponse
+		worker *v1beta1.Worker
+	}
+	entries := make([]listEntry, 0)
 
 	seen := make(map[string]struct{})
 	var list v1beta1.WorkerList
@@ -217,7 +194,7 @@ func (h *ResourceHandler) ListWorkers(w http.ResponseWriter, r *http.Request) {
 		if teamFilter != "" && resp.Team != teamFilter {
 			continue
 		}
-		workers = append(workers, resp)
+		entries = append(entries, listEntry{resp: resp, worker: &list.Items[i]})
 		seen[resp.Name] = struct{}{}
 	}
 
@@ -234,7 +211,7 @@ func (h *ResourceHandler) ListWorkers(w http.ResponseWriter, r *http.Request) {
 		}
 		if team.Spec.Leader.Name != "" {
 			if _, ok := seen[team.Spec.Leader.Name]; !ok {
-				workers = append(workers, h.teamMemberToResponse(r.Context(), team, team.Spec.Leader.Name))
+				entries = append(entries, listEntry{resp: h.teamMemberToResponse(r.Context(), team, team.Spec.Leader.Name)})
 				seen[team.Spec.Leader.Name] = struct{}{}
 			}
 		}
@@ -242,16 +219,29 @@ func (h *ResourceHandler) ListWorkers(w http.ResponseWriter, r *http.Request) {
 			if _, ok := seen[worker.Name]; ok {
 				continue
 			}
-			workers = append(workers, h.teamMemberToResponse(r.Context(), team, worker.Name))
+			entries = append(entries, listEntry{resp: h.teamMemberToResponse(r.Context(), team, worker.Name)})
 			seen[worker.Name] = struct{}{}
 		}
 		for _, ref := range team.Spec.WorkerMembers {
 			if _, ok := seen[ref.Name]; ok {
 				continue
 			}
-			workers = append(workers, h.teamMemberToResponse(r.Context(), team, ref.Name))
+			entries = append(entries, listEntry{resp: h.teamMemberToResponse(r.Context(), team, ref.Name)})
 			seen[ref.Name] = struct{}{}
 		}
+	}
+
+	if h.health != nil && len(entries) > 0 {
+		items := make([]healthAttachItem, len(entries))
+		for i := range entries {
+			items[i] = healthAttachItem{Resp: &entries[i].resp, Worker: entries[i].worker}
+		}
+		h.health.AttachHealthChecksBatch(r.Context(), items)
+	}
+
+	workers := make([]WorkerResponse, len(entries))
+	for i := range entries {
+		workers[i] = entries[i].resp
 	}
 
 	httputil.WriteJSON(w, http.StatusOK, WorkerListResponse{Workers: workers, Total: len(workers)})
@@ -645,6 +635,14 @@ func (h *ResourceHandler) CreateHuman(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	permissionLevel := req.PermissionLevel
+	if h.soloOperator && permissionLevel == 0 {
+		// Solo mode: the sole Human defaults to Admin (1) when the caller
+		// didn't specify a level. Only applies to the zero-value (unset);
+		// an explicit non-zero level from the caller is never overridden.
+		permissionLevel = 1
+	}
+
 	human := &v1beta1.Human{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      req.Name,
@@ -653,7 +651,7 @@ func (h *ResourceHandler) CreateHuman(w http.ResponseWriter, r *http.Request) {
 		Spec: v1beta1.HumanSpec{
 			DisplayName:       req.DisplayName,
 			Email:             req.Email,
-			PermissionLevel:   req.PermissionLevel,
+			PermissionLevel:   permissionLevel,
 			AccessibleTeams:   req.AccessibleTeams,
 			AccessibleWorkers: req.AccessibleWorkers,
 			Note:              req.Note,
@@ -890,20 +888,219 @@ func (h *ResourceHandler) DeleteManager(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// --- Projects ---
+
+func (h *ResourceHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
+	var req CreateProjectRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid JSON: "+err.Error())
+		return
+	}
+	if req.Name == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "name is required")
+		return
+	}
+	if err := validation.ValidateResourceName(req.Name); err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if req.Team == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "team is required")
+		return
+	}
+	if len(req.Repos) == 0 {
+		httputil.WriteError(w, http.StatusBadRequest, "at least one repo is required")
+		return
+	}
+	for _, repo := range req.Repos {
+		if repo.URL == "" {
+			httputil.WriteError(w, http.StatusBadRequest, "repos[].url is required")
+			return
+		}
+		if repo.Access != "rw" && repo.Access != "ro" {
+			httputil.WriteError(w, http.StatusBadRequest, "repos[].access must be rw or ro")
+			return
+		}
+	}
+
+	proj := &v1beta1.Project{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      req.Name,
+			Namespace: h.namespace,
+		},
+		Spec: v1beta1.ProjectSpec{
+			Team:        req.Team,
+			Description: req.Description,
+			ProjectName: req.ProjectName,
+			Repos:       req.Repos,
+			Workers:     req.Workers,
+			DependsOn:   req.DependsOn,
+		},
+	}
+
+	h.stampControllerLabel(&proj.ObjectMeta)
+
+	if err := h.client.Create(r.Context(), proj); err != nil {
+		writeK8sError(w, "create project", err)
+		return
+	}
+
+	httputil.WriteJSON(w, http.StatusCreated, projectToResponse(proj))
+}
+
+func (h *ResourceHandler) GetProject(w http.ResponseWriter, r *http.Request) {
+	name := r.PathValue("name")
+	if name == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "project name is required")
+		return
+	}
+
+	var proj v1beta1.Project
+	if err := h.client.Get(r.Context(), client.ObjectKey{Name: name, Namespace: h.namespace}, &proj); err != nil {
+		writeK8sError(w, "get project", err)
+		return
+	}
+
+	httputil.WriteJSON(w, http.StatusOK, projectToResponse(&proj))
+}
+
+func (h *ResourceHandler) ListProjects(w http.ResponseWriter, r *http.Request) {
+	teamFilter := r.URL.Query().Get("team")
+
+	var list v1beta1.ProjectList
+	if err := h.client.List(r.Context(), &list, client.InNamespace(h.namespace)); err != nil {
+		writeK8sError(w, "list projects", err)
+		return
+	}
+
+	projects := make([]ProjectResponse, 0, len(list.Items))
+	for i := range list.Items {
+		if teamFilter != "" && list.Items[i].Spec.Team != teamFilter {
+			continue
+		}
+		projects = append(projects, projectToResponse(&list.Items[i]))
+	}
+
+	httputil.WriteJSON(w, http.StatusOK, ProjectListResponse{Projects: projects, Total: len(projects)})
+}
+
+// allowedProjectPhases are the operator-settable phases (decision #18).
+// Reconciler-computed phases (Pending/Provisioning/Ready/Degraded/Failed)
+// cannot be set through the API.
+var allowedProjectPhases = map[string]bool{
+	"Completed": true,
+	"Archived":  true,
+}
+
+func (h *ResourceHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
+	name := r.PathValue("name")
+	if name == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "project name is required")
+		return
+	}
+
+	var req UpdateProjectRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid JSON: "+err.Error())
+		return
+	}
+	if req.Phase != "" && !allowedProjectPhases[req.Phase] {
+		httputil.WriteError(w, http.StatusBadRequest, "phase must be one of: Completed, Archived (other phases are reconciler-computed)")
+		return
+	}
+	for _, repo := range req.Repos {
+		if repo.Access != "" && repo.Access != "rw" && repo.Access != "ro" {
+			httputil.WriteError(w, http.StatusBadRequest, "repos[].access must be rw or ro")
+			return
+		}
+	}
+
+	ctx := r.Context()
+	for attempt := 0; attempt < k8sUpdateMaxRetries; attempt++ {
+		var proj v1beta1.Project
+		if err := h.client.Get(ctx, client.ObjectKey{Name: name, Namespace: h.namespace}, &proj); err != nil {
+			writeK8sError(w, "get project for update", err)
+			return
+		}
+
+		if req.Description != "" {
+			proj.Spec.Description = req.Description
+		}
+		if req.ProjectName != "" {
+			proj.Spec.ProjectName = req.ProjectName
+		}
+		if req.Repos != nil {
+			proj.Spec.Repos = req.Repos
+		}
+		if req.Workers != nil {
+			proj.Spec.Workers = req.Workers
+		}
+		if req.DependsOn != nil {
+			proj.Spec.DependsOn = req.DependsOn
+		}
+
+		if err := h.client.Update(ctx, &proj); err != nil {
+			if apierrors.IsConflict(err) && attempt+1 < k8sUpdateMaxRetries {
+				time.Sleep(time.Duration(attempt+1) * 100 * time.Millisecond)
+				continue
+			}
+			writeK8sError(w, "update project", err)
+			return
+		}
+
+		// Phase is an operator-set status field (decision #18); patch it
+		// separately via the status subresource after the spec update lands.
+		if req.Phase != "" && req.Phase != proj.Status.Phase {
+			statusBase := proj.DeepCopy()
+			proj.Status.Phase = req.Phase
+			if err := h.client.Status().Patch(ctx, &proj, client.MergeFrom(statusBase)); err != nil {
+				writeK8sError(w, "update project status", err)
+				return
+			}
+		}
+
+		httputil.WriteJSON(w, http.StatusOK, projectToResponse(&proj))
+		return
+	}
+}
+
+func (h *ResourceHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
+	name := r.PathValue("name")
+	if name == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "project name is required")
+		return
+	}
+
+	proj := &v1beta1.Project{
+		ObjectMeta: metav1.ObjectMeta{Name: name, Namespace: h.namespace},
+	}
+	if err := h.client.Delete(r.Context(), proj); err != nil {
+		writeK8sError(w, "delete project", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // --- Conversion helpers ---
 
 func workerToResponse(w *v1beta1.Worker) WorkerResponse {
 	resp := WorkerResponse{
-		Name:           w.Name,
-		Phase:          w.Status.Phase,
-		State:          w.Spec.DesiredState(),
-		Model:          w.Spec.Model,
-		Runtime:        w.Spec.Runtime,
-		Image:          w.Spec.Image,
-		ContainerState: w.Status.ContainerState,
-		MatrixUserID:   w.Status.MatrixUserID,
-		RoomID:         w.Status.RoomID,
-		Message:        w.Status.Message,
+		Name:                  w.Name,
+		Phase:                 w.Status.Phase,
+		State:                 w.Spec.DesiredState(),
+		Model:                 w.Spec.Model,
+		Runtime:               w.Spec.Runtime,
+		Image:                 w.Spec.Image,
+		ContainerState:        w.Status.ContainerState,
+		MatrixUserID:          w.Status.MatrixUserID,
+		RoomID:                w.Status.RoomID,
+		Message:               w.Status.Message,
+		LastHeartbeat:         w.Status.LastHeartbeat,
+		LastActiveAt:          w.Status.LastActiveAt,
+		LLMCallsLastHeartbeat: w.Status.LLMCallsLastHeartbeat,
+		LLMCallsTotal:         w.Status.LLMCallsTotal,
+		HealthState:           w.Status.HealthState,
 	}
 	if w.Spec.ContainerManaged != nil {
 		resp.ContainerManaged = *w.Spec.ContainerManaged
@@ -989,6 +1186,28 @@ func managerToResponse(m *v1beta1.Manager) ManagerResponse {
 		Version:      m.Status.Version,
 		Message:      m.Status.Message,
 		WelcomeSent:  m.Status.WelcomeSent,
+	}
+	if resp.Phase == "" {
+		resp.Phase = "Pending"
+	}
+	return resp
+}
+
+func projectToResponse(p *v1beta1.Project) ProjectResponse {
+	resp := ProjectResponse{
+		Name:            p.Name,
+		Team:            p.Spec.Team,
+		Description:     p.Spec.Description,
+		ProjectName:     p.Spec.EffectiveProjectName(p.Name),
+		Repos:           p.Spec.Repos,
+		Workers:         p.Spec.Workers,
+		DependsOn:       p.Spec.DependsOn,
+		Phase:           p.Status.Phase,
+		Message:         p.Status.Message,
+		RepoCount:       p.Status.RepoCount,
+		RecordedWorkers: p.Status.RecordedWorkers,
+		Dependencies:    p.Status.Dependencies,
+		Conditions:      p.Status.Conditions,
 	}
 	if resp.Phase == "" {
 		resp.Phase = "Pending"
