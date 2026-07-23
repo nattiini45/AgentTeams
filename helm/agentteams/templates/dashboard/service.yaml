@@ -1,0 +1,18 @@
+{{- if .Values.dashboard.enabled }}
+{{- $comp := dict "root" . "component" "dashboard" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "agentteams.dashboard.fullname" . }}
+  namespace: {{ include "agentteams.namespace" . }}
+  labels:
+    {{- include "agentteams.component.labels" $comp | nindent 4 }}
+spec:
+  type: {{ .Values.dashboard.service.type }}
+  selector:
+    {{- include "agentteams.component.selectorLabels" $comp | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.dashboard.service.port }}
+      targetPort: http
+{{- end }}

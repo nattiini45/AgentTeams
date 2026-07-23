@@ -90,6 +90,10 @@ Shared runtime Secret name.
 {{- printf "%s-controller" (include "agentteams.fullname" .) | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
+{{- define "agentteams.dashboard.fullname" -}}
+{{- printf "%s-dashboard" (include "agentteams.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
 {{- define "agentteams.tuwunel.fullname" -}}
 {{- printf "%s-tuwunel" (include "agentteams.fullname" .) | trunc 63 | trimSuffix "-" }}
 {{- end }}
@@ -164,6 +168,10 @@ app.kubernetes.io/component: {{ .component }}
 {{- end }}
 {{- end }}
 
+{{- define "agentteams.dashboard.serviceAccountName" -}}
+{{- default (printf "%sadmin" (.Values.controller.resourcePrefix | default "agentteams-")) .Values.dashboard.serviceAccount.name }}
+{{- end }}
+
 {{/* ── Manager image helper (used by controller to create Manager CR) ──── */}}
 
 {{- define "agentteams.manager.image" -}}
@@ -191,4 +199,9 @@ app.kubernetes.io/component: {{ .component }}
 {{- define "agentteams.worker.openhumanImage" -}}
 {{- $tag := default (include "agentteams.globalImageTag" .) .Values.worker.defaultImage.openhuman.tag }}
 {{- printf "%s:%s" .Values.worker.defaultImage.openhuman.repository $tag }}
+{{- end }}
+
+{{- define "agentteams.worker.qwenpawImage" -}}
+{{- $tag := default (include "agentteams.globalImageTag" .) .Values.worker.defaultImage.qwenpaw.tag }}
+{{- printf "%s:%s" .Values.worker.defaultImage.qwenpaw.repository $tag }}
 {{- end }}

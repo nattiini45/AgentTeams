@@ -3,7 +3,7 @@ name: Remediation gates
 on:
   pull_request:
     paths:
-      - "hiclaw-controller/**"
+      - "agentteams-controller/**"
       - "copaw/**"
       - "hermes/**"
       - "qwenpaw/**"
@@ -25,13 +25,13 @@ jobs:
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: hiclaw-controller
+        working-directory: agentteams-controller
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version-file: hiclaw-controller/go.mod
-          cache-dependency-path: hiclaw-controller/go.sum
+          go-version-file: agentteams-controller/go.mod
+          cache-dependency-path: agentteams-controller/go.sum
       - run: go test -timeout=5m ./internal/... ./cmd/...
 
   python-runtimes:
@@ -113,10 +113,10 @@ jobs:
       - uses: azure/setup-helm@v4
       - name: Add dependency repos
         run: helm repo add higress.io https://higress.io/helm-charts
-      - run: helm dependency build helm/hiclaw
-      - run: helm lint helm/hiclaw --set credentials.llmApiKey=dummy --set gateway.publicURL=http://localhost:18080
+      - run: helm dependency build helm/agentteams
+      - run: helm lint helm/agentteams --set credentials.llmApiKey=dummy --set gateway.publicURL=http://localhost:18080
       - run: >
-          helm template test helm/hiclaw
+          helm template test helm/agentteams
           --set credentials.llmApiKey=dummy
           --set gateway.publicURL=http://localhost:18080
           --set dashboard.enabled=true > /dev/null
