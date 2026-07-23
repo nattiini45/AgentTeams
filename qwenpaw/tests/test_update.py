@@ -610,7 +610,7 @@ rendered generation {runtime_config.generation}
                 },
                 "desired": {
                     "agentPackage": {
-                        "ref": f"file://{package_path}",
+                        "ref": package_path.resolve().as_uri(),
                         "name": "dev-worker",
                         "version": version,
                         "digest": f"sha256:{version}",

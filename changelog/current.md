@@ -8,6 +8,7 @@ changes here before the next release.
 
 **Bug Fixes**
 
+- **QwenPaw file:// package refs on Windows**: Resolve `file://C:\\...` agent package refs correctly instead of treating an empty urlparse path as `.` (cwd).
 - **CoPaw Team coordination routing**: Route Team Leader worker assignments sent through the `message` tool from Leader DM to Team Room, matching the Matrix channel send path. ([92c8145](https://github.com/agentscope-ai/AgentTeams/commit/92c8145))
 - **Pinned OpenClaw source fetch**: Fetch the pinned OpenClaw commit directly so the base image build does not depend on a retired-brand external branch name. ([b0081c2](https://github.com/agentscope-ai/AgentTeams/commit/b0081c2))
 - **Higress extra providers**: Restore OPT-IN `AGENTTEAMS_EXTRA_LLM_PROVIDERS` registration with `modelMapping` that strips the `<provider>/` prefix before upstream calls.

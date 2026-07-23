@@ -75,6 +75,11 @@ def _empty_package(tmp_path: Path, version: str) -> Path:
     return package_path
 
 
+def _package_ref(package_path: Path) -> str:
+    """Build a portable file:// ref (Windows-safe; avoids file://C:\\... netloc parsing)."""
+    return package_path.resolve().as_uri()
+
+
 def _runtime_config(tmp_path: Path, package_path: Path, version: str) -> MemberRuntimeConfig:
     path = tmp_path / f"runtime-{version}.yaml"
     path.write_text(
@@ -87,7 +92,7 @@ member:
   runtime: qwenpaw
 desired:
   agentPackage:
-    ref: file://{package_path}
+    ref: {_package_ref(package_path)}
     name: dev-worker
     version: {version}
     digest: sha256:{version}
@@ -183,11 +188,24 @@ def test_agent_package_manager_applies_changed_package_without_restart_signal(tm
     assert (workspace_dir / "AGENTS.md").read_text(encoding="utf-8") == "agent package 2\n"
     assert (workspace_dir / "skills" / "code-review" / "SKILL.md").read_text(encoding="utf-8") == "skill 2\n"
     assert manager.marker_path.read_text(encoding="utf-8").splitlines() == [
-        f"file://{package_v2}",
+        _package_ref(package_v2),
         "dev-worker",
         "2",
         "sha256:2",
     ]
+
+
+def test_agent_package_manager_resolves_windows_style_file_refs(tmp_path: Path) -> None:
+    """file://C:\\path (backslash form) must not resolve to Path('.') via empty urlparse path."""
+    workspace_dir = tmp_path / "workspace"
+    manager = AgentPackageManager(tmp_path / "packages", workspace_dir=workspace_dir)
+    package_path = _package(tmp_path, "win-ref")
+    # Intentionally use the fragile formatting that fails on Windows without _file_ref_to_path.
+    legacy_ref = f"file://{package_path}"
+    applied = manager.apply(_runtime_config_ref(tmp_path, legacy_ref, "win-ref"))
+    assert applied == manager.current_dir
+    assert (workspace_dir / "AGENTS.md").read_text(encoding="utf-8") == "agent package win-ref\n"
+    assert (manager.current_dir / "config" / "AGENTS.md").read_text(encoding="utf-8") == "agent package win-ref\n"
 
 
 def test_agent_package_manager_fetches_oss_package_from_storage_prefix(
@@ -886,7 +904,7 @@ def test_agent_package_manager_keeps_workspace_when_desired_package_is_empty(tmp
     assert (workspace_dir / "AGENTS.md").read_text(encoding="utf-8") == "agent package 1\n"
     assert (workspace_dir / "skills" / "code-review" / "SKILL.md").read_text(encoding="utf-8") == "skill 1\n"
     assert manager.marker_path.read_text(encoding="utf-8").splitlines() == [
-        f"file://{package_v1}",
+        _package_ref(package_v1),
         "dev-worker",
         "1",
         "sha256:1",
@@ -1060,7 +1078,7 @@ def test_agent_package_manager_rolls_back_workspace_and_current_when_workspace_a
     assert (workspace_dir / "MEMORY.md").read_text(encoding="utf-8") == "memory 1\n"
     assert (workspace_dir / "skills" / "code-review" / "SKILL.md").read_text(encoding="utf-8") == "skill 1\n"
     assert manager.marker_path.read_text(encoding="utf-8").splitlines() == [
-        f"file://{package_v1}",
+        _package_ref(package_v1),
         "dev-worker",
         "1",
         "sha256:1",
@@ -1086,7 +1104,7 @@ def test_agent_package_manager_keeps_previous_version_when_new_package_is_invali
     assert (manager.current_dir / "config" / "AGENTS.md").read_text(encoding="utf-8") == "agent package 1\n"
     assert (workspace_dir / "AGENTS.md").read_text(encoding="utf-8") == "agent package 1\n"
     assert manager.marker_path.read_text(encoding="utf-8").splitlines() == [
-        f"file://{package_v1}",
+        _package_ref(package_v1),
         "dev-worker",
         "1",
         "sha256:1",
@@ -1115,7 +1133,7 @@ def test_agent_package_manager_keeps_previous_version_when_mcp_json_is_invalid(t
     assert (manager.current_dir / "config" / "AGENTS.md").read_text(encoding="utf-8") == "agent package 1\n"
     assert (workspace_dir / "AGENTS.md").read_text(encoding="utf-8") == "agent package 1\n"
     assert manager.marker_path.read_text(encoding="utf-8").splitlines() == [
-        f"file://{package_v1}",
+        _package_ref(package_v1),
         "dev-worker",
         "1",
         "sha256:1",
