@@ -2,6 +2,9 @@
 Bridge: translate openclaw.json (AgentTeams Worker config) into CoPaw's
 config.json + providers.json, then set COPAW_WORKING_DIR so CoPaw
 picks up the right workspace.
+
+Root ``show_tool_details`` lives only in config.json (global UI knob); when
+``AGENTTEAMS_QUIET_ROOMS`` is set, bridge writes it and MatrixChannel reads it.
 """
 from __future__ import annotations
 
@@ -27,6 +30,23 @@ def _port_remap(url: str, is_container: bool) -> str:
 
 def _is_in_container() -> bool:
     return Path("/.dockerenv").exists() or Path("/run/.containerenv").exists()
+
+
+def quiet_rooms_enabled() -> bool:
+    """True if AGENTTEAMS_QUIET_ROOMS is set truthily (default off).
+
+    When enabled, bridge writes ``show_tool_details: false`` into config.json
+    and MatrixChannel.from_config reads it so outbound tool chatter is suppressed.
+    """
+    raw = os.environ.get("AGENTTEAMS_QUIET_ROOMS")
+    if raw is None:
+        return False
+    return raw.strip().lower() in ("true", "1", "yes", "on")
+
+
+def _quiet_rooms_enabled() -> bool:
+    """Backward-compatible alias for quiet_rooms_enabled()."""
+    return quiet_rooms_enabled()
 
 
 def _secret_dir(working_dir: Path) -> Path:
@@ -128,6 +148,10 @@ def bridge_controller_to_copaw(
     providers_src = working_dir / "providers.json"
     if providers_src.exists():
         shutil.copy2(providers_src, secret_dir / "providers.json")
+
+
+# Fork / test alias — same full bridge entrypoint under the historical name.
+bridge_openclaw_to_copaw = bridge_controller_to_copaw
 
 
 # ---------------------------------------------------------------------------
@@ -291,6 +315,18 @@ def _write_config_json(
         existing.setdefault("agents", {}).setdefault("running", {})[
             "max_input_length"
         ] = context_window
+
+    # Phase 5b "quiet rooms" (env-gated, default off): root-level
+    # show_tool_details is a separate knob from channels.matrix.* above
+    # (copaw/src/matrix/config.py defaults True). Only touch it when the
+    # operator opts in — leaving the env unset must produce byte-identical
+    # config.json output to before this flag existed.
+    if quiet_rooms_enabled():
+        existing["show_tool_details"] = False
+    else:
+        # Restart-time overlay: if quiet rooms was previously enabled and is
+        # now off, don't leave a stale show_tool_details behind.
+        existing.pop("show_tool_details", None)
 
     with open(config_path, "w") as f:
         json.dump(existing, f, indent=2, ensure_ascii=False)

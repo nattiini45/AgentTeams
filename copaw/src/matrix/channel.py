@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import html
 import io
+import json
 import logging
 import mimetypes
 import os
@@ -489,19 +490,48 @@ class MatrixChannel(BaseChannel):
         else:
             # SimpleNamespace or other object — convert to dict via __dict__
             cfg = MatrixChannelConfig(vars(config))
+
+        resolved_show_tool_details = cls._resolve_show_tool_details(
+            show_tool_details,
+        )
+
         return cls(
             process=process,
             config=cfg,
             on_reply_sent=on_reply_sent,
-            show_tool_details=show_tool_details,
+            show_tool_details=resolved_show_tool_details,
             filter_tool_messages=filter_tool_messages
             or cfg.filter_tool_messages,
             filter_thinking=filter_thinking or cfg.filter_thinking,
         )
 
+    @staticmethod
+    def _resolve_show_tool_details(default: bool) -> bool:
+        """Honor config.json root show_tool_details (AGENTTEAMS_QUIET_ROOMS bridge)."""
+        working_dir = os.environ.get("COPAW_WORKING_DIR")
+        if working_dir:
+            cfg_path = Path(working_dir) / "config.json"
+            if cfg_path.is_file():
+                try:
+                    data = json.loads(cfg_path.read_text(encoding="utf-8"))
+                    if "show_tool_details" in data:
+                        return bool(data["show_tool_details"])
+                except (OSError, json.JSONDecodeError):
+                    pass
+
+        try:
+            # Lazy: channel may load without copaw_worker installed.
+            from copaw_worker.bridge import quiet_rooms_enabled
+
+            if quiet_rooms_enabled():
+                return False
+        except ImportError:
+            pass
+
+        return default
+
     @classmethod
     def from_env(cls, process: Callable, on_reply_sent=None) -> "MatrixChannel":
-        import os
         cfg = MatrixChannelConfig({
             "homeserver": os.environ.get("AGENTTEAMS_MATRIX_SERVER", ""),
             "access_token": os.environ.get("AGENTTEAMS_MATRIX_TOKEN", ""),
