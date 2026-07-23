@@ -55,6 +55,12 @@ class _FakeCfg:
 
 class _FakeContentType:
     TEXT = "text"
+    DATA = "data"
+    FILE = "file"
+    IMAGE = "image"
+    AUDIO = "audio"
+    VIDEO = "video"
+    REFUSAL = "refusal"
 
 
 class _FakeTextContent:
