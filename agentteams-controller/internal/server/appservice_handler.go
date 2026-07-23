@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -17,6 +18,9 @@ import (
 )
 
 const roleTeamWorker = "worker"
+
+// Cap appservice mention dedup map growth in long-running controllers.
+const appserviceSeenCap = 10000
 
 // AppserviceHandler handles Matrix Application Service transaction pushes
 // from the homeserver. Events arrive via HTTP push (PUT /transactions)
@@ -158,12 +162,15 @@ func (h *AppserviceHandler) HandleRoomQuery(w http.ResponseWriter, _ *http.Reque
 // --- Internal logic ---
 
 func (h *AppserviceHandler) verifyHSToken(r *http.Request) bool {
+	expected := []byte(h.hsToken)
 	auth := r.Header.Get("Authorization")
-	if !strings.HasPrefix(auth, "Bearer ") {
-		// Also check query param (some homeserver implementations).
-		return r.URL.Query().Get("access_token") == h.hsToken
+	if strings.HasPrefix(auth, "Bearer ") {
+		got := []byte(strings.TrimSpace(strings.TrimPrefix(auth, "Bearer ")))
+		return subtle.ConstantTimeCompare(got, expected) == 1
 	}
-	return strings.TrimPrefix(auth, "Bearer ") == h.hsToken
+	// Also check query param (some homeserver implementations).
+	got := []byte(strings.TrimSpace(r.URL.Query().Get("access_token")))
+	return subtle.ConstantTimeCompare(got, expected) == 1
 }
 
 func (h *AppserviceHandler) handleMention(ctx context.Context, roomID, eventID, sender, userID string) error {
@@ -178,6 +185,10 @@ func (h *AppserviceHandler) handleMention(ctx context.Context, roomID, eventID, 
 			logger.V(1).Info("mention skipped: duplicate event",
 				"roomID", roomID, "eventID", eventID, "mentionedUser", userID)
 			return nil
+		}
+		if len(h.seen) >= appserviceSeenCap {
+			// Bound memory: drop oldest entries by resetting the map.
+			h.seen = make(map[string]struct{}, appserviceSeenCap/2)
 		}
 		h.seen[key] = struct{}{}
 		h.mu.Unlock()

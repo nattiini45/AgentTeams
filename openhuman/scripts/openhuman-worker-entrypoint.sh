@@ -196,11 +196,34 @@ if [ -z "${BRIDGE_ALLOWED_USERS:-}" ] && [ -n "${MATRIX_ALLOWED_USERS:-}" ]; the
     BRIDGE_ALLOWED_USERS=$(echo "${MATRIX_ALLOWED_USERS}" | tr ',' '\n')
 fi
 
+# Escape a value for embedding inside a TOML basic string (double-quoted).
+toml_escape() {
+    # Order matters: backslashes first, then quotes.
+    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
 # Convert newline-separated user list to TOML array entries.
 ALLOWED_USERS_TOML=""
 if [ -n "${BRIDGE_ALLOWED_USERS:-}" ]; then
-    ALLOWED_USERS_TOML=$(echo "${BRIDGE_ALLOWED_USERS}" | sed '/^$/d' | sed 's/.*/ "&",/' | sed '$ s/,$//')
+    while IFS= read -r _user; do
+        [ -z "${_user}" ] && continue
+        _esc="$(toml_escape "${_user}")"
+        if [ -n "${ALLOWED_USERS_TOML}" ]; then
+            ALLOWED_USERS_TOML="${ALLOWED_USERS_TOML},
+ \"${_esc}\""
+        else
+            ALLOWED_USERS_TOML=" \"${_esc}\""
+        fi
+    done <<EOF_USERS
+$(printf '%s\n' "${BRIDGE_ALLOWED_USERS}")
+EOF_USERS
 fi
+
+BRIDGE_HOMESERVER_ESC="$(toml_escape "${BRIDGE_HOMESERVER}")"
+BRIDGE_ACCESS_TOKEN_ESC="$(toml_escape "${BRIDGE_ACCESS_TOKEN}")"
+BRIDGE_ROOM_ID_ESC="$(toml_escape "${BRIDGE_ROOM_ID}")"
+BRIDGE_USER_ID_ESC="$(toml_escape "${BRIDGE_USER_ID:-}")"
+MATRIX_DEVICE_ID_ESC="$(toml_escape "${MATRIX_DEVICE_ID:-}")"
 
 # Write Matrix-only config.toml first; LLM settings are applied below via
 # openhuman-core CLI (which is the supported, schema-stable path).
@@ -211,14 +234,14 @@ cat > "${WORKSPACE}/config.toml" <<EOF
 [channels_config]
 
 [channels_config.matrix]
-homeserver = "${BRIDGE_HOMESERVER}"
-access_token = "${BRIDGE_ACCESS_TOKEN}"
-room_id = "${BRIDGE_ROOM_ID}"
+homeserver = "${BRIDGE_HOMESERVER_ESC}"
+access_token = "${BRIDGE_ACCESS_TOKEN_ESC}"
+room_id = "${BRIDGE_ROOM_ID_ESC}"
 allowed_users = [
 ${ALLOWED_USERS_TOML}
 ]
-$([ -n "${BRIDGE_USER_ID}" ] && echo "user_id = \"${BRIDGE_USER_ID}\"")
-$([ -n "${MATRIX_DEVICE_ID:-}" ] && echo "device_id = \"${MATRIX_DEVICE_ID}\"")
+$([ -n "${BRIDGE_USER_ID:-}" ] && echo "user_id = \"${BRIDGE_USER_ID_ESC}\"")
+$([ -n "${MATRIX_DEVICE_ID:-}" ] && echo "device_id = \"${MATRIX_DEVICE_ID_ESC}\"")
 EOF
 
 log "config.toml generated at ${WORKSPACE}/config.toml"

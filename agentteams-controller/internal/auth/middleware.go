@@ -164,5 +164,5 @@ func extractBearerToken(r *http.Request) string {
 	if token == authHeader {
 		return ""
 	}
-	return token
+	return strings.TrimSpace(token)
 }

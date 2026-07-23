@@ -1929,11 +1929,15 @@ step_existing() {
         log "$(msg install.loading_config "${existing_env}")"
         while IFS='=' read -r key value; do
             case "${key}" in \#*|"") continue ;; esac
+            # Only accept shell-safe identifiers (blocks injection via crafted keys).
+            case "${key}" in
+                *[!A-Za-z0-9_]*|[0-9]*) continue ;;
+            esac
             value="${value%%#*}"
             value="${value#"${value%%[![:space:]]*}"}"
             value="${value%"${value##*[![:space:]]}"}"
-            eval "_existing_val=\"\${${key}+x}\""
-            if [ -z "${_existing_val}" ]; then export "${key}=${value}"; fi
+            # Prefer existing shell env over file values (indirect expansion, no eval).
+            if [ -z "${!key+x}" ]; then export "${key}=${value}"; fi
         done < "${existing_env}"
     fi
 }

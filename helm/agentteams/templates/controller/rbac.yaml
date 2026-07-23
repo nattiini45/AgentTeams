@@ -75,7 +75,7 @@ rules:
     verbs: ["get", "list", "watch"]
   - apiGroups: ["storage.k8s.io"]
     resources: ["storageclasses"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
   {{- if .Values.credentialProvider.enabled }}
   - apiGroups: ["agentidentity.alibabacloud.com"]
     resources: ["credentialproviders", "agentidentities", "agentroles", "agentrolebindings"]

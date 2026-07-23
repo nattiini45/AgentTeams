@@ -7,7 +7,10 @@
 
 global:
   namespace: ""  # defaults to .Release.Namespace
-  imageRegistry: higress-registry.cn-hangzhou.cr.aliyuncs.com/higress
+  # Default registry/namespace for AgentTeams images (controller, manager, workers).
+  # Component images that still live under the Higress org (tuwunel, minio, element-web)
+  # keep full repository paths below and are not rewritten from this value.
+  imageRegistry: higress-registry.cn-hangzhou.cr.aliyuncs.com/agentteams
   imageTag: ""
 
 imagePullSecrets: []
@@ -98,6 +101,9 @@ gateway:
 storage:
   provider: minio             # minio | oss
   mode: managed               # managed | existing
+  # Canonical bucket name after the AgentTeams rename (was hiclaw-fs in older installs).
+  # Existing clusters that still use hiclaw-fs must override storage.bucket; this chart
+  # does not auto-migrate bucket contents.
   bucket: "agentteams-storage"
   # Required when provider=oss:
   oss:
@@ -334,10 +340,10 @@ worker:
       repository: higress-registry.cn-hangzhou.cr.aliyuncs.com/agentteams/agentteams-hermes-worker
       tag: ""                 # defaults to global.imageTag
     openhuman:
-      repository: higress-registry.cn-hangzhou.cr.aliyuncs.com/higress/agentteams-openhuman-worker
+      repository: higress-registry.cn-hangzhou.cr.aliyuncs.com/agentteams/agentteams-openhuman-worker
       tag: ""                 # defaults to global.imageTag
     qwenpaw:
-      repository: higress-registry.cn-hangzhou.cr.aliyuncs.com/higress/agentteams-qwenpaw-worker
+      repository: higress-registry.cn-hangzhou.cr.aliyuncs.com/agentteams/agentteams-qwenpaw-worker
       tag: ""                 # defaults to global.imageTag
   defaultRuntime: "openclaw"
   resources:

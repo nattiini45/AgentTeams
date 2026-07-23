@@ -18,6 +18,12 @@ changes here before the next release.
 - **Hermes sync semantics**: Restore thin `agentteams_sync` wrapper with byte-accurate push compare and keep local-only skills across pull.
 - **Installer prompt safety**: Use `printf -v` for installer prompt helpers so preset/default values are never eval-executed.
 - **OpenHuman gateway id**: Rename provider id to `agentteams-gateway` consistently in bridge and tests.
+- **Controller appservice auth**: Compare Matrix `hs_token` with `subtle.ConstantTimeCompare` and cap the appservice mention dedup map.
+- **Controller proxy DoS**: Bound Docker container-create request bodies with `io.LimitReader`.
+- **Worker lifecycle errors**: Log backend Start/Stop and status-update failures in wake/sleep/ensure-ready instead of discarding them.
+- **Helm worker images**: Wire `AGENTTEAMS_QWENPAW_WORKER_IMAGE`, align openhuman/qwenpaw image repos to the `agentteams/` registry namespace, and drop StorageClass `delete` RBAC.
+- **OpenHuman config.toml**: Escape Matrix bridge string values before TOML heredoc interpolation.
+- **CoPaw bridge Matrix identity**: Remove duplicate env lookups and restore `COPAW_*` fallbacks for domain/worker name.
 
 **Branding and Compatibility**
 

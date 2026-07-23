@@ -286,7 +286,6 @@ def _resolve_matrix_user_id(
 
     env_user_id = (
         os.environ.get("AGENTTEAMS_MATRIX_USER_ID")
-        or os.environ.get("AGENTTEAMS_MATRIX_USER_ID")
         or os.environ.get("COPAW_MATRIX_USER_ID")
     )
     if env_user_id:
@@ -294,11 +293,11 @@ def _resolve_matrix_user_id(
 
     matrix_domain = (
         os.environ.get("AGENTTEAMS_MATRIX_DOMAIN")
-        or os.environ.get("AGENTTEAMS_MATRIX_DOMAIN")
+        or os.environ.get("COPAW_MATRIX_DOMAIN")
     )
     localpart = (
         os.environ.get("AGENTTEAMS_WORKER_NAME")
-        or os.environ.get("AGENTTEAMS_WORKER_NAME")
+        or os.environ.get("COPAW_WORKER_NAME")
         or ("manager" if profile == "manager" else "")
     )
     if matrix_domain and localpart:

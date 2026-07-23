@@ -87,11 +87,18 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.proxy.ServeHTTP(w, r)
 }
 
+const maxContainerCreateBodyBytes = 16 << 20 // 16 MiB
+
 func (h *Handler) handleContainerCreate(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
+	limited := io.LimitReader(r.Body, maxContainerCreateBodyBytes+1)
+	body, err := io.ReadAll(limited)
 	r.Body.Close()
 	if err != nil {
 		http.Error(w, `{"message":"agentteams-controller: failed to read request body"}`, http.StatusBadRequest)
+		return
+	}
+	if len(body) > maxContainerCreateBodyBytes {
+		http.Error(w, `{"message":"agentteams-controller: request body too large"}`, http.StatusRequestEntityTooLarge)
 		return
 	}
 

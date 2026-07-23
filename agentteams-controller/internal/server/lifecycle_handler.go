@@ -58,16 +58,23 @@ func (h *LifecycleHandler) Wake(w http.ResponseWriter, r *http.Request) {
 	// Directly operate on backend for immediate response
 	b := h.registry.DetectWorkerBackend(r.Context())
 	if b != nil {
-		_ = b.Start(r.Context(), name)
+		if err := b.Start(r.Context(), name); err != nil {
+			// Spec is already Running; reconciler will retry if the backend start fails.
+			log.Printf("[WARN] wake start worker %s: %v (reconciler will retry)", name, err)
+		}
 	}
 
 	h.setReady(name, false)
 
 	// Refresh and update status
-	_ = h.k8s.Get(r.Context(), client.ObjectKey{Name: name, Namespace: h.namespace}, &worker)
+	if err := h.k8s.Get(r.Context(), client.ObjectKey{Name: name, Namespace: h.namespace}, &worker); err != nil {
+		log.Printf("[WARN] wake refresh worker %s: %v", name, err)
+	}
 	worker.Status.Phase = "Running"
 	worker.Status.Message = ""
-	_ = h.k8s.Status().Update(r.Context(), &worker)
+	if err := h.k8s.Status().Update(r.Context(), &worker); err != nil {
+		log.Printf("[WARN] wake status update worker %s: %v", name, err)
+	}
 
 	httputil.WriteJSON(w, http.StatusOK, WorkerLifecycleResponse{Name: name, Phase: "Running"})
 }
@@ -97,16 +104,23 @@ func (h *LifecycleHandler) Sleep(w http.ResponseWriter, r *http.Request) {
 	// Directly operate on backend for immediate response
 	b := h.registry.DetectWorkerBackend(r.Context())
 	if b != nil {
-		_ = b.Stop(r.Context(), name)
+		if err := b.Stop(r.Context(), name); err != nil {
+			// Spec is already Sleeping; reconciler will retry if the backend stop fails.
+			log.Printf("[WARN] sleep stop worker %s: %v (reconciler will retry)", name, err)
+		}
 	}
 
 	h.setReady(name, false)
 
 	// Refresh and update status
-	_ = h.k8s.Get(r.Context(), client.ObjectKey{Name: name, Namespace: h.namespace}, &worker)
+	if err := h.k8s.Get(r.Context(), client.ObjectKey{Name: name, Namespace: h.namespace}, &worker); err != nil {
+		log.Printf("[WARN] sleep refresh worker %s: %v", name, err)
+	}
 	worker.Status.Phase = "Sleeping"
 	worker.Status.Message = ""
-	_ = h.k8s.Status().Update(r.Context(), &worker)
+	if err := h.k8s.Status().Update(r.Context(), &worker); err != nil {
+		log.Printf("[WARN] sleep status update worker %s: %v", name, err)
+	}
 
 	httputil.WriteJSON(w, http.StatusOK, WorkerLifecycleResponse{Name: name, Phase: "Sleeping"})
 }
@@ -147,10 +161,14 @@ func (h *LifecycleHandler) EnsureReady(w http.ResponseWriter, r *http.Request) {
 		h.setReady(name, false)
 
 		// Refresh and update status
-		_ = h.k8s.Get(r.Context(), client.ObjectKey{Name: name, Namespace: h.namespace}, &worker)
+		if err := h.k8s.Get(r.Context(), client.ObjectKey{Name: name, Namespace: h.namespace}, &worker); err != nil {
+			log.Printf("[WARN] ensure-ready refresh worker %s: %v", name, err)
+		}
 		worker.Status.Phase = "Running"
 		worker.Status.Message = ""
-		_ = h.k8s.Status().Update(r.Context(), &worker)
+		if err := h.k8s.Status().Update(r.Context(), &worker); err != nil {
+			log.Printf("[WARN] ensure-ready status update worker %s: %v", name, err)
+		}
 	}
 
 	phase := worker.Status.Phase
