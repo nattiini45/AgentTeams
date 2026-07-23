@@ -17,8 +17,8 @@ def team_storage_name_from_worker_team(bucket: str, team_ref: str) -> str:
     team_name = team_ref.strip()
     bucket_name = (bucket or "").strip()
     prefixes = [bucket_name]
-    if bucket_name.startswith("agt-"):
-        prefixes.append(bucket_name.removeprefix("agt-"))
+    if bucket_name.startswith("agentteams-"):
+        prefixes.append(bucket_name.removeprefix("agentteams-"))
 
     for prefix in prefixes:
         if prefix and team_name.startswith(f"{prefix}-"):

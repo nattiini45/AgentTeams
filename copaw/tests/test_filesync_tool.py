@@ -113,6 +113,8 @@ def test_worker_metadata_query_uses_cr_name_while_storage_uses_runtime_name(tmp_
 
     def fake_mc(*args, **_kwargs):
         commands.append(args)
+        # agentteams_sync.FileSync.mirror_all requires openclaw.json after mirror.
+        (sync.local_dir / "openclaw.json").write_text("{}", encoding="utf-8")
         return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
 
     monkeypatch.setattr("copaw_worker.sync._mc", fake_mc)
