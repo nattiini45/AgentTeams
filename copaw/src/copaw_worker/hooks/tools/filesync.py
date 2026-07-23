@@ -2,20 +2,38 @@
 
 from __future__ import annotations
 
-import asyncio
 import json
 import os
 from pathlib import Path
 from typing import Any
 
+from agentscope.message import TextBlock
 from agentscope.tool import ToolResponse
 
-from copaw_worker.hooks.tools._toolhelpers import _error, _ok
 from copaw_worker.sync import FileSync
 
 
 class FilesyncToolError(ValueError):
     """Expected user-facing error from the filesync tool."""
+
+
+def _response(payload: dict[str, Any]) -> ToolResponse:
+    return ToolResponse(
+        content=[
+            TextBlock(
+                type="text",
+                text=json.dumps(payload, ensure_ascii=False),
+            ),
+        ],
+    )
+
+
+def _ok(**payload: Any) -> ToolResponse:
+    return _response({"ok": True, **payload})
+
+
+def _error(message: str, **payload: Any) -> ToolResponse:
+    return _response({"ok": False, "error": message, **payload})
 
 
 def _copaw_working_dir() -> Path:
@@ -34,32 +52,26 @@ def _copaw_working_dir() -> Path:
 def create_sync() -> FileSync:
     worker_name = (
         os.getenv("AGENTTEAMS_WORKER_NAME")
-        or os.getenv("HICLAW_WORKER_NAME")
         or os.getenv("COPAW_WORKER_NAME")
     )
     worker_cr_name = (
         os.getenv("AGENTTEAMS_WORKER_CR_NAME")
-        or os.getenv("HICLAW_WORKER_CR_NAME")
         or os.getenv("COPAW_WORKER_CR_NAME")
     )
     minio_endpoint = (
         os.getenv("AGENTTEAMS_FS_ENDPOINT")
-        or os.getenv("HICLAW_FS_ENDPOINT")
         or os.getenv("COPAW_MINIO_ENDPOINT")
     )
     minio_access_key = (
         os.getenv("AGENTTEAMS_FS_ACCESS_KEY")
-        or os.getenv("HICLAW_FS_ACCESS_KEY")
         or os.getenv("COPAW_MINIO_ACCESS_KEY")
     )
     minio_secret_key = (
         os.getenv("AGENTTEAMS_FS_SECRET_KEY")
-        or os.getenv("HICLAW_FS_SECRET_KEY")
         or os.getenv("COPAW_MINIO_SECRET_KEY")
     )
     minio_bucket = (
         os.getenv("AGENTTEAMS_FS_BUCKET")
-        or os.getenv("HICLAW_FS_BUCKET")
         or os.getenv("COPAW_MINIO_BUCKET")
         or "agentteams-storage"
     )
@@ -190,18 +202,18 @@ async def filesync(
             return _ok(dryRun=True, **payload)
 
         if action == "pull":
-            await asyncio.to_thread(sync.pull_shared_path, resolved_path)
+            sync.pull_shared_path(resolved_path)
             return _ok(pulled=True, **payload)
 
         if action == "push":
-            await asyncio.to_thread(sync.push_shared_path, resolved_path, exclude=excludes)
+            sync.push_shared_path(resolved_path, exclude=excludes)
             return _ok(pushed=True, **payload)
 
         if action == "stat":
-            await asyncio.to_thread(sync.stat_shared_path, resolved_path)
+            sync.stat_shared_path(resolved_path)
             return _ok(exists=True, **payload)
 
-        _, entries = await asyncio.to_thread(sync.list_shared_path, resolved_path)
+        _, entries = sync.list_shared_path(resolved_path)
         return _ok(entries=entries, **payload)
     except FilesyncToolError as exc:
         return _error(str(exc), action=action, path=resolved_path)

@@ -23,7 +23,7 @@ docker build -t agentteams/worker-agent:latest .
 Workers are created by the Manager Agent. The Manager provides the installation command:
 
 ```bash
-../install/hiclaw-install.sh worker \
+../install/agentteams-install.sh worker \
   --name alice \
   --fs http://<MANAGER_IP>:9000 \
   --fs-key <ACCESS_KEY> \
@@ -35,12 +35,17 @@ Workers are created by the Manager Agent. The Manager provides the installation 
 ```
 worker/
 ├── Dockerfile
-├── README.md
-└── scripts/
-    └── worker-entrypoint.sh        # Startup: sync config, configure mcporter, launch OpenClaw
+├── scripts/
+│   └── worker-entrypoint.sh        # Startup: sync config, configure mcporter, launch OpenClaw
+└── agent/
+    └── skills/
+        ├── file-sync/
+        │   ├── SKILL.md             # File sync skill (config, credentials, collaboration)
+        │   └── scripts/
+        │       └── agentteams-sync.sh   # Pull files from centralized storage
+        └── github-operations/
+            └── SKILL.md             # GitHub MCP operations skill
 ```
-
-Worker agent templates (AGENTS.md, skills) live under `manager/agent/worker-agent/` and are pushed to MinIO by the controller — not under `worker/`.
 
 ## Environment Variables
 
@@ -54,4 +59,4 @@ Worker agent templates (AGENTS.md, skills) live under `manager/agent/worker-agen
 | `AGENTTEAMS_FS_ACCESS_KEY` | Yes | MinIO access key |
 | `AGENTTEAMS_FS_SECRET_KEY` | Yes | MinIO secret key |
 
-Runtime scripts use `AGENTTEAMS_MATRIX_URL` and `AGENTTEAMS_AI_GATEWAY_URL` as the main contract. Existing `AGENTTEAMS_*` inputs are still accepted by the shared bootstrap for compatibility with older controller/Helm releases.
+Runtime scripts use the `AGENTTEAMS_*` variables above as their only platform environment contract.

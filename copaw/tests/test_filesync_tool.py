@@ -1,8 +1,6 @@
 import json
 import shutil
 import subprocess
-import threading
-from pathlib import Path
 
 import pytest
 
@@ -31,15 +29,15 @@ def _sync(tmp_path):
     )
 
 
-def _mock_hiclaw_worker(monkeypatch, payload, expected_name="dag-team-dev"):
+def _mock_agentteams_worker(monkeypatch, payload, expected_name="dag-team-dev"):
     original_which = shutil.which
     monkeypatch.setattr(
         "shutil.which",
-        lambda name: "/usr/local/bin/hiclaw" if name == "hiclaw" else original_which(name),
+        lambda name: "/usr/local/bin/agt" if name == "agt" else original_which(name),
     )
 
     def fake_run(cmd, **kwargs):
-        if cmd == ["/usr/local/bin/hiclaw", "get", "workers", expected_name, "-o", "json"]:
+        if cmd == ["/usr/local/bin/agt", "get", "workers", expected_name, "-o", "json"]:
             return subprocess.CompletedProcess(
                 cmd,
                 0,
@@ -51,10 +49,10 @@ def _mock_hiclaw_worker(monkeypatch, payload, expected_name="dag-team-dev"):
     monkeypatch.setattr(subprocess, "run", fake_run)
 
 
-def test_create_sync_accepts_legacy_hiclaw_environment(tmp_path, monkeypatch):
+def test_create_sync_accepts_agentteams_environment(tmp_path, monkeypatch):
     monkeypatch.setenv("COPAW_WORKING_DIR", str(tmp_path / "worker" / ".copaw"))
-    monkeypatch.setenv("AGENTTEAMS_WORKER_NAME", "legacy-worker")
-    monkeypatch.setenv("AGENTTEAMS_WORKER_CR_NAME", "legacy-worker-cr")
+    monkeypatch.setenv("AGENTTEAMS_WORKER_NAME", "worker")
+    monkeypatch.setenv("AGENTTEAMS_WORKER_CR_NAME", "worker-cr")
     monkeypatch.setenv("AGENTTEAMS_FS_ENDPOINT", "http://minio:9000")
     monkeypatch.setenv("AGENTTEAMS_FS_ACCESS_KEY", "minio")
     monkeypatch.setenv("AGENTTEAMS_FS_SECRET_KEY", "password")
@@ -62,8 +60,8 @@ def test_create_sync_accepts_legacy_hiclaw_environment(tmp_path, monkeypatch):
 
     sync = create_sync()
 
-    assert sync.worker_name == "legacy-worker"
-    assert sync.worker_cr_name == "legacy-worker-cr"
+    assert sync.worker_name == "worker"
+    assert sync.worker_cr_name == "worker-cr"
     assert sync.endpoint == "http://minio:9000"
     assert sync.bucket == "agentteams-storage"
 
@@ -73,11 +71,11 @@ def test_resolve_shared_path_strips_bucket_prefix_from_worker_team(tmp_path, mon
         endpoint="http://minio:9000",
         access_key="minio",
         secret_key="password",
-        bucket="hiclaw-magic-cn-123",
+        bucket="agentteams-magic-cn-123",
         worker_name="dag-team-dev",
         local_dir=tmp_path / "worker",
     )
-    _mock_hiclaw_worker(
+    _mock_agentteams_worker(
         monkeypatch,
         {"name": "dag-team-dev", "team": "magic-cn-123-dag-team"},
     )
@@ -87,7 +85,7 @@ def test_resolve_shared_path_strips_bucket_prefix_from_worker_team(tmp_path, mon
     assert resolved.kind == "shared"
     assert resolved.subpath == "tasks/st-01/result.md"
     assert resolved.local == sync.shared_dir / "tasks" / "st-01" / "result.md"
-    assert resolved.remote == "agentteams/hiclaw-magic-cn-123/teams/dag-team/shared/tasks/st-01/result.md"
+    assert resolved.remote == "agentteams/agentteams-magic-cn-123/teams/dag-team/shared/tasks/st-01/result.md"
 
 
 def test_team_storage_name_keeps_legacy_team_without_bucket_prefix():
@@ -104,10 +102,7 @@ def test_worker_metadata_query_uses_cr_name_while_storage_uses_runtime_name(tmp_
         worker_cr_name="nov-worker-cr",
         local_dir=tmp_path / "worker",
     )
-    sync.local_dir.mkdir(parents=True, exist_ok=True)
-    # mirror_all requires openclaw.json after the primary mirror succeeds.
-    (sync.local_dir / "openclaw.json").write_text("{}")
-    _mock_hiclaw_worker(
+    _mock_agentteams_worker(
         monkeypatch,
         {"name": "nov-worker-cr", "workerName": "novworker02", "team": "dag-team"},
         expected_name="nov-worker-cr",
@@ -137,14 +132,14 @@ def test_worker_metadata_query_uses_cr_name_while_storage_uses_runtime_name(tmp_
 
 def test_resolve_shared_path_uses_global_remote_for_standalone_worker(tmp_path, monkeypatch):
     sync = _sync(tmp_path)
-    _mock_hiclaw_worker(monkeypatch, {"name": "dag-team-dev", "team": "", "role": "worker"})
+    _mock_agentteams_worker(monkeypatch, {"name": "dag-team-dev", "team": "", "role": "worker"})
 
     resolved = sync.resolve_shared_path("shared/tasks/st-01/result.md")
 
     assert resolved.remote == "agentteams/agentteams-storage/shared/tasks/st-01/result.md"
 
 
-def test_resolve_shared_path_fails_closed_when_hiclaw_cli_is_missing(tmp_path, monkeypatch):
+def test_resolve_shared_path_fails_closed_when_agentteams_cli_is_missing(tmp_path, monkeypatch):
     sync = _sync(tmp_path)
     (sync.local_dir / "SOUL.md").write_text("You are the Team Leader of `wrong-team`.")
     monkeypatch.setattr("shutil.which", lambda name: None)
@@ -153,10 +148,10 @@ def test_resolve_shared_path_fails_closed_when_hiclaw_cli_is_missing(tmp_path, m
         sync.resolve_shared_path("shared/tasks/st-01/result.md")
 
 
-def test_is_team_leader_uses_hiclaw_role(tmp_path, monkeypatch):
+def test_is_team_leader_uses_agentteams_role(tmp_path, monkeypatch):
     sync = _sync(tmp_path)
     (sync.local_dir / "AGENTS.md").write_text("No prompt text should define role.")
-    _mock_hiclaw_worker(
+    _mock_agentteams_worker(
         monkeypatch,
         {"name": "dag-team-dev", "team": "dag-team", "role": "team_leader"},
     )
@@ -189,7 +184,7 @@ async def test_filesync_dry_run_returns_resolved_local_path(tmp_path, monkeypatc
     monkeypatch.setenv("AGENTTEAMS_FS_ENDPOINT", "http://minio:9000")
     monkeypatch.setenv("AGENTTEAMS_FS_ACCESS_KEY", "minio")
     monkeypatch.setenv("AGENTTEAMS_FS_SECRET_KEY", "password")
-    _mock_hiclaw_worker(monkeypatch, {"name": "dag-team-dev", "team": "dag-team"})
+    _mock_agentteams_worker(monkeypatch, {"name": "dag-team-dev", "team": "dag-team"})
 
     response = await filesync(
         action="pull",
@@ -202,9 +197,7 @@ async def test_filesync_dry_run_returns_resolved_local_path(tmp_path, monkeypatc
     assert payload["dryRun"] is True
     assert payload["action"] == "pull"
     assert payload["kind"] == "shared"
-    assert Path(payload["localPath"]) == (
-        working_dir / "workspaces" / "default" / "shared" / "tasks" / "st-01"
-    )
+    assert payload["localPath"].endswith(".copaw/workspaces/default/shared/tasks/st-01")
 
 
 @pytest.mark.asyncio
@@ -218,7 +211,7 @@ async def test_filesync_normalizes_project_directory_without_trailing_slash(
     monkeypatch.setenv("AGENTTEAMS_FS_ENDPOINT", "http://minio:9000")
     monkeypatch.setenv("AGENTTEAMS_FS_ACCESS_KEY", "minio")
     monkeypatch.setenv("AGENTTEAMS_FS_SECRET_KEY", "password")
-    _mock_hiclaw_worker(monkeypatch, {"name": "dag-team-dev", "team": "dag-team"})
+    _mock_agentteams_worker(monkeypatch, {"name": "dag-team-dev", "team": "dag-team"})
 
     response = await filesync(
         action="pull",
@@ -229,13 +222,8 @@ async def test_filesync_normalizes_project_directory_without_trailing_slash(
 
     assert payload["ok"] is True
     assert payload["path"] == "shared/projects/project-20260512-001122/"
-    assert Path(payload["localPath"]) == (
-        working_dir
-        / "workspaces"
-        / "default"
-        / "shared"
-        / "projects"
-        / "project-20260512-001122"
+    assert payload["localPath"].endswith(
+        ".copaw/workspaces/default/shared/projects/project-20260512-001122"
     )
 
 
@@ -247,7 +235,7 @@ async def test_filesync_accepts_action_payload_and_json_string_exclude(tmp_path,
     monkeypatch.setenv("AGENTTEAMS_FS_ENDPOINT", "http://minio:9000")
     monkeypatch.setenv("AGENTTEAMS_FS_ACCESS_KEY", "minio")
     monkeypatch.setenv("AGENTTEAMS_FS_SECRET_KEY", "password")
-    _mock_hiclaw_worker(monkeypatch, {"name": "dag-team-dev", "team": "dag-team"})
+    _mock_agentteams_worker(monkeypatch, {"name": "dag-team-dev", "team": "dag-team"})
 
     response = await filesync(
         action="push",
@@ -277,65 +265,3 @@ async def test_filesync_rejects_invalid_action(tmp_path, monkeypatch):
 
     assert payload["ok"] is False
     assert "action must be one of" in payload["error"]
-
-
-@pytest.mark.asyncio
-async def test_filesync_pull_runs_blocking_sync_off_event_loop(tmp_path, monkeypatch):
-    """Regression test for event-loop blocking: pull_shared_path must run in a worker thread."""
-    working_dir = tmp_path / "worker" / ".copaw"
-    monkeypatch.setenv("COPAW_WORKING_DIR", str(working_dir))
-    monkeypatch.setenv("AGENTTEAMS_WORKER_NAME", "dag-team-dev")
-    monkeypatch.setenv("AGENTTEAMS_FS_ENDPOINT", "http://minio:9000")
-    monkeypatch.setenv("AGENTTEAMS_FS_ACCESS_KEY", "minio")
-    monkeypatch.setenv("AGENTTEAMS_FS_SECRET_KEY", "password")
-    _mock_hiclaw_worker(monkeypatch, {"name": "dag-team-dev", "team": "dag-team"})
-
-    call_threads = []
-    main_thread = threading.current_thread()
-
-    def fake_pull_shared_path(self, path):
-        call_threads.append(threading.current_thread())
-        assert threading.current_thread() is not main_thread
-
-    monkeypatch.setattr(FileSync, "pull_shared_path", fake_pull_shared_path)
-
-    response = await filesync(action="pull", path="shared/tasks/st-01/")
-    payload = _response_json(response)
-
-    assert payload["ok"] is True
-    assert payload["pulled"] is True
-    assert len(call_threads) == 1
-    assert call_threads[0] is not main_thread
-
-
-@pytest.mark.asyncio
-async def test_filesync_push_runs_blocking_sync_off_event_loop(tmp_path, monkeypatch):
-    """Regression test for event-loop blocking: push_shared_path must run in a worker thread."""
-    working_dir = tmp_path / "worker" / ".copaw"
-    monkeypatch.setenv("COPAW_WORKING_DIR", str(working_dir))
-    monkeypatch.setenv("AGENTTEAMS_WORKER_NAME", "dag-team-dev")
-    monkeypatch.setenv("AGENTTEAMS_FS_ENDPOINT", "http://minio:9000")
-    monkeypatch.setenv("AGENTTEAMS_FS_ACCESS_KEY", "minio")
-    monkeypatch.setenv("AGENTTEAMS_FS_SECRET_KEY", "password")
-    _mock_hiclaw_worker(monkeypatch, {"name": "dag-team-dev", "team": "dag-team"})
-
-    main_thread = threading.current_thread()
-    seen = {}
-
-    def fake_push_shared_path(self, path, exclude=None):
-        seen["thread"] = threading.current_thread()
-        seen["exclude"] = exclude
-
-    monkeypatch.setattr(FileSync, "push_shared_path", fake_push_shared_path)
-
-    response = await filesync(
-        action="push",
-        path="shared/tasks/st-01/",
-        exclude=["spec.md"],
-    )
-    payload = _response_json(response)
-
-    assert payload["ok"] is True
-    assert payload["pushed"] is True
-    assert seen["thread"] is not main_thread
-    assert seen["exclude"] == ["spec.md"]

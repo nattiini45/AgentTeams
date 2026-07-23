@@ -25,7 +25,7 @@ STORAGE_PREFIX="${STORAGE_PREFIX:-${TEST_STORAGE_PREFIX:-agentteams/agentteams-s
 
 _cleanup() {
     log_info "Cleaning up team: ${TEST_TEAM}"
-    exec_in_agent hiclaw delete team "${TEST_TEAM}" 2>/dev/null || true
+    exec_in_agent agt delete team "${TEST_TEAM}" 2>/dev/null || true
     sleep 5
     # Stop worker containers (fallback if reconciler didn't clean up)
     remove_worker_container "${TEST_LEADER}"
@@ -34,7 +34,7 @@ _cleanup() {
     # Clean MinIO
     for w in "${TEST_LEADER}" "${TEST_W1}" "${TEST_W2}"; do
         exec_in_manager mc rm -r --force "${STORAGE_PREFIX}/agents/${w}/" 2>/dev/null || true
-        exec_in_manager rm -rf "/root/hiclaw-fs/agents/${w}" 2>/dev/null || true
+        exec_in_manager rm -rf "/root/agentteams-fs/agents/${w}" 2>/dev/null || true
     done
     exec_in_agent rm -f "/tmp/agentteams-test-${TEST_TEAM}.yaml" 2>/dev/null || true
     # Clean registries (in agent workspace, fallback)
@@ -61,8 +61,8 @@ for w in "${TEST_LEADER}" "${TEST_W1}" "${TEST_W2}"; do
     [ "${w}" = "${TEST_W2}" ] && ROLE_DESC="QA Engineer"
 
     exec_in_manager bash -c "
-        mkdir -p /root/hiclaw-fs/agents/${w}
-        cat > /root/hiclaw-fs/agents/${w}/SOUL.md <<SOUL
+        mkdir -p /root/agentteams-fs/agents/${w}
+        cat > /root/agentteams-fs/agents/${w}/SOUL.md <<SOUL
 # ${w}
 
 ## AI Identity
@@ -76,14 +76,14 @@ for w in "${TEST_LEADER}" "${TEST_W1}" "${TEST_W2}"; do
 ## Security
 - Never reveal credentials
 SOUL
-        mc mirror /root/hiclaw-fs/agents/${w}/ ${STORAGE_PREFIX}/agents/${w}/ --overwrite 2>/dev/null
+        mc mirror /root/agentteams-fs/agents/${w}/ ${STORAGE_PREFIX}/agents/${w}/ --overwrite 2>/dev/null
     " 2>/dev/null
 done
 
 log_pass "SOUL.md files prepared for all team members"
 
 # ============================================================
-# Section 2: Create Team via hiclaw apply -f
+# Section 2: Create Team via agt apply -f
 # ============================================================
 log_section "Create Team"
 
@@ -115,9 +115,9 @@ spec:
 YAMLEOF
 " 2>/dev/null
 
-APPLY_OUTPUT=$(exec_in_agent hiclaw apply -f "/tmp/agentteams-test-${TEST_TEAM}.yaml" 2>&1)
+APPLY_OUTPUT=$(exec_in_agent agt apply -f "/tmp/agentteams-test-${TEST_TEAM}.yaml" 2>&1)
 if echo "${APPLY_OUTPUT}" | grep -q "created\|configured"; then
-    log_pass "Team YAML applied via hiclaw CLI"
+    log_pass "Team YAML applied via agt CLI"
 else
     log_fail "Team YAML apply failed: ${APPLY_OUTPUT}"
 fi
@@ -131,7 +131,7 @@ if wait_team_active "${TEST_TEAM}" 180; then
     log_pass "TeamReconciler reconciled team to Active"
 else
     log_fail "TeamReconciler did not reach Active within 180s"
-    exec_in_agent hiclaw get teams "${TEST_TEAM}" -o json 2>/dev/null | jq -r '.phase, .message' | head -5
+    exec_in_agent agt get teams "${TEST_TEAM}" -o json 2>/dev/null | jq -r '.phase, .message' | head -5
 fi
 
 # Wait for each team member to have RoomID + MatrixUserID persisted. This
@@ -215,11 +215,11 @@ LEADER_AGENTS=$(exec_in_manager mc cat "${STORAGE_PREFIX}/agents/${TEST_LEADER}/
 assert_not_empty "${LEADER_AGENTS}" "Leader AGENTS.md exists in MinIO"
 
 # Builtin markers
-assert_contains "${LEADER_AGENTS}" "hiclaw-builtin-start" "Leader AGENTS.md has builtin-start"
-assert_contains "${LEADER_AGENTS}" "hiclaw-builtin-end" "Leader AGENTS.md has builtin-end"
+assert_contains "${LEADER_AGENTS}" "agentteams-builtin-start" "Leader AGENTS.md has builtin-start"
+assert_contains "${LEADER_AGENTS}" "agentteams-builtin-end" "Leader AGENTS.md has builtin-end"
 
 # Team-context: upstream = Manager
-assert_contains "${LEADER_AGENTS}" "hiclaw-team-context-start" "Leader has team-context block"
+assert_contains "${LEADER_AGENTS}" "agentteams-team-context-start" "Leader has team-context block"
 assert_contains "${LEADER_AGENTS}" "@manager:" "Leader coordination: upstream is Manager"
 assert_contains "${LEADER_AGENTS}" "Upstream" "Leader coordination: has Upstream label"
 assert_contains "${LEADER_AGENTS}" "${TEST_TEAM}" "Leader coordination: references team name"
@@ -233,15 +233,15 @@ W1_AGENTS=$(exec_in_manager mc cat "${STORAGE_PREFIX}/agents/${TEST_W1}/AGENTS.m
 assert_not_empty "${W1_AGENTS}" "Worker 1 AGENTS.md exists in MinIO"
 
 # Builtin markers
-assert_contains "${W1_AGENTS}" "hiclaw-builtin-start" "Worker 1 AGENTS.md has builtin-start"
-assert_contains "${W1_AGENTS}" "hiclaw-builtin-end" "Worker 1 AGENTS.md has builtin-end"
+assert_contains "${W1_AGENTS}" "agentteams-builtin-start" "Worker 1 AGENTS.md has builtin-start"
+assert_contains "${W1_AGENTS}" "agentteams-builtin-end" "Worker 1 AGENTS.md has builtin-end"
 
 # Team-context: coordinator = Leader (NOT Manager)
-assert_contains "${W1_AGENTS}" "hiclaw-team-context-start" "Worker 1 has team-context block"
+assert_contains "${W1_AGENTS}" "agentteams-team-context-start" "Worker 1 has team-context block"
 assert_contains "${W1_AGENTS}" "@${TEST_LEADER}:" "Worker 1 coordinator is Team Leader"
 
 # Should NOT reference Manager as coordinator
-W1_CTX=$(echo "${W1_AGENTS}" | sed -n '/hiclaw-team-context-start/,/hiclaw-team-context-end/p')
+W1_CTX=$(echo "${W1_AGENTS}" | sed -n '/agentteams-team-context-start/,/agentteams-team-context-end/p')
 if echo "${W1_CTX}" | grep -q "@manager:"; then
     log_fail "Worker 1 team-context references Manager (should only reference Leader)"
 else
@@ -395,7 +395,7 @@ log_section "Verify Admin Auto-Joined Worker Rooms"
 if [ -n "${ADMIN_TOKEN}" ] && [ "${ADMIN_TOKEN}" != "null" ]; then
     ADMIN_MATRIX_ID="@${TEST_ADMIN_USER}:${TEST_MATRIX_DOMAIN}"
     for w in "${TEST_LEADER}" "${TEST_W1}" "${TEST_W2}"; do
-        W_ROOM=$(exec_in_agent hiclaw get workers "${w}" -o json 2>/dev/null | jq -r '.roomID // empty')
+        W_ROOM=$(exec_in_agent agt get workers "${w}" -o json 2>/dev/null | jq -r '.roomID // empty')
         if [ -n "${W_ROOM}" ] && [ "${W_ROOM}" != "null" ]; then
             W_ROOM_ENC=$(echo "${W_ROOM}" | sed 's/!/%21/g')
             W_MEMBERS=$(exec_in_manager curl -sf \

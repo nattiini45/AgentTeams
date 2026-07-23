@@ -17,8 +17,7 @@
 #   update-manager-model.sh deepseek-chat --no-reasoning
 
 set -e
-source /opt/hiclaw/scripts/lib/hiclaw-env.sh
-source /opt/hiclaw/scripts/lib/resolve-model-params.sh
+source /opt/agentteams/scripts/lib/agentteams-env.sh
 
 # Detect runtime
 MANAGER_RUNTIME="${AGENTTEAMS_MANAGER_RUNTIME:-openclaw}"
@@ -45,7 +44,7 @@ shift
 MODEL_NAME="${MODEL_NAME#agentteams-gateway/}"
 
 CTX_OVERRIDE=""
-REASONING_OVERRIDE=""
+REASONING="true"
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --context-window)
@@ -53,7 +52,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --no-reasoning)
-            REASONING_OVERRIDE="false"
+            REASONING="false"
             shift
             ;;
         *)
@@ -84,32 +83,48 @@ else
     fi
 fi
 
-# Resolve context window, max tokens, reasoning, and input from known-models.json
-resolve_model_params "${MODEL_NAME}"
-CTX="${MODEL_CONTEXT_WINDOW}"
-MAX="${MODEL_MAX_TOKENS}"
-INPUT="${MODEL_INPUT}"
-
-if [ -n "${REASONING_OVERRIDE}" ]; then
-    REASONING="${REASONING_OVERRIDE}"
-elif [ "${MODEL_REASONING}" = "true" ] || [ "${MODEL_REASONING}" = "1" ]; then
-    REASONING="true"
-else
-    REASONING="false"
-fi
+# Resolve context window and max tokens
+case "${MODEL_NAME}" in
+    gpt-5.4)
+        CTX=1050000; MAX=128000 ;;
+    gpt-5.3-codex|gpt-5-mini|gpt-5-nano)
+        CTX=400000; MAX=128000 ;;
+    claude-opus-4-6)
+        CTX=1000000; MAX=128000 ;;
+    claude-sonnet-4-6)
+        CTX=1000000; MAX=64000 ;;
+    claude-haiku-4-5)
+        CTX=200000; MAX=64000 ;;
+    qwen3.6-plus|qwen3.5-plus)
+        CTX=200000; MAX=64000 ;;
+    deepseek-chat|deepseek-reasoner|kimi-k2.5)
+        CTX=256000; MAX=128000 ;;
+    glm-5|MiniMax-M2.7|MiniMax-M2.7-highspeed|MiniMax-M2.5)
+        CTX=200000; MAX=128000 ;;
+    *)
+        CTX=150000; MAX=128000 ;;
+esac
 
 # Allow explicit context-window override (for unknown models)
 if [ -n "${CTX_OVERRIDE:-}" ]; then
     CTX="${CTX_OVERRIDE}"
 fi
 
+# Resolve input modalities: only vision-capable models get "image"
+case "${MODEL_NAME}" in
+    gpt-5.4|gpt-5.3-codex|gpt-5-mini|gpt-5-nano|claude-opus-4-6|claude-sonnet-4-6|claude-haiku-4-5|qwen3.6-plus|qwen3.5-plus|kimi-k2.5)
+        INPUT='["text", "image"]' ;;
+    *)
+        INPUT='["text"]' ;;
+esac
+
 log "Updating Manager model: ${MODEL_NAME} (ctx=${CTX}, max=${MAX}, reasoning=${REASONING}, input=${INPUT})"
 
 # ── Pre-flight: verify the model is reachable via AI Gateway ──────────────────
 GATEWAY_URL="${AGENTTEAMS_AI_GATEWAY_URL}/v1/chat/completions"
 GATEWAY_KEY="${AGENTTEAMS_MANAGER_GATEWAY_KEY:-}"
-if [ -z "${GATEWAY_KEY}" ] && [ -f "/data/hiclaw-secrets.env" ]; then
-    source /data/hiclaw-secrets.env
+if [ -z "${GATEWAY_KEY}" ] && [ -f "/data/agentteams-secrets.env" ]; then
+    source /data/agentteams-secrets.env
     GATEWAY_KEY="${AGENTTEAMS_MANAGER_GATEWAY_KEY:-}"
 fi
 

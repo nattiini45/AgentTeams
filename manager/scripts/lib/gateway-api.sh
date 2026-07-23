@@ -11,7 +11,7 @@
 #   higress_request(method, path, body)       — low-level Console call w/ cookie auth + 1 re-login retry
 #
 # Prerequisites:
-#   - source hiclaw-env.sh (for AGENTTEAMS_RUNTIME)
+#   - source agentteams-env.sh (for AGENTTEAMS_RUNTIME)
 #   - source container-api.sh (for _orch_api)
 
 # ── Backend detection ─────────────────────────────────────────────────────────

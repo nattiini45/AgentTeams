@@ -18,6 +18,7 @@ from agentscope.tool import ToolResponse
 from copaw_worker.hooks.message_filter import (
     extract_matrix_mentions,
     filter_outgoing_matrix_message,
+    resolve_team_leader_assignment_room,
 )
 from copaw_worker.hooks.tools._toolhelpers import _error, _ok
 
@@ -406,11 +407,23 @@ async def message(
                 "user targets are not supported yet; use a room target",
             )
 
+        room_id = resolve_team_leader_assignment_room(
+            filtered_message,
+            parsed_target.identifier,
+        )
+        if room_id != parsed_target.identifier:
+            logger.info(
+                "message tool: rerouting team assignment from Leader DM %s "
+                "to Team Room %s",
+                parsed_target.identifier,
+                room_id,
+            )
+
         result: dict[str, Any] = {
             "channel": "matrix",
             "target": target,
             "targetKind": parsed_target.kind,
-            "roomId": parsed_target.identifier,
+            "roomId": room_id,
             "mentions": mentions,
         }
 
@@ -418,7 +431,7 @@ async def message(
             return _ok(dryRun=True, content=content, **result)
 
         event_id = await _send_matrix_room_message(
-            room_id=parsed_target.identifier,
+            room_id=room_id,
             content=content,
             account_id=accountId or "default",
         )
@@ -426,7 +439,7 @@ async def message(
         warning = None
         try:
             session_recorded = await _record_matrix_outbound_to_session(
-                room_id=parsed_target.identifier,
+                room_id=room_id,
                 text=filtered_message,
                 message_id=event_id,
                 account_id=accountId or "default",

@@ -10,9 +10,9 @@ For recurring/scheduled tasks that repeat on a cron schedule with no natural end
 
 2. Push to MinIO.
 
-3. Add to state.json (via `manage-state.sh`, which delegates to `hiclaw manager-state`):
+3. Add to state.json:
    ```bash
-   bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh \
+   bash /opt/agentteams/agent/skills/task-management/scripts/manage-state.sh \
      --action add-infinite --task-id {task-id} --title "{title}" \
      --assigned-to {worker} --room-id {room-id} \
      --schedule "{cron}" --timezone "{tz}" --next-scheduled-at "{ISO-8601}"
@@ -22,26 +22,21 @@ For recurring/scheduled tasks that repeat on a cron schedule with no natural end
 
 Infinite tasks are triggered **exclusively by heartbeat** when `now > next_scheduled_at + 30min` and `last_executed_at < next_scheduled_at`. See HEARTBEAT.md Step 3.
 
-**HARD RULE:** Never paste the trigger text only in an admin DM reply. Workers cannot see the admin DM. Heartbeat (or any dispatch) must send the trigger into the Worker's room.
+**HARD RULE:** Never paste the trigger text only in an admin DM reply. Workers cannot see the admin DM. Heartbeat (or any dispatch) must send the trigger into the Worker's room using the runtime protocol in HEARTBEAT.md Step 3.
 
-Use `hiclaw get workers -o json` for `roomID`, then dispatch with the helper (do **not** look up Manager runtime via API):
+Before sending, use `agt get workers -o json` for `roomID` and `agt get managers -o json | jq -r '.managers[0].runtime'` for runtime:
 
-```bash
-bash /opt/hiclaw/agent/skills/task-management/scripts/send-task-message.sh \
-  --room "<ROOM_ID>" \
-  --worker "{worker}" \
-  --text '@{worker}:{domain} Execute recurring task {task-id}: {title}. Report back with "executed" when done.'
-```
+- **`openclaw`:** **message** tool with `channel=matrix`, `target=room:<ROOM_ID>`, and body:
+  `@{worker}:{domain} Execute recurring task {task-id}: {title}. Report back with "executed" when done.`
 
-- **CoPaw:** script exits 0 after `copaw channels send`.
-- **OpenClaw:** script exits 2 — deliver the printed body via the **message** tool (`channel=matrix`, `target=room:<ROOM_ID>`).
+- **`copaw`:** `copaw channels send --agent-id default --channel matrix --target-session "<ROOM_ID>" --target-user "@{worker}:${AGENTTEAMS_MATRIX_DOMAIN}"` with `--text` set to that same body (quoted for the shell).
 
 ## Recording execution completion
 
 When a Worker reports `executed`, **only** update state.json:
 
 ```bash
-bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh \
+bash /opt/agentteams/agent/skills/task-management/scripts/manage-state.sh \
   --action executed --task-id {task-id} --next-scheduled-at "{new-ISO-8601}"
 ```
 
