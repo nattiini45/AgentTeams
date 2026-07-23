@@ -10,7 +10,7 @@ This wiki is the generated knowledge base for the AgentTeams repository. It expl
 |---------|---------------|
 | [Architecture Overview](architecture/overview.md) | System layers, deployment shapes, component relationships, CRD model |
 | [Controller: CRDs & Reconcilers](controller/crds-and-reconcilers.md) | Go operator, 5 CRD types, reconciler logic, service/provisioner layers |
-| [Controller: CLI & API](controller/cli-and-api.md) | `hiclaw` CLI commands, REST API endpoints, lifecycle operations |
+| [Controller: CLI & API](controller/cli-and-api.md) | `agt` CLI commands, REST API endpoints, lifecycle operations |
 | [Worker Runtimes](workers/runtime-guide.md) | OpenClaw, CoPaw, Hermes, OpenHuman, QwenPaw — configuration and differences |
 | [Manager](manager/overview.md) | Coordinator agent, 19 skills, bootstrap chain, agent config templates |
 | [Operations: Install & Deploy](operations/installation.md) | Docker install, Helm chart, build commands, registry mirrors |
@@ -36,8 +36,8 @@ This wiki is the generated knowledge base for the AgentTeams repository. It expl
 
 ```
 AgentTeams/
-├── hiclaw-controller/   # Go operator: CRDs, reconcilers, CLI, REST API
-├── helm/hiclaw/         # Helm chart for Kubernetes deployment
+├── agentteams-controller/   # Go operator: CRDs, reconcilers, CLI, REST API
+├── helm/agentteams/         # Helm chart for Kubernetes deployment
 ├── manager/             # Manager images, agent configs, 19 skills, bootstrap scripts
 ├── worker/              # OpenClaw Worker base image
 ├── copaw/               # CoPaw Python worker runtime
@@ -58,7 +58,7 @@ AgentTeams/
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| Kubernetes operator | Go (hiclaw-controller) | Reconciles Worker/Manager/Team/Human/Project CRDs |
+| Kubernetes operator | Go (agentteams-controller) | Reconciles Worker/Manager/Team/Human/Project CRDs |
 | AI Gateway | Higress | LLM proxy, MCP server hosting, consumer auth |
 | Matrix Server | Tuwunel (conduwuit fork) | IM between agents and humans |
 | File System | MinIO or Alibaba Cloud OSS | Centralized object storage for workspaces |
@@ -87,5 +87,5 @@ The `docs/` directory contains the original project documentation:
 ## Git Context
 
 - **Repository:** `agentscope-ai/AgentTeams` (GitHub)
-- **Latest documented commit:** `f37b50c` — feat(hiclaw): rewrite status as one-screen cluster overview
+- **Latest documented commit:** `f37b50c` — feat(agt): rewrite status as one-screen cluster overview
 - **Key recent work:** Gastown-inspired features (escalation, health monitoring, dispatch gating, session recovery), QwenPaw runtime wiring, remediation gates CI

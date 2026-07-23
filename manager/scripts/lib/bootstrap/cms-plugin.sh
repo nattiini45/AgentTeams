@@ -38,7 +38,7 @@ if [ "${CMS_TRACES_ENABLED}" = "true" ]; then
                     DIAG_AVAILABLE="1"
                     if [ ! -d "${DIAG_PLUGIN_DIR}/node_modules" ]; then
                         log "diagnostics-otel dependencies missing, installing..."
-                        if (cd "${DIAG_PLUGIN_DIR}" && npm install --omit=dev --ignore-scripts >/tmp/hiclaw-diag-install.log 2>&1); then
+                        if (cd "${DIAG_PLUGIN_DIR}" && npm install --omit=dev --ignore-scripts >/tmp/agentteams-diag-install.log 2>&1); then
                             log "diagnostics-otel dependencies installed"
                         else
                             log "WARNING: diagnostics-otel npm install failed, metrics plugin may not load"

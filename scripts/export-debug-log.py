@@ -72,6 +72,14 @@ _PII_PATTERNS: list[tuple[str, re.Pattern]] = [
     ("SSN",           re.compile(r'\b\d{3}-\d{2}-\d{4}\b')),
 ]
 
+_SECRET_FIELD_PATTERN = re.compile(
+    r'(?i)^(?:password|passwd|pwd|secret|token|api[_-]?key'
+    r'|access[_-]?key(?:[_-]?secret)?|secret[_-]?access[_-]?key'
+    r'|secret[_-]?key|private[_-]?key|credential|app[_-]?key'
+    r'|app[_-]?secret|auth[_-]?token|signing[_-]?key'
+    r'|client[_-]?secret|master[_-]?key)$'
+)
+
 
 def redact_pii(text: str) -> str:
     if not text:
@@ -90,7 +98,13 @@ def redact_json_strings(obj):
     if isinstance(obj, list):
         return [redact_json_strings(v) for v in obj]
     if isinstance(obj, dict):
-        return {k: redact_json_strings(v) for k, v in obj.items()}
+        redacted = {}
+        for key, value in obj.items():
+            if isinstance(key, str) and _SECRET_FIELD_PATTERN.fullmatch(key):
+                redacted[key] = "****"
+            else:
+                redacted[key] = redact_json_strings(value)
+        return redacted
     return obj
 
 
@@ -131,9 +145,9 @@ def docker_exec(container: str, cmd: str) -> str:
     return result.stdout
 
 
-def list_hiclaw_containers() -> list[str]:
+def list_agentteams_containers() -> list[str]:
     names: list[str] = []
-    for prefix in ("agentteams-", "hiclaw-"):
+    for prefix in ("agentteams-",):
         result = subprocess.run(
             ["docker", "ps", "--format", "{{.Names}}", "--filter", f"name={prefix}"],
             capture_output=True, text=True, timeout=10,
@@ -229,8 +243,7 @@ def format_event(event: dict, redact: bool) -> dict:
     }
     if event.get("type") == "m.room.message":
         record["msgtype"] = content.get("msgtype")
-        body = content.get("body")
-        record["body"] = redact_pii(body) if redact else body
+        record["body"] = content.get("body")
         if content.get("format"):
             record["format"] = content["format"]
         if content.get("url"):
@@ -239,7 +252,7 @@ def format_event(event: dict, redact: bool) -> dict:
             record["relates_to"] = content["m.relates_to"]
     else:
         record["content"] = content
-    return record
+    return redact_json_strings(record) if redact else record
 
 
 def export_matrix_messages(out_dir: Path, since_epoch: float, redact: bool,
@@ -248,18 +261,18 @@ def export_matrix_messages(out_dir: Path, since_epoch: float, redact: bool,
                            messages_only: bool) -> tuple[int, int]:
     """Export Matrix messages. Returns (rooms_exported, message_count)."""
     env_path = env_file or os.path.expanduser("~/agentteams-manager.env")
-    hiclaw_env = load_env_file(env_path)
+    agentteams_env = load_env_file(env_path)
 
     if not homeserver:
-        if not hiclaw_env:
+        if not agentteams_env:
             print(f"  [matrix] Cannot find {env_path}, skipping Matrix export")
             return 0, 0
-        port = hiclaw_env.get("AGENTTEAMS_PORT_GATEWAY", "18080")
+        port = agentteams_env.get("AGENTTEAMS_PORT_GATEWAY", "18080")
         homeserver = f"http://127.0.0.1:{port}"
 
     if not token:
         # Use Manager token — Manager is in every room (DM, Worker, Project)
-        manager_password = hiclaw_env.get("AGENTTEAMS_MANAGER_PASSWORD", "")
+        manager_password = agentteams_env.get("AGENTTEAMS_MANAGER_PASSWORD", "")
         if manager_password:
             try:
                 token = matrix_login(homeserver, "manager", manager_password)
@@ -268,8 +281,8 @@ def export_matrix_messages(out_dir: Path, since_epoch: float, redact: bool,
 
         # Fallback to admin token if Manager login failed
         if not token:
-            admin_user = hiclaw_env.get("AGENTTEAMS_ADMIN_USER", "admin")
-            admin_password = hiclaw_env.get("AGENTTEAMS_ADMIN_PASSWORD", "")
+            admin_user = agentteams_env.get("AGENTTEAMS_ADMIN_USER", "admin")
+            admin_password = agentteams_env.get("AGENTTEAMS_ADMIN_PASSWORD", "")
             if not admin_password:
                 print(f"  [matrix] No usable credentials found, skipping Matrix export")
                 return 0, 0
@@ -347,14 +360,14 @@ def detect_runtime(container: str) -> tuple[str, str]:
         hermes   -> /root/manager-workspace/.hermes/sessions
         copaw    -> /root/manager-workspace/.copaw/workspaces/default/sessions
 
-      OpenClaw / Hermes Worker (HOME=/root/hiclaw-fs/agents/<name>):
-        openclaw -> /root/hiclaw-fs/agents/<name>/.openclaw/agents/main/sessions
-        hermes   -> /root/hiclaw-fs/agents/<name>/.hermes/sessions
+      OpenClaw / Hermes Worker (HOME=/root/agentteams-fs/agents/<name>):
+        openclaw -> /root/agentteams-fs/agents/<name>/.openclaw/agents/main/sessions
+        hermes   -> /root/agentteams-fs/agents/<name>/.hermes/sessions
 
-      CoPaw Worker (HOME=/root/.hiclaw-worker/<name>, also reachable via
-      /root/hiclaw-fs symlink that points to that same dir):
-        copaw    -> /root/.hiclaw-worker/<name>/.copaw/workspaces/default/sessions
-        copaw    -> /root/hiclaw-fs/.copaw/workspaces/default/sessions  (alt)
+      CoPaw Worker (HOME=/root/.agentteams-worker/<name>, also reachable via
+      /root/agentteams-fs symlink that points to that same dir):
+        copaw    -> /root/.agentteams-worker/<name>/.copaw/workspaces/default/sessions
+        copaw    -> /root/agentteams-fs/.copaw/workspaces/default/sessions  (alt)
     """
     candidates: list[tuple[str, str]] = [
         ("openclaw", "/root/manager-workspace/.openclaw/agents/main/sessions"),
@@ -365,10 +378,10 @@ def detect_runtime(container: str) -> tuple[str, str]:
     worker_name = docker_exec(container, "echo $AGENTTEAMS_WORKER_NAME").strip()
     if worker_name:
         candidates.extend([
-            ("openclaw", f"/root/hiclaw-fs/agents/{worker_name}/.openclaw/agents/main/sessions"),
-            ("hermes",   f"/root/hiclaw-fs/agents/{worker_name}/.hermes/sessions"),
-            ("copaw",    f"/root/.hiclaw-worker/{worker_name}/.copaw/workspaces/default/sessions"),
-            ("copaw",    "/root/hiclaw-fs/.copaw/workspaces/default/sessions"),
+            ("openclaw", f"/root/agentteams-fs/agents/{worker_name}/.openclaw/agents/main/sessions"),
+            ("hermes",   f"/root/agentteams-fs/agents/{worker_name}/.hermes/sessions"),
+            ("copaw",    f"/root/.agentteams-worker/{worker_name}/.copaw/workspaces/default/sessions"),
+            ("copaw",    "/root/agentteams-fs/.copaw/workspaces/default/sessions"),
         ])
 
     for runtime, path in candidates:
@@ -630,7 +643,7 @@ def export_hermes_sessions(container: str, sessions_dir: str, since_epoch: float
 def export_agent_sessions(out_dir: Path, since_epoch: float, redact: bool,
                           container_filter: str | None) -> tuple[int, int]:
     """Export agent sessions from all containers. Returns (session_count, event_count)."""
-    containers = list_hiclaw_containers()
+    containers = list_agentteams_containers()
     if container_filter:
         containers = [c for c in containers if container_filter in c]
 

@@ -9,7 +9,7 @@
 #   AGENTTEAMS_CONTROLLER_URL  - controller URL (e.g. http://agentteams-controller:8090)
 #
 # Usage:
-#   source /opt/hiclaw/scripts/lib/container-api.sh
+#   source /opt/agentteams/scripts/lib/container-api.sh
 #   worker_backend_create '{"name":"alice","image":"agentteams/worker-agent:latest"}'
 #   worker_backend_status "alice"
 #   worker_backend_delete "alice"
@@ -29,7 +29,7 @@ _resolve_controller_token() {
 }
 
 _log() {
-    echo "[hiclaw-container $(date '+%Y-%m-%d %H:%M:%S')] $1"
+    echo "[agentteams-container $(date '+%Y-%m-%d %H:%M:%S')] $1"
 }
 
 # ============================================================
@@ -228,7 +228,7 @@ container_get_manager_ip() {
 # Usage:
 #   send_matrix_message <matrix_url> <token> <room_id> <body> [mention_user_id ...]
 #
-# - matrix_url: base Matrix server URL (e.g. "${HICLAW_MATRIX_URL}")
+# - matrix_url: base Matrix server URL (e.g. "${AGENTTEAMS_MATRIX_URL}")
 # - token:      bearer token to authenticate as (caller resolves this —
 #               token-resolution fallbacks vary per caller and are NOT
 #               duplicated here)

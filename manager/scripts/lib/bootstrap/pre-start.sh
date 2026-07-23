@@ -13,7 +13,7 @@ bootstrap_pre_start() {
     log "HOME=${HOME} (manager-workspace, host-mounted)"
 
     export MANAGER_MATRIX_TOKEN MANAGER_TOKEN HIGRESS_COOKIE_FILE
-    local RENDER=/opt/hiclaw/scripts/lib/render-skills.sh
+    local RENDER=/opt/agentteams/scripts/lib/render-skills.sh
     log "Rendering agent doc templates..."
     bash "$RENDER" /root/manager-workspace/skills
     bash "$RENDER" /root/manager-workspace/skills-alpha
@@ -22,16 +22,16 @@ bootstrap_pre_start() {
     bash "$RENDER" /root/manager-workspace/worker-agent
     bash "$RENDER" /root/manager-workspace/copaw-worker-agent
     bash "$RENDER" /root/manager-workspace/hermes-worker-agent
-    bash "$RENDER" /opt/hiclaw/agent/worker-skills
-    bash "$RENDER" /opt/hiclaw/agent/worker-agent
-    bash "$RENDER" /opt/hiclaw/agent/copaw-worker-agent
-    bash "$RENDER" /opt/hiclaw/agent/hermes-worker-agent
+    bash "$RENDER" /opt/agentteams/agent/worker-skills
+    bash "$RENDER" /opt/agentteams/agent/worker-agent
+    bash "$RENDER" /opt/agentteams/agent/copaw-worker-agent
+    bash "$RENDER" /opt/agentteams/agent/hermes-worker-agent
     log "Agent doc templates rendered"
 
     if [ -n "${AGENTTEAMS_GITHUB_TOKEN}" ] && is_local_runtime; then
         if [ ! -f "${HOME}/config/mcporter.json" ]; then
             log "Auto-generating Manager mcporter config for GitHub MCP (AGENTTEAMS_GITHUB_TOKEN set)..."
-            bash /opt/hiclaw/agent/skills/mcp-server-management/scripts/setup-mcp-server.sh \
+            bash /opt/agentteams/agent/skills/mcp-server-management/scripts/setup-mcp-server.sh \
                 github "${AGENTTEAMS_GITHUB_TOKEN}" 2>&1 | while IFS= read -r line; do log "  [setup-mcp] ${line}"; done || \
                 log "WARNING: setup-mcp-server.sh failed — Agent may need to configure GitHub MCP manually"
         else

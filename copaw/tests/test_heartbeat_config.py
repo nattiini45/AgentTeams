@@ -1,6 +1,6 @@
 """Tests for AGENTTEAMS_MANAGER_HEARTBEAT_INTERVAL -> agent.json heartbeat.every.
 
-The controller (hiclaw-controller/internal/service/worker_env.go) sets
+The controller (agentteams-controller/internal/service/worker_env.go) sets
 AGENTTEAMS_MANAGER_HEARTBEAT_INTERVAL on the Manager container. The CoPaw side
 of that pipeline is copaw_worker.bridge.bridge_openclaw_to_copaw ->
 _write_agent_json, which materializes workspaces/default/agent.json from

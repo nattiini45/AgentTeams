@@ -5,7 +5,7 @@
 Read state.json (local only, no sync needed). If the file does not exist, initialize it first:
 
 ```bash
-bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh --action init
+bash /opt/agentteams/agent/skills/task-management/scripts/manage-state.sh --action init
 cat ~/state.json
 ```
 
@@ -17,18 +17,18 @@ The `active_tasks` field in state.json contains all in-progress tasks (both fini
    - List joined rooms, find the DM room with exactly 2 members: you and `@${AGENTTEAMS_ADMIN_USER}:${AGENTTEAMS_MATRIX_DOMAIN}`
    - Persist it:
      ```bash
-     bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh \
+     bash /opt/agentteams/agent/skills/task-management/scripts/manage-state.sh \
        --action set-admin-dm --room-id "<discovered-room-id>"
      ```
 2. Verify the channel is resolvable:
    ```bash
-   bash /opt/hiclaw/agent/skills/task-management/scripts/resolve-notify-channel.sh
+   bash /opt/agentteams/agent/skills/task-management/scripts/resolve-notify-channel.sh
    ```
    If the output shows `"channel": "none"`, the admin DM room discovery above may have failed — retry or log a warning.
 
 ### 1b. Sending to Matrix group rooms (Worker / Leader / project)
 
-Steps 2, 2b, 3, 4, and 6 send into Matrix **group** rooms. For each send, use the **message** tool with `channel=matrix`, `target=room:<room_id>`, and the message body shown in that step (include @mentions in the body as required). Take `room_id` from the `state.json` entry or project `meta.json`; when a step uses `hiclaw get workers -o json`, read `roomID` (camelCase, e.g. `.roomID` in `jq`).
+Steps 2, 2b, 3, 4, and 6 send into Matrix **group** rooms. For each send, use the **message** tool with `channel=matrix`, `target=room:<room_id>`, and the message body shown in that step (include @mentions in the body as required). Take `room_id` from the `state.json` entry or project `meta.json`; when a step uses `agt get workers -o json`, read `roomID` (camelCase, e.g. `.roomID` in `jq`).
 
 ---
 
@@ -40,7 +40,7 @@ Iterate over entries in `active_tasks` with `"type": "finite"`:
 - Determine the target room: use `project_room_id` if available, otherwise use `room_id`
 - **Before sending any message**, ensure the Worker's container is running:
   ```bash
-  bash /opt/hiclaw/agent/skills/worker-management/scripts/lifecycle-worker.sh \
+  bash /opt/agentteams/agent/skills/worker-management/scripts/lifecycle-worker.sh \
     --action ensure-ready --worker {worker}
   ```
   The script outputs JSON with a `status` field:
@@ -57,7 +57,7 @@ Iterate over entries in `active_tasks` with `"type": "finite"`:
 - If the Worker has not responded (no response for more than one heartbeat cycle), flag the anomaly in the Room and notify the human admin (see Step 7)
 - If the Worker has replied that the task is complete but meta.json has not been updated, proactively update meta.json (status → completed, fill in completed_at), and remove the entry from `active_tasks`:
   ```bash
-  bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh --action complete --task-id {task-id}
+  bash /opt/agentteams/agent/skills/task-management/scripts/manage-state.sh --action complete --task-id {task-id}
   ```
 
 ---
@@ -70,7 +70,7 @@ Iterate over entries in `active_tasks` that have a `delegated_to_team` field:
 - Read `assigned_to` (the Team Leader name) and `room_id` (the Leader Room)
 - **Ensure the Team Leader's container is running**:
   ```bash
-  bash /opt/hiclaw/agent/skills/worker-management/scripts/lifecycle-worker.sh \
+  bash /opt/agentteams/agent/skills/worker-management/scripts/lifecycle-worker.sh \
     --action ensure-ready --worker {leader}
   ```
 - **Send** using the **message** tool with `channel=matrix`, `target=room:<room_id>` (Leader `room_id`), and body @mention `@{leader}:${AGENTTEAMS_MATRIX_DOMAIN}`:
@@ -88,14 +88,14 @@ Iterate over entries in `active_tasks` that have a `delegated_to_team` field:
 Run the escalation staleness check:
 
 ```bash
-bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh --action check-stale
+bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh --action check-stale
 ```
 
 - For each stale item with `stale_reason: "threshold_exceeded"`: re-notify admin with `[RE-ESCALATION] [{severity}] {summary}` using the resolved notification channel
 - For each stale item with `stale_reason: "max_re_escalations_reached"`: flag as critical finding for Step 7 report
 - Scan Step 2 Worker replies for `[BLOCKED:...]` patterns — if a Worker reported a blocker but no escalation exists for that task, raise one now:
   ```bash
-  bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh \
+  bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh \
     --action raise --task-id {task-id} --severity {parsed-severity} \
     --category {infer} --worker {worker} --summary "{from reply}"
   ```
@@ -119,7 +119,7 @@ If conditions are met:
 
 1. **Ensure the Worker's container is running** before triggering:
    ```bash
-   bash /opt/hiclaw/agent/skills/worker-management/scripts/lifecycle-worker.sh \
+   bash /opt/agentteams/agent/skills/worker-management/scripts/lifecycle-worker.sh \
      --action ensure-ready --worker {worker}
    ```
    If `status` is `failed`, skip the trigger and flag the anomaly for the admin report (Step 7). If `started` or `recreated`, wait for the Worker to initialize (30s / 60s respectively).
@@ -131,7 +131,7 @@ If conditions are met:
 
 **Note**: Infinite tasks are never removed from active_tasks. After the Worker reports `executed`, **only** update `last_executed_at` and `next_scheduled_at` — do NOT @mention the Worker again:
 ```bash
-bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh \
+bash /opt/agentteams/agent/skills/task-management/scripts/manage-state.sh \
   --action executed --task-id {task-id} --next-scheduled-at "{new-ISO-8601}"
 ```
 
@@ -141,10 +141,10 @@ bash /opt/hiclaw/agent/skills/task-management/scripts/manage-state.sh \
 
 ### 4. Project Progress Monitoring
 
-Scan plan.md for all active projects under /root/hiclaw-fs/shared/projects/:
+Scan plan.md for all active projects under /root/agentteams-fs/shared/projects/:
 
 ```bash
-for meta in /root/hiclaw-fs/shared/projects/*/meta.json; do
+for meta in /root/agentteams-fs/shared/projects/*/meta.json; do
   cat "$meta"
 done
 ```
@@ -172,7 +172,7 @@ done
 Run the health classification script:
 
 ```bash
-bash /opt/hiclaw/agent/skills/worker-management/scripts/worker-health-report.sh
+bash /opt/agentteams/agent/skills/worker-management/scripts/worker-health-report.sh
 ```
 
 Parse the JSON output and act on each health state:
@@ -191,7 +191,7 @@ If any tasks were deferred due to dispatch gating (Step 0 in finite-tasks workfl
 
 1. For each deferred task, run the dispatch gate check:
    ```bash
-   bash /opt/hiclaw/agent/skills/task-management/scripts/dispatch-gate.sh \
+   bash /opt/agentteams/agent/skills/task-management/scripts/dispatch-gate.sh \
      --action check --worker {worker}
    ```
 2. If `allowed: true`, proceed with the original assignment flow (notify Worker, update state.json)
@@ -204,19 +204,19 @@ If any tasks were deferred due to dispatch gating (Step 0 in finite-tasks workfl
 Only execute when the container API is available (check first):
 
 ```bash
-bash -c 'source /opt/hiclaw/scripts/lib/container-api.sh && container_api_available && echo available'
+bash -c 'source /opt/agentteams/scripts/lib/container-api.sh && container_api_available && echo available'
 ```
 
 If the output is `available`, proceed with the following steps:
 
 1. Sync status:
    ```bash
-   bash /opt/hiclaw/agent/skills/worker-management/scripts/lifecycle-worker.sh --action sync-status
+   bash /opt/agentteams/agent/skills/worker-management/scripts/lifecycle-worker.sh --action sync-status
    ```
 
 2. Detect idle Workers and auto-stop those that have exceeded the timeout:
    ```bash
-   bash /opt/hiclaw/agent/skills/worker-management/scripts/lifecycle-worker.sh --action check-idle
+   bash /opt/agentteams/agent/skills/worker-management/scripts/lifecycle-worker.sh --action check-idle
    ```
    For each Worker that was auto-stopped, look up the Worker's `room_id` and Matrix id from `workers-registry.json` and **send** using the **message** tool with `channel=matrix`, `target=room:<room_id>`, and body (no @mention required unless you need to address someone specific):
    ```
@@ -233,7 +233,7 @@ If the output is `available`, proceed with the following steps:
 - Otherwise, **read SOUL.md first** — use the identity, personality, and **user's preferred language** defined there when composing the report. Report in that language and tone.
 - Resolve the notification channel:
   ```bash
-  bash /opt/hiclaw/agent/skills/task-management/scripts/resolve-notify-channel.sh
+  bash /opt/agentteams/agent/skills/task-management/scripts/resolve-notify-channel.sh
   ```
   The script outputs JSON with `channel`, `target`, and `via` fields. Use the **message** tool with those `channel` and `target` values.
 
@@ -244,7 +244,7 @@ If the output is `available`, proceed with the following steps:
 **Include escalation summary** — before composing the report, get the escalation state:
 
 ```bash
-bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh --action summary
+bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh --action summary
 ```
 
 If `open > 0`, include in the report: `[Escalations: {open} open, highest: {highest_severity}]`. List CRITICAL escalations individually with their summary and question.

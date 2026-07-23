@@ -9,8 +9,8 @@ AgentTeams is an open-source Agent Teams system that uses IM (Matrix protocol) f
 ## Project Structure
 
 ```
-hiclaw/
-├── hiclaw-controller/   # Kubernetes operator (Go): reconciles Worker, Manager, Team, Human CRDs
+AgentTeams/
+├── agentteams-controller/   # Kubernetes operator (Go): reconciles Worker, Manager, Team, Human CRDs
 ├── helm/                # Helm chart (K8s): Higress, Tuwunel, MinIO, controller, Manager CR, defaults
 ├── manager/             # Manager images: OpenClaw-based (Dockerfile) and CoPaw-based (Dockerfile.copaw)
 ├── worker/              # OpenClaw Worker image (shared base pattern; runtime also selected at deploy time)
@@ -18,7 +18,7 @@ hiclaw/
 ├── hermes/              # Hermes Python package source (Hermes Matrix worker runtime)
 ├── openhuman/           # OpenHuman Worker image: Rust core + native Matrix (channel-matrix feature)
 ├── openclaw-base/       # Base image: Ubuntu + Node.js + bundled agent assets + mcporter
-├── shared/lib/          # Shared shell libs copied into images (hiclaw-env.sh, render-skills.sh, …)
+├── shared/lib/          # Shared shell libs copied into images (agentteams-env.sh, render-skills.sh, …)
 ├── install/             # Local install scripts (Docker Compose / embedded “all-in-one” stack)
 ├── scripts/             # Project-level utilities (e.g. replay-task.sh)
 ├── tests/               # Automated integration tests
@@ -40,10 +40,8 @@ Logs and local artifacts (for example replay logs) stay out of git via `.gitigno
 | Runtime   | Stack | Role |
 |-----------|--------|------|
 | `openclaw` | Node.js / OpenClaw (default) | Primary worker agent runtime |
-| `copaw`    | Python / AgentScope via CoPaw | Alternative worker runtime (`copaw-worker-agent/` builtins) |
+| `copaw`    | Python / AgentScope via CoPaw | Alternative worker runtime |
 | `hermes`   | Python / `hermes-worker` package | Alternative worker runtime (Matrix bridge + policies under `hermes/src/`) |
-| `openhuman` | Rust / OpenHuman Core | Alternative worker runtime with native Matrix (`openhuman-worker-agent/`) |
-| `qwenpaw`  | QwenPaw / TeamHarness | Alternative worker runtime (`qwenpaw-worker-agent/` builtins — **not** the same tree as `copaw`) |
 
 **Manager runtimes** (container env `AGENTTEAMS_MANAGER_RUNTIME`, CoPaw Manager CR / Helm `manager.runtime` where applicable):
 
@@ -52,13 +50,13 @@ Logs and local artifacts (for example replay logs) stay out of git via `.gitigno
 | `openclaw` (default) | OpenClaw gateway; primary Matrix channel uses the **message** tool pattern (see upstream OpenClaw / AgentTeams manager config). |
 | `copaw` | Python CoPaw workspace; Matrix traffic uses the **`copaw channels send`** CLI (see `start-copaw-manager.sh`). |
 
-Hermes, OpenHuman, and QwenPaw are **Worker-only** runtimes in the API and Helm worker defaults; the Manager entrypoint in `start-manager-agent.sh` today starts **openclaw** or **copaw** only.
+Hermes and OpenHuman are **Worker-only** runtimes in the API and Helm worker defaults; the Manager entrypoint in `start-manager-agent.sh` today starts **openclaw** or **copaw** only.
 
 **Deployment runtime** (`AGENTTEAMS_RUNTIME`): local embedded stack vs `aliyun` vs `k8s` changes which bootstrap steps run inside the Manager container (for example Matrix registration and Higress setup are skipped or reduced in `k8s` because the controller owns them).
 
 ## `manager/agent/` layout (built into Manager images)
 
-Agent-facing Markdown and skills under `manager/agent/` are copied to `/opt/hiclaw/agent/` in the image and synced into the Manager workspace by `upgrade-builtins.sh`. This tree is the single source of truth for builtin prompts and skills.
+Agent-facing Markdown and skills under `manager/agent/` are copied to `/opt/agentteams/agent/` in the image and synced into the Manager workspace by `upgrade-builtins.sh`. This tree is the single source of truth for builtin prompts and skills.
 
 ```
 manager/agent/
@@ -73,10 +71,8 @@ manager/agent/
 │   ├── AGENTS.md                # Replaces workspace AGENTS.md for CoPaw Manager
 │   └── HEARTBEAT.md             # Replaces workspace HEARTBEAT.md for CoPaw Manager
 ├── worker-agent/                # Builtin OpenClaw Worker workspace template
-├── copaw-worker-agent/          # Builtin CoPaw Worker workspace template (`runtime=copaw`)
+├── copaw-worker-agent/          # Builtin CoPaw Worker workspace template
 ├── hermes-worker-agent/         # Builtin Hermes Worker workspace template
-├── openhuman-worker-agent/      # Builtin OpenHuman Worker workspace template
-├── qwenpaw-worker-agent/        # Builtin QwenPaw/TeamHarness Worker workspace template (`runtime=qwenpaw`)
 ├── team-leader-agent/           # Team Leader agent template (Teams feature)
 └── worker-skills/               # Extra worker skill templates (e.g. GitHub) pushed on demand
 ```
@@ -86,7 +82,6 @@ manager/agent/
 - **OpenClaw Manager**: workspace copies of `AGENTS.md`, `HEARTBEAT.md`, `SOUL.md`, plus everything under `skills/` (from image builtins).
 - **CoPaw Manager**: `copaw-manager-agent/AGENTS.md` and `copaw-manager-agent/HEARTBEAT.md` are merged into the workspace copies during `upgrade-builtins.sh` when `MANAGER_RUNTIME=copaw`; **skills/** stay shared with OpenClaw Manager.
 - **Workers**: the controller (or local registry) records `runtime` per worker; init scripts materialize the matching `*-worker-agent/` tree into that worker’s storage.
-- **`copaw` vs `qwenpaw`**: these are **different** builtin trees (`copaw-worker-agent/` vs `qwenpaw-worker-agent/`). Do not conflate them even when agent-facing headers mention “QwenPaw” — `runtime=copaw` uses the CoPaw bridge path; `runtime=qwenpaw` uses TeamHarness / `runtime.yaml`.
 
 **Template rendering**: `shared/lib/render-skills.sh` runs from `start-manager-agent.sh` over workspace and image paths so known `${VAR}` placeholders become literal text before agents read them.
 
@@ -95,30 +90,29 @@ manager/agent/
 ### To understand the architecture
 
 - Read [docs/architecture.md](docs/architecture.md) for system overview and component diagram
-- Read [docs/k8s-native-agent-orch.md](docs/k8s-native-agent-orch.md) for the Kubernetes-native agent orchestration design
-- Browse [docs/design/](docs/design/) for detailed design docs (controller refactor, Matrix appservice, team/worker proposal)
+- Read [design/design.md](design/design.md) for full product design (Chinese)
+- Read [design/poc-design.md](design/poc-design.md) for detailed implementation specs
 
 ### Kubernetes deployment
 
-- [helm/hiclaw/](helm/hiclaw/) — primary Helm chart (`Chart.yaml`, `values.yaml`): matrix, gateway, storage, controller, Manager CR, worker defaults, optional Element Web and CMS hooks
+- [helm/agentteams/](helm/agentteams/) — primary Helm chart (`Chart.yaml`, `values.yaml`): matrix, gateway, storage, controller, Manager CR, worker defaults, optional Element Web and CMS hooks
 
 ### Controller (operator) development
 
-- [hiclaw-controller/](hiclaw-controller/) — Go operator: CRD definitions under `api/v1beta1/`, reconcilers, `hiclaw` CLI baked into Manager/Worker images
-- [hiclaw-controller/internal/AGENTS.md](hiclaw-controller/internal/AGENTS.md) — package-level routing and ownership map for the 29 internal subdirectories
+- [agentteams-controller/](agentteams-controller/) — Go operator: CRD definitions under `api/v1beta1/`, reconcilers, `agt` CLI baked into Manager/Worker images
 
 ### To build and run
 
 - [Makefile](Makefile) — unified build/test/push/install/replay interface (`make help` for all targets)
 - [docs/quickstart.md](docs/quickstart.md) — end-to-end guide from zero to working team
-- [install/hiclaw-install.sh](install/hiclaw-install.sh) — local installation script
+- [install/agentteams-install.sh](install/agentteams-install.sh) — local installation script
 - [scripts/replay-task.sh](scripts/replay-task.sh) — send tasks to Manager via Matrix CLI
 
 ### Local full build (from source)
 
 The image dependency chain is: `openclaw-base` → `manager` / `worker`. CoPaw and Hermes worker images and the controller image are additional build targets; see the `Makefile` for current image names.
 
-By default, `OPENCLAW_BASE_IMAGE` points to the remote registry (`higress-registry.cn-hangzhou.cr.aliyuncs.com/higress/openclaw-base`). When building locally from a modified `openclaw-base`, you **must** override it to the local image name so that manager/worker actually use your local base:
+By default, `OPENCLAW_BASE_IMAGE` points to the remote registry (`higress-registry.cn-hangzhou.cr.aliyuncs.com/agentteams/openclaw-base`). When building locally from a modified `openclaw-base`, you **must** override it to the local image name so that manager/worker actually use your local base:
 
 ```bash
 # Step 1: Build openclaw-base
@@ -126,11 +120,11 @@ make build-openclaw-base
 
 # Step 2: Build manager, worker, copaw-worker using the LOCAL base
 make build-manager build-worker build-copaw-worker \
-    OPENCLAW_BASE_IMAGE=hiclaw/openclaw-base \
+    OPENCLAW_BASE_IMAGE=agentteams/openclaw-base \
     OPENCLAW_BASE_VERSION=latest
 ```
 
-**Common pitfall**: Running `make build-manager build-worker OPENCLAW_BASE_VERSION=latest` without `OPENCLAW_BASE_IMAGE=hiclaw/openclaw-base` will pull the remote registry's `:latest` tag instead of using the locally-built image. Always set both variables together for local builds.
+**Common pitfall**: Running `make build-manager build-worker OPENCLAW_BASE_VERSION=latest` without `OPENCLAW_BASE_IMAGE=agentteams/openclaw-base` will pull the remote registry's `:latest` tag instead of using the locally-built image. Always set both variables together for local builds.
 
 **Proxy support**: If behind an HTTP proxy, pass proxy build args. This covers APT, PIP, NPM and all other network access — no mirror args needed:
 
@@ -160,7 +154,7 @@ make build-openclaw-base DOCKER_BUILD_ARGS="--build-arg APT_MIRROR=mirrors.aliyu
 
 ### To modify the Manager container
 
-- [manager/Dockerfile](manager/Dockerfile) — OpenClaw-based Manager (from `openclaw-base`; bundles `hiclaw` CLI from controller image)
+- [manager/Dockerfile](manager/Dockerfile) — OpenClaw-based Manager (from `openclaw-base`; bundles `agt` CLI from controller image)
 - [manager/Dockerfile.copaw](manager/Dockerfile.copaw) — CoPaw-based Manager (Python venv + CoPaw from PyPI; same agent tree and scripts pattern)
 - [manager/supervisord.conf](manager/supervisord.conf) — process orchestration (local embedded stack)
 - [manager/scripts/init/](manager/scripts/init/) — startup: `start-manager-agent.sh` (runtime + `AGENTTEAMS_RUNTIME`), `upgrade-builtins.sh`, Higress/Matrix bootstrap where applicable
@@ -211,12 +205,11 @@ In `k8s` / `aliyun` modes, Workers are created via the controller API instead of
 
 - [.github/workflows/](.github/workflows/) — GitHub Actions workflows
 - [tests/](tests/) — integration test suite
-- [.pre-commit-config.yaml](.pre-commit-config.yaml) — local pre-commit hooks (install with `pre-commit install`)
 
 ### To modify Higress routing and initialization
 
 - [manager/scripts/init/setup-higress.sh](manager/scripts/init/setup-higress.sh) — route, consumer, MCP server setup (local / full console mode)
-- [design/higress-api-doc.json](design/higress-api-doc.json) — Higress Console API spec (OpenAPI 3.0)
+- [design/higress-console-api.yaml](design/higress-console-api.yaml) — Higress Console API spec (OpenAPI 3.0)
 
 ## Technology Stack
 
@@ -235,7 +228,7 @@ In `k8s` / `aliyun` modes, Workers are created via the controller API instead of
 
 ## Changelog Policy
 
-Any change that affects the content of a built image — i.e. modifications under `manager/`, `worker/`, `copaw/`, `hermes/`, `openclaw-base/`, or `hiclaw-controller/` — **must** be recorded in [`changelog/current.md`](changelog/current.md) before committing.
+Any change that affects the content of a built image — i.e. modifications under `manager/`, `worker/`, `copaw/`, `hermes/`, `openclaw-base/`, or `agentteams-controller/` — **must** be recorded in [`changelog/current.md`](changelog/current.md) before committing.
 
 Format: one bullet per logical change, with a linked commit hash, e.g.:
 
@@ -270,8 +263,6 @@ This convention applies to all files that end up in the Agent's workspace or are
 - `manager/agent/worker-agent/**` (OpenClaw Worker Agent config, builtin skills)
 - `manager/agent/copaw-worker-agent/**` (CoPaw Worker Agent config, builtin skills)
 - `manager/agent/hermes-worker-agent/**` (Hermes Worker Agent config, builtin skills)
-- `manager/agent/openhuman-worker-agent/**` (OpenHuman Worker Agent config, builtin skills)
-- `manager/agent/qwenpaw-worker-agent/**` (QwenPaw/TeamHarness Worker Agent config, builtin skills)
 - `manager/agent/team-leader-agent/**` (Team Leader Agent config and skills)
 - `manager/agent/worker-skills/**` (on-demand skill definitions pushed to Workers)
 
@@ -288,13 +279,3 @@ All technical assumptions have been verified in POC. See [design/poc-tech-verifi
 - MCP Server created via `PUT` (not `POST`)
 - Auth plugin takes ~40s to activate after first configuration
 - OpenClaw Skills auto-load from `workspace/skills/<name>/SKILL.md`
-
-<!-- OPENWIKI:START -->
-
-## OpenWiki
-
-This repository uses OpenWiki for recurring code documentation. Start with `openwiki/quickstart.md`, then follow its links to architecture, workflows, domain concepts, operations, integrations, testing guidance, and source maps.
-
-The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do not hand-edit generated OpenWiki pages unless explicitly asked; prefer updating source code/docs and letting OpenWiki regenerate.
-
-<!-- OPENWIKI:END -->

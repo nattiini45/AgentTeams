@@ -18,32 +18,18 @@
 #   --header "Key: Value"   Repeatable. Auth header(s) to forward to the backend MCP server.
 #                           Examples: --header "Authorization: Bearer xxx"
 #                                     --header "X-API-Key: my-key"
-#   --consumers <csv>       Authorize exactly this comma-separated consumer list in Step 5
-#                           instead of broadcasting to every registry worker (e.g. for a
-#                           per-worker server). Implies --skip-worker-broadcast's mcporter
-#                           side-effects are limited to the given consumer names.
-#   --skip-worker-broadcast Skip Step 5 entirely (no all-workers consumer PUT, no
-#                           workers-registry.json mcporter rewrite). Used by callers
-#                           (e.g. provision-worker-gitea.sh, #12/#14) that own their own
-#                           narrow, single-consumer authorization out-of-band.
-#
-#   Default behavior (no --consumers / --skip-worker-broadcast) is unchanged: Step 5
-#   still authorizes every worker in workers-registry.json and rewrites every worker's
-#   config/mcporter.json.
 #
 # Examples:
 #   bash setup-mcp-proxy.sh sentry https://mcp.sentry.dev/mcp http
 #   bash setup-mcp-proxy.sh notion https://mcp.notion.com/mcp http --header "Authorization: Bearer ntn_xxx"
 #   bash setup-mcp-proxy.sh asana https://mcp.asana.com/sse sse --header "X-API-Key: my-key"
-#   bash setup-mcp-proxy.sh gitea-alice https://gitea-mcp:8080 http --header "Authorization: Bearer <PAT>" --skip-worker-broadcast
 #
 # Prerequisites:
 #   - HIGRESS_COOKIE_FILE env var (session cookie for Higress Console)
 #   - AGENTTEAMS_AI_GATEWAY_DOMAIN env var
 
 set -euo pipefail
-source /opt/hiclaw/scripts/lib/hiclaw-env.sh
-source /opt/hiclaw/scripts/lib/gateway-api.sh
+source /opt/agentteams/scripts/lib/agentteams-env.sh
 
 # ============================================================
 # Parse arguments
@@ -52,8 +38,6 @@ SERVER_NAME=""
 MCP_URL=""
 TRANSPORT=""
 HEADERS=()
-CONSUMERS_CSV=""
-SKIP_WORKER_BROADCAST="false"
 
 POSITIONAL=()
 while [ $# -gt 0 ]; do
@@ -61,14 +45,6 @@ while [ $# -gt 0 ]; do
         --header)
             HEADERS+=("${2:-}")
             shift 2
-            ;;
-        --consumers)
-            CONSUMERS_CSV="${2:-}"
-            shift 2
-            ;;
-        --skip-worker-broadcast)
-            SKIP_WORKER_BROADCAST="true"
-            shift
             ;;
         *)
             POSITIONAL+=("$1")
@@ -108,7 +84,12 @@ fi
 
 MCP_SERVER_NAME="mcp-${SERVER_NAME}"
 
-gateway_require_local_mcp_management || exit 1
+# Cloud mode check
+if [ "${AGENTTEAMS_RUNTIME:-}" = "aliyun" ]; then
+    log "ERROR: MCP Server management via this script is not yet supported in cloud mode (AGENTTEAMS_RUNTIME=aliyun)."
+    log "Please manage MCP Servers through the Alibaba Cloud AI Gateway console instead."
+    exit 1
+fi
 
 if [ -z "${HIGRESS_COOKIE_FILE:-}" ]; then
     log "ERROR: HIGRESS_COOKIE_FILE not set"
@@ -325,12 +306,8 @@ if [ -n "${MANAGER_KEY}" ]; then
                 url: ("http://" + $domain + ":8080/mcp-servers/" + $name + "/mcp"),
                 transport: "http",
                 headers: {Authorization: ("Bearer " + $key)}
-            }' "${MANAGER_MCPORTER}" 2>/dev/null) || UPDATED=""
-        if [ -n "${UPDATED}" ]; then
-            echo "${UPDATED}" | jq . > "${MANAGER_MCPORTER}"
-        else
-            log "  WARNING: mcporter merge failed — keeping existing config/mcporter.json for Manager"
-        fi
+            }' "${MANAGER_MCPORTER}" 2>/dev/null)
+        echo "${UPDATED}" | jq . > "${MANAGER_MCPORTER}"
     else
         jq -n --arg name "${MCP_SERVER_NAME}" --arg domain "${AI_GATEWAY_DOMAIN}" --arg key "${MANAGER_KEY}" \
             '{mcpServers: {($name): {
@@ -348,15 +325,6 @@ fi
 # ============================================================
 # Step 5: Authorize existing Workers and update their configs
 # ============================================================
-if [ "${SKIP_WORKER_BROADCAST}" = "true" ]; then
-    log "Step 5: Skipped (--skip-worker-broadcast) — caller owns consumer authorization for ${MCP_SERVER_NAME}"
-elif [ -n "${CONSUMERS_CSV}" ]; then
-    log "Step 5: Authorizing explicit consumer list for ${MCP_SERVER_NAME}..."
-    CONSUMER_LIST=$(printf '%s' "${CONSUMERS_CSV}" | jq -R 'split(",") | map(select(length > 0))')
-    higress_api PUT /v1/mcpServer/consumers "Authorizing consumers for ${MCP_SERVER_NAME}" \
-        '{"mcpServerName":"'"${MCP_SERVER_NAME}"'","consumers":'"${CONSUMER_LIST}"'}'
-    log "  (--consumers given: skipping the all-workers mcporter rewrite)"
-else
 log "Step 5: Authorizing existing Workers for ${MCP_SERVER_NAME}..."
 REGISTRY_FILE="${HOME}/workers-registry.json"
 if [ -f "${REGISTRY_FILE}" ]; then
@@ -371,7 +339,7 @@ if [ -f "${REGISTRY_FILE}" ]; then
         '{"mcpServerName":"'"${MCP_SERVER_NAME}"'","consumers":'"${CONSUMER_LIST}"'}'
 
     for wname in ${WORKER_NAMES}; do
-        WORKER_AGENT_DIR="/root/hiclaw-fs/agents/${wname}"
+        WORKER_AGENT_DIR="/root/agentteams-fs/agents/${wname}"
         MCPORTER_DIR="${WORKER_AGENT_DIR}/config"
         MCPORTER_FILE="${MCPORTER_DIR}/mcporter.json"
         MCPORTER_COMPAT="${WORKER_AGENT_DIR}/mcporter-servers.json"
@@ -391,7 +359,7 @@ if [ -f "${REGISTRY_FILE}" ]; then
                     url: ("http://" + $domain + ":8080/mcp-servers/" + $name + "/mcp"),
                     transport: "http",
                     headers: {Authorization: ("Bearer " + $key)}
-                }' "${MCPORTER_FILE}" 2>/dev/null) || UPDATED=""
+                }' "${MCPORTER_FILE}" 2>/dev/null)
             if [ -n "${UPDATED}" ] && [ "${UPDATED}" != "null" ]; then
                 echo "${UPDATED}" | jq . > "${MCPORTER_FILE}"
                 log "  Updated config/mcporter.json for ${wname}"
@@ -416,7 +384,6 @@ if [ -f "${REGISTRY_FILE}" ]; then
     done
 else
     log "  No workers-registry.json found, skipping Worker authorization"
-fi
 fi
 
 log "${MCP_SERVER_NAME} proxy setup complete"

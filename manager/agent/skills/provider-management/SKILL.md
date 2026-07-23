@@ -9,10 +9,10 @@ Use this to onboard an additional OpenAI-compatible LLM provider (e.g. Ollama Cl
 or any other OpenAI-compatible endpoint) alongside the default provider, from chat, without
 touching the boot-time `default-ai-route` configuration.
 
-This is your interactive counterpart to `setup-higress.sh`'s env-gated `HICLAW_EXTRA_LLM_PROVIDERS`
+This is your interactive counterpart to `setup-higress.sh`'s env-gated `AGENTTEAMS_EXTRA_LLM_PROVIDERS`
 loop (boot-persistent alternative — see "Boot-persistent alternative" below). Both paths register
 the identical shapes: a DNS service-source, an `openai`-type provider, and the provider's own AI
-route named `hiclaw-<name>-route`, matched by model-name prefix `<name>/`.
+route named `agt-<name>-route`, matched by model-name prefix `<name>/`.
 
 ## When to use
 
@@ -22,7 +22,7 @@ vendor, or to remove a previously-registered one.
 ## Usage
 
 ```bash
-bash /opt/hiclaw/agent/skills/provider-management/scripts/register-provider.sh <name> \
+bash /opt/agentteams/agent/skills/provider-management/scripts/register-provider.sh <name> \
     --url <base-url> (--key <API-key> | --key-env <VAR>) [--models "id1,id2"] [--delete]
 ```
 
@@ -55,14 +55,14 @@ inline in the (unlogged) request body sent to the Higress Console.
 ## What the script does
 
 1. Ensures the Higress console session is usable: if a call returns the HTML session-expired page
-   (or a 401/403), it re-logs in once using `HICLAW_ADMIN_USER`/`HICLAW_ADMIN_PASSWORD` (always
+   (or a 401/403), it re-logs in once using `AGENTTEAMS_ADMIN_USER`/`AGENTTEAMS_ADMIN_PASSWORD` (always
    present in your container env) and retries exactly once. If re-login also fails, it hard-fails
    with a clear message — it does not loop or guess.
 2. Parses `<name>` and `--url` (validates no `/` in the name, per `docs/faq.md:550-552`).
 3. GET-then-PUT/POST idempotent upsert of:
    - a DNS service-source for the provider's domain,
    - an `openai`-type LLM provider using `openaiCustomUrl`,
-   - the provider's own AI route `hiclaw-<name>-route`, matched by model-prefix `<name>/`, with
+   - the provider's own AI route `agt-<name>-route`, matched by model-prefix `<name>/`, with
      `allowedConsumers: ["manager"]` (matching the boot-loop's `setup-higress.sh:364-386` shape).
 4. **Never reads or writes `default-ai-route`.** That route is rewritten on every Manager boot
    (`setup-higress.sh:253-281`); any edits you make to it interactively would be silently clobbered
@@ -73,7 +73,7 @@ inline in the (unlogged) request body sent to the Higress Console.
 
 ## Priority note (S5)
 
-⚠️ Whether `hiclaw-<name>-route`'s prefix-matched requests could ever be shadowed by
+⚠️ Whether `agt-<name>-route`'s prefix-matched requests could ever be shadowed by
 `default-ai-route`'s path-only catch-all is a route-priority question you can only confirm against
 a live Higress instance (carried from the Milestone-2 unverified-assumption ledger, items 1–3;
 Milestone-3 ledger item 5). If a newly-onboarded provider's models aren't being routed correctly,
@@ -92,7 +92,7 @@ Registering a provider does not automatically send any traffic to it. To actuall
 ## Model catalog note
 
 Until you update the model catalog, models from a newly-onboarded provider resolve to the unknown-
-model default (150k context / 128k max output, `hiclaw-controller/internal/agentconfig/generator.go:412`).
+model default (150k context / 128k max output, `agentteams-controller/internal/agentconfig/generator.go:412`).
 This is safe but imprecise. If you know the new provider's real context/output limits, the optional
 follow-up is the same 4-spot catalog procedure used for Ollama/MiMo in Milestone 2 Step 5
 (`generator.go`, `manager/configs/known-models.json`, `manager/configs/manager-openclaw.json.tmpl`,
@@ -101,8 +101,8 @@ follow-up is the same 4-spot catalog procedure used for Ollama/MiMo in Milestone
 ## Boot-persistent alternative
 
 For a provider that should survive every Manager restart without being re-registered from chat,
-set `HICLAW_EXTRA_LLM_PROVIDERS="name1=url1;name2=url2"` (plus per-provider
-`HICLAW_<NAME>_API_KEY`) in your env — `setup-higress.sh`'s 5c loop registers the exact same
+set `AGENTTEAMS_EXTRA_LLM_PROVIDERS="name1=url1;name2=url2"` (plus per-provider
+`AGENTTEAMS_<NAME>_API_KEY`) in your env — `setup-higress.sh`'s 5c loop registers the exact same
 shapes on every boot. Use this script for one-off, chat-driven onboarding instead; use the env var
 for providers that should be part of the standing deployment config.
 

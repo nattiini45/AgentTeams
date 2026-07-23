@@ -208,6 +208,10 @@ def bridge_openclaw_to_copaw(
     bootstrap_copaw_runtime(working_dir)
 
 
+# Upstream-shaped alias used by worker.py and some tests.
+bridge_controller_to_copaw = bridge_openclaw_to_copaw
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -282,7 +286,6 @@ def _resolve_matrix_user_id(
 
     env_user_id = (
         os.environ.get("AGENTTEAMS_MATRIX_USER_ID")
-        or os.environ.get("HICLAW_MATRIX_USER_ID")
         or os.environ.get("COPAW_MATRIX_USER_ID")
     )
     if env_user_id:
@@ -290,11 +293,11 @@ def _resolve_matrix_user_id(
 
     matrix_domain = (
         os.environ.get("AGENTTEAMS_MATRIX_DOMAIN")
-        or os.environ.get("HICLAW_MATRIX_DOMAIN")
+        or os.environ.get("COPAW_MATRIX_DOMAIN")
     )
     localpart = (
         os.environ.get("AGENTTEAMS_WORKER_NAME")
-        or os.environ.get("HICLAW_WORKER_NAME")
+        or os.environ.get("COPAW_WORKER_NAME")
         or ("manager" if profile == "manager" else "")
     )
     if matrix_domain and localpart:
@@ -511,7 +514,7 @@ def _write_agent_json(
         agent_cfg.setdefault("running", {})["max_input_length"] = context_window
 
     # Manager heartbeat interval — AGENTTEAMS_MANAGER_HEARTBEAT_INTERVAL flows from
-    # the controller (see hiclaw-controller/internal/service/worker_env.go) and
+    # the controller (see agentteams-controller/internal/service/worker_env.go) and
     # overrides the template-seeded heartbeat.every (hardcoded "30m" in
     # templates/agent.manager.json). Only the manager profile reads this env
     # var; the worker template already defaults to 10m on its own.
@@ -679,3 +682,6 @@ def _main_cli(argv=None):
 if __name__ == "__main__":
     import sys as _sys
     _sys.exit(_main_cli())
+
+
+sync_outer_prompt_files_to_inner = propagate_prompts

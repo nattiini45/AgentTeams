@@ -16,8 +16,8 @@ import time
 import urllib.request
 import zipfile
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import parse_qs, urlencode, urlparse
+from typing import Any, Dict, Iterable, List, Optional, Tuple
+from urllib.parse import parse_qs, unquote, urlencode, urlparse
 
 from qwenpaw_worker.update.constants import (
     DEFAULT_AGENT_ID,
@@ -29,6 +29,42 @@ from qwenpaw_worker.update.runtime_config import MemberRuntimeConfig
 from qwenpaw_worker.update.utils import _download_path_part, _strip_json_line_comments, _string, _string_list
 
 logger = logging.getLogger(__name__)
+
+
+def _file_ref_to_path(ref: str) -> Path:
+    """Resolve a local path or file:// URL to a filesystem Path.
+
+    Handles both RFC-style URIs (`file:///C:/path` / `file:///tmp/x`) and the
+    Windows-local form often produced by string formatting (`file://C:\\path`),
+    which urlparse places entirely in netloc with an empty path.
+    """
+    parsed = urlparse(ref)
+    if parsed.scheme != "file":
+        return Path(ref)
+
+    from_uri = getattr(Path, "from_uri", None)
+    if callable(from_uri):
+        try:
+            return from_uri(ref)
+        except (ValueError, OSError, NotImplementedError):
+            pass
+
+    # file://C:\Users\... or file://C:/Users/... → path lives in netloc
+    if parsed.netloc and (not parsed.path or parsed.path == "/"):
+        netloc = unquote(parsed.netloc)
+        if len(netloc) >= 2 and netloc[1] == ":":
+            return Path(netloc)
+        # UNC: file://server/share/...
+        return Path(f"//{netloc}{unquote(parsed.path)}")
+
+    path_str = unquote(parsed.path)
+    # file:///C:/Users/... → "/C:/Users/..." ; drop the leading slash before the drive
+    if os.name == "nt" and len(path_str) >= 3 and path_str[0] in "/\\" and path_str[2] == ":":
+        path_str = path_str[1:]
+    if not path_str:
+        raise RuntimeError(f"invalid file agent package ref: {ref}")
+    return Path(path_str)
+
 
 class AgentPackageManager:
     """Download and extract desired AgentSpec packages without restarting."""
@@ -76,7 +112,7 @@ class AgentPackageManager:
             raise RuntimeError("desired.agentPackage.ref is required")
         parsed = urlparse(ref)
         if parsed.scheme in ("", "file"):
-            path = Path(parsed.path if parsed.scheme == "file" else ref)
+            path = _file_ref_to_path(ref) if parsed.scheme == "file" else Path(ref)
             if not path.exists():
                 raise RuntimeError(f"agent package not found: {ref}")
             return path

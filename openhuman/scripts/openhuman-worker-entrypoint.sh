@@ -4,9 +4,9 @@
 # sets up MinIO file sync, launches openhuman-core with native Matrix support.
 #
 # Config bridging (in priority order):
-#   1. openclaw.json  - channels.matrix.* + models.providers.hiclaw-gateway
+#   1. openclaw.json  - channels.matrix.* + models.providers.agentteams-gateway
 #                       (pulled from MinIO, same source as hermes/copaw)
-#   2. MATRIX_* / AGENTTEAMS_AI_GATEWAY_URL env vars  - controller-injected fallback
+#   2. AGENTTEAMS_* / MATRIX_* env vars  - controller-injected fallback
 #
 # Generated config.toml sections:
 #   - [channels_config.matrix]
@@ -16,14 +16,14 @@
 #       aborted (fail-closed) if the gateway config is missing.
 #
 # Environment variables (set by controller during worker creation):
-#   AGENTTEAMS_WORKER_NAME        - Worker name (required)
-#   AGENTTEAMS_FS_ENDPOINT        - MinIO endpoint (required in local mode)
-#   AGENTTEAMS_FS_ACCESS_KEY      - MinIO access key (required in local mode)
-#   AGENTTEAMS_FS_SECRET_KEY      - MinIO secret key (required in local mode)
-#   AGENTTEAMS_RUNTIME            - "aliyun" for cloud mode (uses RRSA/STS)
-#   AGENTTEAMS_AI_GATEWAY_URL     - AgentTeams AI gateway base URL (required)
-#   AGENTTEAMS_WORKER_GATEWAY_KEY - Higress consumer key (required)
-#   AGENTTEAMS_DEFAULT_MODEL      - Default model id (default qwen-plus)
+#   AGENTTEAMS_WORKER_NAME         - Worker name (required)
+#   AGENTTEAMS_FS_ENDPOINT         - MinIO endpoint (required in local mode)
+#   AGENTTEAMS_FS_ACCESS_KEY       - MinIO access key (required in local mode)
+#   AGENTTEAMS_FS_SECRET_KEY       - MinIO secret key (required in local mode)
+#   AGENTTEAMS_RUNTIME             - "aliyun" for cloud mode (uses RRSA/STS)
+#   AGENTTEAMS_AI_GATEWAY_URL      - AgentTeams AI gateway base URL (required)
+#   AGENTTEAMS_WORKER_GATEWAY_KEY  - Higress consumer key (required)
+#   AGENTTEAMS_DEFAULT_MODEL       - Default model id (default qwen-plus)
 #   MATRIX_HOMESERVER_URL         - Matrix homeserver URL (fallback)
 #   MATRIX_ACCESS_TOKEN           - Matrix access token (fallback)
 #   MATRIX_HOME_ROOM_ID           - Matrix room ID
@@ -35,14 +35,14 @@
 set -e
 
 # Source shared environment bootstrap (provides ensure_mc_credentials in cloud mode)
-source /opt/hiclaw/scripts/lib/hiclaw-env.sh 2>/dev/null || true
+source /opt/agentteams/scripts/lib/agentteams-env.sh 2>/dev/null || true
 
 WORKER_NAME="${AGENTTEAMS_WORKER_NAME:?AGENTTEAMS_WORKER_NAME is required}"
 WORKER_CR_NAME="${AGENTTEAMS_WORKER_CR_NAME:-${WORKER_NAME}}"
 WORKSPACE="${OPENHUMAN_WORKSPACE:-/home/openhuman/.openhuman}"
 
 log() {
-    echo "[hiclaw-openhuman-worker $(date '+%Y-%m-%d %H:%M:%S')] $1"
+    echo "[agentteams-openhuman-worker $(date '+%Y-%m-%d %H:%M:%S')] $1"
 }
 
 # ============================================================
@@ -60,13 +60,13 @@ fi
 if [ "${AGENTTEAMS_RUNTIME:-}" = "aliyun" ]; then
     log "Configuring mc alias for cloud (RRSA OIDC)..."
     ensure_mc_credentials || { log "ERROR: Failed to obtain OSS credentials"; exit 1; }
-    FS_BUCKET="${AGENTTEAMS_FS_BUCKET:-hiclaw-cloud-storage}"
+    FS_BUCKET="${AGENTTEAMS_FS_BUCKET:-agentteams-storage}"
 else
     FS_ENDPOINT="${AGENTTEAMS_FS_ENDPOINT:?AGENTTEAMS_FS_ENDPOINT is required}"
     FS_ACCESS_KEY="${AGENTTEAMS_FS_ACCESS_KEY:?AGENTTEAMS_FS_ACCESS_KEY is required}"
     FS_SECRET_KEY="${AGENTTEAMS_FS_SECRET_KEY:?AGENTTEAMS_FS_SECRET_KEY is required}"
     FS_BUCKET="${AGENTTEAMS_FS_BUCKET:-agentteams-storage}"
-    log "Configuring mc alias for local MinIO (alias=${AGENTTEAMS_STORAGE_ALIAS})..."
+    log "Configuring mc alias for local MinIO..."
     mc alias set "${AGENTTEAMS_STORAGE_ALIAS}" "${FS_ENDPOINT}" "${FS_ACCESS_KEY}" "${FS_SECRET_KEY}"
 fi
 log "  FS bucket: ${FS_BUCKET}"
@@ -131,21 +131,138 @@ ln -sfn "${WORKSPACE}/skills" "${HOME}/.agents/skills"
 log "Worker config pulled successfully"
 
 # ============================================================
-# Step 3: Generate config.toml — Python bridge (openclaw.json → TOML)
+# Step 3: Generate config.toml — bridge from openclaw.json
 # ============================================================
 # Primary source: openclaw.json (channels.matrix.*) pulled from MinIO in Step 2.
-# Fallback: MATRIX_* / AGENTTEAMS_* environment variables injected by controller.
-log "Generating OpenHuman config.toml via openhuman-worker bridge..."
+# Fallback: MATRIX_* environment variables injected by the controller.
+# This keeps OpenHuman aligned with how hermes / copaw / openclaw runtimes
+# consume Matrix configuration — via a single config artifact rather than
+# per-field env vars.
+log "Generating OpenHuman config.toml..."
 
 OPENCLAW_JSON="${WORKSPACE}/agent-config/openclaw.json"
-openhuman-worker bridge \
-    --workspace "${WORKSPACE}" \
-    --openclaw-json "${OPENCLAW_JSON}" || {
-    log "FATAL: openhuman-worker bridge failed"
-    exit 1
+
+if [ -f "${OPENCLAW_JSON}" ] && command -v jq >/dev/null 2>&1; then
+    log "Reading config from openclaw.json (bridge mode)"
+
+    # --- Matrix config ---
+    MATRIX_CFG=$(jq -r '.channels.matrix // empty' "${OPENCLAW_JSON}")
+    if [ -n "${MATRIX_CFG}" ]; then
+        _HS=$(jq -r '.channels.matrix.homeserver // empty' "${OPENCLAW_JSON}")
+        _AT=$(jq -r '.channels.matrix.accessToken // empty' "${OPENCLAW_JSON}")
+        _UID=$(jq -r '.channels.matrix.userId // empty' "${OPENCLAW_JSON}")
+
+        BRIDGE_HOMESERVER="${_HS:-${AGENTTEAMS_MATRIX_URL:-${MATRIX_HOMESERVER_URL:-}}}"
+        BRIDGE_ACCESS_TOKEN="${_AT:-${AGENTTEAMS_WORKER_MATRIX_TOKEN:-${MATRIX_ACCESS_TOKEN:-}}}"
+        BRIDGE_USER_ID="${_UID:-${AGENTTEAMS_MATRIX_USER_ID:-${MATRIX_USER_ID:-}}}"
+        BRIDGE_ROOM_ID="${AGENTTEAMS_WORKER_ROOM_ID:-${MATRIX_HOME_ROOM_ID:-}}"  # room_id is not in openclaw.json; always from env
+
+        # Allowed users — merge dm.allowFrom + groupAllowFrom (deduplicated)
+        BRIDGE_ALLOWED_USERS=$(
+            jq -r '[
+                (.channels.matrix.dm.allowFrom // [])[] ,
+                (.channels.matrix.groupAllowFrom // [])[]
+            ] | unique | .[]' "${OPENCLAW_JSON}" 2>/dev/null
+        )
+    fi
+
+    # --- LLM provider config (AgentTeams AI gateway via Higress) ---
+    # Maps openclaw.json's models.providers["agentteams-gateway"] +
+    # agents.defaults.model.primary into OpenHuman's [[cloud_providers]]
+    # and [model_routes] sections so that the worker routes LLM traffic
+    # through Higress instead of falling back to api.openhuman.ai.
+    BRIDGE_LLM_BASE_URL=$(jq -r '.models.providers["agentteams-gateway"].baseUrl // empty' "${OPENCLAW_JSON}")
+    BRIDGE_LLM_API_KEY=$(jq -r '.models.providers["agentteams-gateway"].apiKey // empty' "${OPENCLAW_JSON}")
+    # primary is "agentteams-gateway/<model>" — strip the provider prefix.
+    BRIDGE_LLM_PRIMARY=$(jq -r '.agents.defaults.model.primary // empty | sub("^agentteams-gateway/"; "")' "${OPENCLAW_JSON}")
+fi
+
+# Apply fallback from env vars when openclaw.json was absent or incomplete.
+BRIDGE_HOMESERVER="${BRIDGE_HOMESERVER:-${AGENTTEAMS_MATRIX_URL:-${MATRIX_HOMESERVER_URL:-}}}"
+BRIDGE_ACCESS_TOKEN="${BRIDGE_ACCESS_TOKEN:-${AGENTTEAMS_WORKER_MATRIX_TOKEN:-${MATRIX_ACCESS_TOKEN:-}}}"
+BRIDGE_ROOM_ID="${BRIDGE_ROOM_ID:-${AGENTTEAMS_WORKER_ROOM_ID:-${MATRIX_HOME_ROOM_ID:-}}}"
+BRIDGE_USER_ID="${BRIDGE_USER_ID:-${AGENTTEAMS_MATRIX_USER_ID:-${MATRIX_USER_ID:-}}}"
+
+# LLM fallback: AGENTTEAMS_AI_GATEWAY_URL is the base host (no /v1 suffix);
+# AGENTTEAMS_WORKER_GATEWAY_KEY is the Higress consumer key for this worker.
+if [ -z "${BRIDGE_LLM_BASE_URL:-}" ] && [ -n "${AGENTTEAMS_AI_GATEWAY_URL:-}" ]; then
+    BRIDGE_LLM_BASE_URL="${AGENTTEAMS_AI_GATEWAY_URL%/}/v1"
+fi
+BRIDGE_LLM_API_KEY="${BRIDGE_LLM_API_KEY:-${AGENTTEAMS_WORKER_GATEWAY_KEY:-}}"
+BRIDGE_LLM_PRIMARY="${BRIDGE_LLM_PRIMARY:-${AGENTTEAMS_DEFAULT_MODEL:-qwen-plus}}"
+
+# If bridge didn't yield allowed users, fall back to MATRIX_ALLOWED_USERS env var.
+if [ -z "${BRIDGE_ALLOWED_USERS:-}" ] && [ -n "${MATRIX_ALLOWED_USERS:-}" ]; then
+    BRIDGE_ALLOWED_USERS=$(echo "${MATRIX_ALLOWED_USERS}" | tr ',' '\n')
+fi
+
+# Escape a value for embedding inside a TOML basic string (double-quoted).
+toml_escape() {
+    # Order matters: backslashes first, then quotes.
+    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
 }
-export OPENHUMAN_CONFIG="${WORKSPACE}/config.toml"
+
+# Convert newline-separated user list to TOML array entries.
+ALLOWED_USERS_TOML=""
+if [ -n "${BRIDGE_ALLOWED_USERS:-}" ]; then
+    while IFS= read -r _user; do
+        [ -z "${_user}" ] && continue
+        _esc="$(toml_escape "${_user}")"
+        if [ -n "${ALLOWED_USERS_TOML}" ]; then
+            ALLOWED_USERS_TOML="${ALLOWED_USERS_TOML},
+ \"${_esc}\""
+        else
+            ALLOWED_USERS_TOML=" \"${_esc}\""
+        fi
+    done <<EOF_USERS
+$(printf '%s\n' "${BRIDGE_ALLOWED_USERS}")
+EOF_USERS
+fi
+
+BRIDGE_HOMESERVER_ESC="$(toml_escape "${BRIDGE_HOMESERVER}")"
+BRIDGE_ACCESS_TOKEN_ESC="$(toml_escape "${BRIDGE_ACCESS_TOKEN}")"
+BRIDGE_ROOM_ID_ESC="$(toml_escape "${BRIDGE_ROOM_ID}")"
+BRIDGE_USER_ID_ESC="$(toml_escape "${BRIDGE_USER_ID:-}")"
+MATRIX_DEVICE_ID_ESC="$(toml_escape "${MATRIX_DEVICE_ID:-}")"
+
+# Write Matrix-only config.toml first; LLM settings are applied below via
+# openhuman-core CLI (which is the supported, schema-stable path).
+cat > "${WORKSPACE}/config.toml" <<EOF
+# Auto-generated by openhuman-worker-entrypoint.sh
+# Do not edit manually — changes will be overwritten on container restart.
+
+[channels_config]
+
+[channels_config.matrix]
+homeserver = "${BRIDGE_HOMESERVER_ESC}"
+access_token = "${BRIDGE_ACCESS_TOKEN_ESC}"
+room_id = "${BRIDGE_ROOM_ID_ESC}"
+allowed_users = [
+${ALLOWED_USERS_TOML}
+]
+$([ -n "${BRIDGE_USER_ID:-}" ] && echo "user_id = \"${BRIDGE_USER_ID_ESC}\"")
+$([ -n "${MATRIX_DEVICE_ID:-}" ] && echo "device_id = \"${MATRIX_DEVICE_ID_ESC}\"")
+EOF
+
 log "config.toml generated at ${WORKSPACE}/config.toml"
+
+# --- LLM routing through AgentTeams AI gateway (Higress) ---
+# Use openhuman-core's CLI to register the AgentTeams gateway as an
+# OpenAI-compatible inference endpoint. This is REQUIRED for AgentTeams-managed
+# workers; if not configured, the entrypoint aborts (fail-closed) to
+# prevent silent routing of workloads to external services.
+export OPENHUMAN_CONFIG="${WORKSPACE}/config.toml"
+if [ -n "${BRIDGE_LLM_BASE_URL}" ] && [ -n "${BRIDGE_LLM_API_KEY}" ]; then
+    log "Configuring LLM: endpoint=${BRIDGE_LLM_BASE_URL} model=${BRIDGE_LLM_PRIMARY}"
+    openhuman-core config update_model_settings \
+        --inference_url "${BRIDGE_LLM_BASE_URL}" \
+        --api_key "${BRIDGE_LLM_API_KEY}" \
+        --default_model "${BRIDGE_LLM_PRIMARY}" \
+        >/dev/null 2>&1 || log "WARNING: openhuman-core config update_model_settings failed"
+else
+    log "FATAL: LLM gateway not configured (AGENTTEAMS_AI_GATEWAY_URL or AGENTTEAMS_WORKER_GATEWAY_KEY missing). AgentTeams-managed workers must route through the platform AI gateway; refusing to start to prevent silent fallback to external services."
+    exit 1
+fi
 
 # Generate a random core token if not set
 export OPENHUMAN_CORE_TOKEN="${OPENHUMAN_CORE_TOKEN:-$(openssl rand -hex 32 2>/dev/null || head -c 64 /dev/urandom | od -A n -t x1 | tr -d ' \n')}"
@@ -153,10 +270,6 @@ export OPENHUMAN_CORE_TOKEN="${OPENHUMAN_CORE_TOKEN:-$(openssl rand -hex 32 2>/d
 # ============================================================
 # Step 4: Start file sync loops
 # ============================================================
-# Semantics: design/sync-contract.md (OPENHUMAN preset).
-# Push: memory/ → agents/{name}/memory/; shared/ → global shared/ with
-# spec.md + base/ excludes (Manager-owned read-only paths).
-# Pull: skills + shared fallback every 300s.
 
 # Local → Remote: push changed files every 30 seconds
 (
@@ -174,7 +287,7 @@ export OPENHUMAN_CORE_TOKEN="${OPENHUMAN_CORE_TOKEN:-$(openssl rand -hex 32 2>/d
                 --overwrite 2>/dev/null || true
             mc mirror "${WORKSPACE}/shared/" \
                 "${AGENTTEAMS_STORAGE_PREFIX}/shared/" \
-                --overwrite --exclude "*/spec.md" --exclude "*/base/*" 2>/dev/null || true
+                --overwrite --exclude "spec.md" --exclude "base/" 2>/dev/null || true
             # Push SOUL.md/AGENTS.md only if agent modified them
             for _mf in SOUL.md AGENTS.md MEMORY.md; do
                 if [ -f "${WORKSPACE}/${_mf}" ] && [ "${WORKSPACE}/${_mf}" -nt "${PULL_MARKER}" ]; then
@@ -248,7 +361,7 @@ CORE_PID=$!
 
     # Report ready to controller
     if [ -n "${AGENTTEAMS_CONTROLLER_URL:-}" ]; then
-        hiclaw worker report-ready --name "${WORKER_CR_NAME}" 2>/dev/null || \
+        agt worker report-ready --name "${WORKER_CR_NAME}" 2>/dev/null || \
             curl -sf -X POST "${AGENTTEAMS_CONTROLLER_URL}/api/v1/workers/${WORKER_CR_NAME}/ready" \
                 -H "Content-Type: application/json" \
                 -H "Authorization: Bearer $(cat ${AGENTTEAMS_AUTH_TOKEN_FILE:-/var/run/secrets/agentteams/token} 2>/dev/null)" 2>/dev/null || \

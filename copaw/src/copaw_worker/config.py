@@ -24,7 +24,6 @@ class WorkerConfig:
         self.worker_cr_name = (
             worker_cr_name
             or os.environ.get("AGENTTEAMS_WORKER_CR_NAME")
-            or os.environ.get("HICLAW_WORKER_CR_NAME")
             or os.environ.get("COPAW_WORKER_CR_NAME")
             or worker_name
         )
@@ -33,9 +32,16 @@ class WorkerConfig:
         self.minio_secret_key = minio_secret_key
         self.minio_bucket = minio_bucket
         self.minio_secure = minio_secure
-        self.install_dir = install_dir or Path(
-            os.environ.get("COPAW_INSTALL_DIR", Path.home() / ".hiclaw-worker")
-        )
+        self.install_dir = install_dir or _default_install_dir()
         self.console_port = console_port
         self.worker_port = worker_port or (console_port + 1)
         self.sync_interval = sync_interval
+
+
+def _default_install_dir() -> Path:
+    if configured := os.environ.get("COPAW_INSTALL_DIR"):
+        return Path(configured)
+
+    # Prefer HOME so tests (and Unix shells) can override the install root.
+    home = os.environ.get("HOME") or os.environ.get("USERPROFILE")
+    return (Path(home) if home else Path.home()) / ".agentteams-worker"

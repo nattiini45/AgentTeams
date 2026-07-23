@@ -36,5 +36,5 @@ Use your worker name as Git author so contributions are identifiable:
 
 ```bash
 git config user.name "${AGENTTEAMS_WORKER_NAME}"
-git config user.email "${AGENTTEAMS_WORKER_NAME}@hiclaw.local"
+git config user.email "${AGENTTEAMS_WORKER_NAME}@agt.local"
 ```

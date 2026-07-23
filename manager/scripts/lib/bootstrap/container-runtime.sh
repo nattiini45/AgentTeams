@@ -2,7 +2,7 @@
 # bootstrap/container-runtime.sh - Detect Worker creation backend
 
 bootstrap_detect_container_runtime() {
-    source /opt/hiclaw/scripts/lib/container-api.sh
+    source /opt/agentteams/scripts/lib/container-api.sh
     if container_api_available; then
         log "Container runtime socket detected at ${CONTAINER_SOCKET} — direct Worker creation enabled"
         export AGENTTEAMS_CONTAINER_RUNTIME="socket"

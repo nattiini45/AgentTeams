@@ -1,14 +1,14 @@
-# Integrating HiClaw with Alibaba Cloud CMS 2.0
+# Integrating AgentTeams with Alibaba Cloud CMS 2.0
 
-This guide explains how to integrate HiClaw with Alibaba Cloud Monitor Service (CMS) 2.0 for comprehensive observability of your AI Agent applications.
+This guide explains how to integrate AgentTeams with Alibaba Cloud Monitor Service (CMS) 2.0 for comprehensive observability of your AI Agent applications.
 
 ## Version Requirements
 
-**⚠️ Important: CMS 2.0 observability support is available starting from HiClaw v1.0.9.**
+**⚠️ Important: CMS 2.0 observability support is available starting from AgentTeams v1.0.9.**
 
 ## Overview
 
-HiClaw supports integration with CMS 2.0 through OpenTelemetry protocol, enabling you to:
+AgentTeams supports integration with CMS 2.0 through OpenTelemetry protocol, enabling you to:
 
 - Monitor complete request traces across Manager and Worker Agents
 - Track LLM API call latency and token consumption
@@ -17,14 +17,14 @@ HiClaw supports integration with CMS 2.0 through OpenTelemetry protocol, enablin
 
 ## Prerequisites
 
-- HiClaw v1.0.9 or higher
+- AgentTeams v1.0.9 or higher
 - Alibaba Cloud account with CMS 2.0 service enabled
 - CMS 2.0 workspace created
-- Network connectivity from HiClaw deployment to CMS 2.0 endpoints
+- Network connectivity from AgentTeams deployment to CMS 2.0 endpoints
 
 ## Step 1: Obtain CMS 2.0 Integration Configuration
 
-Before configuring HiClaw, you need to obtain the integration parameters from the CMS 2.0 console.
+Before configuring AgentTeams, you need to obtain the integration parameters from the CMS 2.0 console.
 
 ### 1.1 Login to CMS 2.0 Console
 
@@ -41,8 +41,8 @@ Before configuring HiClaw, you need to obtain the integration parameters from th
 
 1. In the parameter configuration area, enter your **application name** (this will be the service name displayed in CMS 2.0)
 2. Select the **connection method**:
-   - **Public Endpoint**: For HiClaw deployed in public cloud or requires internet access
-   - **VPC Endpoint**: For HiClaw deployed within Alibaba Cloud VPC (recommended for better security and lower latency)
+   - **Public Endpoint**: For AgentTeams deployed in public cloud or requires internet access
+   - **VPC Endpoint**: For AgentTeams deployed within Alibaba Cloud VPC (recommended for better security and lower latency)
 3. Click **Get** next to the LicenseKey field to generate authentication credentials
 4. The page will generate the complete integration command based on your configuration
 
@@ -60,12 +60,12 @@ Note down the following parameters from the generated configuration:
 
 **Important Notes:**
 - The endpoint URL automatically routes to either trace or metrics collection based on the path suffix
-- For VPC connections, ensure your HiClaw deployment has network access to the VPC endpoint
+- For VPC connections, ensure your AgentTeams deployment has network access to the VPC endpoint
 - The license key is sensitive information - store it securely
 
-## Step 2: Configure HiClaw Manager
+## Step 2: Configure AgentTeams Manager
 
-Add the following environment variables to your HiClaw Manager container, then restart it:
+Add the following environment variables to your AgentTeams Manager container, then restart it:
 
 ```bash
 # Enable trace collection
@@ -94,9 +94,9 @@ After configuration, restart the container: `docker restart agentteams-manager`
 | Where | What to configure |
 |-------|-------------------|
 | **Embedded Docker** | Put all `AGENTTEAMS_CMS_*` variables on **`agentteams-manager`** (or `agentteams-manager-copaw` if you use QwenPaw Manager). They are loaded from your `agentteams-manager.env` at container start. **`agentteams-controller`** does not need CMS env for normal agent tracing. |
-| **Helm / Kubernetes** | Set the same keys on the **Manager** Deployment (see `helm/hiclaw/values.yaml` → manager env). Optionally seed worker defaults there so every Worker Pod receives CMS settings even if Manager was configured late. |
+| **Helm / Kubernetes** | Set the same keys on the **Manager** Deployment (see `helm/agentteams/values.yaml` → manager env). Optionally seed worker defaults there so every Worker Pod receives CMS settings even if Manager was configured late. |
 
-## Step 3: Configure HiClaw Workers
+## Step 3: Configure AgentTeams Workers
 
 Manager will automatically propagate CMS configuration to newly created Workers. Ensure you configure Manager before creating Workers.
 

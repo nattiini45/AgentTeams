@@ -8,7 +8,7 @@ AgentTeams supports two deployment modes: local Docker/Podman install and Kubern
 
 **macOS / Linux:**
 ```bash
-bash <(curl -sSL https://higress.ai/hiclaw/install.sh)
+bash <(curl -sSL https://higress.ai/agentteams/install.sh)
 ```
 
 **Windows (PowerShell 7+):**
@@ -16,7 +16,7 @@ bash <(curl -sSL https://higress.ai/hiclaw/install.sh)
 Set-ExecutionPolicy Bypass -Scope Process -Force
 $wc = New-Object Net.WebClient
 $wc.Encoding = [Text.Encoding]::UTF8
-iex $wc.DownloadString('https://higress.ai/hiclaw/install.ps1')
+iex $wc.DownloadString('https://higress.ai/agentteams/install.ps1')
 ```
 
 The installer walks through:
@@ -46,9 +46,9 @@ Open `http://127.0.0.1:18088` in your browser to access Element Web. The Manager
 
 | Script | Purpose |
 |--------|---------|
-| [`install/hiclaw-install.sh`](../../install/hiclaw-install.sh) | Main installer (macOS/Linux) |
-| [`install/hiclaw-install.ps1`](../../install/hiclaw-install.ps1) | Main installer (Windows) |
-| [`install/hiclaw-verify.sh`](../../install/hiclaw-verify.sh) | Installation verification |
+| [`install/agentteams-install.sh`](../../install/agentteams-install.sh) | Main installer (macOS/Linux) |
+| [`install/agentteams-install.ps1`](../../install/agentteams-install.ps1) | Main installer (Windows) |
+| [`install/agentteams-verify.sh`](../../install/agentteams-verify.sh) | Installation verification |
 | [`install/defaults.env`](../../install/defaults.env) | Default configuration values |
 | [`install/load-defaults.ps1`](../../install/load-defaults.ps1) | PowerShell defaults loader |
 
@@ -56,23 +56,23 @@ Open `http://127.0.0.1:18088` in your browser to access Element Web. The Manager
 
 ```bash
 # Upgrade to latest (preserves all data)
-bash <(curl -sSL https://higress.ai/hiclaw/install.sh)
+bash <(curl -sSL https://higress.ai/agentteams/install.sh)
 
 # Upgrade to specific version
-AGENTTEAMS_VERSION=v1.1.2 bash <(curl -sSL https://higress.ai/hiclaw/install.sh)
+AGENTTEAMS_VERSION=v1.1.2 bash <(curl -sSL https://higress.ai/agentteams/install.sh)
 ```
 
 ### Uninstall
 
 ```bash
 # macOS / Linux
-bash <(curl -fsSL https://raw.githubusercontent.com/higress-group/hiclaw/main/install/hiclaw-install.sh) uninstall
+bash <(curl -fsSL https://raw.githubusercontent.com/agentscope-ai/AgentTeams/main/install/agentteams-install.sh) uninstall
 
 # Windows
 Set-ExecutionPolicy Bypass -Scope Process -Force
 $wc = New-Object Net.WebClient
 $wc.Encoding = [Text.Encoding]::UTF8
-$s = $wc.DownloadString('https://raw.githubusercontent.com/higress-group/hiclaw/main/install/hiclaw-install.ps1')
+$s = $wc.DownloadString('https://raw.githubusercontent.com/agentscope-ai/AgentTeams/main/install/agentteams-install.ps1')
 & ([scriptblock]::Create($s)) uninstall
 ```
 
@@ -90,8 +90,8 @@ $s = $wc.DownloadString('https://raw.githubusercontent.com/higress-group/hiclaw/
 helm repo add higress.io https://higress.io/helm-charts
 helm repo update
 
-helm install hiclaw higress.io/hiclaw \
-  -n hiclaw-system --create-namespace \
+helm install agt higress.io/agentteams \
+  -n agentteams-system --create-namespace \
   --render-subchart-notes \
   --set credentials.llmApiKey=<your-api-key> \
   --set credentials.adminPassword=<your-admin-password> \
@@ -115,10 +115,10 @@ helm install hiclaw higress.io/hiclaw \
 
 ### Helm Chart Structure
 
-The chart is at [`helm/hiclaw/`](../../helm/hiclaw/):
+The chart is at [`helm/agentteams/`](../../helm/agentteams/):
 
 ```
-helm/hiclaw/
+helm/agentteams/
 ├── Chart.yaml              # Chart metadata (v1.1.1)
 ├── values.yaml             # Default values
 ├── crds/                   # CRD manifests
@@ -169,11 +169,11 @@ make build-openclaw-base
 
 # Build using local base image (important!)
 make build-manager build-worker \
-    OPENCLAW_BASE_IMAGE=hiclaw/openclaw-base \
+    OPENCLAW_BASE_IMAGE=agt/openclaw-base \
     OPENCLAW_BASE_VERSION=latest
 ```
 
-**Common pitfall:** Running `make build-manager` without `OPENCLAW_BASE_IMAGE=hiclaw/openclaw-base` will pull the remote registry's image instead of using your locally-built base. Always set both variables together.
+**Common pitfall:** Running `make build-manager` without `OPENCLAW_BASE_IMAGE=agt/openclaw-base` will pull the remote registry's image instead of using your locally-built base. Always set both variables together.
 
 ### Registry Configuration
 
@@ -236,7 +236,7 @@ spec:
 ```
 
 ```bash
-hiclaw apply -f worker.yaml
+agt apply -f worker.yaml
 ```
 
 See [`docs/declarative-resource-management.md`](../../docs/declarative-resource-management.md) for full reference.
@@ -244,7 +244,7 @@ See [`docs/declarative-resource-management.md`](../../docs/declarative-resource-
 ## Source References
 
 - Install scripts: [`install/`](../../install/)
-- Helm chart: [`helm/hiclaw/`](../../helm/hiclaw/)
+- Helm chart: [`helm/agentteams/`](../../helm/agentteams/)
 - Makefile: [`Makefile`](../../Makefile)
 - Development guide: [`docs/development.md`](../../docs/development.md)
 - Declarative management: [`docs/declarative-resource-management.md`](../../docs/declarative-resource-management.md)

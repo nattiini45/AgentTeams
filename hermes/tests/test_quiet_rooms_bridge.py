@@ -22,7 +22,7 @@ def _make_cfg():
         "channels": {
             "matrix": {
                 "enabled": True,
-                "homeserver": "http://hiclaw-controller:6167",
+                "homeserver": "http://agentteams-controller:6167",
                 "accessToken": "tok",
                 "userId": "@alice:matrix.local",
             }

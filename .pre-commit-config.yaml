@@ -11,11 +11,11 @@ repos:
         exclude: ^(manager/agent/|\.qoder/)
       - id: check-yaml
         args: [--allow-multiple-documents]
-        exclude: ^helm/hiclaw/templates/
+        exclude: ^helm/agentteams/templates/
       - id: check-json
       - id: check-merge-conflict
   - repo: https://github.com/dnephin/pre-commit-golang
     rev: v0.5.1
     hooks:
       - id: go-fmt
-        files: ^hiclaw-controller/
+        files: ^agentteams-controller/

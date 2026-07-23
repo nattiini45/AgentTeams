@@ -11,8 +11,7 @@
 #     These reflect current env config and must be updated on every boot so that
 #     upgrades (e.g. switching LLM provider) take effect without a clean reinstall.
 
-source /opt/hiclaw/scripts/lib/base.sh
-source /opt/hiclaw/scripts/lib/gateway-api.sh
+source /opt/agentteams/scripts/lib/base.sh
 
 MATRIX_DOMAIN="${AGENTTEAMS_MATRIX_DOMAIN:-matrix-local.agentteams.io:8080}"
 MATRIX_CLIENT_DOMAIN="${AGENTTEAMS_MATRIX_CLIENT_DOMAIN:-matrix-client-local.agentteams.io}"
@@ -37,50 +36,59 @@ CONSOLE_URL="http://127.0.0.1:8001"
 
 # ============================================================
 # Helper: call Higress Console API, log result, never fail.
-#
-# Request/retry/re-login mechanics live in the shared higress_request()
-# (gateway-api.sh) — this is a thin, desc-specific logging wrapper around it
-# (same consolidation as register-provider.sh's higress_api/higress_get).
 # ============================================================
 higress_api() {
     local method="$1"
     local path="$2"
     local desc="$3"
-    local body="$4"
+    shift 3
+    local body="$*"
 
-    higress_request "${method}" "${path}" "${body}" || { log "ERROR: ${desc} ... re-login to Higress Console failed"; return 1; }
+    local tmpfile
+    tmpfile=$(mktemp)
+    local http_code
+    http_code=$(curl -s -o "${tmpfile}" -w '%{http_code}' -X "${method}" "${CONSOLE_URL}${path}" \
+        -b "${HIGRESS_COOKIE_FILE}" \
+        -H 'Content-Type: application/json' \
+        -d "${body}" 2>/dev/null) || true
+    local response
+    response=$(cat "${tmpfile}" 2>/dev/null)
+    rm -f "${tmpfile}"
 
-    if [ "${HIGRESS_REQUEST_AUTH_FAILED}" = "true" ]; then
-        if echo "${HIGRESS_REQUEST_BODY}" | grep -q '<!DOCTYPE html>' 2>/dev/null; then
-            log "ERROR: ${desc} ... got HTML page (session expired?). Re-login needed."
-        else
-            log "ERROR: ${desc} ... HTTP ${HIGRESS_REQUEST_CODE} auth failed"
-        fi
+    if echo "${response}" | grep -q '<!DOCTYPE html>' 2>/dev/null; then
+        log "ERROR: ${desc} ... got HTML page (session expired?). Re-login needed."
         return 1
     fi
-
-    if echo "${HIGRESS_REQUEST_BODY}" | grep -q '"success":true' 2>/dev/null; then
+    if [ "${http_code}" = "401" ] || [ "${http_code}" = "403" ]; then
+        log "ERROR: ${desc} ... HTTP ${http_code} auth failed"
+        return 1
+    fi
+    if echo "${response}" | grep -q '"success":true' 2>/dev/null; then
         log "${desc} ... OK"
-    elif [ "${HIGRESS_REQUEST_CODE}" = "409" ]; then
+    elif [ "${http_code}" = "409" ]; then
         log "${desc} ... already exists, skipping"
-    elif echo "${HIGRESS_REQUEST_BODY}" | grep -q '"success":false' 2>/dev/null; then
-        log "WARNING: ${desc} ... FAILED (HTTP ${HIGRESS_REQUEST_CODE}): ${HIGRESS_REQUEST_BODY}"
-    elif [ "${HIGRESS_REQUEST_CODE}" = "200" ] || [ "${HIGRESS_REQUEST_CODE}" = "201" ] || [ "${HIGRESS_REQUEST_CODE}" = "204" ]; then
-        log "${desc} ... OK (HTTP ${HIGRESS_REQUEST_CODE})"
+    elif echo "${response}" | grep -q '"success":false' 2>/dev/null; then
+        log "WARNING: ${desc} ... FAILED (HTTP ${http_code}): ${response}"
+    elif [ "${http_code}" = "200" ] || [ "${http_code}" = "201" ] || [ "${http_code}" = "204" ]; then
+        log "${desc} ... OK (HTTP ${http_code})"
     else
-        log "WARNING: ${desc} ... unexpected (HTTP ${HIGRESS_REQUEST_CODE}): ${HIGRESS_REQUEST_BODY}"
+        log "WARNING: ${desc} ... unexpected (HTTP ${http_code}): ${response}"
     fi
 }
 
 # Helper: GET a resource, return body if 200, empty string otherwise.
 higress_get() {
     local path="$1"
-
-    higress_request GET "${path}" "" || return 1
-    [ "${HIGRESS_REQUEST_AUTH_FAILED}" = "true" ] && return 1
-
-    if [ "${HIGRESS_REQUEST_CODE}" = "200" ]; then
-        echo "${HIGRESS_REQUEST_BODY}"
+    local tmpfile
+    tmpfile=$(mktemp)
+    local http_code
+    http_code=$(curl -s -o "${tmpfile}" -w '%{http_code}' -X GET "${CONSOLE_URL}${path}" \
+        -b "${HIGRESS_COOKIE_FILE}" 2>/dev/null) || true
+    local body
+    body=$(cat "${tmpfile}" 2>/dev/null)
+    rm -f "${tmpfile}"
+    if [ "${http_code}" = "200" ]; then
+        echo "${body}"
     fi
 }
 
@@ -179,7 +187,7 @@ if [ -n "${AGENTTEAMS_LLM_API_KEY}" ]; then
     # Create/update LLM provider (GET → PUT if exists, POST if not)
     case "${LLM_PROVIDER}" in
         qwen)
-            PROVIDER_BODY='{"type":"qwen","name":"qwen","tokens":["'"${AGENTTEAMS_LLM_API_KEY}"'"],"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"qwenEnableSearch":false,"qwenEnableCompatible":true,"qwenFileIds":[],"hiclawMode":true}}'
+            PROVIDER_BODY='{"type":"qwen","name":"qwen","tokens":["'"${AGENTTEAMS_LLM_API_KEY}"'"],"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"qwenEnableSearch":false,"qwenEnableCompatible":true,"qwenFileIds":[],"agentteamsMode":true}}'
             existing_provider=$(higress_get /v1/ai/providers/qwen)
             if [ -n "${existing_provider}" ]; then
                 higress_api PUT /v1/ai/providers/qwen "Updating LLM provider (qwen)" "${PROVIDER_BODY}"
@@ -210,7 +218,7 @@ if [ -n "${AGENTTEAMS_LLM_API_KEY}" ]; then
                     higress_api POST /v1/service-sources "Registering openai-compat DNS service source" "${SVC_BODY}"
                 fi
 
-                PROVIDER_BODY='{"type":"openai","name":"openai-compat","tokens":["'"${AGENTTEAMS_LLM_API_KEY}"'"],"version":0,"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"openaiCustomUrl":"'"${OPENAI_BASE_URL}"'","openaiCustomServiceName":"openai-compat.dns","openaiCustomServicePort":'"${OC_PORT}"',"hiclawMode":true}}'
+                PROVIDER_BODY='{"type":"openai","name":"openai-compat","tokens":["'"${AGENTTEAMS_LLM_API_KEY}"'"],"version":0,"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"openaiCustomUrl":"'"${OPENAI_BASE_URL}"'","openaiCustomServiceName":"openai-compat.dns","openaiCustomServicePort":'"${OC_PORT}"',"agentteamsMode":true}}'
                 existing_provider=$(higress_get /v1/ai/providers/openai-compat)
                 if [ -n "${existing_provider}" ]; then
                     higress_api PUT /v1/ai/providers/openai-compat "Updating LLM provider (openai-compat)" "${PROVIDER_BODY}"
@@ -222,9 +230,9 @@ if [ -n "${AGENTTEAMS_LLM_API_KEY}" ]; then
         *)
             PROVIDER_BODY='{"name":"'"${LLM_PROVIDER}"'","type":"openai","tokens":["'"${AGENTTEAMS_LLM_API_KEY}"'"],"modelMapping":{},"protocol":"openai/v1"'
             if [ -n "${LLM_API_URL}" ]; then
-                PROVIDER_BODY="${PROVIDER_BODY}"',"rawConfigs":{"apiUrl":"'"${LLM_API_URL}"'","hiclawMode":true}'
+                PROVIDER_BODY="${PROVIDER_BODY}"',"rawConfigs":{"apiUrl":"'"${LLM_API_URL}"'","agentteamsMode":true}'
             else
-                PROVIDER_BODY="${PROVIDER_BODY}"',"rawConfigs":{"hiclawMode":true}'
+                PROVIDER_BODY="${PROVIDER_BODY}"',"rawConfigs":{"agentteamsMode":true}'
             fi
             PROVIDER_BODY="${PROVIDER_BODY}"'}'
             existing_provider=$(higress_get /v1/ai/providers/"${LLM_PROVIDER}")
@@ -239,7 +247,7 @@ if [ -n "${AGENTTEAMS_LLM_API_KEY}" ]; then
     # 5b. Create or update AI Gateway Route (GET → PUT if exists, POST if not)
     AI_ROUTE_BODY='{"name":"default-ai-route","domains":'"${AI_ROUTE_DOMAINS}"',"pathPredicate":{"matchType":"PRE","matchValue":"/","caseSensitive":false},"upstreams":[{"provider":"'"${LLM_PROVIDER}"'","weight":100,"modelMapping":{}}],"authConfig":{"enabled":true,"allowedCredentialTypes":["key-auth"],"allowedConsumers":["manager"]}}'
 
-    AGENTTEAMS_VERSION=$(cat /opt/hiclaw/agent/.builtin-version 2>/dev/null | tr -d '[:space:]')
+    AGENTTEAMS_VERSION=$(cat /opt/agentteams/agent/.builtin-version 2>/dev/null | tr -d '[:space:]')
     AGENTTEAMS_VERSION="${AGENTTEAMS_VERSION:-latest}"
 
     existing_route_resp=$(higress_get /v1/ai/routes/default-ai-route)
@@ -276,7 +284,7 @@ else
     log "Skipping AI Gateway configuration (no AGENTTEAMS_LLM_API_KEY)"
 fi
 
-# ============================================================
+
 # 5c. Extra LLM providers (idempotent, OPT-IN via AGENTTEAMS_EXTRA_LLM_PROVIDERS)
 #
 # Plan v2.3 Phase 2b / decision #7: register additional OpenAI-compatible
@@ -344,7 +352,7 @@ if [ -n "${AGENTTEAMS_EXTRA_LLM_PROVIDERS:-}" ]; then
         fi
 
         # Provider: GET -> PUT if exists, POST if not
-        EXTRA_PROVIDER_BODY='{"type":"openai","name":"'"${_provider_name}"'","tokens":["'"${_provider_key}"'"],"version":0,"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"openaiCustomUrl":"'"${_provider_url}"'","openaiCustomServiceName":"'"${_provider_name}"'.dns","openaiCustomServicePort":'"${_ep_port}"',"hiclawMode":true}}'
+        EXTRA_PROVIDER_BODY='{"type":"openai","name":"'"${_provider_name}"'","tokens":["'"${_provider_key}"'"],"version":0,"protocol":"openai/v1","tokenFailoverConfig":{"enabled":false},"rawConfigs":{"openaiCustomUrl":"'"${_provider_url}"'","openaiCustomServiceName":"'"${_provider_name}"'.dns","openaiCustomServicePort":'"${_ep_port}"',"agentteamsMode":true}}'
         existing_extra_provider=$(higress_get "/v1/ai/providers/${_provider_name}")
         if [ -n "${existing_extra_provider}" ]; then
             higress_api PUT "/v1/ai/providers/${_provider_name}" "Updating LLM provider (${_provider_name})" "${EXTRA_PROVIDER_BODY}"
@@ -356,7 +364,7 @@ if [ -n "${AGENTTEAMS_EXTRA_LLM_PROVIDERS:-}" ]; then
         # default-ai-route (#S5: that route's PRE-"/" path predicate is a
         # path-only catch-all; keeping these on separate route names/model
         # matches avoids touching its boot-time rewrite at all).
-        _route_name="hiclaw-${_provider_name}-route"
+        _route_name="agentteams-${_provider_name}-route"
         # modelMapping strips the "<provider>/" prefix before forwarding upstream.
         # OpenAI-compatible upstreams (Ollama Cloud, MiMo, Vanchin/StreamLake) reject
         # prefixed model names like "ollama/gpt-oss:120b" with a 404 — they expect the
@@ -387,13 +395,15 @@ else
 fi
 
 # ============================================================
+
+# ============================================================
 # 6. GitHub MCP Server (idempotent via PUT)
 # ============================================================
 if [ -n "${AGENTTEAMS_GITHUB_TOKEN}" ]; then
     higress_api POST /v1/service-sources "Registering GitHub API service source" \
         '{"type":"dns","name":"github-api","domain":"api.github.com","port":443,"protocol":"https"}'
 
-    MCP_YAML_FILE="/opt/hiclaw/configs/mcp-templates/mcp-github.yaml"
+    MCP_YAML_FILE="/opt/agentteams/agent/skills/mcp-server-management/references/mcp-github.yaml"
     if [ -f "${MCP_YAML_FILE}" ]; then
         MCP_YAML=$(sed "s|accessToken: \"\"|accessToken: \"${AGENTTEAMS_GITHUB_TOKEN}\"|" "${MCP_YAML_FILE}")
         RAW_CONFIG=$(printf '%s' "${MCP_YAML}" | jq -Rs .)

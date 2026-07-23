@@ -44,7 +44,7 @@ class FileSync:
         shared_dir: Optional[Path] = None,
         global_shared_dir: Optional[Path] = None,
         *,
-        team_resolver: Literal["hiclaw", "agents_md"] = "hiclaw",
+        team_resolver: Literal["agt", "agents_md"] = "agt",
         pull_includes_shared: bool = False,
         pull_includes_global_shared: bool = False,
         shared_remote_root: str | None = None,
@@ -98,7 +98,7 @@ class FileSync:
             [
                 "bash",
                 "-c",
-                "source /opt/hiclaw/scripts/lib/hiclaw-env.sh && "
+                "source /opt/agentteams/scripts/lib/agentteams-env.sh && "
                 "ensure_mc_credentials && "
                 '_mc_host_var=MC_HOST_"${AGENTTEAMS_MC_ALIAS}" && '
                 'printf "%s" "${!_mc_host_var}"',
@@ -295,13 +295,13 @@ class FileSync:
         if self._worker_info is not None:
             return self._worker_info
 
-        hiclaw_bin = shutil.which("hiclaw")
-        if not hiclaw_bin:
-            raise RuntimeError("hiclaw CLI not found; cannot resolve worker storage scope")
+        agt_bin = shutil.which("agt")
+        if not agt_bin:
+            raise RuntimeError("agt CLI not found; cannot resolve worker storage scope")
 
         try:
             result = subprocess.run(
-                [hiclaw_bin, "get", "workers", self.worker_cr_name, "-o", "json"],
+                [agt_bin, "get", "workers", self.worker_cr_name, "-o", "json"],
                 capture_output=True,
                 text=True,
                 check=True,

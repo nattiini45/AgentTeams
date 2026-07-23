@@ -15,7 +15,7 @@ Hermes, OpenHuman, and QwenPaw are **Worker-only** runtimes — they cannot serv
 
 ## Directory Structure
 
-The Manager's agent-facing content lives in [`manager/agent/`](../../manager/agent/) and is copied to `/opt/hiclaw/agent/` in the image. The `upgrade-builtins.sh` script syncs these files into the Manager workspace at startup.
+The Manager's agent-facing content lives in [`manager/agent/`](../../manager/agent/) and is copied to `/opt/agentteams/agent/` in the image. The `upgrade-builtins.sh` script syncs these files into the Manager workspace at startup.
 
 ```
 manager/agent/
@@ -51,7 +51,7 @@ The Manager has 19 skill modules in [`manager/agent/skills/`](../../manager/agen
 | `escalation-management` | Handle escalation protocols |
 | `file-sync-management` | Manage MinIO file synchronization |
 | `git-delegation-management` | Delegate git operations to workers |
-| `hiclaw-find-worker` | Find and query workers |
+| `agentteams-find-worker` | Find and query workers |
 | `human-management` | Manage human participants |
 | `matrix-server-management` | Matrix server administration |
 | `mcp-server-management` | Create and configure MCP servers |
@@ -111,7 +111,7 @@ The [`manager/agent/fragments/`](../../manager/agent/fragments/) directory conta
 
 ### Dockerfiles
 
-- [`manager/Dockerfile`](../../manager/Dockerfile) — OpenClaw-based Manager (from `openclaw-base`; bundles `hiclaw` CLI from controller image)
+- [`manager/Dockerfile`](../../manager/Dockerfile) — OpenClaw-based Manager (from `openclaw-base`; bundles `agt` CLI from controller image)
 - [`manager/Dockerfile.copaw`](../../manager/Dockerfile.copaw) — CoPaw-based Manager (Python venv + CoPaw from PyPI)
 
 ### Bootstrap Chain

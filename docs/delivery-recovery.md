@@ -82,5 +82,5 @@ GitHub Actions → build.yml → **"Re-run failed jobs"** — all push steps are
 | `push-hermes-worker` | `agentteams-hermes-worker` |
 | `push-qwenpaw-worker` | `agentteams-qwenpaw-worker` |
 | `push-openhuman-worker` | `agentteams-openhuman-worker` |
-| `push-hiclaw-controller` | `agentteams-controller` |
+| `push-agentteams-controller` | `agentteams-controller` |
 | `push-embedded` | `agentteams-embedded` |

@@ -32,7 +32,7 @@ test('MinioClient.getObject signs the request and returns the upstream body', as
   const upstream = await startUpstream((req, res) => {
     seenAuth = req.headers.authorization;
     seenPath = req.url;
-    if (req.url === '/hiclaw-storage/shared/tasks/t1/meta.json') {
+    if (req.url === '/agentteams-storage/shared/tasks/t1/meta.json') {
       res.writeHead(200, { 'content-type': 'application/json' });
       res.end('{"task_id":"t1"}');
     } else {
@@ -46,13 +46,13 @@ test('MinioClient.getObject signs the request and returns the upstream body', as
       endpoint: `http://127.0.0.1:${port}`,
       accessKey: 'ak',
       secretKey: 'sk',
-      bucket: 'hiclaw-storage',
+      bucket: 'agentteams-storage',
     });
     const res = await client.getObject('shared/tasks/t1/meta.json');
     assert.equal(res.statusCode, 200);
     assert.equal(res.body.toString('utf8'), '{"task_id":"t1"}');
     assert.ok(seenAuth.startsWith('AWS4-HMAC-SHA256'));
-    assert.equal(seenPath, '/hiclaw-storage/shared/tasks/t1/meta.json');
+    assert.equal(seenPath, '/agentteams-storage/shared/tasks/t1/meta.json');
   } finally {
     upstream.close();
   }
@@ -79,14 +79,14 @@ test('MinioClient.getObject percent-encodes a key with spaces on the wire while 
       endpoint: `http://127.0.0.1:${port}`,
       accessKey: 'ak',
       secretKey: 'sk',
-      bucket: 'hiclaw-storage',
+      bucket: 'agentteams-storage',
     });
     const res = await client.getObject('shared/tasks/a b/meta.json');
     assert.equal(res.statusCode, 200);
     // The request line actually sent on the wire must be percent-encoded --
     // a raw space would both break the HTTP request line and mismatch the
     // signature MinIO recomputes from the real path (SignatureDoesNotMatch).
-    assert.equal(seenPath, '/hiclaw-storage/shared/tasks/a%20b/meta.json');
+    assert.equal(seenPath, '/agentteams-storage/shared/tasks/a%20b/meta.json');
     assert.ok(seenAuth.startsWith('AWS4-HMAC-SHA256'));
 
     const { port: port2 } = upstream2.address();
@@ -94,7 +94,7 @@ test('MinioClient.getObject percent-encodes a key with spaces on the wire while 
       endpoint: `http://127.0.0.1:${port2}`,
       accessKey: 'ak',
       secretKey: 'sk',
-      bucket: 'hiclaw-storage',
+      bucket: 'agentteams-storage',
     });
     await client2.getObject('shared/tasks/t1/meta.json');
 
@@ -113,7 +113,7 @@ test('MinioClient.getObject percent-encodes a key with spaces on the wire while 
 test('MinioClient.listObjects parses ListObjectsV2 XML into prefixes/objects', async () => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <ListBucketResult>
-  <Name>hiclaw-storage</Name>
+  <Name>agentteams-storage</Name>
   <Prefix>shared/projects/</Prefix>
   <CommonPrefixes><Prefix>shared/projects/proj-1/</Prefix></CommonPrefixes>
   <Contents>
@@ -132,7 +132,7 @@ test('MinioClient.listObjects parses ListObjectsV2 XML into prefixes/objects', a
       endpoint: `http://127.0.0.1:${port}`,
       accessKey: 'ak',
       secretKey: 'sk',
-      bucket: 'hiclaw-storage',
+      bucket: 'agentteams-storage',
     });
     const listing = await client.listObjects('shared/projects/');
     assert.deepEqual(listing.prefixes, ['shared/projects/proj-1/']);
@@ -149,7 +149,7 @@ test('MinioClient.getObject forwards conditional headers unsigned, without chang
   let seenIfNoneMatch;
   let seenIfModifiedSince;
   const upstream = await startUpstream((req, res) => {
-    if (req.url === '/hiclaw-storage/shared/tasks/t1/meta.json') {
+    if (req.url === '/agentteams-storage/shared/tasks/t1/meta.json') {
       seenAuthWithConditional = req.headers.authorization;
       seenIfNoneMatch = req.headers['if-none-match'];
       seenIfModifiedSince = req.headers['if-modified-since'];
@@ -172,7 +172,7 @@ test('MinioClient.getObject forwards conditional headers unsigned, without chang
       endpoint: `http://127.0.0.1:${port}`,
       accessKey: 'ak',
       secretKey: 'sk',
-      bucket: 'hiclaw-storage',
+      bucket: 'agentteams-storage',
     });
     const res = await client.getObject('shared/tasks/t1/meta.json', {
       conditionalHeaders: { 'if-none-match': '"abc123"', 'if-modified-since': 'Wed, 31 Dec 2025 00:00:00 GMT' },
@@ -187,7 +187,7 @@ test('MinioClient.getObject forwards conditional headers unsigned, without chang
       endpoint: `http://127.0.0.1:${port2}`,
       accessKey: 'ak',
       secretKey: 'sk',
-      bucket: 'hiclaw-storage',
+      bucket: 'agentteams-storage',
     });
     await client2.getObject('shared/tasks/t1/meta.json');
 
@@ -215,7 +215,7 @@ test('MinioClient.getObject relays a 304 from upstream with no body expectation'
       endpoint: `http://127.0.0.1:${port}`,
       accessKey: 'ak',
       secretKey: 'sk',
-      bucket: 'hiclaw-storage',
+      bucket: 'agentteams-storage',
     });
     const res = await client.getObject('shared/tasks/t1/meta.json', {
       conditionalHeaders: { 'if-none-match': '"abc123"' },
@@ -237,7 +237,7 @@ test('MinioClient.listObjects throws on an error status', async () => {
       endpoint: `http://127.0.0.1:${port}`,
       accessKey: 'ak',
       secretKey: 'sk',
-      bucket: 'hiclaw-storage',
+      bucket: 'agentteams-storage',
     });
     await assert.rejects(() => client.listObjects('shared/'));
   } finally {

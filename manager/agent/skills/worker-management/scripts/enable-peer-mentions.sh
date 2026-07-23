@@ -16,8 +16,7 @@
 #   - Environment: AGENTTEAMS_MATRIX_DOMAIN, MANAGER_MATRIX_TOKEN
 
 set -e
-source /opt/hiclaw/scripts/lib/hiclaw-env.sh
-source /opt/hiclaw/scripts/lib/container-api.sh
+source /opt/agentteams/scripts/lib/agentteams-env.sh
 
 # ============================================================
 # Parse arguments
@@ -47,7 +46,7 @@ _fail() {
 # ============================================================
 # Ensure Manager Matrix token is available
 # ============================================================
-SECRETS_FILE="/data/hiclaw-secrets.env"
+SECRETS_FILE="/data/agentteams-secrets.env"
 if [ -f "${SECRETS_FILE}" ]; then
     source "${SECRETS_FILE}"
 fi
@@ -73,7 +72,7 @@ VALIDATED=()
 for w in "${WORKER_ARR[@]}"; do
     w=$(echo "${w}" | tr -d ' ')
     [ -z "${w}" ] && continue
-    SOUL_FILE="/root/hiclaw-fs/agents/${w}/SOUL.md"
+    SOUL_FILE="/root/agentteams-fs/agents/${w}/SOUL.md"
     if [ ! -f "${SOUL_FILE}" ]; then
         _fail "Worker '${w}' not found (no SOUL.md at ${SOUL_FILE})"
     fi
@@ -92,7 +91,7 @@ log "Enabling peer @mentions for: ${VALIDATED[*]}"
 UPDATED_WORKERS=()
 
 for target in "${VALIDATED[@]}"; do
-    TARGET_CONFIG="/root/hiclaw-fs/agents/${target}/openclaw.json"
+    TARGET_CONFIG="/root/agentteams-fs/agents/${target}/openclaw.json"
     TARGET_MINIO="${AGENTTEAMS_STORAGE_PREFIX}/agents/${target}/openclaw.json"
 
     # Pull latest config from MinIO
@@ -149,9 +148,9 @@ for w in "${UPDATED_WORKERS[@]}"; do
             "${AGENTTEAMS_MATRIX_URL}/_matrix/client/v3/rooms/${ROOM_ID}/send/m.room.message/${TXN_ID}" \
             -H "Authorization: Bearer ${MANAGER_MATRIX_TOKEN}" \
             -H 'Content-Type: application/json' \
-            -d "{\"msgtype\":\"m.text\",\"body\":\"@${w}:${MATRIX_DOMAIN} Peer mention enabled: you can now be @mentioned by ${PEERS}. Please run: hiclaw-sync\",\"m.mentions\":{\"user_ids\":[\"@${w}:${MATRIX_DOMAIN}\"]}}" \
+            -d "{\"msgtype\":\"m.text\",\"body\":\"@${w}:${MATRIX_DOMAIN} Peer mention enabled: you can now be @mentioned by ${PEERS}. Please run: agentteams-sync\",\"m.mentions\":{\"user_ids\":[\"@${w}:${MATRIX_DOMAIN}\"]}}" \
             > /dev/null 2>&1 \
-            && log "  Notified @${w} to run hiclaw-sync" \
+            && log "  Notified @${w} to run agentteams-sync" \
             || log "  WARNING: Failed to notify @${w}"
     fi
 done

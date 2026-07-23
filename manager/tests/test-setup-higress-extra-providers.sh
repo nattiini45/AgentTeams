@@ -10,7 +10,7 @@
 #      pre-existing (no-env) baseline (proves the new loop is a true no-op).
 #   2. AGENTTEAMS_EXTRA_LLM_PROVIDERS set -> each provider gets its own DNS
 #      service-source, its own `openai`-type provider, and its own AI route
-#      named `hiclaw-<provider>-route` with a model-prefix match.
+#      named `agt-<provider>-route` with a model-prefix match.
 #   3. The new loop never reads or writes `default-ai-route` (grep-assert +
 #      runtime call-log assert).
 #   4. A malformed entry / missing per-provider API key is skipped with a
@@ -63,8 +63,8 @@ assert_not_contains() {
 TMPDIR_ROOT=$(mktemp -d)
 trap 'rm -rf "${TMPDIR_ROOT}"' EXIT
 
-# ── Fake /opt/hiclaw tree the script sources/reads from ──────────────────────
-FAKE_ROOT="${TMPDIR_ROOT}/fake-opt-hiclaw"
+# ── Fake /opt/agentteams tree the script sources/reads from ──────────────────────
+FAKE_ROOT="${TMPDIR_ROOT}/fake-opt-agentteams"
 mkdir -p "${FAKE_ROOT}/scripts/lib" "${FAKE_ROOT}/agent"
 cp "${PROJECT_ROOT}/manager/scripts/lib/base.sh" "${FAKE_ROOT}/scripts/lib/base.sh"
 sed -i 's/\r$//' "${FAKE_ROOT}/scripts/lib/base.sh"
@@ -75,8 +75,8 @@ sed -i 's/\r$//' "${FAKE_ROOT}/scripts/lib/gateway-api.sh"
 # and rewrite the two hardcoded source paths so they resolve inside FAKE_ROOT.
 RUN_SCRIPT="${TMPDIR_ROOT}/setup-higress.sh"
 sed 's/\r$//' "${TARGET_SCRIPT}" > "${RUN_SCRIPT}"
-sed -i "s#source /opt/hiclaw/scripts/lib/base.sh#source ${FAKE_ROOT}/scripts/lib/base.sh#" "${RUN_SCRIPT}"
-sed -i "s#source /opt/hiclaw/scripts/lib/gateway-api.sh#source ${FAKE_ROOT}/scripts/lib/gateway-api.sh#" "${RUN_SCRIPT}"
+sed -i "s#source /opt/agentteams/scripts/lib/base.sh#source ${FAKE_ROOT}/scripts/lib/base.sh#" "${RUN_SCRIPT}"
+sed -i "s#source /opt/agentteams/scripts/lib/gateway-api.sh#source ${FAKE_ROOT}/scripts/lib/gateway-api.sh#" "${RUN_SCRIPT}"
 chmod +x "${RUN_SCRIPT}"
 
 # ── PATH shims: curl + jq record every call, no network/binary needed ───────
@@ -178,7 +178,7 @@ run_setup_higress "${home1}"
 baseline_log=$(cat "${CALL_LOG}")
 assert_not_contains "no extra-provider service-source call when env unset" "ollama" "${baseline_log}"
 assert_not_contains "no mimo service-source call when env unset" "mimo" "${baseline_log}"
-assert_not_contains "no hiclaw-<provider>-route call when env unset" "hiclaw-ollama-route" "${baseline_log}"
+assert_not_contains "no agt-<provider>-route call when env unset" "agentteams-ollama-route" "${baseline_log}"
 
 echo "=== Test 1b: env-unset baseline is IDENTICAL across two independent runs ==="
 home1b=$(new_home)
@@ -202,8 +202,8 @@ assert_contains "ollama service-source body has domain ollama.com" '"domain":"ol
 assert_contains "mimo service-source body has domain platform.xiaomimimo.com" '"domain":"platform.xiaomimimo.com"' "${extra_log}"
 assert_contains "ollama provider created" '"type":"openai","name":"ollama"' "${extra_log}"
 assert_contains "mimo provider created" '"type":"openai","name":"mimo"' "${extra_log}"
-assert_contains "ollama route uses its own route name" '"name":"hiclaw-ollama-route"' "${extra_log}"
-assert_contains "mimo route uses its own route name" '"name":"hiclaw-mimo-route"' "${extra_log}"
+assert_contains "ollama route uses its own route name" '"name":"agentteams-ollama-route"' "${extra_log}"
+assert_contains "mimo route uses its own route name" '"name":"agentteams-mimo-route"' "${extra_log}"
 assert_contains "ollama route matches model prefix ollama/" '"modelPredicate":{"matchType":"PRE","matchValue":"ollama/"}' "${extra_log}"
 assert_contains "mimo route matches model prefix mimo/" '"modelPredicate":{"matchType":"PRE","matchValue":"mimo/"}' "${extra_log}"
 assert_not_contains "extra-provider loop never PUTs/POSTs default-ai-route" '/v1/ai/routes/default-ai-route' "${extra_log}"

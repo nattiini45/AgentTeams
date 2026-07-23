@@ -307,11 +307,11 @@ def test_credential_guard_reads_workspace_credagent_and_updates_qwenpaw_security
             {
                 "credentials": [
                     {
-                        "path": "~/hiclaw/credentials/matrix/password",
+                        "path": "~/agentteams/credentials/matrix/password",
                         "programPermit": "qwenpaw",
                     },
                     {
-                        "path": "/etc/hiclaw/secrets/",
+                        "path": "/etc/agentteams/secrets/",
                         "programPermit": ["mc", "qwenpaw"],
                         "writable": True,
                     },
@@ -362,8 +362,8 @@ def test_credential_guard_reads_workspace_credagent_and_updates_qwenpaw_security
     assert "EXISTING_RULE" in security["tool_guard"]["auto_denied_rules"]
     assert "/manual/keep" in sensitive_files
     assert "/old/removed-secret" not in sensitive_files
-    assert "/etc/hiclaw/secrets/" in sensitive_files
-    assert any(path.endswith("/hiclaw/credentials/matrix/password") for path in sensitive_files)
+    assert "/etc/agentteams/secrets/" in sensitive_files
+    assert any(path.endswith("/agentteams/credentials/matrix/password") for path in sensitive_files)
 
     raw_secret = "abcdefghijklmnopqrstuvwxyz123456"
     assert raw_secret not in module.sanitize_text(f"privateToken={raw_secret}")
@@ -482,7 +482,7 @@ def test_mcp_client_receives_matrix_env_for_message_tool(tmp_path: Path, monkeyp
     monkeypatch.setitem(sys.modules, "qwenpaw.config", types.ModuleType("qwenpaw.config"))
     monkeypatch.setitem(sys.modules, "qwenpaw.config.config", config_module)
     monkeypatch.setenv("TEAMHARNESS_SHARED_DIR", str(shared_dir))
-    monkeypatch.setenv("TEAMHARNESS_RUNTIME_CONFIG", "/root/hiclaw-fs/shared/runtime/members/worker-a/runtime.yaml")
+    monkeypatch.setenv("TEAMHARNESS_RUNTIME_CONFIG", "/root/agentteams-fs/shared/runtime/members/worker-a/runtime.yaml")
     monkeypatch.setenv("AGENTTEAMS_MATRIX_URL", "http://matrix.local")
     monkeypatch.setenv("AGENTTEAMS_WORKER_MATRIX_TOKEN", "matrix-token")
     monkeypatch.setenv("AGENTTEAMS_WORKER_ROLE", "worker")
@@ -499,7 +499,7 @@ def test_mcp_client_receives_matrix_env_for_message_tool(tmp_path: Path, monkeyp
     assert client.command == sys.executable
     assert client.env["TEAMHARNESS_SHARED_DIR"] == str(shared_dir)
     assert client.env["LOONGSUITE_PYTHON_SITE_BOOTSTRAP_LOG_SUCCESS"] == "false"
-    assert client.env["TEAMHARNESS_RUNTIME_CONFIG"] == "/root/hiclaw-fs/shared/runtime/members/worker-a/runtime.yaml"
+    assert client.env["TEAMHARNESS_RUNTIME_CONFIG"] == "/root/agentteams-fs/shared/runtime/members/worker-a/runtime.yaml"
     assert client.env["AGENTTEAMS_MATRIX_URL"] == "http://matrix.local"
     assert client.env["AGENTTEAMS_WORKER_MATRIX_TOKEN"] == "matrix-token"
     assert client.env["AGENTTEAMS_WORKER_ROLE"] == "worker"

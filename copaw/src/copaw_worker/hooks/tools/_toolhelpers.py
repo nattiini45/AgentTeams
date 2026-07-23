@@ -1,4 +1,4 @@
-"""Shared helpers for CoPaw-native HiClaw tool modules.
+"""Shared helpers for CoPaw-native AgentTeams tool modules.
 
 Extracted from the verbatim-duplicated definitions in taskflow.py,
 projectflow.py, message.py, and filesync.py. Behavior-preserving: the

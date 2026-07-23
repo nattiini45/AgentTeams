@@ -33,8 +33,8 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/higress-group/hiclaw"
-Repository = "https://github.com/higress-group/hiclaw"
+Homepage = "https://github.com/agentscope-ai/AgentTeams"
+Repository = "https://github.com/agentscope-ai/AgentTeams"
 
 [project.scripts]
 hermes-worker = "hermes_worker.cli:main"

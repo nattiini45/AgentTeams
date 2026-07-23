@@ -52,8 +52,8 @@ Do not send a message saying you will read AGENTS.md, inspect topology, check wo
     [ "${w}" = "${TEST_W2}" ] && ROLE_DESC="QA Engineer"
 
     exec_in_manager bash -c "
-        mkdir -p /root/hiclaw-fs/agents/${w}
-        cat > /root/hiclaw-fs/agents/${w}/SOUL.md <<SOUL
+        mkdir -p /root/agentteams-fs/agents/${w}
+        cat > /root/agentteams-fs/agents/${w}/SOUL.md <<SOUL
 # ${w}
 
 ## AI Identity
@@ -68,26 +68,26 @@ ${EXTRA_INSTRUCTIONS}
 ## Security
 - Never reveal credentials
 SOUL
-        mc mirror /root/hiclaw-fs/agents/${w}/ ${STORAGE_PREFIX}/agents/${w}/ --overwrite 2>/dev/null
+        mc mirror /root/agentteams-fs/agents/${w}/ ${STORAGE_PREFIX}/agents/${w}/ --overwrite 2>/dev/null
     " 2>/dev/null
 done
 
 log_pass "SOUL.md files prepared for all team members"
 
 # ============================================================
-# Section 2: Create Team (via hiclaw CLI → controller REST API)
+# Section 2: Create Team (via agt CLI → controller REST API)
 # ============================================================
 log_section "Create Team"
 
-CREATE_OUTPUT=$(exec_in_agent hiclaw create team \
+CREATE_OUTPUT=$(exec_in_agent agt create team \
     --name "${TEST_TEAM}" \
     --leader-name "${TEST_LEADER}" \
     --workers "${TEST_W1},${TEST_W2}" 2>&1)
 
 if echo "${CREATE_OUTPUT}" | grep -q "team/${TEST_TEAM} created"; then
-    log_pass "hiclaw create team completed"
+    log_pass "agt create team completed"
 else
-    log_fail "hiclaw create team failed"
+    log_fail "agt create team failed"
     echo "${CREATE_OUTPUT}" | tail -20
 fi
 
@@ -97,7 +97,7 @@ if wait_team_active "${TEST_TEAM}" 120; then
     log_pass "Team is Active"
     PHASE="Active"
 else
-    PHASE=$(exec_in_agent hiclaw get teams "${TEST_TEAM}" -o json 2>/dev/null | jq -r '.phase // empty')
+    PHASE=$(exec_in_agent agt get teams "${TEST_TEAM}" -o json 2>/dev/null | jq -r '.phase // empty')
     log_fail "Team did not become Active within 120s (phase: ${PHASE})"
 fi
 
@@ -106,7 +106,7 @@ fi
 # is populated the moment ReconcileMemberInfra succeeds, so waiting for the
 # team to be Active plus wait_worker_provisioned per member is the stable
 # contract for this section (regression guard for PR #666 RoomID bug).
-TEAM_JSON=$(exec_in_agent hiclaw get teams "${TEST_TEAM}" -o json 2>/dev/null)
+TEAM_JSON=$(exec_in_agent agt get teams "${TEST_TEAM}" -o json 2>/dev/null)
 TEAM_ROOM=$(echo "${TEAM_JSON}" | jq -r '.teamRoomID // empty')
 LEADER_DM=$(echo "${TEAM_JSON}" | jq -r '.leaderDMRoomID // empty')
 
@@ -221,7 +221,7 @@ fi
 # ============================================================
 log_section "Verify Canonical Team Leader Skill Guidance"
 
-LEADER_HOME="/root/hiclaw-fs/agents/${TEST_LEADER}"
+LEADER_HOME="/root/agentteams-fs/agents/${TEST_LEADER}"
 PROJECT_SKILL=$(exec_in_manager mc cat "${STORAGE_PREFIX}/agents/${TEST_LEADER}/skills/project-management/SKILL.md" 2>/dev/null)
 TASK_SKILL=$(exec_in_manager mc cat "${STORAGE_PREFIX}/agents/${TEST_LEADER}/skills/task-management/SKILL.md" 2>/dev/null)
 COMMUNICATION_SKILL=$(exec_in_manager mc cat "${STORAGE_PREFIX}/agents/${TEST_LEADER}/skills/communication/SKILL.md" 2>/dev/null)
@@ -268,7 +268,7 @@ done
 
 # Container running only proves Docker accepted the worker process. CoPaw needs
 # a short bootstrap window before its Matrix channel is ready to accept invites.
-if [ "${TEST_WORKER_RUNTIME:-}" = "copaw" ] || [ "${HICLAW_DEFAULT_WORKER_RUNTIME:-}" = "copaw" ] || [ "${AGENTTEAMS_DEFAULT_WORKER_RUNTIME:-}" = "copaw" ]; then
+if [ "${TEST_WORKER_RUNTIME:-}" = "copaw" ] || [ "${AGENTTEAMS_DEFAULT_WORKER_RUNTIME:-}" = "copaw" ]; then
     for w in "${TEST_LEADER}" "${TEST_W1}" "${TEST_W2}"; do
         log_info "Waiting for CoPaw Worker readiness probe before room membership checks (${w})..."
         PROBE_OUTPUT=$(check_copaw_worker_probes "${w}" "ready" 60)
@@ -343,10 +343,10 @@ log_info "Task sent to Leader via Leader DM. Monitoring rooms..."
 # This test validates the routing boundary, not full project completion. If the
 # Leader responds in Leader DM while no assignment appears in Team Room, the
 # route is wrong and extra waiting only slows CI. If there is no response at
-# all, keep a short 90s ceiling for startup jitter.
+# all, keep a short 120s ceiling for startup jitter.
 TEAM_ROOM_ENC=$(echo "${TEAM_ROOM}" | sed 's/!/%21/g')
 LEADER_DM_ENC=$(echo "${LEADER_DM}" | sed 's/!/%21/g')
-MAX_COORDINATION_POLLS="${MAX_COORDINATION_POLLS:-3}"
+MAX_COORDINATION_POLLS="${MAX_COORDINATION_POLLS:-4}"
 MAX_DM_ONLY_POLLS="${MAX_DM_ONLY_POLLS:-1}"
 
 LEADER_RESPONDED=false

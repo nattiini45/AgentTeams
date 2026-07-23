@@ -21,7 +21,7 @@ Everything buildable/testable **from this checkout alone** — no VPS. Deferred 
 ## Toolchain (verified on this box)
 
 Go 1.26.3 (module targets go 1.25) · Python 3.14.5 · GNU Make 3.81 · Docker 29.5.3 · Node 24.
-Controller tests: `make test-unit` in `hiclaw-controller/` (= `go test ./internal/... ./cmd/...`). No lint config exists.
+Controller tests: `make test-unit` in `agentteams-controller/` (= `go test ./internal/... ./cmd/...`). No lint config exists.
 Python tests: `PYTHONPATH=src pytest tests/` from `copaw/` and `hermes/` respectively.
 Root `tests/` is a **live-instance bash e2e suite — not runnable locally**; it runs after Phase 0 deploys.
 
@@ -33,13 +33,13 @@ S1 → S2 (independent Go) → S3, S4 (Dockerfiles, independent) → S5 (largest
 
 ### Step 1 — Docker backend: resource limits + member RestartPolicy *(plan Phase 0 step 6)*
 
-**Files:** `hiclaw-controller/internal/backend/docker.go`, `internal/config/config.go`, `internal/controller/member_reconcile.go`, `internal/backend/docker_test.go`.
+**Files:** `agentteams-controller/internal/backend/docker.go`, `internal/config/config.go`, `internal/controller/member_reconcile.go`, `internal/backend/docker_test.go`.
 **Seams:**
 - `dockerHostConfig` `docker.go:491-498` — add `Memory int64` + `NanoCpus int64` (Docker Engine API JSON names `Memory`, `NanoCpus`); `SecurityOpt` is the add-a-field precedent.
 - `buildCreatePayload` `:517-599`; ⚠️ **the HostConfig is only attached if one of NetworkMode/ExtraHosts/PortBindings/Binds/RestartPolicy is set (`:584-587`) — new fields must join that condition or they silently drop.**
 - `req.Resources` (`interface.go:70-75,119-121`) carries k8s-style strings (`"1000m"`, `"2Gi"`) — convert via `resource.ParseQuantity` (already a dependency): CPU → `MilliValue()*1e6` NanoCpus; memory → `Value()` bytes.
 - Mirror `kubernetes.go` `buildDefaultResources` `:433-450` (defaults **1000m/2Gi**) + `mergeResourceOverrides` `:454-488` as docker-side helpers.
-- Config: add `HICLAW_DOCKER_WORKER_CPU/_MEMORY` (+ Manager variants) mirroring the K8s envs (`config.go:290-291`, `K8sConfig()` `:500-512`); extend `DockerConfig` struct (`docker.go:21-28`) + `config.go DockerConfig()` `:459-468`.
+- Config: add `AGENTTEAMS_DOCKER_WORKER_CPU/_MEMORY` (+ Manager variants) mirroring the K8s envs (`config.go:290-291`, `K8sConfig()` `:500-512`); extend `DockerConfig` struct (`docker.go:21-28`) + `config.go DockerConfig()` `:459-468`.
 - RestartPolicy: `createMemberContainer` (`member_reconcile.go:414-425`) sets none — add `RestartPolicy: "unless-stopped"` like the Manager gets at `manager_reconcile_container.go:222` (docker.go attaches when non-empty, `:550-553`).
 **Tests:** `docker_test.go` uses `mockDockerAPI(t)` (`:14-70`) — a real `httptest.Server` faking the Docker Engine API. Capture the `POST /containers/create` body; assert `HostConfig.Memory`/`NanoCpus` (a) from `req.Resources`, (b) from defaults when nil; assert member RestartPolicy.
 **Acceptance:** `make test-unit` green; k8s backend behavior unchanged.
@@ -58,7 +58,7 @@ S1 → S2 (independent Go) → S3, S4 (Dockerfiles, independent) → S5 (largest
 
 ### Step 3 — Embedded image health *(plan §7)* — split in two (validator recommendation)
 
-**Files:** `hiclaw-controller/Dockerfile.embedded`, `hiclaw-controller/supervisord.embedded.conf` / entrypoint (locate the kine start path; add a small `healthcheck.sh` + `preflight.sh`).
+**Files:** `agentteams-controller/Dockerfile.embedded`, `agentteams-controller/supervisord.embedded.conf` / entrypoint (locate the kine start path; add a small `healthcheck.sh` + `preflight.sh`).
 **S3a — HEALTHCHECK (safe, do first):** `HEALTHCHECK CMD` = one composite check: controller `/healthz` (`:8090`) + MinIO `/minio/health/live` + Tuwunel `/_matrix/client/versions`.
 **S3b — kine SQLite integrity pre-flight (gated):** **first verify the `sqlite3` binary exists in the built image** (unverified — the validator flags this as a real risk); install it in `Dockerfile.embedded` if absent, or fall back to a tiny Go/`python3 -c` check if installing is unreasonable. Then: `PRAGMA integrity_check` on the kine DB **before** kine starts; on failure log loudly and refuse to start (no silent fallback-to-empty).
 **Tests:** `docker build` locally succeeds; `docker inspect` shows the Healthcheck; document a manual corruption check (copy DB, truncate, expect refusal).
@@ -75,25 +75,25 @@ S1 → S2 (independent Go) → S3, S4 (Dockerfiles, independent) → S5 (largest
 **Files:** `copaw/src/matrix/channel.py` (Manager overlay, 2693 lines), `copaw/src/copaw_worker/matrix_channel.py` (leads/workers, 1613 lines — a **stale fork subset**), `copaw/tests/test_channel_mention.py`, new `copaw/tests/test_worker_channel.py`.
 **Three sub-changes, each in BOTH files:**
 1. **Bare-`@mention` resolution** — `_was_mentioned` (`channel.py:981-1014` / `matrix_channel.py:662-683`, near-verbatim twins; 3 tiers: m.mentions → matrix.to href regex → raw-MXID regex). Add tier 4: bare `@localpart` resolved against a localpart cache built from **room members** (works in both files without needing `workers-registry.json`; the manager may additionally consult `~/workers-registry.json`). Implementor decides the nio API for member listing; cache with TTL.
-2. **Immediate ack** — on accepting a task/mention, send a short ack via direct `room_send` bypassing the queue. Precedent: the readiness-probe path (test `test_matrix_readiness_probe_replies_directly_without_enqueue`, `test_channel_mention.py:418-458`); primitives: `_send_plain_text` (`channel.py:958-978`) / `send()` (`matrix_channel.py:1501-1533`). Env-gate `HICLAW_CHAT_ACK` (default on).
+2. **Immediate ack** — on accepting a task/mention, send a short ack via direct `room_send` bypassing the queue. Precedent: the readiness-probe path (test `test_matrix_readiness_probe_replies_directly_without_enqueue`, `test_channel_mention.py:418-458`); primitives: `_send_plain_text` (`channel.py:958-978`) / `send()` (`matrix_channel.py:1501-1533`). Env-gate `AGENTTEAMS_CHAT_ACK` (default on).
 3. **Catch-up replay** — today both files clear `event_callbacks` during first sync and drop everything (`channel.py:763-800` / `matrix_channel.py:548-569`). Buffer suppressed message events (cap ~50, skip own) and replay after ready. **Also port the drift fixes to the worker copy:** `timeout=0` first sync (`channel.py:773` vs stale `timeout=30000` at `matrix_channel.py:554`), the None-guard on token save (`channel.py:779-781`), and configurable sync timeout.
 **Tests:** extend `test_channel_mention.py` (channel.py) for all three; **new mirrored test file for `copaw_worker.matrix_channel` — nothing tests it today.** Run: `cd copaw && PYTHONPATH=src pytest tests/`.
 **Acceptance:** pytest green; bare `@alice` wakes the handler in both impls (test-proven); replay test proves no first-boot message loss.
 
 ### Step 6 — Heartbeat interval configurable *(plan Phase 1 step 3)*
 
-**Validator finding (changes this step's shape):** `HICLAW_MANAGER_HEARTBEAT_INTERVAL` **already exists and already flows to the manager container** (`internal/service/worker_env.go:80`) — but it is a **dead env var with zero consumers**. Reuse that exact name; do NOT invent a new one. Second finding: `bridge.py` contains **no heartbeat-handling code**, yet `copaw/tests/test_bridge.py` asserts heartbeat-seeding behavior — the logic lives either in the vendored `copaw` package or those tests are currently red. **Mandatory first action: run the pytest spike (`cd copaw && PYTHONPATH=src pytest tests/test_bridge.py -k heartbeat -v`) to establish ground truth before writing any code.**
+**Validator finding (changes this step's shape):** `AGENTTEAMS_MANAGER_HEARTBEAT_INTERVAL` **already exists and already flows to the manager container** (`internal/service/worker_env.go:80`) — but it is a **dead env var with zero consumers**. Reuse that exact name; do NOT invent a new one. Second finding: `bridge.py` contains **no heartbeat-handling code**, yet `copaw/tests/test_bridge.py` asserts heartbeat-seeding behavior — the logic lives either in the vendored `copaw` package or those tests are currently red. **Mandatory first action: run the pytest spike (`cd copaw && PYTHONPATH=src pytest tests/test_bridge.py -k heartbeat -v`) to establish ground truth before writing any code.**
 **Files:** `copaw/src/copaw_worker/` (wherever the spike shows heartbeat config is applied), `copaw/src/copaw_worker/templates/agent.manager.json` (`:11-14`, hardcoded `"every": "30m"`), `manager/configs/manager-openclaw.json.tmpl:104` (hardcoded `"1h"`), `manager/scripts/init/start-manager-agent.sh` (exports around `:632-667`; **two** jq branches `:696-736` upgrade + `:755-778` fresh — the upgrade branch bypasses the template, so a jq clause is required either way).
-**Change:** consume `HICLAW_MANAGER_HEARTBEAT_INTERVAL` (default **10m**; plan wants 5–10m). CoPaw path: override `heartbeat.every` at the point the spike identifies. OpenClaw analogue: `${HICLAW_MANAGER_HEARTBEAT_INTERVAL:-10m}` in the tmpl + export + jq clause in **both** branches.
+**Change:** consume `AGENTTEAMS_MANAGER_HEARTBEAT_INTERVAL` (default **10m**; plan wants 5–10m). CoPaw path: override `heartbeat.every` at the point the spike identifies. OpenClaw analogue: `${AGENTTEAMS_MANAGER_HEARTBEAT_INTERVAL:-10m}` in the tmpl + export + jq clause in **both** branches.
 **Tests:** python unit for the CoPaw override; `bash -n`; grep-assert both jq branches set `.agents.defaults.heartbeat.every`.
 **Acceptance:** setting the env changes the effective interval in both generated configs; unset → 10m; the formerly-dead env var now has a consumer.
 
 ### Step 7 — Solo mode *(plan Phase 1 step 5)*
 
-**Files:** `internal/config/config.go` (`HICLAW_SOLO_OPERATOR`), `internal/service/provisioner.go` `renderManagerWelcomeBody` `:1540-1568` (non-interview welcome variant), `internal/controller/manager_reconcile_welcome.go` (thread the flag), `team_controller.go` (force `PeerMentions=true`; today default-true at `types.go:243`), `resource_handler.go:620` / `types.go:468` (`PermissionLevel` — treat the sole Human as admin).
+**Files:** `internal/config/config.go` (`AGENTTEAMS_SOLO_OPERATOR`), `internal/service/provisioner.go` `renderManagerWelcomeBody` `:1540-1568` (non-interview welcome variant), `internal/controller/manager_reconcile_welcome.go` (thread the flag), `team_controller.go` (force `PeerMentions=true`; today default-true at `types.go:243`), `resource_handler.go:620` / `types.go:468` (`PermissionLevel` — treat the sole Human as admin).
 **Scope guard:** keep to (a) welcome variant, (b) PeerMentions force, (c) config flag + admin default. If the PermissionLevel strip balloons across handlers, defer the deeper strip and note it — don't let this step grow.
 **Tests:** unit: flag on → welcome body contains no 4-question interview; config parse; PeerMentions forced.
-**Acceptance:** `make test-unit` green; flag documented alongside the other `HICLAW_*` envs.
+**Acceptance:** `make test-unit` green; flag documented alongside the other `AGENTTEAMS_*` envs.
 
 ### Step 8 — `manage-state.sh` new actions *(plan Phase 1 step 8 + Phase 1b)*
 
@@ -120,10 +120,10 @@ S1 → S2 (independent Go) → S3, S4 (Dockerfiles, independent) → S5 (largest
 ## Milestone verification
 
 ```
-cd hiclaw-controller && make test-unit
+cd agentteams-controller && make test-unit
 cd copaw  && PYTHONPATH=src pytest tests/
 cd hermes && PYTHONPATH=src pytest tests/
-docker build copaw/   (Step 4)   ·   docker build -f hiclaw-controller/Dockerfile.embedded .  (Step 3)
+docker build copaw/   (Step 4)   ·   docker build -f agentteams-controller/Dockerfile.embedded .  (Step 3)
 bash manager/tests/test-manage-state.sh   (Step 8)
 ```
 

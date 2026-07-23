@@ -5,6 +5,8 @@ Import paths remain ``hermes_worker.sync`` for worker startup and tests.
 """
 from __future__ import annotations
 
+import os
+
 import logging
 import shutil
 import subprocess
@@ -47,7 +49,7 @@ class FileSync(_BaseFileSync):
             bucket=bucket,
             worker_name=worker_name,
             secure=secure,
-            local_dir=local_dir or Path("/root/hiclaw-fs/agents") / worker_name,
+            local_dir=local_dir or Path(os.environ.get("AGENTTEAMS_ROOT", "/root/agentteams-fs")) / "agents" / worker_name,
             team_resolver="agents_md",
             pull_includes_shared=HERMES.pull_all_includes_shared,
             pull_includes_global_shared=HERMES.pull_all_includes_global_shared,

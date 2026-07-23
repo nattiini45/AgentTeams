@@ -49,7 +49,7 @@ def test_wipe_matrix_crypto_idempotent(tmp_path: Path) -> None:
 def test_relogin_skips_without_password(tmp_path: Path, monkeypatch, capsys) -> None:
     cfg = {"channels": {"matrix": {"homeserver": "http://matrix:6167", "accessToken": "old"}}}
     (tmp_path / "openclaw.json").write_text(json.dumps(cfg))
-    monkeypatch.setenv("AGENTTEAMS_STORAGE_PREFIX", "hiclaw/bucket")
+    monkeypatch.setenv("AGENTTEAMS_STORAGE_PREFIX", "agt/bucket")
 
     def fake_mc(*args, **_kwargs):
         return subprocess.CompletedProcess(args, 1, stdout="", stderr="missing")
@@ -63,7 +63,7 @@ def test_relogin_skips_without_password(tmp_path: Path, monkeypatch, capsys) -> 
 
 def test_relogin_skips_without_homeserver(tmp_path: Path, monkeypatch, capsys) -> None:
     (tmp_path / "openclaw.json").write_text(json.dumps({"channels": {"matrix": {}}}))
-    monkeypatch.setenv("AGENTTEAMS_STORAGE_PREFIX", "hiclaw/bucket")
+    monkeypatch.setenv("AGENTTEAMS_STORAGE_PREFIX", "agt/bucket")
 
     def fake_mc(*args, **_kwargs):
         return subprocess.CompletedProcess(args, 0, stdout="secret\n", stderr="")
@@ -77,7 +77,7 @@ def test_relogin_skips_without_homeserver(tmp_path: Path, monkeypatch, capsys) -
 def test_relogin_updates_token_on_success(tmp_path: Path, monkeypatch) -> None:
     cfg = {"channels": {"matrix": {"homeserver": "http://matrix:6167", "accessToken": "old"}}}
     (tmp_path / "openclaw.json").write_text(json.dumps(cfg))
-    monkeypatch.setenv("AGENTTEAMS_STORAGE_PREFIX", "hiclaw/bucket")
+    monkeypatch.setenv("AGENTTEAMS_STORAGE_PREFIX", "agt/bucket")
 
     def fake_mc(*args, **_kwargs):
         return subprocess.CompletedProcess(args, 0, stdout="secret", stderr="")
@@ -106,7 +106,7 @@ def test_relogin_updates_token_on_success(tmp_path: Path, monkeypatch) -> None:
 def test_relogin_logs_failure_response(tmp_path: Path, monkeypatch, capsys) -> None:
     cfg = {"channels": {"matrix": {"homeserver": "http://matrix:6167", "accessToken": "old"}}}
     (tmp_path / "openclaw.json").write_text(json.dumps(cfg))
-    monkeypatch.setenv("AGENTTEAMS_STORAGE_PREFIX", "hiclaw/bucket")
+    monkeypatch.setenv("AGENTTEAMS_STORAGE_PREFIX", "agt/bucket")
 
     def fake_mc(*args, **_kwargs):
         return subprocess.CompletedProcess(args, 0, stdout="secret", stderr="")
@@ -140,7 +140,7 @@ def test_bootstrap_wipes_then_relogins(tmp_path: Path, monkeypatch) -> None:
     cfg = {"channels": {"matrix": {"homeserver": "http://matrix:6167", "accessToken": "old"}}}
     (tmp_path / "openclaw.json").write_text(json.dumps(cfg))
     monkeypatch.setenv("AGENTTEAMS_WORKER_NAME", "alice")
-    monkeypatch.setenv("AGENTTEAMS_STORAGE_PREFIX", "hiclaw/bucket")
+    monkeypatch.setenv("AGENTTEAMS_STORAGE_PREFIX", "agt/bucket")
 
     def fake_mc(*args, **_kwargs):
         return subprocess.CompletedProcess(args, 0, stdout="secret", stderr="")

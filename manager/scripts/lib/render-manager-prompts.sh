@@ -7,7 +7,7 @@
 #   render-manager-prompts.sh all     [agent_src_dir]
 #
 # Default output_dir for openclaw/copaw: stdout
-# Default agent_src_dir for all: /opt/hiclaw/agent (or manager/agent when run from repo)
+# Default agent_src_dir for all: /opt/agentteams/agent (or manager/agent when run from repo)
 
 set -euo pipefail
 
@@ -112,7 +112,7 @@ case "${RUNTIME}" in
         fi
         ;;
     all)
-        AGENT_SRC="${OUT_DIR:-/opt/hiclaw/agent}"
+        AGENT_SRC="${OUT_DIR:-/opt/agentteams/agent}"
         _render_agents_openclaw "${AGENT_SRC}/AGENTS.md"
         _render_heartbeat_openclaw "${AGENT_SRC}/HEARTBEAT.md"
         mkdir -p "${AGENT_SRC}/copaw-manager-agent"

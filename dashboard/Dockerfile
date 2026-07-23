@@ -1,4 +1,4 @@
-# HiClaw dashboard: same-origin proxy (dashboard/server) serving the built
+# AgentTeams dashboard: same-origin proxy (dashboard/server) serving the built
 # SPA (dashboard/web). Multi-stage build: compile the SPA with Node, then
 # run only the proxy + static assets in the final image (no dev deps, no
 # Vite at runtime).
@@ -21,10 +21,10 @@ COPY --from=web-build /web/dist ./web/dist
 
 # Defaults; override at deploy time. See README.md for the full list.
 ENV PORT=8090 \
-    HICLAW_CONTROLLER_URL=http://127.0.0.1:8080 \
-    HICLAW_AUTH_TOKEN_FILE=/var/run/hiclaw/cli-token \
+    AGENTTEAMS_CONTROLLER_URL=http://127.0.0.1:8080 \
+    AGENTTEAMS_AUTH_TOKEN_FILE=/var/run/agentteams/cli-token \
     MINIO_ENDPOINT=http://127.0.0.1:9000 \
-    HICLAW_FS_BUCKET=hiclaw-storage
+    AGENTTEAMS_FS_BUCKET=agentteams-storage
 
 EXPOSE 8090
 

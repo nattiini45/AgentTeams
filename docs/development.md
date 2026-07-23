@@ -1,6 +1,6 @@
 # Development Guide
 
-Guide for contributing to HiClaw, building images locally, and running tests.
+Guide for contributing to AgentTeams, building images locally, and running tests.
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ make build-manager
 make build-worker
 
 # Controller + embedded all-in-one (infra + controller binary, no Manager agent)
-make build-hiclaw-controller
+make build-agentteams-controller
 make build-embedded
 
 # Alternate Manager / Worker runtimes
@@ -45,14 +45,14 @@ make build DOCKER_PLATFORM=linux/amd64
 
 See all available targets with `make help`.
 
-### Helm chart (`helm/hiclaw`)
+### Helm chart (`helm/agentteams`)
 
-The production Kubernetes install is defined under **`helm/hiclaw/`** (subcharts for gateway, homeserver, storage, etc.). Useful Makefile targets:
+The production Kubernetes install is defined under **`helm/agentteams/`** (subcharts for gateway, homeserver, storage, etc.). Useful Makefile targets:
 
 ```bash
 make helm-lint      # helm dependency build + helm lint
 make helm-template  # render templates locally (validation)
-make sync-crds      # copy CRD YAML from hiclaw-controller/config/crd/ into the chart
+make sync-crds      # copy CRD YAML from agentteams-controller/config/crd/ into the chart
 ```
 
 ### Push Images (Multi-Architecture by Default)
@@ -61,7 +61,7 @@ make sync-crds      # copy CRD YAML from hiclaw-controller/config/crd/ into the 
 
 ```bash
 # Build amd64 + arm64 and push to registry
-make push VERSION=0.1.0 REGISTRY=ghcr.io REPO=higress-group/hiclaw
+make push VERSION=0.1.0 REGISTRY=ghcr.io REPO=agentscope-ai/AgentTeams
 
 # Push only Manager (multi-arch)
 make push-manager VERSION=latest
@@ -87,43 +87,43 @@ All base images are hosted on the Higress Alibaba Cloud registry with regional m
 Or pass it directly to Docker:
 
 ```bash
-docker build --build-arg HIGRESS_REGISTRY=higress-registry.us-west-1.cr.aliyuncs.com -t hiclaw/manager-agent:latest ./manager/
+docker build --build-arg HIGRESS_REGISTRY=higress-registry.us-west-1.cr.aliyuncs.com -t agentteams/manager:latest ./manager/
 ```
 
 ## Install / Uninstall / Replay
 
 ### Quick Install (Minimal)
 
-Only `HICLAW_LLM_API_KEY` is required — everything else uses sensible defaults:
+Only `AGENTTEAMS_LLM_API_KEY` is required — everything else uses sensible defaults:
 
 ```bash
 # Build images + install Manager with one command
-HICLAW_LLM_API_KEY="sk-xxx" make install
+AGENTTEAMS_LLM_API_KEY="sk-xxx" make install
 ```
 
 This will:
 1. Build Manager and Worker images (`make build`)
-2. Run the install script (`install/hiclaw-install.sh manager`)
+2. Run the install script (`install/agentteams-install.sh manager`)
 3. Mount the container runtime socket for direct Worker creation
-4. Save configuration to `./hiclaw-manager.env`
+4. Save configuration to `./agentteams-manager.env`
 
 ### Custom Install
 
 Override any configuration via environment variables:
 
 ```bash
-HICLAW_LLM_API_KEY="sk-xxx" \
-HICLAW_LLM_PROVIDER="openai" \
-HICLAW_DEFAULT_MODEL="gpt-4o" \
-HICLAW_ADMIN_USER="myadmin" \
-HICLAW_ADMIN_PASSWORD="mypassword" \
+AGENTTEAMS_LLM_API_KEY="sk-xxx" \
+AGENTTEAMS_LLM_PROVIDER="openai" \
+AGENTTEAMS_DEFAULT_MODEL="gpt-4o" \
+AGENTTEAMS_ADMIN_USER="myadmin" \
+AGENTTEAMS_ADMIN_PASSWORD="mypassword" \
 make install
 ```
 
 ### Uninstall
 
 ```bash
-make uninstall   # Runs install/hiclaw-install.sh uninstall (v1.1+: controller + manager + workers + volume + env)
+make uninstall   # Runs install/agentteams-install.sh uninstall (v1.1+: controller + manager + workers + volume + env)
 ```
 
 ### Replay (Send Task to Manager)
@@ -142,7 +142,7 @@ echo "Create worker bob" | ./scripts/replay-task.sh
 ```
 
 The replay script:
-- Reads credentials from `./hiclaw-manager.env`
+- Reads credentials from `./agentteams-manager.env`
 - Logs into Matrix as the admin user
 - Finds (or auto-creates) the DM room with the Manager
 - Sends the task message
@@ -160,7 +160,7 @@ make test-installed
 make test-installed TEST_FILTER="01 02"
 ```
 
-This reads credentials from `./hiclaw-manager.env` and skips the container lifecycle (start/stop).
+This reads credentials from `./agentteams-manager.env` and skips the container lifecycle (start/stop).
 
 ## Running Tests
 
@@ -168,7 +168,7 @@ This reads credentials from `./hiclaw-manager.env` and skips the container lifec
 
 ```bash
 # Build images + run all 10 test cases
-export HICLAW_LLM_API_KEY="your-api-key"
+export AGENTTEAMS_LLM_API_KEY="your-api-key"
 make test
 ```
 
@@ -198,7 +198,7 @@ make test-quick
 Tests 08-10 require a GitHub Personal Access Token:
 
 ```bash
-export HICLAW_GITHUB_TOKEN="ghp_..."
+export AGENTTEAMS_GITHUB_TOKEN="ghp_..."
 make test TEST_FILTER="08 09 10"
 ```
 
@@ -220,7 +220,7 @@ Each component has its own startup script in `manager/scripts/init/`:
 
 ### Modifying Higress Configuration
 
-Route, consumer, and MCP server bootstrap for **embedded** stacks is owned by the **controller** image (`hiclaw-controller` / `Dockerfile.embedded` wiring). The legacy **`manager/scripts/init/setup-higress.sh`** path still applies to **older single-container** Manager images (≤v1.0.9) and to Manager-side behaviors where applicable — check your install mode before editing.
+Route, consumer, and MCP server bootstrap for **embedded** stacks is owned by the **controller** image (`agentteams-controller` / `Dockerfile.embedded` wiring). The legacy **`manager/scripts/init/setup-higress.sh`** path still applies to **older single-container** Manager images (≤v1.0.9) and to Manager-side behaviors where applicable — check your install mode before editing.
 
 ### Adding a New MCP Server
 
@@ -246,19 +246,19 @@ All CI multi-arch builds use `docker/setup-qemu-action` for cross-platform emula
 
 | Secret | Purpose |
 |--------|---------|
-| `HICLAW_LLM_API_KEY` | LLM access for Agent behavior tests |
-| `HICLAW_GITHUB_TOKEN` | GitHub operations in tests 08-10 |
+| `AGENTTEAMS_LLM_API_KEY` | LLM access for Agent behavior tests |
+| `AGENTTEAMS_GITHUB_TOKEN` | GitHub operations in tests 08-10 |
 
 ### Local CI Simulation
 
 ```bash
 # Same flow as CI but local (single arch)
-export HICLAW_LLM_API_KEY="your-key"
+export AGENTTEAMS_LLM_API_KEY="your-key"
 make test
 
 # Multi-arch build like CI does on main branch
 docker login ghcr.io
-make push VERSION=latest REGISTRY=ghcr.io REPO=higress-group/hiclaw
+make push VERSION=latest REGISTRY=ghcr.io REPO=agentscope-ai/AgentTeams
 ```
 
 ## Network Proxy Setup (China Mainland)
@@ -295,18 +295,16 @@ When running tests, `no_proxy` is critical — without it, test health checks to
 
 ```bash
 export no_proxy="localhost,127.0.0.1,::1,local,169.254/16"
-HICLAW_LLM_API_KEY="your-key" make test SKIP_BUILD=1
+AGENTTEAMS_LLM_API_KEY="your-key" make test SKIP_BUILD=1
 ```
 
 ## Container Runtime Socket (Direct Worker Creation)
 
-When the host runtime socket is available, the **embedded controller** (`agentteams-controller`) mounts it and creates Worker containers via the Docker Engine API — no human intervention needed for local deployments. Legacy all-in-one installs (≤v1.0.9 only) mount the socket on the Manager container instead.
-
-See **Security: solo-operator Docker socket** below for the accepted-risk model and escalation path before shared-host use.
+When the Manager container is started with the host's container runtime socket mounted, it can create Worker containers directly — no human intervention needed for local deployments.
 
 ### How It Works
 
-The controller's `DockerBackend` uses `AGENTTEAMS_PROXY_SOCKET` (default `/var/run/docker.sock`). Embedded install scripts mount the socket into `agentteams-controller` only; the spawned Manager agent does not receive `docker.sock`. Legacy `container-api.sh` in the Manager image applied when the Manager held the socket directly (pre-v1.1).
+The Manager detects the socket at startup and sets `AGENTTEAMS_CONTAINER_RUNTIME=socket`. The `container-api.sh` script provides functions to create/start/stop Worker containers via the Docker-compatible REST API (works with both Docker and Podman).
 
 ### Socket Paths
 
@@ -320,40 +318,28 @@ The controller's `DockerBackend` uses `AGENTTEAMS_PROXY_SOCKET` (default `/var/r
 
 ```bash
 # Docker
-docker run -d --name hiclaw-manager \
+docker run -d --name agentteams-manager \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -e HICLAW_WORKER_IMAGE=hiclaw/worker-agent:latest \
+  -e AGENTTEAMS_WORKER_IMAGE=agentteams/worker-agent:latest \
   ... \
-  hiclaw/manager-agent:latest
+  agentteams/manager:latest
 
 # Podman
-podman run -d --name hiclaw-manager \
+podman run -d --name agentteams-manager \
   -v /run/podman/podman.sock:/var/run/docker.sock \
   --security-opt label=disable \
-  -e HICLAW_WORKER_IMAGE=hiclaw/worker-agent:latest \
+  -e AGENTTEAMS_WORKER_IMAGE=agentteams/worker-agent:latest \
   ... \
-  hiclaw/manager-agent:latest
+  agentteams/manager:latest
 ```
 
 ### Test Integration
 
 The test orchestrator (`tests/run-all-tests.sh`) automatically detects the socket and mounts it when available.
 
-### Security: solo-operator Docker socket (accepted risk)
+### Security Note
 
-Embedded installs (v1.1+) mount the host runtime socket into **`agentteams-controller` only** — not the Manager agent container. The controller's `DockerBackend` dials `AGENTTEAMS_PROXY_SOCKET` (default `/var/run/docker.sock`) directly to create Worker containers. HTTP filtering for legacy Manager-side `/docker/` calls lives in `hiclaw-controller/internal/proxy/`, but **`DockerBackend` bypasses that validator** — the controller process has full Docker Engine API access when the socket is mounted.
-
-This is an **accepted solo-operator risk**: a single trusted admin runs AgentTeams on their own machine or VPS, and only the controller (not every agent) holds socket access. That is a meaningful improvement over v1.0.x, where the all-in-one Manager container (or a separate `hiclaw-docker-proxy` sidecar) also sat on the socket path.
-
-**Before shared-host or multi-tenant use**, escalate containment — for example point `AGENTTEAMS_PROXY_SOCKET` at a filtered sidecar (tecnativa/docker-socket-proxy or equivalent) instead of the raw socket, and treat Manager/Worker compromise as host-compromise until then.
-
-The standalone `docker-proxy/` tree was removed in `d029ed2`; do not restore it. Uninstall scripts still stop/remove leftover `hiclaw-docker-proxy` containers from v1.0.x upgrades.
-
-### Non-root Manager/Worker images (deferred hardening)
-
-Default installs run Manager and Worker containers as **root**. Forcing non-root (e.g. `USER 1000`) without a broader refactor will crash CoPaw Manager startup (`start-manager-agent.sh` writes `/data`, `/root/manager-workspace`, `/etc/hosts`, and install-time volume mounts assume root-owned paths). A naive `USER` line in `copaw/Dockerfile` targets the **Worker** image and does not cover `/data` or Manager entrypoints.
-
-Full non-root is **deferred**: primary targets are `manager/Dockerfile.copaw`, `manager/Dockerfile`, and entrypoint scripts refactored away from hard-coded `/data` and `/root/*` paths in embedded mode. Track as a separate hardening milestone if needed; do not ship a partial UID change that fails at first `mkdir`.
+Mounting the container runtime socket gives the container full control over the host's container runtime (equivalent to root access). This is acceptable for local development. In production, consider using more restrictive approaches like Podman socket activation with limited API access.
 
 ## Key Technical Notes
 
@@ -427,19 +413,19 @@ Without `gateway.mode=local`, OpenClaw refuses to start. Without `gateway.auth.t
 
 ### View Manager Logs
 
-Container name is `hiclaw-manager` (via `make install`) or `hiclaw-manager-test` (via `make test`).
+Container name is `agentteams-manager` (via `make install`) or `agentteams-manager-test` (via `make test`).
 
-**v1.1.0+ embedded install:** infrastructure logs are on **`hiclaw-controller`**, not the Manager container.
+**v1.1.0+ embedded install:** infrastructure logs are on **`agentteams-controller`**, not the Manager container.
 
 ```bash
 # Manager Agent
-docker exec hiclaw-manager cat /var/log/hiclaw/manager-agent.log
-docker exec hiclaw-manager cat /var/log/hiclaw/manager-agent-error.log  # OpenClaw gateway stderr (OpenClaw Manager)
-docker exec hiclaw-manager bash -c 'cat /tmp/openclaw/openclaw-*.log' | jq .
+docker exec agentteams-manager cat /var/log/agentteams/manager-agent.log
+docker exec agentteams-manager cat /var/log/agentteams/manager-agent-error.log  # OpenClaw gateway stderr (OpenClaw Manager)
+docker exec agentteams-manager bash -c 'cat /tmp/openclaw/openclaw-*.log' | jq .
 
 # Higress / homeserver (embedded controller)
-docker exec hiclaw-controller cat /var/log/hiclaw/higress-console.log
-docker exec hiclaw-controller cat /var/log/hiclaw/tuwunel.log
+docker exec agentteams-controller cat /var/log/agentteams/higress-console.log
+docker exec agentteams-controller cat /var/log/agentteams/tuwunel.log
 ```
 
 ### View Replay Conversation Logs
@@ -454,7 +440,7 @@ make replay-log
 ### Check OpenClaw Skills Loading
 
 ```bash
-docker exec hiclaw-manager bash -c \
+docker exec agentteams-manager bash -c \
   'OPENCLAW_CONFIG_PATH=/root/manager-workspace/openclaw.json openclaw skills list --json' \
   | jq '.skills[] | select(.source == "openclaw-workspace") | {name, eligible, description}'
 ```
@@ -462,7 +448,7 @@ docker exec hiclaw-manager bash -c \
 ### Interactive Shell in Container
 
 ```bash
-docker exec -it hiclaw-manager bash
+docker exec -it agentteams-manager bash
 ```
 
 ### Check Higress State
@@ -491,7 +477,7 @@ curl -s http://localhost:18001/v1/ai/routes -b /tmp/cookie | jq
 
 ```bash
 mc alias set test http://localhost:9000 <user> <password>
-mc ls test/hiclaw-storage/ --recursive
+mc ls test/agentteams-storage/ --recursive
 ```
 
 ### Common Issues
@@ -509,31 +495,3 @@ mc ls test/hiclaw-storage/ --recursive
 | Skills not loaded by OpenClaw | Missing YAML front matter in SKILL.md | Add `---\nname: ...\ndescription: ...\n---` |
 | `setup-higress.sh` crashes on restart | `set -e` + `curl -sf` on "already exists" errors | Use `higress_api()` helper which handles this gracefully |
 | Higress setup runs again on restart, resets consumers | Missing setup marker | Check `/data/.higress-setup-done`; delete it only to force re-setup |
-
-## Branch Protection (Recommended)
-
-The following branch protection settings are recommended for the `main` branch to ensure changes pass validation before acceptance. Configure these in **GitHub Settings → Branches → Branch protection rules → main**:
-
-- **Require status checks to pass before merging:**
-  - `controller` (from `remediation-gates.yml`)
-  - `python-runtimes` (all matrix entries)
-  - `shared-python`
-  - `dashboard` (server + web)
-  - `helm`
-  - `shared-shell`
-  - `test` (from `test-controller.yml`)
-- **Require branches to be up to date before merging**
-- **Require conversation resolution before merging**
-
-> **Note:** Branch protection cannot be codified in-repo without a GitHub App or Terraform provider. A repository admin must configure these settings manually.
-
-### Local Pre-commit Hooks
-
-Complementary local checks are available via [pre-commit](https://pre-commit.com/):
-
-```bash
-pip install pre-commit
-pre-commit install
-```
-
-This enables fast format/syntax checks (trailing whitespace, YAML/JSON validity, Go formatting) before each commit. These are opt-in and do not replace CI gates.

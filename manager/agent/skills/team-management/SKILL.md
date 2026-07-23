@@ -10,8 +10,8 @@ A Team consists of 1 Team Leader + N Workers. The Team Leader is a special Worke
 ## Quick Create (2 steps)
 
 ```bash
-# 1. Create team via hiclaw CLI
-hiclaw create team \
+# 1. Create team via agt CLI
+agt create team \
   --name <TEAM_NAME> \
   --leader-name <LEADER_NAME> \
   --leader-model <MODEL> \
@@ -24,7 +24,7 @@ After creation, the Leader is online in the Leader Room (Manager + Global Admin 
 
 > Full workflow: read `references/create-team.md`
 
-If admin asks for CPU or memory requests/limits, use a YAML Team manifest with `leader.resources` and/or `workers[].resources`, then apply it with `hiclaw apply -f`. The simple `hiclaw create team` / `hiclaw update team` flags do not expose resource tuning. Changing member resources recreates the affected member container, so confirm the team is not mid-task.
+If admin asks for CPU or memory requests/limits, use a YAML Team manifest with `leader.resources` and/or `workers[].resources`, then apply it with `agt apply -f`. The simple `agt create team` / `agt update team` flags do not expose resource tuning. Changing member resources recreates the affected member container, so confirm the team is not mid-task.
 
 ## Gotchas
 
@@ -37,14 +37,14 @@ If admin asks for CPU or memory requests/limits, use a YAML Team manifest with `
 - **Team Admin defaults to Global Admin** — if `--team-admin` not specified
 - **Delegated tasks use `--delegated-to-team`** — so heartbeat knows to check with Leader, not workers
 - **Team Leader runtime is always `copaw`** — controller default; use `--worker-runtimes` / YAML `workers[].runtime` for mixed worker runtimes
-- **`create-team.sh` delegates to `hiclaw create team`** — set `HICLAW_TEAM_CREATE_IMPL=shell` only for legacy Manager-side provisioning
+- **`create-team.sh` delegates to `agt create team`** — set `AGENTTEAMS_TEAM_CREATE_IMPL=shell` only for legacy Manager-side provisioning
 
 ## Operation Reference
 
 | Admin wants to... | Read | Command |
 |---|---|---|
-| Create a new team | `references/create-team.md` | `hiclaw create team` |
+| Create a new team | `references/create-team.md` | `agt create team` |
 | Understand team lifecycle | `references/team-lifecycle.md` | — |
 | Delegate task to team | `references/team-task-delegation.md` | — |
-| Add/remove worker from team | `references/team-lifecycle.md` | `hiclaw get team` |
+| Add/remove worker from team | `references/team-lifecycle.md` | `agt get team` |
 | Delete a team's containers | `references/team-lifecycle.md` | `scripts/lifecycle-worker.sh` (per worker) |

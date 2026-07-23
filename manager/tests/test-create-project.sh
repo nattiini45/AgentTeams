@@ -1,10 +1,10 @@
 #!/bin/bash
 # test-create-project.sh
 # Static harness for create-project.sh's federation flags (--team / --repo,
-# decision #16). PATH-shims curl, mc, AND hiclaw so nothing touches a real
+# decision #16). PATH-shims curl, mc, AND agt so nothing touches a real
 # Matrix/MinIO/controller — create-project.sh curls Matrix and runs
 # `mc mirror` unconditionally, and (when --team is given) shells out to
-# `hiclaw apply -f`, so all three must be stubbed for the harness to run
+# `agt apply -f`, so all three must be stubbed for the harness to run
 # offline. Every shimmed call is appended to a call-log file the assertions
 # inspect.
 #
@@ -58,33 +58,33 @@ strip_cr() {
 }
 strip_cr "${CREATE_PROJECT_SCRIPT}"
 
-# ── Stub /opt/hiclaw/scripts/lib/hiclaw-env.sh ────────────────────────────────
+# ── Stub /opt/agentteams/scripts/lib/agentteams-env.sh ────────────────────────────────
 # create-project.sh sources this unconditionally (the real path only exists
 # inside a built Manager container). Provide a harmless stub so the harness
 # can run standalone; real containers always have the actual file.
-HICLAW_ENV_STUB_DIR="/opt/hiclaw/scripts/lib"
-if [ ! -f "${HICLAW_ENV_STUB_DIR}/hiclaw-env.sh" ]; then
-    if mkdir -p "${HICLAW_ENV_STUB_DIR}" 2>/dev/null; then
-        cat > "${HICLAW_ENV_STUB_DIR}/hiclaw-env.sh" << 'ENVSTUB'
-# Test-harness stub — real containers ship the actual hiclaw-env.sh.
+AGENTTEAMS_ENV_STUB_DIR="/opt/agentteams/scripts/lib"
+if [ ! -f "${AGENTTEAMS_ENV_STUB_DIR}/agentteams-env.sh" ]; then
+    if mkdir -p "${AGENTTEAMS_ENV_STUB_DIR}" 2>/dev/null; then
+        cat > "${AGENTTEAMS_ENV_STUB_DIR}/agentteams-env.sh" << 'ENVSTUB'
+# Test-harness stub — real containers ship the actual agentteams-env.sh.
 : "${AGENTTEAMS_STORAGE_PREFIX:=agentteams/agentteams-storage}"
 : "${AGENTTEAMS_MATRIX_URL:=http://matrix.fake.local}"
 ensure_mc_credentials() { :; }
-log() { echo "[hiclaw-env-stub] $*" >&2; }
+log() { echo "[agentteams-env-stub] $*" >&2; }
 ENVSTUB
     else
-        echo "SKIP: cannot write ${HICLAW_ENV_STUB_DIR}/hiclaw-env.sh (no permission) — run this harness as root/in a container" >&2
+        echo "SKIP: cannot write ${AGENTTEAMS_ENV_STUB_DIR}/agentteams-env.sh (no permission) — run this harness as root/in a container" >&2
         exit 1
     fi
 fi
 
-# ── Fake bin dir: PATH-shimmed curl / mc / hiclaw / jq(passthrough) ───────────
+# ── Fake bin dir: PATH-shimmed curl / mc / agt / jq(passthrough) ───────────
 # Each test case gets its own sandbox so shim state never leaks between cases.
 new_sandbox() {
     local sandbox
     sandbox=$(mktemp -d "${TMPDIR_ROOT}/sandbox-XXXXXX")
-    mkdir -p "${sandbox}/bin" "${sandbox}/home" "${sandbox}/root/hiclaw-fs/shared/projects" \
-        "${sandbox}/root/hiclaw-fs/agents/manager" "${sandbox}/data/worker-creds"
+    mkdir -p "${sandbox}/bin" "${sandbox}/home" "${sandbox}/root/agentteams-fs/shared/projects" \
+        "${sandbox}/root/agentteams-fs/agents/manager" "${sandbox}/data/worker-creds"
     : > "${sandbox}/calls.log"
     echo "${sandbox}"
 }
@@ -159,15 +159,15 @@ MCSHIM
     chmod +x "${sandbox}/bin/mc"
 }
 
-# The hiclaw shim: logs the full invocation plus the applied YAML's content
+# The agt shim: logs the full invocation plus the applied YAML's content
 # (so assertions can inspect what create-project.sh generated), and always
-# succeeds unless FAKE_HICLAW_FAIL=1 is set for a test case.
-write_hiclaw_shim() {
+# succeeds unless FAKE_AGENTTEAMS_FAIL=1 is set for a test case.
+write_agt_shim() {
     local sandbox="$1"
-    cat > "${sandbox}/bin/hiclaw" << 'HICLAWSHIM'
+    cat > "${sandbox}/bin/agt" << 'AGTSHIM'
 #!/bin/bash
 CALL_LOG="${FAKE_CALL_LOG:?FAKE_CALL_LOG not set}"
-echo "hiclaw $*" >> "${CALL_LOG}"
+echo "agt $*" >> "${CALL_LOG}"
 
 # Find the -f/--file argument and dump the applied YAML into the log too.
 prev=""
@@ -180,14 +180,14 @@ for a in "$@"; do
     prev="${a}"
 done
 
-if [ "${FAKE_HICLAW_FAIL:-0}" = "1" ]; then
-    echo "hiclaw: simulated failure" >&2
+if [ "${FAKE_AGENTTEAMS_FAIL:-0}" = "1" ]; then
+    echo "agt: simulated failure" >&2
     exit 1
 fi
 echo "  project/fake created"
 exit 0
-HICLAWSHIM
-    chmod +x "${sandbox}/bin/hiclaw"
+AGTSHIM
+    chmod +x "${sandbox}/bin/agt"
 }
 
 run_create_project() {
@@ -196,7 +196,7 @@ run_create_project() {
     HOME="${sandbox}/home" \
     PATH="${sandbox}/bin:${PATH}" \
     FAKE_CALL_LOG="${sandbox}/calls.log" \
-    FAKE_HICLAW_FAIL="${FAKE_HICLAW_FAIL:-0}" \
+    FAKE_AGENTTEAMS_FAIL="${FAKE_AGENTTEAMS_FAIL:-0}" \
     AGENTTEAMS_MATRIX_DOMAIN="matrix.fake.local" \
     AGENTTEAMS_ADMIN_USER="admin" \
     AGENTTEAMS_MATRIX_URL="http://matrix.fake.local" \
@@ -227,14 +227,14 @@ yaml_dq_direct() {
 
 project_dir() {
     # project_dir <sandbox> <project-id> — create-project.sh hardcodes
-    # /root/hiclaw-fs/shared/projects/<id>; on this box that resolves under
+    # /root/agentteams-fs/shared/projects/<id>; on this box that resolves under
     # the real filesystem root, not the sandbox, so tests read from there and
     # clean up afterward.
-    echo "/root/hiclaw-fs/shared/projects/$2"
+    echo "/root/agentteams-fs/shared/projects/$2"
 }
 
 cleanup_real_project_dir() {
-    rm -rf "/root/hiclaw-fs/shared/projects/$1" 2>/dev/null || true
+    rm -rf "/root/agentteams-fs/shared/projects/$1" 2>/dev/null || true
 }
 
 # ── Tests ─────────────────────────────────────────────────────────────────────
@@ -250,12 +250,12 @@ echo "=== TC1: bash -n on create-project.sh ==="
 }
 
 echo ""
-echo "=== TC2: no-flags invocation — byte-identical to today (no hiclaw call at all) ==="
+echo "=== TC2: no-flags invocation — byte-identical to today (no agt call at all) ==="
 {
     s=$(new_sandbox)
     write_curl_shim "${s}"
     write_mc_shim "${s}"
-    write_hiclaw_shim "${s}"
+    write_agt_shim "${s}"
     pid="proj-tc2-$$"
     cleanup_real_project_dir "${pid}"
 
@@ -264,7 +264,7 @@ echo "=== TC2: no-flags invocation — byte-identical to today (no hiclaw call a
 
     assert_contains "prints ---RESULT---" "---RESULT---" "${out}"
     assert_contains "result has project_id" "\"project_id\": \"${pid}\"" "${out}"
-    assert_not_contains "hiclaw is NEVER invoked without --team" "hiclaw apply" "${log}"
+    assert_not_contains "agt is NEVER invoked without --team" "agt apply" "${log}"
 
     pd=$(project_dir "${s}" "${pid}")
     if [ -f "${pd}/meta.json" ]; then
@@ -286,7 +286,7 @@ echo "=== TC3: --team without --repo is rejected before any side effects ==="
     s=$(new_sandbox)
     write_curl_shim "${s}"
     write_mc_shim "${s}"
-    write_hiclaw_shim "${s}"
+    write_agt_shim "${s}"
     pid="proj-tc3-$$"
     cleanup_real_project_dir "${pid}"
 
@@ -294,7 +294,7 @@ echo "=== TC3: --team without --repo is rejected before any side effects ==="
     log=$(calls "${s}")
 
     assert_contains "error mentions --repo requirement" "--team requires at least one --repo" "${out}"
-    assert_eq "no Matrix/MinIO/hiclaw calls happened" "" "${log}"
+    assert_eq "no Matrix/MinIO/agt calls happened" "" "${log}"
     if [ -f "$(project_dir "${s}" "${pid}")/meta.json" ]; then
         fail "no meta.json written on validation failure" "absent" "present"
     else
@@ -309,7 +309,7 @@ echo "=== TC4: --repo without --team is rejected ==="
     s=$(new_sandbox)
     write_curl_shim "${s}"
     write_mc_shim "${s}"
-    write_hiclaw_shim "${s}"
+    write_agt_shim "${s}"
     pid="proj-tc4-$$"
     cleanup_real_project_dir "${pid}"
 
@@ -326,7 +326,7 @@ echo "=== TC5: --repo access enum is enforced (rejects anything but rw/ro) ==="
     s=$(new_sandbox)
     write_curl_shim "${s}"
     write_mc_shim "${s}"
-    write_hiclaw_shim "${s}"
+    write_agt_shim "${s}"
     pid="proj-tc5-$$"
     cleanup_real_project_dir "${pid}"
 
@@ -338,12 +338,12 @@ echo "=== TC5: --repo access enum is enforced (rejects anything but rw/ro) ==="
 }
 
 echo ""
-echo "=== TC6: --team + --repo emits a Project CR and calls hiclaw apply -f ==="
+echo "=== TC6: --team + --repo emits a Project CR and calls agt apply -f ==="
 {
     s=$(new_sandbox)
     write_curl_shim "${s}"
     write_mc_shim "${s}"
-    write_hiclaw_shim "${s}"
+    write_agt_shim "${s}"
     pid="proj-tc6-$$"
     cleanup_real_project_dir "${pid}"
 
@@ -353,8 +353,8 @@ echo "=== TC6: --team + --repo emits a Project CR and calls hiclaw apply -f ==="
         --repo "https://git.fake.local/teamA/repo-ro.git:ro")
     log=$(calls "${s}")
 
-    assert_contains "hiclaw apply -f was invoked" "hiclaw apply -f" "${log}"
-    assert_contains "applied YAML has apiVersion" "apiVersion: hiclaw.io/v1beta1" "${log}"
+    assert_contains "agt apply -f was invoked" "agt apply -f" "${log}"
+    assert_contains "applied YAML has apiVersion" "apiVersion: agentteams.io/v1beta1" "${log}"
     assert_contains "applied YAML has kind: Project" "kind: Project" "${log}"
     # Scalars are emitted as quoted YAML strings (yaml_dq) so that chat-origin
     # values can never break out of the scalar — see the injection fix above.
@@ -383,19 +383,19 @@ echo "=== TC6: --team + --repo emits a Project CR and calls hiclaw apply -f ==="
 }
 
 echo ""
-echo "=== TC7: hiclaw apply failure does not fail the whole script (chat-flow project still created) ==="
+echo "=== TC7: agt apply failure does not fail the whole script (chat-flow project still created) ==="
 {
     s=$(new_sandbox)
     write_curl_shim "${s}"
     write_mc_shim "${s}"
-    write_hiclaw_shim "${s}"
+    write_agt_shim "${s}"
     pid="proj-tc7-$$"
     cleanup_real_project_dir "${pid}"
 
-    FAKE_HICLAW_FAIL=1 out=$(FAKE_HICLAW_FAIL=1 run_create_project "${s}" --id "${pid}" --title "Apply Fails" \
+    FAKE_AGENTTEAMS_FAIL=1 out=$(FAKE_AGENTTEAMS_FAIL=1 run_create_project "${s}" --id "${pid}" --title "Apply Fails" \
         --workers "alice" --team "teamA" --repo "https://git.fake.local/teamA/repo.git:rw")
 
-    assert_contains "warns about the apply failure" "WARNING: hiclaw apply -f failed" "${out}"
+    assert_contains "warns about the apply failure" "WARNING: agt apply -f failed" "${out}"
     assert_contains "still prints the RESULT block" "---RESULT---" "${out}"
     pd=$(project_dir "${s}" "${pid}")
     if [ -f "${pd}/meta.json" ]; then
@@ -446,7 +446,7 @@ echo "=== TC8b: end-to-end — a YAML-adversarial but JSON-safe title stays a si
     s=$(new_sandbox)
     write_curl_shim "${s}"
     write_mc_shim "${s}"
-    write_hiclaw_shim "${s}"
+    write_agt_shim "${s}"
     pid="proj-tc8b-$$"
     cleanup_real_project_dir "${pid}"
 
@@ -459,7 +459,7 @@ echo "=== TC8b: end-to-end — a YAML-adversarial but JSON-safe title stays a si
     log=$(calls "${s}")
 
     assert_contains "description scalar is quoted and intact" 'description: "- Title: with a colon"' "${log}"
-    assert_contains "still applies the CR successfully" "hiclaw apply -f" "${log}"
+    assert_contains "still applies the CR successfully" "agt apply -f" "${log}"
     assert_contains "still prints the RESULT block" "---RESULT---" "${out}"
     cleanup_real_project_dir "${pid}"
 }
@@ -470,7 +470,7 @@ echo "=== TC9: unquoted-looking repo/worker/team scalars stay quoted in the emit
     s=$(new_sandbox)
     write_curl_shim "${s}"
     write_mc_shim "${s}"
-    write_hiclaw_shim "${s}"
+    write_agt_shim "${s}"
     pid="proj-tc9-$$"
     cleanup_real_project_dir "${pid}"
 
@@ -495,7 +495,7 @@ echo "=== TC10: --team containing invalid characters (space) hard-fails, no side
     s=$(new_sandbox)
     write_curl_shim "${s}"
     write_mc_shim "${s}"
-    write_hiclaw_shim "${s}"
+    write_agt_shim "${s}"
     pid="proj-tc10-$$"
     cleanup_real_project_dir "${pid}"
 
@@ -512,7 +512,7 @@ echo "=== TC10: --team containing invalid characters (space) hard-fails, no side
         fail "invalid --team (space) causes non-zero exit" "non-zero" "0"
     fi
     assert_contains "error mentions --team validation" "--team must match" "${out}"
-    assert_eq "no Matrix/MinIO/hiclaw calls happened" "" "${log}"
+    assert_eq "no Matrix/MinIO/agt calls happened" "" "${log}"
     if [ -f "$(project_dir "${s}" "${pid}")/meta.json" ]; then
         fail "no meta.json written on --team validation failure" "absent" "present"
     else
@@ -527,7 +527,7 @@ echo "=== TC11: --team containing a colon hard-fails ==="
     s=$(new_sandbox)
     write_curl_shim "${s}"
     write_mc_shim "${s}"
-    write_hiclaw_shim "${s}"
+    write_agt_shim "${s}"
     pid="proj-tc11-$$"
     cleanup_real_project_dir "${pid}"
 

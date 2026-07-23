@@ -1,7 +1,7 @@
 #!/bin/bash
 # bootstrap/workers.sh - Worker config upgrade, recreate, notify
 
-SEND_MANAGER_MESSAGE="/opt/hiclaw/scripts/lib/send-manager-message.sh"
+SEND_MANAGER_MESSAGE="/opt/agentteams/scripts/lib/send-manager-message.sh"
 
 bootstrap_manage_workers() {
 # Upgrade Worker openclaw.json: merge known models + E2EE flag into existing configs
@@ -11,7 +11,7 @@ bootstrap_manage_workers() {
 REGISTRY_FILE="/root/manager-workspace/workers-registry.json"
 if [ -f "${REGISTRY_FILE}" ]; then
     # Use known-models.json (valid JSON) instead of template (contains ${VAR} placeholders)
-    KNOWN_MODELS_FILE="/opt/hiclaw/configs/known-models.json"
+    KNOWN_MODELS_FILE="/opt/agentteams/configs/known-models.json"
     if [ -f "${KNOWN_MODELS_FILE}" ]; then
         _KNOWN_MODELS=$(cat "${KNOWN_MODELS_FILE}")
         for _wname in $(jq -r '.workers | keys[]' "${REGISTRY_FILE}" 2>/dev/null); do

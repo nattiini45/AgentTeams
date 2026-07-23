@@ -45,7 +45,7 @@ The snapshot is written automatically at the end of each heartbeat cycle by `ses
 If you need to force a snapshot (e.g., before a risky operation):
 
 ```bash
-bash /opt/hiclaw/agent/skills/session-recovery/scripts/session-snapshot.sh
+bash /opt/agentteams/agent/skills/session-recovery/scripts/session-snapshot.sh
 ```
 
 ## Gotchas

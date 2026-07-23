@@ -47,7 +47,7 @@ function main() {
 
   server.listen(config.port, config.bindHost, () => {
     // eslint-disable-next-line no-console
-    console.log(`hiclaw-dashboard proxy listening on ${config.bindHost}:${config.port} -> controller ${config.controllerUrl}`);
+    console.log(`agentteams-dashboard proxy listening on ${config.bindHost}:${config.port} -> controller ${config.controllerUrl}`);
   });
 
   return server;

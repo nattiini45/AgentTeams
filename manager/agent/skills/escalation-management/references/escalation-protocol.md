@@ -57,7 +57,7 @@ When you see this format in a Worker's reply:
 2. Parse what_was_tried and question from the text
 3. Raise escalation:
    ```bash
-   bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh \
+   bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh \
      --action raise --task-id {task-id} --severity {severity} \
      --category {infer-from-context} --worker {worker} \
      --summary "{brief description}" --what-tried "{what was tried}" \
@@ -80,7 +80,7 @@ When you see this format in a Worker's reply:
 During heartbeat, after checking finite tasks (Step 2) and team tasks (Step 2b):
 
 ```bash
-bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh --action check-stale
+bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh --action check-stale
 ```
 
 For each stale item in the output:
@@ -106,7 +106,7 @@ Raised: {created_at}
 When admin provides the answer or fix:
 
 ```bash
-bash /opt/hiclaw/agent/skills/escalation-management/scripts/manage-escalations.sh \
+bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalations.sh \
   --action resolve --id {esc-id} --resolution "{what was done}"
 ```
 

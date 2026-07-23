@@ -17,7 +17,7 @@ shared/projects/{project-id}/
 
 This skill's `meta.json`/`plan.md` are the **execution layer** — chat-flow tracking of phases,
 tasks, and assignments, always created by `create-project.sh`. There is a **second, federated
-layer**: the `Project` CRD (`hiclaw-controller`'s `/api/v1/projects`), which is **repo/access
+layer**: the `Project` CRD (`agentteams-controller`'s `/api/v1/projects`), which is **repo/access
 provisioning** — which team owns the project, which Gitea repos are attached, and at what access
 level (`rw`/`ro`). The two are linked only by the shared project id; there is no schema merge
 between them.
@@ -26,8 +26,8 @@ Create the CRD layer by adding `--team <TEAM_NAME>` and one or more repeatable
 `--repo <URL>:<rw|ro>` flags to the same `create-project.sh` call (`references/create-project.md`
 Step 1b). Omit both flags when the project has no repo to provision (e.g. pure coordination/chat
 work) — this remains the default and produces byte-identical output to a project with no CRD.
-The CRD is applied via `hiclaw apply -f`, which POSTs/PUTs to the controller's Project REST
-routes; the Manager container bundles the `hiclaw` CLI.
+The CRD is applied via `agt apply -f`, which POSTs/PUTs to the controller's Project REST
+routes; the Manager container bundles the `agt` CLI.
 
 ## Gotchas
 

@@ -27,7 +27,7 @@ Break the project goal into phases and tasks. For each task identify:
 ```bash
 PROJECT_ID="proj-$(date +%Y%m%d-%H%M%S)"
 
-bash /opt/hiclaw/agent/skills/project-management/scripts/create-project.sh \
+bash /opt/agentteams/agent/skills/project-management/scripts/create-project.sh \
   --id "${PROJECT_ID}" \
   --title "<title>" \
   --workers "worker1,worker2,worker3"
@@ -44,7 +44,7 @@ execution: phases, tasks, assignments). If the project also needs one or more **
 provisioned** for the team, add `--team` and repeatable `--repo`:
 
 ```bash
-bash /opt/hiclaw/agent/skills/project-management/scripts/create-project.sh \
+bash /opt/agentteams/agent/skills/project-management/scripts/create-project.sh \
   --id "${PROJECT_ID}" \
   --title "<title>" \
   --workers "worker1,worker2,worker3" \
@@ -56,9 +56,9 @@ bash /opt/hiclaw/agent/skills/project-management/scripts/create-project.sh \
 
 Repeat `--depends-on` for each upstream Project CR metadata name in the same namespace. Dependencies are recorded on the Project CR only; they do not modify `plan.md`.
 
-This additionally emits a `Project` CR YAML (`apiVersion: hiclaw.io/v1beta1`, `kind: Project` —
-see `hiclaw-controller/api/v1beta1/types.go` `ProjectSpec` for the exact schema) and runs
-`hiclaw apply -f` against it — a **second, federated document** (repo/access provisioning),
+This additionally emits a `Project` CR YAML (`apiVersion: agentteams.io/v1beta1`, `kind: Project` —
+see `agentteams-controller/api/v1beta1/types.go` `ProjectSpec` for the exact schema) and runs
+`agt apply -f` against it — a **second, federated document** (repo/access provisioning),
 sharing the same project id as `meta.json` but never merged into it (decision #16). `--team` and
 `--repo` are optional; every `access` value must be `rw` or `ro`; omitting both flags is a no-op
 for this layer (no CR is created) and produces the same chat-flow output as before.
@@ -99,7 +99,7 @@ Never post a "please confirm" message in YOLO mode — that is a hard rule, not 
 ## Step 1d: After confirmation
 
 1. Update meta.json: `"status": "planning" → "active"`, set `confirmed_at`
-2. Sync to MinIO: `mc mirror /root/hiclaw-fs/shared/projects/${PROJECT_ID}/ ${AGENTTEAMS_STORAGE_PREFIX}/shared/projects/${PROJECT_ID}/ --overwrite`
+2. Sync to MinIO: `mc mirror /root/agentteams-fs/shared/projects/${PROJECT_ID}/ ${AGENTTEAMS_STORAGE_PREFIX}/shared/projects/${PROJECT_ID}/ --overwrite`
 3. Verify admin is in the project room — if not, invite immediately
 4. Post the project plan in the project room
 5. Assign the first task(s) — see `references/task-lifecycle.md`

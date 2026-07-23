@@ -1,6 +1,6 @@
 # Manager Guide
 
-Detailed guide for setting up and configuring the HiClaw Manager.
+Detailed guide for setting up and configuring the AgentTeams Manager.
 
 ## Installation
 
@@ -16,7 +16,7 @@ The Manager is configured via environment variables set during installation. The
 |----------|----------|---------|-------------|
 | `AGENTTEAMS_LLM_API_KEY` | Yes | - | LLM API key |
 | `AGENTTEAMS_LLM_PROVIDER` | No | `qwen` | LLM provider (`qwen` for Alibaba Cloud, `openai-compat` for OpenAI-compatible APIs) |
-| `AGENTTEAMS_DEFAULT_MODEL` | No | `qwen3.6-plus` | Default model ID |
+| `AGENTTEAMS_DEFAULT_MODEL` | No | `qwen3.5-plus` | Default model ID |
 | `AGENTTEAMS_ADMIN_USER` | No | `admin` | Human admin Matrix username |
 | `AGENTTEAMS_ADMIN_PASSWORD` | No | (auto-generated) | Human admin password (min 8 chars, MinIO requirement) |
 | `AGENTTEAMS_MATRIX_DOMAIN` | No | `matrix-local.agentteams.io:18080` | Matrix server domain (used inside container) |
@@ -33,7 +33,6 @@ The Manager is configured via environment variables set during installation. The
 | `AGENTTEAMS_MOUNT_SOCKET` | No | `1` | Mount container runtime socket for direct Worker creation |
 | `AGENTTEAMS_YOLO` | No | - | Set to `1` to enable YOLO mode (autonomous decisions, no interactive prompts) |
 | `AGENTTEAMS_MANAGER_RUNTIME` | No | `openclaw` | Manager engine: **`openclaw`** (default, `agentteams-manager` image) or **`copaw`** (`agentteams-manager-copaw` image). Hermes is supported for **Workers** only, not as a Manager runtime. |
-| `AGENTTEAMS_SOLO_OPERATOR` | No | - | Set to `1`/`true` when a single human runs AgentTeams alone (no multi-person org). Skips the Manager's 4-question onboarding interview, forces every Team's `peerMentions` to `true`, and defaults the sole Human's `permissionLevel` to Admin when unset. |
 
 ### QwenPaw Manager (formerly CoPaw, `AGENTTEAMS_MANAGER_RUNTIME=copaw`)
 
@@ -51,7 +50,7 @@ If your install still exposes MinIO on localhost, use the MinIO Console; otherwi
 
 ### Adding Skills
 
-The repo ships **16** built-in Manager skills under `manager/agent/skills/` (synced into the bucket as `agents/manager/skills/<name>/SKILL.md`): **channel-management**, **file-sync-management**, **git-delegation-management**, **hiclaw-find-worker**, **human-management**, **matrix-server-management**, **mcp-server-management**, **mcporter**, **model-switch**, **project-management**, **service-publishing**, **task-coordination**, **task-management**, **team-management**, **worker-management**, **worker-model-switch**.
+The repo ships **16** built-in Manager skills under `manager/agent/skills/` (synced into the bucket as `agents/manager/skills/<name>/SKILL.md`): **channel-management**, **file-sync-management**, **git-delegation-management**, **agentteams-find-worker**, **human-management**, **matrix-server-management**, **mcp-server-management**, **mcporter**, **model-switch**, **project-management**, **service-publishing**, **task-coordination**, **task-management**, **team-management**, **worker-management**, **worker-model-switch**.
 
 Place additional self-contained `SKILL.md` files under `agents/manager/skills/<skill-name>/`. The Manager runtime auto-discovers skills from that directory.
 
@@ -132,7 +131,7 @@ When a Worker's session is reset (context wiped due to 2 days of inactivity), th
 During task execution, Workers append to a daily progress log after every meaningful action:
 
 ```
-~/hiclaw-fs/shared/tasks/{task-id}/progress/YYYY-MM-DD.md
+~/agentteams-fs/shared/tasks/{task-id}/progress/YYYY-MM-DD.md
 ```
 
 These files are stored in shared MinIO storage and are readable by both the Manager and other Workers. They capture completed steps, current state, issues encountered, and next planned actions — providing a full audit trail even after a session reset.
@@ -142,7 +141,7 @@ These files are stored in shared MinIO storage and are readable by both the Mana
 Each Worker maintains a local task history file:
 
 ```
-~/hiclaw-fs/agents/{worker-name}/task-history.json
+~/agentteams-fs/agents/{worker-name}/task-history.json
 ```
 
 This file records the 10 most recently active tasks (task ID, brief description, status, task directory path, last worked timestamp). When a new task pushes the count above 10, the oldest entry is archived to `history-tasks/{task-id}.json`.
@@ -165,15 +164,15 @@ When the Manager or Human Admin asks a Worker to resume a task after a session r
 ```bash
 # Manager Agent (stdout/stderr + startup scripts)
 docker logs agentteams-manager -f
-docker exec agentteams-manager cat /var/log/hiclaw/manager-agent.log
+docker exec agentteams-manager cat /var/log/agentteams/manager-agent.log
 
 # OpenClaw runtime log (agent events, tool calls, LLM interactions) — OpenClaw Manager only
 docker exec agentteams-manager bash -c 'cat /tmp/openclaw/openclaw-*.log' | jq .
 
 # Infrastructure + Higress Console (embedded stack)
 docker logs agentteams-controller -f
-docker exec agentteams-controller cat /var/log/hiclaw/higress-console.log
-docker exec agentteams-controller cat /var/log/hiclaw/tuwunel.log
+docker exec agentteams-controller cat /var/log/agentteams/higress-console.log
+docker exec agentteams-controller cat /var/log/agentteams/tuwunel.log
 ```
 
 ### Replay Conversation Logs
@@ -201,7 +200,7 @@ curl -s http://127.0.0.1:18001/
 ### Consoles
 
 - **Higress Console**: http://localhost:18001 — gateway routes and consumers
-- **Element Web**: http://127.0.0.1:18088 — IM (direct host port), or via gateway hostname `http://matrix-client-local.hiclaw.io:18080` when `*-local.hiclaw.io` resolves to localhost
+- **Element Web**: http://127.0.0.1:18088 — IM (direct host port), or via gateway hostname `http://matrix-client-local.agentteams.io:18080` when `*-local.agentteams.io` resolves to localhost
 - **MinIO**: embedded install keeps MinIO **inside** `agentteams-controller` (no default host publish). Use `mc` from that container, the MinIO API through internal URLs, or browse objects if you add a console route yourself
 - **OpenClaw control UI** (OpenClaw Manager): http://127.0.0.1:18888
 
@@ -209,7 +208,7 @@ curl -s http://127.0.0.1:18001/
 
 ### Data Volume
 
-All persistent data is stored in the `hiclaw-data` Docker volume:
+All persistent data is stored in the `agentteams-data` Docker volume:
 - Tuwunel database (Matrix history)
 - MinIO storage (Agent configs, task data)
 - Higress configuration
@@ -227,22 +226,22 @@ You can optionally share the user's home directory with agents:
 ### Backup
 
 ```bash
-docker run --rm -v hiclaw-data:/data -v $(pwd):/backup ubuntu \
-  tar czf /backup/hiclaw-backup-$(date +%Y%m%d).tar.gz /data
+docker run --rm -v agentteams-data:/data -v $(pwd):/backup ubuntu \
+  tar czf /backup/agentteams-backup-$(date +%Y%m%d).tar.gz /data
 ```
 
 ### Restore
 
 ```bash
-docker run --rm -v hiclaw-data:/data -v $(pwd):/backup ubuntu \
-  tar xzf /backup/hiclaw-backup-YYYYMMDD.tar.gz -C /
+docker run --rm -v agentteams-data:/data -v $(pwd):/backup ubuntu \
+  tar xzf /backup/agentteams-backup-YYYYMMDD.tar.gz -C /
 ```
 
 ### Directory Structure
 
 The system maintains the Docker volume for persistent storage and can optionally share the host directory:
 
-- `hiclaw-data` Docker volume: Contains all persistent system data
+- `agentteams-data` Docker volume: Contains all persistent system data
 - Host `$HOME` directory: Optionally shared to container at `/host-share`
 - Inside container: Original host path (e.g., `/home/zhangty`) via symlink to `/host-share` when available
 - This provides consistent file paths between host and container environments when sharing is enabled
@@ -254,7 +253,7 @@ facilitating file transfer and processing workflows with path consistency.
 
 ```bash
 # Example 1: Install with home directory sharing (recommended)
-AGENTTEAMS_LLM_API_KEY=your-key-here ./install/hiclaw-install.sh manager
+AGENTTEAMS_LLM_API_KEY=your-key-here ./install/agentteams-install.sh manager
 
 # Example 2: Place files in home directory for agent access
 mkdir -p ~/project-inputs/
@@ -280,7 +279,7 @@ Two ways to activate (either one is sufficient):
 
 ```bash
 # Option 1: environment variable at container start
-docker run -e AGENTTEAMS_YOLO=1 ... agentteams/manager-agent:latest
+docker run -e AGENTTEAMS_YOLO=1 ... agentteams/manager:latest
 
 # Option 2: touch a file in the workspace (takes effect immediately, no restart needed)
 docker exec agentteams-manager touch /root/manager-workspace/yolo-mode

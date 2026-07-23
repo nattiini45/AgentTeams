@@ -61,7 +61,7 @@ if [ -f /root/manager-workspace/openclaw.json ]; then
     log "Manager openclaw.json already exists, updating dynamic fields only (preserving user customizations)..."
     # Merge known models into existing config (add missing, preserve user-added)
     # Use known-models.json (valid JSON) instead of template (contains ${VAR} placeholders)
-    KNOWN_MODELS=$(cat /opt/hiclaw/configs/known-models.json 2>/dev/null || echo '[]')
+    KNOWN_MODELS=$(cat /opt/agentteams/configs/known-models.json 2>/dev/null || echo '[]')
     jq --arg token "${MANAGER_TOKEN}" \
        --arg key "${AGENTTEAMS_MANAGER_GATEWAY_KEY}" \
        --arg model "${MODEL_NAME}" \
@@ -129,7 +129,7 @@ if [ -f /root/manager-workspace/openclaw.json ]; then
     fi
 else
     log "Manager openclaw.json not found, generating from template..."
-    envsubst < /opt/hiclaw/configs/manager-openclaw.json.tmpl > /root/manager-workspace/openclaw.json
+    envsubst < /opt/agentteams/configs/manager-openclaw.json.tmpl > /root/manager-workspace/openclaw.json
     # Post-envsubst injection: memorySearch + custom model (single jq pass when possible)
     if ! jq -e --arg model "${MODEL_NAME}" '.models.providers["agentteams-gateway"].models | map(.id) | index($model)' /root/manager-workspace/openclaw.json > /dev/null 2>&1; then
         log "Custom model '${MODEL_NAME}' not in built-in list, injecting into config..."

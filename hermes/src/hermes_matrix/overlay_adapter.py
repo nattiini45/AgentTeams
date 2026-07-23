@@ -39,7 +39,7 @@ except Exception:  # pragma: no cover - defensive fallback if mautrix isn't impo
 # mautrix's ``EventID`` (a ``str`` subtype); returning ``None`` here would
 # break callers that treat the result as an event id (e.g. building an
 # ``m.replace`` ``relates_to`` for streaming edits).
-_SUPPRESSED_EVENT_ID = _EventID("$hiclaw-suppressed")
+_SUPPRESSED_EVENT_ID = _EventID("$agentteams-suppressed")
 
 logger = logging.getLogger(__name__)
 _IMAGE_FILENAME_EXTENSIONS = frozenset({
@@ -131,7 +131,7 @@ class MatrixAdapter(_NativeMatrixAdapter):
         """
         if self._client is None:
             return
-        if getattr(self._client, "_hiclaw_mentions_wrapped", False):
+        if getattr(self._client, "_agentteams_mentions_wrapped", False):
             return
 
         original = self._client.send_message_event
@@ -157,7 +157,7 @@ class MatrixAdapter(_NativeMatrixAdapter):
             return await original(room_id, event_type, content, *args, **kwargs)
 
         self._client.send_message_event = types.MethodType(wrapped, self._client)
-        self._client._hiclaw_mentions_wrapped = True  # type: ignore[attr-defined]
+        self._client._agentteams_mentions_wrapped = True  # type: ignore[attr-defined]
         logger.debug("Matrix: wrapped send_message_event for outbound mentions")
 
     async def _resolve_message_context(

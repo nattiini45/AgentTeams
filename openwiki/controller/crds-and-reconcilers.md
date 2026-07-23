@@ -1,10 +1,10 @@
 # Controller: CRDs & Reconcilers
 
-The `hiclaw-controller` is a Go-based Kubernetes operator that reconciles five Custom Resource Definitions. It runs as a standalone binary and can operate in two modes: as a Kubernetes Deployment (using CRDs) or as an embedded process in a local Docker container (using a simulated CRD store).
+The `agentteams-controller` is a Go-based Kubernetes operator that reconciles five Custom Resource Definitions. It runs as a standalone binary and can operate in two modes: as a Kubernetes Deployment (using CRDs) or as an embedded process in a local Docker container (using a simulated CRD store).
 
 ## CRD Types
 
-All types are defined under `agentteams.io/v1beta1` in [`hiclaw-controller/api/v1beta1/`](../../hiclaw-controller/api/v1beta1/).
+All types are defined under `agentteams.io/v1beta1` in [`agentteams-controller/api/v1beta1/`](../../agentteams-controller/api/v1beta1/).
 
 ### Worker (`workers.agentteams.io`)
 
@@ -32,7 +32,7 @@ Represents an AI agent worker. The most feature-rich CRD.
 
 **Status fields:** `phase`, `matrixUserId`, `roomId`, `containerState`, `heartbeatInfo`, `healthState`
 
-**Source:** [`worker_types.go`](../../hiclaw-controller/api/v1beta1/worker_types.go)
+**Source:** [`worker_types.go`](../../agentteams-controller/api/v1beta1/worker_types.go)
 
 ### Manager (`managers.agentteams.io`)
 
@@ -48,7 +48,7 @@ Represents the coordinator agent.
 - `state` — `Running`, `Sleeping`, `Stopped`
 - `accessEntries` — Access control
 
-**Source:** [`manager_types.go`](../../hiclaw-controller/api/v1beta1/manager_types.go)
+**Source:** [`manager_types.go`](../../agentteams-controller/api/v1beta1/manager_types.go)
 
 ### Team (`teams.agentteams.io`)
 
@@ -66,7 +66,7 @@ Groups workers under a team with coordination rules.
 
 **Status fields:** `phase`, `leaderRoomId`, `teamRoomId`, `adminDmRoomId`, `memberStates`
 
-**Source:** [`team_types.go`](../../hiclaw-controller/api/v1beta1/team_types.go)
+**Source:** [`team_types.go`](../../agentteams-controller/api/v1beta1/team_types.go)
 
 ### Human (`humans.agentteams.io`)
 
@@ -81,7 +81,7 @@ Represents a human participant.
 - `accessibleWorkers` — Workers this human can access
 - `identitySource` — Authentication source (legacy/external SSO)
 
-**Source:** [`human_types.go`](../../hiclaw-controller/api/v1beta1/human_types.go)
+**Source:** [`human_types.go`](../../agentteams-controller/api/v1beta1/human_types.go)
 
 ### Project (`projects.agentteams.io`)
 
@@ -97,11 +97,11 @@ Represents a team-scoped project with repositories and worker assignments.
 
 **Status fields:** `phase`, `storageKey`, conditions: `StorageIdentityReady`, `ReposResolved`, `WorkersRecorded`, `MinIOProjected`
 
-**Source:** [`project_types.go`](../../hiclaw-controller/api/v1beta1/project_types.go)
+**Source:** [`project_types.go`](../../agentteams-controller/api/v1beta1/project_types.go)
 
 ## Shared Types
 
-Common types defined in [`types_shared.go`](../../hiclaw-controller/api/v1beta1/types_shared.go):
+Common types defined in [`types_shared.go`](../../agentteams-controller/api/v1beta1/types_shared.go):
 - `ResourceRequirements` — CPU/memory requests and limits
 - `MCPServerConfig` — MCP server connection configuration
 - `AccessEntry` — Access control entries
@@ -111,7 +111,7 @@ Common types defined in [`types_shared.go`](../../hiclaw-controller/api/v1beta1/
 
 ## Reconcilers
 
-All reconcilers live in [`hiclaw-controller/internal/controller/`](../../hiclaw-controller/internal/controller/).
+All reconcilers live in [`agentteams-controller/internal/controller/`](../../agentteams-controller/internal/controller/).
 
 ### WorkerReconciler (`worker_controller.go`)
 
@@ -185,7 +185,7 @@ Monitors worker health states: healthy, stalled, zombie, idle. Reports findings 
 
 ## Service Layers
 
-Services in [`hiclaw-controller/internal/service/`](../../hiclaw-controller/internal/service/) provide the core logic used by reconcilers.
+Services in [`agentteams-controller/internal/service/`](../../agentteams-controller/internal/service/) provide the core logic used by reconcilers.
 
 ### Provisioner (`provisioner.go`)
 
@@ -228,7 +228,7 @@ Defines service interfaces for testability:
 
 ## Gateway Integration
 
-Gateway clients in [`hiclaw-controller/internal/gateway/`](../../hiclaw-controller/internal/gateway/) abstract different gateway backends.
+Gateway clients in [`agentteams-controller/internal/gateway/`](../../agentteams-controller/internal/gateway/) abstract different gateway backends.
 
 ### HigressClient (`higress.go`)
 
@@ -255,7 +255,7 @@ Unified interface:
 
 ## Matrix Integration
 
-Matrix clients in [`hiclaw-controller/internal/matrix/`](../../hiclaw-controller/internal/matrix/):
+Matrix clients in [`agentteams-controller/internal/matrix/`](../../agentteams-controller/internal/matrix/):
 - `client.go` — Base client setup
 - `client_http.go` — HTTP-level Matrix API calls
 - `client_messages.go` — Message sending
@@ -264,7 +264,7 @@ Matrix clients in [`hiclaw-controller/internal/matrix/`](../../hiclaw-controller
 
 ## Package Organization
 
-The internal package map is documented in [`hiclaw-controller/internal/AGENTS.md`](../../hiclaw-controller/internal/AGENTS.md). Key packages:
+The internal package map is documented in [`agentteams-controller/internal/AGENTS.md`](../../agentteams-controller/internal/AGENTS.md). Key packages:
 
 | Package | Purpose |
 |---------|---------|
@@ -282,9 +282,9 @@ The internal package map is documented in [`hiclaw-controller/internal/AGENTS.md
 
 ## Source References
 
-- CRD types: [`hiclaw-controller/api/v1beta1/`](../../hiclaw-controller/api/v1beta1/)
-- Reconcilers: [`hiclaw-controller/internal/controller/`](../../hiclaw-controller/internal/controller/)
-- Services: [`hiclaw-controller/internal/service/`](../../hiclaw-controller/internal/service/)
-- Gateway: [`hiclaw-controller/internal/gateway/`](../../hiclaw-controller/internal/gateway/)
-- Matrix: [`hiclaw-controller/internal/matrix/`](../../hiclaw-controller/internal/matrix/)
-- Package map: [`hiclaw-controller/internal/AGENTS.md`](../../hiclaw-controller/internal/AGENTS.md)
+- CRD types: [`agentteams-controller/api/v1beta1/`](../../agentteams-controller/api/v1beta1/)
+- Reconcilers: [`agentteams-controller/internal/controller/`](../../agentteams-controller/internal/controller/)
+- Services: [`agentteams-controller/internal/service/`](../../agentteams-controller/internal/service/)
+- Gateway: [`agentteams-controller/internal/gateway/`](../../agentteams-controller/internal/gateway/)
+- Matrix: [`agentteams-controller/internal/matrix/`](../../agentteams-controller/internal/matrix/)
+- Package map: [`agentteams-controller/internal/AGENTS.md`](../../agentteams-controller/internal/AGENTS.md)

@@ -26,17 +26,17 @@ function loadConfig(env = process.env, options = {}) {
   const value = (current, legacy, fallback) => envValue(env, current, legacy, fallback, warn);
 
   const port = intValue(
-    value('AGENTTEAMS_DASHBOARD_PORT', ['HICLAW_DASHBOARD_PORT', 'PORT'], String(DEFAULTS.port)),
+    value('AGENTTEAMS_DASHBOARD_PORT', ['AGENTTEAMS_DASHBOARD_PORT', 'PORT'], String(DEFAULTS.port)),
     'AGENTTEAMS_DASHBOARD_PORT',
     { min: 1, max: 65535 },
   );
   const bindHost = value(
     'AGENTTEAMS_DASHBOARD_BIND_HOST',
-    ['HICLAW_DASHBOARD_BIND_HOST'],
+    ['AGENTTEAMS_DASHBOARD_BIND_HOST'],
     DEFAULTS.bindHost,
   );
   const authDisabled = boolValue(
-    value('AGENTTEAMS_DASHBOARD_AUTH_DISABLED', ['HICLAW_DASHBOARD_AUTH_DISABLED'], 'false'),
+    value('AGENTTEAMS_DASHBOARD_AUTH_DISABLED', ['AGENTTEAMS_DASHBOARD_AUTH_DISABLED'], 'false'),
     'AGENTTEAMS_DASHBOARD_AUTH_DISABLED',
   );
 
@@ -49,11 +49,11 @@ function loadConfig(env = process.env, options = {}) {
     auth = { enabled: false, username: '', password: '' };
   } else {
     const username = requiredValue(
-      value('AGENTTEAMS_DASHBOARD_USERNAME', ['HICLAW_DASHBOARD_USERNAME'], undefined),
+      value('AGENTTEAMS_DASHBOARD_USERNAME', ['AGENTTEAMS_DASHBOARD_USERNAME'], undefined),
       'AGENTTEAMS_DASHBOARD_USERNAME',
     );
     const passwordFile = requiredValue(
-      value('AGENTTEAMS_DASHBOARD_PASSWORD_FILE', ['HICLAW_DASHBOARD_PASSWORD_FILE'], undefined),
+      value('AGENTTEAMS_DASHBOARD_PASSWORD_FILE', ['AGENTTEAMS_DASHBOARD_PASSWORD_FILE'], undefined),
       'AGENTTEAMS_DASHBOARD_PASSWORD_FILE',
     );
     const password = readSecretFile(passwordFile);
@@ -62,42 +62,42 @@ function loadConfig(env = process.env, options = {}) {
   }
 
   const controllerUrl = validHttpUrl(
-    value('AGENTTEAMS_CONTROLLER_URL', ['HICLAW_CONTROLLER_URL'], DEFAULTS.controllerUrl),
+    value('AGENTTEAMS_CONTROLLER_URL', ['AGENTTEAMS_CONTROLLER_URL'], DEFAULTS.controllerUrl),
     'AGENTTEAMS_CONTROLLER_URL',
   );
   const tokenFile = value(
     'AGENTTEAMS_AUTH_TOKEN_FILE',
-    ['HICLAW_AUTH_TOKEN_FILE'],
+    ['AGENTTEAMS_AUTH_TOKEN_FILE'],
     DEFAULTS.tokenFile,
   );
   const upstreamTimeoutMs = intValue(
-    value('AGENTTEAMS_DASHBOARD_UPSTREAM_TIMEOUT_MS', ['HICLAW_DASHBOARD_UPSTREAM_TIMEOUT_MS'], String(DEFAULTS.upstreamTimeoutMs)),
+    value('AGENTTEAMS_DASHBOARD_UPSTREAM_TIMEOUT_MS', ['AGENTTEAMS_DASHBOARD_UPSTREAM_TIMEOUT_MS'], String(DEFAULTS.upstreamTimeoutMs)),
     'AGENTTEAMS_DASHBOARD_UPSTREAM_TIMEOUT_MS',
     { min: 1 },
   );
   const maxJsonBytes = intValue(
-    value('AGENTTEAMS_DASHBOARD_MAX_JSON_BYTES', ['HICLAW_DASHBOARD_MAX_JSON_BYTES'], String(DEFAULTS.maxJsonBytes)),
+    value('AGENTTEAMS_DASHBOARD_MAX_JSON_BYTES', ['AGENTTEAMS_DASHBOARD_MAX_JSON_BYTES'], String(DEFAULTS.maxJsonBytes)),
     'AGENTTEAMS_DASHBOARD_MAX_JSON_BYTES',
     { min: 1 },
   );
   const maxObjectBytes = intValue(
-    value('AGENTTEAMS_DASHBOARD_MAX_OBJECT_BYTES', ['HICLAW_DASHBOARD_MAX_OBJECT_BYTES'], String(DEFAULTS.maxObjectBytes)),
+    value('AGENTTEAMS_DASHBOARD_MAX_OBJECT_BYTES', ['AGENTTEAMS_DASHBOARD_MAX_OBJECT_BYTES'], String(DEFAULTS.maxObjectBytes)),
     'AGENTTEAMS_DASHBOARD_MAX_OBJECT_BYTES',
     { min: 1 },
   );
   const listMaxLimit = intValue(
-    value('AGENTTEAMS_DASHBOARD_LIST_MAX_LIMIT', ['HICLAW_DASHBOARD_LIST_MAX_LIMIT'], String(DEFAULTS.listMaxLimit)),
+    value('AGENTTEAMS_DASHBOARD_LIST_MAX_LIMIT', ['AGENTTEAMS_DASHBOARD_LIST_MAX_LIMIT'], String(DEFAULTS.listMaxLimit)),
     'AGENTTEAMS_DASHBOARD_LIST_MAX_LIMIT',
     { min: 1, max: 1000 },
   );
   const listDefaultLimit = intValue(
-    value('AGENTTEAMS_DASHBOARD_LIST_DEFAULT_LIMIT', ['HICLAW_DASHBOARD_LIST_DEFAULT_LIMIT'], String(DEFAULTS.listDefaultLimit)),
+    value('AGENTTEAMS_DASHBOARD_LIST_DEFAULT_LIMIT', ['AGENTTEAMS_DASHBOARD_LIST_DEFAULT_LIMIT'], String(DEFAULTS.listDefaultLimit)),
     'AGENTTEAMS_DASHBOARD_LIST_DEFAULT_LIMIT',
     { min: 1, max: listMaxLimit },
   );
   const publicOriginValue = value(
     'AGENTTEAMS_DASHBOARD_PUBLIC_ORIGIN',
-    ['HICLAW_DASHBOARD_PUBLIC_ORIGIN'],
+    ['AGENTTEAMS_DASHBOARD_PUBLIC_ORIGIN'],
     '',
   );
 
@@ -122,7 +122,7 @@ function loadConfig(env = process.env, options = {}) {
       ),
       accessKey: value('AGENTTEAMS_MINIO_ACCESS_KEY', [], env.MINIO_ACCESS_KEY || env.MINIO_ACCESS || ''),
       secretKey: value('AGENTTEAMS_MINIO_SECRET_KEY', [], env.MINIO_SECRET_KEY || env.MINIO_SECRET || ''),
-      bucket: value('AGENTTEAMS_FS_BUCKET', ['HICLAW_FS_BUCKET'], DEFAULTS.bucket),
+      bucket: value('AGENTTEAMS_FS_BUCKET', ['AGENTTEAMS_FS_BUCKET'], DEFAULTS.bucket),
     },
   };
 }
@@ -139,7 +139,7 @@ function envValue(env, currentName, legacyNames, fallback, warn) {
   if (hasValue(env, currentName)) return env[currentName];
   for (const name of legacyNames) {
     if (!hasValue(env, name)) continue;
-    if (name.startsWith('HICLAW_')) {
+    if (name.startsWith('AGENTTEAMS_')) {
       warn(name + ' is deprecated; use ' + currentName + ' instead');
     }
     return env[name];

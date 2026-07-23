@@ -64,7 +64,7 @@ HERMES = SyncContract(
     push_check_interval_seconds=5,
     push_policy=PushPolicy.hermes(),
     on_demand_shared_pull=True,
-    notes="pull_all mirrors shared/ every sync tick; team id from AGENTS.md not hiclaw CLI.",
+    notes="pull_all mirrors shared/ every sync tick; team id from AGENTS.md not agt CLI.",
 )
 
 OPENCLAW = SyncContract(
@@ -103,7 +103,7 @@ OPENHUMAN = SyncContract(
     push_policy=PushPolicy.openhuman(),
     on_demand_shared_pull=False,
     notes=(
-        "Uses AGENTTEAMS_STORAGE_ALIAS from hiclaw-env (fixed in Phase 13). "
+        "Uses AGENTTEAMS_STORAGE_ALIAS from agentteams-env (fixed in Phase 13). "
         "Bash push mirrors memory/ and shared/ separately; shared push excludes spec.md and base/. "
         "No openclaw merge loop."
     ),

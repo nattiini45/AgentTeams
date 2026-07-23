@@ -1,8 +1,8 @@
 #!/bin/bash
 # manage-state.sh - Atomic state.json operations for task tracking
 #
-# Prefer the hiclaw CLI implementation when available (Phase 14 I14.4).
-# The shell body below remains as a fallback for environments without hiclaw.
+# Prefer the agt CLI implementation when available (Phase 14 I14.4).
+# The shell body below remains as a fallback for environments without agt.
 #
 # Replaces manual jq edits by the LLM Agent with deterministic script calls.
 # All writes use tmp+mv for atomicity.
@@ -38,10 +38,10 @@ for _arg in "$@"; do
     _prev="$_arg"
 done
 
-# verify stays in shell — it does not mutate state.json and is not implemented in hiclaw manager-state.
-if [ "${HICLAW_MANAGER_STATE_IMPL:-auto}" != "shell" ] && [ "$_pre_action" != "verify" ]; then
-    if command -v hiclaw >/dev/null 2>&1; then
-        exec hiclaw manager-state "$@"
+# verify stays in shell — it does not mutate state.json and is not implemented in agt manager-state.
+if [ "${AGENTTEAMS_MANAGER_STATE_IMPL:-auto}" != "shell" ] && [ "$_pre_action" != "verify" ]; then
+    if command -v agt >/dev/null 2>&1; then
+        exec agt manager-state "$@"
     fi
 fi
 

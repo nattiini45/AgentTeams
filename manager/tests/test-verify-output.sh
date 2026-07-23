@@ -50,13 +50,13 @@ run_verify() {
     local task_root="$1"
     local task_id="$2"
     shift 2
-    HICLAW_TASK_ROOT="${task_root}" bash "${VERIFY_SCRIPT}" --task-id "${task_id}" "$@"
+    AGENTTEAMS_TASK_ROOT="${task_root}" bash "${VERIFY_SCRIPT}" --task-id "${task_id}" "$@"
 }
 
 run_manage_verify() {
     local task_root="$1"
     local task_id="$2"
-    HICLAW_TASK_ROOT="${task_root}" HICLAW_MANAGER_STATE_IMPL=shell \
+    AGENTTEAMS_TASK_ROOT="${task_root}" AGENTTEAMS_MANAGER_STATE_IMPL=shell \
         bash "${STATE_SCRIPT}" --action verify --task-id "${task_id}"
 }
 
@@ -242,31 +242,31 @@ echo "=== TC7: manage-state.sh --action verify delegates to verify-output.sh ===
 }
 
 echo ""
-echo "=== TC8: verify bypasses hiclaw manager-state delegation when hiclaw is on PATH ==="
+echo "=== TC8: verify bypasses agt manager-state delegation when agt is on PATH ==="
 {
     root=$(new_task_root)
-    task_id="task-bypass-hiclaw"
+    task_id="task-bypass-agentteams"
     task_dir="${root}/shared/tasks/${task_id}"
     mkdir -p "${task_dir}"
     echo "done" > "${task_dir}/result.md"
 
     fake_bin="${TMPDIR_ROOT}/fakebin"
     mkdir -p "${fake_bin}"
-    cat > "${fake_bin}/hiclaw" <<'EOF'
+    cat > "${fake_bin}/agt" <<'EOF'
 #!/bin/bash
-echo "hiclaw manager-state should not run for verify" >&2
+echo "agt manager-state should not run for verify" >&2
 exit 99
 EOF
-    chmod +x "${fake_bin}/hiclaw"
+    chmod +x "${fake_bin}/agt"
 
     set +e
-    out=$(PATH="${fake_bin}:${PATH}" HICLAW_TASK_ROOT="${root}" \
+    out=$(PATH="${fake_bin}:${PATH}" AGENTTEAMS_TASK_ROOT="${root}" \
         bash "${STATE_SCRIPT}" --action verify --task-id "${task_id}" 2>&1)
     rc=$?
     set -e
 
     assert_eq "exit code 0 (not 99)" "0" "${rc}"
-    assert_json_true "verified true with fake hiclaw on PATH" "${out}" '.verified'
+    assert_json_true "verified true with fake agt on PATH" "${out}" '.verified'
 }
 
 echo ""

@@ -1,93 +1,93 @@
 # Controller: CLI & API
 
-The `hiclaw` CLI and REST API are the primary interfaces for managing AgentTeams resources. The CLI is baked into Manager and Worker images. The REST API runs on the controller at port 8090.
+The `agt` CLI and REST API are the primary interfaces for managing AgentTeams resources. The CLI is baked into Manager and Worker images. The REST API runs on the controller at port 8090.
 
 ## CLI Commands
 
-The CLI is defined in [`hiclaw-controller/cmd/hiclaw/`](../../hiclaw-controller/cmd/hiclaw/). It communicates with the controller REST API.
+The CLI is defined in [`agentteams-controller/cmd/agt/`](../../agentteams-controller/cmd/agt/). It communicates with the controller REST API.
 
 ### Resource CRUD
 
 ```bash
 # Create resources
-hiclaw create worker --name my-worker --runtime openclaw --model gpt-4
-hiclaw create team --name my-team --workers worker-a,worker-b
-hiclaw create human --name alice --email alice@example.com
-hiclaw create manager --name my-manager --runtime copaw
+agt create worker --name my-worker --runtime openclaw --model gpt-4
+agt create team --name my-team --workers worker-a,worker-b
+agt create human --name alice --email alice@example.com
+agt create manager --name my-manager --runtime copaw
 
 # List resources
-hiclaw get workers
-hiclaw get teams
-hiclaw get humans
-hiclaw get managers
+agt get workers
+agt get teams
+agt get humans
+agt get managers
 
 # Update resources
-hiclaw update worker my-worker --model gpt-5
-hiclaw update team my-team --add-worker worker-c
+agt update worker my-worker --model gpt-5
+agt update team my-team --add-worker worker-c
 
 # Delete resources
-hiclaw delete worker my-worker
-hiclaw delete team my-team
+agt delete worker my-worker
+agt delete team my-team
 
 # Declarative apply (create or update from YAML)
-hiclaw apply -f worker.yaml
+agt apply -f worker.yaml
 ```
 
 ### Worker Lifecycle
 
 ```bash
 # Wake a sleeping worker
-hiclaw worker wake my-worker
+agt worker wake my-worker
 
 # Sleep a running worker
-hiclaw worker sleep my-worker
+agt worker sleep my-worker
 
 # Ensure worker is ready (wait for provisioning)
-hiclaw worker ensure-ready my-worker
+agt worker ensure-ready my-worker
 
 # Report worker ready (called by worker itself)
-hiclaw worker report-ready my-worker
+agt worker report-ready my-worker
 
 # Get worker runtime status
-hiclaw worker status my-worker
+agt worker status my-worker
 ```
 
 ### Status & Monitoring
 
 ```bash
 # Show cluster overview (all resources, one screen)
-hiclaw status
+agt status
 
 # Watch mode (auto-refresh)
-hiclaw status --watch
+agt status --watch
 ```
 
 ### Credential Management
 
 ```bash
 # Rotate Matrix AppService token
-hiclaw rotate appservice-token
+agt rotate appservice-token
 
 # Test LLM provider connectivity
-hiclaw llm-preflight
+agt llm-preflight
 ```
 
 ### Manager State
 
 ```bash
 # Initialize task board
-hiclaw manager-state --action init
+agt manager-state --action init
 
 # Add finite task
-hiclaw manager-state --action add-finite --task "Deploy service X"
+agt manager-state --action add-finite --task "Deploy service X"
 
 # List tasks
-hiclaw manager-state --action list
+agt manager-state --action list
 ```
 
 ## REST API
 
-The REST API is implemented in [`hiclaw-controller/internal/server/`](../../hiclaw-controller/internal/server/) and runs on port 8090.
+The REST API is implemented in [`agentteams-controller/internal/server/`](../../agentteams-controller/internal/server/) and runs on port 8090.
 
 ### Resource Endpoints
 
@@ -172,7 +172,7 @@ The controller also acts as a Matrix AppService for event push:
 
 ## Handler Architecture
 
-API handlers are in [`hiclaw-controller/internal/server/`](../../hiclaw-controller/internal/server/):
+API handlers are in [`agentteams-controller/internal/server/`](../../agentteams-controller/internal/server/):
 
 | File | Purpose |
 |------|---------|
@@ -185,7 +185,7 @@ API handlers are in [`hiclaw-controller/internal/server/`](../../hiclaw-controll
 
 ## CLI Source Structure
 
-The CLI is built with Cobra and lives in [`hiclaw-controller/cmd/hiclaw/`](../../hiclaw-controller/cmd/hiclaw/):
+The CLI is built with Cobra and lives in [`agentteams-controller/cmd/agt/`](../../agentteams-controller/cmd/agt/):
 
 | File | Purpose |
 |------|---------|
@@ -199,7 +199,7 @@ The CLI is built with Cobra and lives in [`hiclaw-controller/cmd/hiclaw/`](../..
 
 ## Source References
 
-- CLI commands: [`hiclaw-controller/cmd/hiclaw/`](../../hiclaw-controller/cmd/hiclaw/)
-- REST handlers: [`hiclaw-controller/internal/server/`](../../hiclaw-controller/internal/server/)
-- Lifecycle handler: [`hiclaw-controller/internal/server/lifecycle_handler.go`](../../hiclaw-controller/internal/server/lifecycle_handler.go)
-- Health handler: [`hiclaw-controller/internal/server/worker_health.go`](../../hiclaw-controller/internal/server/worker_health.go)
+- CLI commands: [`agentteams-controller/cmd/agt/`](../../agentteams-controller/cmd/agt/)
+- REST handlers: [`agentteams-controller/internal/server/`](../../agentteams-controller/internal/server/)
+- Lifecycle handler: [`agentteams-controller/internal/server/lifecycle_handler.go`](../../agentteams-controller/internal/server/lifecycle_handler.go)
+- Health handler: [`agentteams-controller/internal/server/worker_health.go`](../../agentteams-controller/internal/server/worker_health.go)

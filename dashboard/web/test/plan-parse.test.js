@@ -67,7 +67,7 @@ test('parsePlanTasks: non-conforming lines are skipped, not thrown', () => {
   const md = [
     '### Phase 1: X',
     '- [ ] missing-em-dash-so-skip',
-    '  - Spec: /root/hiclaw-fs/shared/tasks/foo/spec.md',
+    '  - Spec: /root/agentteams-fs/shared/tasks/foo/spec.md',
     '- [ ] task-20260101-000001 — Valid line (assigned: @a:x)',
     'random prose that is not a task line at all',
   ].join('\n');

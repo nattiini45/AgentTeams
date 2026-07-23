@@ -41,7 +41,7 @@ _BULK_MIRROR_EXCLUDES = (
 
 
 class FileSync(_BaseFileSync):
-    """OpenClaw MinIO sync — workspace at ``/root/hiclaw-fs/agents/{name}``."""
+    """OpenClaw MinIO sync — workspace at ``/root/agentteams-fs/agents/{name}``."""
 
     def __init__(
         self,
@@ -54,7 +54,7 @@ class FileSync(_BaseFileSync):
         local_dir: Optional[Path] = None,
         shared_dir: Optional[Path] = None,
     ) -> None:
-        agentteams_root = Path(os.environ.get("AGENTTEAMS_ROOT", "/root/hiclaw-fs"))
+        agentteams_root = Path(os.environ.get("AGENTTEAMS_ROOT", "/root/agentteams-fs"))
         workspace = local_dir or agentteams_root / "agents" / worker_name
         super().__init__(
             endpoint=endpoint,

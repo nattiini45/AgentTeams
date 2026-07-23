@@ -4,7 +4,7 @@
 # Reads from:
 #   - worker-lifecycle.json (container_status, idle_since)
 #   - state.json (active tasks per worker, blocked status)
-#   - hiclaw get workers -o json (phase, lastHeartbeat, lastActiveAt)
+#   - agt get workers -o json (phase, lastHeartbeat, lastActiveAt)
 #
 # Outputs JSON health classification per worker.
 #
@@ -49,8 +49,8 @@ _iso_to_epoch() {
 
 # Get workers from controller API
 WORKERS_JSON="[]"
-if command -v hiclaw &>/dev/null; then
-    WORKERS_JSON=$(hiclaw get workers -o json 2>/dev/null | jq -c '.workers // []' 2>/dev/null || echo "[]")
+if command -v agt &>/dev/null; then
+    WORKERS_JSON=$(agt get workers -o json 2>/dev/null | jq -c '.workers // []' 2>/dev/null || echo "[]")
 fi
 
 # Get lifecycle data

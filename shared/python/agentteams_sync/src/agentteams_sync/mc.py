@@ -13,11 +13,17 @@ logger = logging.getLogger(__name__)
 def storage_alias() -> str:
     explicit = os.environ.get("AGENTTEAMS_STORAGE_ALIAS")
     if explicit:
-        return explicit
-    prefix = os.environ.get("AGENTTEAMS_STORAGE_PREFIX") or ""
-    if "/" in prefix:
-        return prefix.split("/", 1)[0]
-    return "agentteams"
+        alias = explicit
+    else:
+        prefix = os.environ.get("AGENTTEAMS_STORAGE_PREFIX") or ""
+        if "/" in prefix:
+            alias = prefix.split("/", 1)[0]
+        else:
+            alias = "agentteams"
+    # Reject shell metacharacters so alias is safe in env keys and bash -c usage.
+    if not alias or any(c in alias for c in ' \t\n\r"$`\\;&|<>(){}[]!*?'):
+        raise ValueError(f"unsafe AGENTTEAMS_STORAGE_ALIAS / storage prefix alias: {alias!r}")
+    return alias
 
 
 def preview_text(value: str | None, limit: int = 2000) -> str:

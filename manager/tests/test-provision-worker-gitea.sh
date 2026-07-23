@@ -57,22 +57,22 @@ strip_cr() {
 strip_cr "${PROVISION_SCRIPT}"
 strip_cr "${SETUP_MCP_PROXY_SCRIPT}"
 
-# ── Stub /opt/hiclaw/scripts/lib/hiclaw-env.sh ────────────────────────────────
-# Both scripts `source /opt/hiclaw/scripts/lib/hiclaw-env.sh` unconditionally
+# ── Stub /opt/agentteams/scripts/lib/agentteams-env.sh ────────────────────────────────
+# Both scripts `source /opt/agentteams/scripts/lib/agentteams-env.sh` unconditionally
 # (the real path only exists inside a built container). Provide a harmless
 # stub here so the harness can run standalone; real behavior is unaffected
 # since production containers always have the real file.
-HICLAW_ENV_STUB_DIR="/opt/hiclaw/scripts/lib"
-if [ ! -f "${HICLAW_ENV_STUB_DIR}/hiclaw-env.sh" ]; then
-    if mkdir -p "${HICLAW_ENV_STUB_DIR}" 2>/dev/null; then
-        cat > "${HICLAW_ENV_STUB_DIR}/hiclaw-env.sh" << 'ENVSTUB'
-# Test-harness stub — real containers ship the actual hiclaw-env.sh.
+AGENTTEAMS_ENV_STUB_DIR="/opt/agentteams/scripts/lib"
+if [ ! -f "${AGENTTEAMS_ENV_STUB_DIR}/agentteams-env.sh" ]; then
+    if mkdir -p "${AGENTTEAMS_ENV_STUB_DIR}" 2>/dev/null; then
+        cat > "${AGENTTEAMS_ENV_STUB_DIR}/agentteams-env.sh" << 'ENVSTUB'
+# Test-harness stub — real containers ship the actual agentteams-env.sh.
 : "${AGENTTEAMS_STORAGE_PREFIX:=agentteams/agentteams-storage}"
 ensure_mc_credentials() { :; }
-log() { echo "[hiclaw-env-stub] $*" >&2; }
+log() { echo "[agentteams-env-stub] $*" >&2; }
 ENVSTUB
     else
-        echo "SKIP: cannot write ${HICLAW_ENV_STUB_DIR}/hiclaw-env.sh (no permission) — run this harness as root/in a container" >&2
+        echo "SKIP: cannot write ${AGENTTEAMS_ENV_STUB_DIR}/agentteams-env.sh (no permission) — run this harness as root/in a container" >&2
         exit 1
     fi
 fi
@@ -83,7 +83,7 @@ fi
 new_sandbox() {
     local sandbox
     sandbox=$(mktemp -d "${TMPDIR_ROOT}/sandbox-XXXXXX")
-    mkdir -p "${sandbox}/bin" "${sandbox}/home" "${sandbox}/fs/shared/projects" "${sandbox}/fs/agents" "${sandbox}/hiclaw-fs/shared/projects"
+    mkdir -p "${sandbox}/bin" "${sandbox}/home" "${sandbox}/fs/shared/projects" "${sandbox}/fs/agents" "${sandbox}/agentteams-fs/shared/projects"
     : > "${sandbox}/calls.log"
     echo "${sandbox}"
 }
@@ -91,8 +91,8 @@ new_sandbox() {
 write_manifest() {
     # write_manifest <sandbox> <project-id> <json>
     local sandbox="$1" pid="$2" json="$3"
-    mkdir -p "${sandbox}/hiclaw-fs/shared/projects/${pid}"
-    printf '%s' "${json}" > "${sandbox}/hiclaw-fs/shared/projects/${pid}/manifest.json"
+    mkdir -p "${sandbox}/agentteams-fs/shared/projects/${pid}"
+    printf '%s' "${json}" > "${sandbox}/agentteams-fs/shared/projects/${pid}/manifest.json"
 }
 
 # The curl shim: logs every call ("METHOD URL BODY") to calls.log, and returns
@@ -237,7 +237,7 @@ JQSHIM
     chmod +x "${sandbox}/bin/jq"
 }
 
-# The mc shim: `cat` reads from the sandbox's fake hiclaw-fs manifest tree
+# The mc shim: `cat` reads from the sandbox's fake agentteams-fs manifest tree
 # (falls back to empty), `cp`/`mirror`/`stat` are no-ops that succeed.
 write_mc_shim() {
     local sandbox="$1"
@@ -250,9 +250,9 @@ SANDBOX="${sandbox}"
 case "\$1" in
     cat)
         path="\$2"
-        # path looks like hiclaw/hiclaw-storage/shared/projects/<id>/manifest.json
+        # path looks like agt/agentteams-storage/shared/projects/<id>/manifest.json
         rel="\${path#*/shared/}"
-        f="\${SANDBOX}/hiclaw-fs/shared/\${rel}"
+        f="\${SANDBOX}/agentteams-fs/shared/\${rel}"
         if [ -f "\${f}" ]; then
             cat "\${f}"
             exit 0
@@ -485,7 +485,7 @@ echo "=== TC11: provision — missing/unreadable manifest aborts BEFORE 'Provisi
     write_curl_shim "${s}"
     write_mc_shim "${s}"
     # Deliberately do NOT write a manifest for proj-missing anywhere (mc cat
-    # and the hiclaw-fs fallback both fail) so read_manifest_repos returns 1.
+    # and the agentteams-fs fallback both fail) so read_manifest_repos returns 1.
     rc=0
     out=$(run_provision "${s}" alice --project proj-missing) || rc=$?
     log=$(calls "${s}")
@@ -518,7 +518,7 @@ echo "=== TC12: --deprovision — missing/unreadable manifest aborts BEFORE dere
 echo ""
 echo "=== TC13: provision — corrupt existing mcporter.json is kept intact, not truncated ==="
 {
-    # update_worker_mcporter() hardcodes /root/hiclaw-fs/agents/<worker> and
+    # update_worker_mcporter() hardcodes /root/agentteams-fs/agents/<worker> and
     # /data/worker-creds/<worker>.env (not sandboxable via HOME/PATH), so this
     # case seeds those real absolute paths for a throwaway worker name, runs
     # a full do_provision via run_provision (with a jq shim that simulates a
@@ -533,7 +533,7 @@ echo "=== TC13: provision — corrupt existing mcporter.json is kept intact, not
         write_manifest "${s}" "proj1" "${FIXTURE_MANIFEST}"
 
         tc13_worker="tc13probe$$"
-        tc13_agent_dir="/root/hiclaw-fs/agents/${tc13_worker}"
+        tc13_agent_dir="/root/agentteams-fs/agents/${tc13_worker}"
         tc13_creds="/data/worker-creds/${tc13_worker}.env"
         cleanup_tc13() { rm -rf "${tc13_agent_dir}"; rm -f "${tc13_creds}"; }
 

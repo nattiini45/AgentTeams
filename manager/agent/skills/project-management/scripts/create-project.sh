@@ -10,7 +10,7 @@
 #   - Environment: AGENTTEAMS_MATRIX_DOMAIN, AGENTTEAMS_ADMIN_USER, MANAGER_MATRIX_TOKEN
 
 set -e
-source /opt/hiclaw/scripts/lib/hiclaw-env.sh
+source /opt/agentteams/scripts/lib/agentteams-env.sh
 
 PROJECT_ID=""
 PROJECT_TITLE=""
@@ -48,7 +48,7 @@ _fail() {
 # it in the surrounding quotes. Chat-origin values (PROJECT_TITLE especially)
 # must never be interpolated into emitted YAML unescaped — a stray '"', '\',
 # or newline would break out of the scalar and corrupt/inject the document
-# that is later fed to `hiclaw apply -f`.
+# that is later fed to `agt apply -f`.
 # Order matters: escape backslashes FIRST (so we don't double-escape the
 # backslashes we're about to introduce for \n / \t), then quotes, then map
 # newlines/tabs to their YAML escapes, and finally drop bare CRs.
@@ -94,7 +94,7 @@ if [ -n "${PROJECT_TEAM}" ] && ! [[ "${PROJECT_TEAM}" =~ ${_SAFE_NAME_RE} ]]; th
 fi
 
 # Ensure Manager Matrix token is available
-SECRETS_FILE="/data/hiclaw-secrets.env"
+SECRETS_FILE="/data/agentteams-secrets.env"
 if [ -f "${SECRETS_FILE}" ]; then
     source "${SECRETS_FILE}"
 fi
@@ -110,7 +110,7 @@ fi
 # Step 1: Create project directories and files
 # ============================================================
 log "Step 1: Creating project directories..."
-PROJECT_DIR="/root/hiclaw-fs/shared/projects/${PROJECT_ID}"
+PROJECT_DIR="/root/agentteams-fs/shared/projects/${PROJECT_ID}"
 mkdir -p "${PROJECT_DIR}"
 
 NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -246,8 +246,8 @@ _worker_auto_join() {
     if [ -z "${WORKER_PASSWORD}" ]; then
         WORKER_PASSWORD=$(mc cat "${AGENTTEAMS_STORAGE_PREFIX}/agents/${worker}/credentials/matrix/password" 2>/dev/null || true)
     fi
-    if [ -z "${WORKER_PASSWORD}" ] && [ -f "/root/hiclaw-fs/agents/${worker}/credentials/matrix/password" ]; then
-        WORKER_PASSWORD=$(cat "/root/hiclaw-fs/agents/${worker}/credentials/matrix/password" 2>/dev/null || true)
+    if [ -z "${WORKER_PASSWORD}" ] && [ -f "/root/agentteams-fs/agents/${worker}/credentials/matrix/password" ]; then
+        WORKER_PASSWORD=$(cat "/root/agentteams-fs/agents/${worker}/credentials/matrix/password" 2>/dev/null || true)
     fi
 
     if [ -n "${WORKER_PASSWORD}" ]; then
@@ -327,7 +327,7 @@ done
 # Step 3: Add Workers to Manager's groupAllowFrom
 # ============================================================
 log "Step 3: Updating Manager groupAllowFrom..."
-MANAGER_CONFIG="/root/hiclaw-fs/agents/manager/openclaw.json"
+MANAGER_CONFIG="/root/agentteams-fs/agents/manager/openclaw.json"
 if [ -f "${MANAGER_CONFIG}" ]; then
     _patch_manager_project_room_config "${MANAGER_CONFIG}"
     # Sync updated Manager config to MinIO
@@ -355,15 +355,15 @@ log "  MinIO sync verified"
 # ============================================================
 # Only runs when --team was given (decision #16). This is IN ADDITION to the
 # meta.json/plan.md chat-flow written above, never a replacement — same
-# project id, two documents, no schema merge. `hiclaw apply -f` hits the
+# project id, two documents, no schema merge. `agt apply -f` hits the
 # controller's Project REST routes (Step 1, /api/v1/projects); the Manager
-# image bundles the `hiclaw` CLI (manager/Dockerfile.copaw).
+# image bundles the `agt` CLI (manager/Dockerfile.copaw).
 if [ -n "${PROJECT_TEAM}" ]; then
     log "Step 5: Applying federated Project CR (team=${PROJECT_TEAM})..."
 
     PROJECT_CR_FILE="${PROJECT_DIR}/project-cr.yaml"
     {
-        echo "apiVersion: hiclaw.io/v1beta1"
+        echo "apiVersion: agentteams.io/v1beta1"
         echo "kind: Project"
         echo "metadata:"
         echo "  name: $(yaml_dq "${PROJECT_ID}")"
@@ -395,10 +395,10 @@ if [ -n "${PROJECT_TEAM}" ]; then
         fi
     } > "${PROJECT_CR_FILE}"
 
-    if hiclaw apply -f "${PROJECT_CR_FILE}"; then
+    if agt apply -f "${PROJECT_CR_FILE}"; then
         log "  Project CR applied (${PROJECT_CR_FILE})"
     else
-        log "  WARNING: hiclaw apply -f failed for Project CR — repo/access provisioning layer not created; chat-flow project is unaffected"
+        log "  WARNING: agt apply -f failed for Project CR — repo/access provisioning layer not created; chat-flow project is unaffected"
     fi
 fi
 

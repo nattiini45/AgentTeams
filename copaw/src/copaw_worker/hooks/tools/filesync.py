@@ -34,32 +34,26 @@ def _copaw_working_dir() -> Path:
 def create_sync() -> FileSync:
     worker_name = (
         os.getenv("AGENTTEAMS_WORKER_NAME")
-        or os.getenv("HICLAW_WORKER_NAME")
         or os.getenv("COPAW_WORKER_NAME")
     )
     worker_cr_name = (
         os.getenv("AGENTTEAMS_WORKER_CR_NAME")
-        or os.getenv("HICLAW_WORKER_CR_NAME")
         or os.getenv("COPAW_WORKER_CR_NAME")
     )
     minio_endpoint = (
         os.getenv("AGENTTEAMS_FS_ENDPOINT")
-        or os.getenv("HICLAW_FS_ENDPOINT")
         or os.getenv("COPAW_MINIO_ENDPOINT")
     )
     minio_access_key = (
         os.getenv("AGENTTEAMS_FS_ACCESS_KEY")
-        or os.getenv("HICLAW_FS_ACCESS_KEY")
         or os.getenv("COPAW_MINIO_ACCESS_KEY")
     )
     minio_secret_key = (
         os.getenv("AGENTTEAMS_FS_SECRET_KEY")
-        or os.getenv("HICLAW_FS_SECRET_KEY")
         or os.getenv("COPAW_MINIO_SECRET_KEY")
     )
     minio_bucket = (
         os.getenv("AGENTTEAMS_FS_BUCKET")
-        or os.getenv("HICLAW_FS_BUCKET")
         or os.getenv("COPAW_MINIO_BUCKET")
         or "agentteams-storage"
     )
