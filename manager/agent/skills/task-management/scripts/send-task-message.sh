@@ -1,7 +1,7 @@
 #!/bin/bash
 # send-task-message.sh - Dispatch a task-related Matrix message to a Worker room
 #
-# Hides runtime branching so the Manager never looks up runtime via hiclaw API.
+# Hides runtime branching so the Manager never looks up runtime via agt API.
 # Mirrors send-worker-greeting.sh behavior.
 #
 # Usage:

@@ -54,9 +54,9 @@ The [`Makefile`](../../Makefile) is the unified build/test/push/install interfac
 ### Controller Development (Go)
 
 ```
-hiclaw-controller/
+agentteams-controller/
 ├── api/v1beta1/           # CRD type definitions
-├── cmd/hiclaw/            # CLI entry point and commands
+├── cmd/agt/            # CLI entry point and commands
 ├── internal/
 │   ├── controller/        # Reconciler implementations
 │   ├── service/           # Provisioner and deployer logic
@@ -74,9 +74,9 @@ hiclaw-controller/
 ```
 
 **Key entry points:**
-- [`hiclaw-controller/cmd/hiclaw/main.go`](../../hiclaw-controller/cmd/hiclaw/main.go) — CLI entry
-- [`hiclaw-controller/internal/app/app.go`](../../hiclaw-controller/internal/app/app.go) — Application setup
-- [`hiclaw-controller/internal/AGENTS.md`](../../hiclaw-controller/internal/AGENTS.md) — Package routing map
+- [`agentteams-controller/cmd/agt/main.go`](../../agentteams-controller/cmd/agt/main.go) — CLI entry
+- [`agentteams-controller/internal/app/app.go`](../../agentteams-controller/internal/app/app.go) — Application setup
+- [`agentteams-controller/internal/AGENTS.md`](../../agentteams-controller/internal/AGENTS.md) — Package routing map
 
 ### Worker Development (Python)
 
@@ -143,10 +143,10 @@ cd copaw && python -m pytest
 
 ```bash
 # Run Go tests
-cd hiclaw-controller && go test ./...
+cd agentteams-controller && go test ./...
 
 # Run specific test
-cd hiclaw-controller && go test ./internal/controller/...
+cd agentteams-controller && go test ./internal/controller/...
 ```
 
 ### Helm Chart Validation
@@ -221,10 +221,10 @@ On release, the workflow renames `current.md` → `vX.Y.Z.md` and creates a fres
 
 ### Modifying CRDs
 
-1. Edit types in `hiclaw-controller/api/v1beta1/`
+1. Edit types in `agentteams-controller/api/v1beta1/`
 2. Run `make generate` to regenerate deepcopy
 3. Run `make manifests` to regenerate CRD YAML
-4. Update Helm chart CRDs in `helm/hiclaw/crds/`
+4. Update Helm chart CRDs in `helm/agentteams/crds/`
 5. Update reconcilers if needed
 
 ## Source References

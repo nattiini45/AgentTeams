@@ -26,8 +26,8 @@ Create the CRD layer by adding `--team <TEAM_NAME>` and one or more repeatable
 `--repo <URL>:<rw|ro>` flags to the same `create-project.sh` call (`references/create-project.md`
 Step 1b). Omit both flags when the project has no repo to provision (e.g. pure coordination/chat
 work) — this remains the default and produces byte-identical output to a project with no CRD.
-The CRD is applied via `hiclaw apply -f`, which POSTs/PUTs to the controller's Project REST
-routes; the Manager container bundles the `hiclaw` CLI.
+The CRD is applied via `agt apply -f`, which POSTs/PUTs to the controller's Project REST
+routes; the Manager container bundles the `agt` CLI.
 
 ## Gotchas
 

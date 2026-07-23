@@ -2,7 +2,7 @@
 # create-team-legacy.sh - Legacy Manager-side team creation (shell implementation)
 #
 # Invoked only when HICLAW_TEAM_CREATE_IMPL=shell (via create-team.sh).
-# Prefer `hiclaw create team` / the default create-team.sh wrapper instead.
+# Prefer `agt create team` / the default create-team.sh wrapper instead.
 #
 # This path performs Manager-side Matrix room pre-creation, direct create-worker.sh
 # calls, teams-registry updates, and Leader AGENTS.md hot-push — none of which

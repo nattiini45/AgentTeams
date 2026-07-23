@@ -58,7 +58,7 @@ Repeat `--depends-on` for each upstream Project CR metadata name in the same nam
 
 This additionally emits a `Project` CR YAML (`apiVersion: hiclaw.io/v1beta1`, `kind: Project` —
 see `hiclaw-controller/api/v1beta1/types.go` `ProjectSpec` for the exact schema) and runs
-`hiclaw apply -f` against it — a **second, federated document** (repo/access provisioning),
+`agt apply -f` against it — a **second, federated document** (repo/access provisioning),
 sharing the same project id as `meta.json` but never merged into it (decision #16). `--team` and
 `--repo` are optional; every `access` value must be `rw` or `ro`; omitting both flags is a no-op
 for this layer (no CR is created) and produces the same chat-flow output as before.

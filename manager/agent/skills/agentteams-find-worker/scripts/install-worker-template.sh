@@ -163,4 +163,4 @@ if [[ "$DRY_RUN" == true ]]; then
     exit 0
 fi
 
-exec agentteams "${AGENTTEAMS_ARGS[@]}"
+exec agt "${AGENTTEAMS_ARGS[@]}"

@@ -6,7 +6,7 @@ AgentTeams uses a **Manager-Workers architecture** where a central Manager agent
 
 | Layer | Role | Container Images |
 |-------|------|-----------------|
-| **hiclaw-controller** | Go operator: reconciles CRDs, REST API, worker/manager lifecycle | `agentteams-controller` (K8s) or `agentteams-embedded` (local) |
+| **agentteams-controller** | Go operator: reconciles CRDs, REST API, worker/manager lifecycle | `agentteams-controller` (K8s) or `agentteams-embedded` (local) |
 | **Manager** | Coordinator agent: tasks, workers, teams, humans, gateway config | `agentteams-manager` (OpenClaw) or `agentteams-manager-copaw` |
 | **Worker** | Task executor: one container per worker, stateless, created on demand | `agentteams-worker`, `agentteams-copaw-worker`, `agentteams-hermes-worker`, `agentteams-openhuman-worker`, `agentteams-qwenpaw-worker` |
 
@@ -25,7 +25,7 @@ flowchart TB
     EW[Element Web UI]
   end
 
-  subgraph Control["hiclaw-controller"]
+  subgraph Control["agentteams-controller"]
     API[REST API :8090]
     REC[Reconcilers: Worker Manager Team Human Project]
   end
@@ -165,7 +165,7 @@ Workers sync their workspace from MinIO on startup. The `agentteams_sync` Python
 
 - Architecture docs: [`docs/architecture.md`](../../docs/architecture.md)
 - K8s-native design: [`docs/k8s-native-agent-orch.md`](../../docs/k8s-native-agent-orch.md)
-- CRD definitions: [`hiclaw-controller/api/v1beta1/`](../../hiclaw-controller/api/v1beta1/)
-- Reconcilers: [`hiclaw-controller/internal/controller/`](../../hiclaw-controller/internal/controller/)
-- Helm chart: [`helm/hiclaw/`](../../helm/hiclaw/)
+- CRD definitions: [`agentteams-controller/api/v1beta1/`](../../agentteams-controller/api/v1beta1/)
+- Reconcilers: [`agentteams-controller/internal/controller/`](../../agentteams-controller/internal/controller/)
+- Helm chart: [`helm/agentteams/`](../../helm/agentteams/)
 - Install scripts: [`install/`](../../install/)

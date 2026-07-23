@@ -36,8 +36,8 @@ This wiki is the generated knowledge base for the AgentTeams repository. It expl
 
 ```
 AgentTeams/
-├── hiclaw-controller/   # Go operator: CRDs, reconcilers, CLI, REST API
-├── helm/hiclaw/         # Helm chart for Kubernetes deployment
+├── agentteams-controller/   # Go operator: CRDs, reconcilers, CLI, REST API
+├── helm/agentteams/         # Helm chart for Kubernetes deployment
 ├── manager/             # Manager images, agent configs, 19 skills, bootstrap scripts
 ├── worker/              # OpenClaw Worker base image
 ├── copaw/               # CoPaw Python worker runtime
@@ -58,7 +58,7 @@ AgentTeams/
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| Kubernetes operator | Go (hiclaw-controller) | Reconciles Worker/Manager/Team/Human/Project CRDs |
+| Kubernetes operator | Go (agentteams-controller) | Reconciles Worker/Manager/Team/Human/Project CRDs |
 | AI Gateway | Higress | LLM proxy, MCP server hosting, consumer auth |
 | Matrix Server | Tuwunel (conduwuit fork) | IM between agents and humans |
 | File System | MinIO or Alibaba Cloud OSS | Centralized object storage for workspaces |

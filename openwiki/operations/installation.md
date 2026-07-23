@@ -115,10 +115,10 @@ helm install hiclaw higress.io/hiclaw \
 
 ### Helm Chart Structure
 
-The chart is at [`helm/hiclaw/`](../../helm/hiclaw/):
+The chart is at [`helm/agentteams/`](../../helm/agentteams/):
 
 ```
-helm/hiclaw/
+helm/agentteams/
 ├── Chart.yaml              # Chart metadata (v1.1.1)
 ├── values.yaml             # Default values
 ├── crds/                   # CRD manifests
@@ -236,7 +236,7 @@ spec:
 ```
 
 ```bash
-hiclaw apply -f worker.yaml
+agt apply -f worker.yaml
 ```
 
 See [`docs/declarative-resource-management.md`](../../docs/declarative-resource-management.md) for full reference.
@@ -244,7 +244,7 @@ See [`docs/declarative-resource-management.md`](../../docs/declarative-resource-
 ## Source References
 
 - Install scripts: [`install/`](../../install/)
-- Helm chart: [`helm/hiclaw/`](../../helm/hiclaw/)
+- Helm chart: [`helm/agentteams/`](../../helm/agentteams/)
 - Makefile: [`Makefile`](../../Makefile)
 - Development guide: [`docs/development.md`](../../docs/development.md)
 - Declarative management: [`docs/declarative-resource-management.md`](../../docs/declarative-resource-management.md)

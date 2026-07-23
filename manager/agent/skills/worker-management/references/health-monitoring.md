@@ -6,7 +6,7 @@ Health classification derives worker states from existing data sources without n
 
 - `worker-lifecycle.json` — container status, idle timestamps
 - `state.json` — active tasks per worker, blocked status
-- `hiclaw get workers -o json` — phase, lastHeartbeat, lastActiveAt from CRD status
+- `agt get workers -o json` — phase, lastHeartbeat, lastActiveAt from CRD status
 
 ## Health States
 

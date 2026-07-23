@@ -48,7 +48,7 @@ _fail() {
 # it in the surrounding quotes. Chat-origin values (PROJECT_TITLE especially)
 # must never be interpolated into emitted YAML unescaped — a stray '"', '\',
 # or newline would break out of the scalar and corrupt/inject the document
-# that is later fed to `hiclaw apply -f`.
+# that is later fed to `agt apply -f`.
 # Order matters: escape backslashes FIRST (so we don't double-escape the
 # backslashes we're about to introduce for \n / \t), then quotes, then map
 # newlines/tabs to their YAML escapes, and finally drop bare CRs.
@@ -355,9 +355,9 @@ log "  MinIO sync verified"
 # ============================================================
 # Only runs when --team was given (decision #16). This is IN ADDITION to the
 # meta.json/plan.md chat-flow written above, never a replacement — same
-# project id, two documents, no schema merge. `hiclaw apply -f` hits the
+# project id, two documents, no schema merge. `agt apply -f` hits the
 # controller's Project REST routes (Step 1, /api/v1/projects); the Manager
-# image bundles the `hiclaw` CLI (manager/Dockerfile.copaw).
+# image bundles the `agt` CLI (manager/Dockerfile.copaw).
 if [ -n "${PROJECT_TEAM}" ]; then
     log "Step 5: Applying federated Project CR (team=${PROJECT_TEAM})..."
 
@@ -395,10 +395,10 @@ if [ -n "${PROJECT_TEAM}" ]; then
         fi
     } > "${PROJECT_CR_FILE}"
 
-    if hiclaw apply -f "${PROJECT_CR_FILE}"; then
+    if agt apply -f "${PROJECT_CR_FILE}"; then
         log "  Project CR applied (${PROJECT_CR_FILE})"
     else
-        log "  WARNING: hiclaw apply -f failed for Project CR — repo/access provisioning layer not created; chat-flow project is unaffected"
+        log "  WARNING: agt apply -f failed for Project CR — repo/access provisioning layer not created; chat-flow project is unaffected"
     fi
 fi
 
