@@ -1,0 +1,27 @@
+name: Docs Links
+
+# Guards against regressions like broken architecture/design links in AGENTS.md,
+# the primary agent navigation file. Uses the safe `pull_request` trigger: no
+# repository secrets and a read-only token, so it is fine to run on fork code.
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'AGENTS.md'
+      - '.github/scripts/check-agents-md-links.py'
+      - '.github/workflows/docs-links.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  agents-md-links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify AGENTS.md relative links resolve
+        run: python3 .github/scripts/check-agents-md-links.py
