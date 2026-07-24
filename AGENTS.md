@@ -90,8 +90,8 @@ manager/agent/
 ### To understand the architecture
 
 - Read [docs/architecture.md](docs/architecture.md) for system overview and component diagram
-- Read [design/design.md](design/design.md) for full product design (Chinese)
-- Read [design/poc-design.md](design/poc-design.md) for detailed implementation specs
+- Read [docs/zh-cn/architecture.md](docs/zh-cn/architecture.md) for the architecture overview in Chinese
+- Read the implementation milestones ([1](docs/implementation-milestone-1.md), [2](docs/implementation-milestone-2.md), [3](docs/implementation-milestone-3.md)) for detailed implementation specs
 
 ### Kubernetes deployment
 
@@ -209,7 +209,7 @@ In `k8s` / `aliyun` modes, Workers are created via the controller API instead of
 ### To modify Higress routing and initialization
 
 - [manager/scripts/init/setup-higress.sh](manager/scripts/init/setup-higress.sh) — route, consumer, MCP server setup (local / full console mode)
-- [design/higress-console-api.yaml](design/higress-console-api.yaml) — Higress Console API spec (OpenAPI 3.0)
+- [design/higress-api-doc.json](design/higress-api-doc.json) — Higress Console API spec (OpenAPI 3.0)
 
 ## Technology Stack
 
@@ -272,7 +272,7 @@ See [manager/scripts/init/start-manager-agent.sh](manager/scripts/init/start-man
 
 ## Verified Technical Details
 
-All technical assumptions have been verified in POC. See [design/poc-tech-verification.md](design/poc-tech-verification.md) for detailed verification results. Key findings that affect implementation:
+The following technical details were verified during the POC and affect implementation:
 
 - Tuwunel uses `CONDUWUIT_` env prefix (not `TUWUNEL_`)
 - Higress Console uses Session Cookie auth (not Basic Auth)

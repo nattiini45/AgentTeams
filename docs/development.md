@@ -249,6 +249,28 @@ All CI multi-arch builds use `docker/setup-qemu-action` for cross-platform emula
 | `AGENTTEAMS_LLM_API_KEY` | LLM access for Agent behavior tests |
 | `AGENTTEAMS_GITHUB_TOKEN` | GitHub operations in tests 08-10 |
 
+### Integration tests on external pull requests
+
+`test-integration.yml` runs with repository secrets (`AGENTTEAMS_LLM_API_KEY`) and a
+write-scoped token, so untrusted fork code is not allowed to run automatically. An
+`authorize` job gates the build and test jobs:
+
+- Pushes to `main`, version tags, `workflow_dispatch`, and pull requests from a branch
+  in this repository run the full suite automatically.
+- Pull requests from a fork run only after a maintainer reviews the diff — especially
+  `Makefile`, `tests/**`, `install/**`, and any Dockerfile — and applies the
+  `safe-to-test` label. Only users with repository write access can add labels.
+- Pushing new commits to a labelled fork PR strips `safe-to-test` (the
+  `revoke-stale-authorization` job), so a maintainer must re-review and re-apply the
+  label before the secret-bearing jobs run again.
+
+One-time maintainer setup — create the label:
+
+```bash
+gh label create safe-to-test \
+  --description "Maintainer-reviewed: allow secret-bearing integration CI on this PR"
+```
+
 ### Local CI Simulation
 
 ```bash
