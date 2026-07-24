@@ -4,6 +4,7 @@ import { renderBoard } from './panels/board.js';
 import { renderProjects } from './panels/projects.js';
 import { renderFiles } from './panels/files.js';
 import { renderHealth } from './panels/health.js';
+import { renderProviders } from './panels/providers.js';
 
 const panels = {
   overview: renderOverview,
@@ -12,6 +13,7 @@ const panels = {
   projects: renderProjects,
   files: renderFiles,
   health: renderHealth,
+  providers: renderProviders,
 };
 
 const main = document.getElementById('main');

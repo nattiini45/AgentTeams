@@ -1090,6 +1090,7 @@ func workerToResponse(w *v1beta1.Worker) WorkerResponse {
 		Phase:                 w.Status.Phase,
 		State:                 w.Spec.DesiredState(),
 		Model:                 w.Spec.Model,
+		ModelProvider:         w.Spec.ModelProvider,
 		Runtime:               w.Spec.Runtime,
 		Image:                 w.Spec.Image,
 		ContainerState:        w.Status.ContainerState,
@@ -1175,11 +1176,12 @@ func toHeartbeatSpec(req *TeamLeaderHeartbeatRequest) *v1beta1.TeamLeaderHeartbe
 
 func managerToResponse(m *v1beta1.Manager) ManagerResponse {
 	resp := ManagerResponse{
-		Name:         m.Name,
-		Phase:        m.Status.Phase,
-		State:        m.Spec.DesiredState(),
-		Model:        m.Spec.Model,
-		Runtime:      m.Spec.Runtime,
+		Name:          m.Name,
+		Phase:         m.Status.Phase,
+		State:         m.Spec.DesiredState(),
+		Model:         m.Spec.Model,
+		ModelProvider: m.Spec.ModelProvider,
+		Runtime:       m.Spec.Runtime,
 		Image:        m.Spec.Image,
 		MatrixUserID: m.Status.MatrixUserID,
 		RoomID:       m.Status.RoomID,

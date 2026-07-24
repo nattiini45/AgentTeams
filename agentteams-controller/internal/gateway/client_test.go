@@ -9,6 +9,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/agentscope-ai/AgentTeams/agentteams-controller/internal/slicesx"
 )
 
 type roundTripFunc func(*http.Request) (*http.Response, error)
@@ -120,7 +122,7 @@ func TestAuthorizeAIRoutes(t *testing.T) {
 			json.NewDecoder(r.Body).Decode(&body)
 			authConfig, _ := body["authConfig"].(map[string]interface{})
 			consumers := toStringSlice(authConfig["allowedConsumers"])
-			if !containsString(consumers, "worker-alice") {
+			if !slicesx.Contains(consumers, "worker-alice") {
 				t.Errorf("expected worker-alice in allowedConsumers, got %v", consumers)
 			}
 			w.WriteHeader(http.StatusOK)
@@ -589,11 +591,11 @@ func TestAuthorizeAIRoutes_ProviderFilter(t *testing.T) {
 		t.Fatalf("expected PUT on qwen-route and stale openai-route, got %v", putRoutes)
 	}
 	qwenConsumers := toStringSlice(putRoutes["qwen-route"]["authConfig"].(map[string]interface{})["allowedConsumers"])
-	if !containsString(qwenConsumers, "worker-alice") {
+	if !slicesx.Contains(qwenConsumers, "worker-alice") {
 		t.Fatalf("qwen-route allowedConsumers=%v, want worker-alice", qwenConsumers)
 	}
 	openAIConsumers := toStringSlice(putRoutes["openai-route"]["authConfig"].(map[string]interface{})["allowedConsumers"])
-	if containsString(openAIConsumers, "worker-alice") {
+	if slicesx.Contains(openAIConsumers, "worker-alice") {
 		t.Fatalf("openai-route allowedConsumers=%v, want worker-alice removed", openAIConsumers)
 	}
 
@@ -705,3 +707,135 @@ func TestResolveModelProvider_Higress_NotFound(t *testing.T) {
 		t.Errorf("error = %q, want it to contain 'not found'", err.Error())
 	}
 }
+
+func TestListAIProviders_Higress(t *testing.T) {
+	client := newGatewayTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.URL.Path == "/system/init":
+			w.WriteHeader(http.StatusOK)
+		case r.URL.Path == "/session/login":
+			w.WriteHeader(http.StatusOK)
+		case r.URL.Path == "/v1/ai/providers" && r.Method == "GET":
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"data":[{"name":"qwen","type":"qwen"},{"name":"ollama","type":"openai"}]}`))
+		case r.URL.Path == "/v1/ai/routes/hiclaw-qwen-route":
+			w.WriteHeader(http.StatusNotFound)
+		case r.URL.Path == "/v1/ai/routes/hiclaw-ollama-route":
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"data":{"name":"hiclaw-ollama-route"}}`))
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+
+	c := NewHigressClient(Config{ConsoleURL: "http://test", AdminUser: "admin", AdminPassword: "pass"}, client)
+	providers, err := c.ListAIProviders(context.Background())
+	if err != nil {
+		t.Fatalf("ListAIProviders: %v", err)
+	}
+	if len(providers) != 2 {
+		t.Fatalf("got %d providers, want 2", len(providers))
+	}
+	if providers[0].Name != "qwen" || providers[0].Route != "" {
+		t.Errorf("providers[0] = %+v", providers[0])
+	}
+	if providers[1].Name != "ollama" || providers[1].Route != "hiclaw-ollama-route" {
+		t.Errorf("providers[1] = %+v", providers[1])
+	}
+}
+
+func TestDeleteAIProvider_Higress(t *testing.T) {
+	var deletedPath string
+	client := newGatewayTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.URL.Path == "/system/init":
+			w.WriteHeader(http.StatusOK)
+		case r.URL.Path == "/session/login":
+			w.WriteHeader(http.StatusOK)
+		case r.Method == "DELETE" && r.URL.Path == "/v1/ai/providers/ollama":
+			deletedPath = r.URL.Path
+			w.WriteHeader(http.StatusOK)
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+
+	c := NewHigressClient(Config{ConsoleURL: "http://test", AdminUser: "admin", AdminPassword: "pass"}, client)
+	if err := c.DeleteAIProvider(context.Background(), "ollama"); err != nil {
+		t.Fatalf("DeleteAIProvider: %v", err)
+	}
+	if deletedPath != "/v1/ai/providers/ollama" {
+		t.Errorf("deleted path = %q", deletedPath)
+	}
+}
+
+func TestDeleteAIProvider_ReservedName(t *testing.T) {
+	c := NewHigressClient(Config{ConsoleURL: "http://test", AdminUser: "admin", AdminPassword: "pass"}, nil)
+	if err := c.DeleteAIProvider(context.Background(), "default"); err == nil {
+		t.Error("expected error for reserved name 'default'")
+	}
+	if err := c.DeleteAIProvider(context.Background(), ""); err == nil {
+		t.Error("expected error for empty name")
+	}
+}
+
+func TestCreateProviderRoute_Higress(t *testing.T) {
+	var createdBody map[string]interface{}
+	client := newGatewayTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.URL.Path == "/system/init":
+			w.WriteHeader(http.StatusOK)
+		case r.URL.Path == "/session/login":
+			w.WriteHeader(http.StatusOK)
+		case r.Method == "GET" && r.URL.Path == "/v1/ai/routes/hiclaw-ollama-route":
+			w.WriteHeader(http.StatusNotFound) // route doesn't exist yet
+		case r.Method == "POST" && r.URL.Path == "/v1/ai/routes":
+			json.NewDecoder(r.Body).Decode(&createdBody)
+			w.WriteHeader(http.StatusCreated)
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+
+	c := NewHigressClient(Config{ConsoleURL: "http://test", AdminUser: "admin", AdminPassword: "pass"}, client)
+	err := c.CreateProviderRoute(context.Background(), ProviderRouteRequest{
+		Name:             "hiclaw-ollama-route",
+		Provider:         "ollama",
+		Domains:          []string{"aigw-local.agentteams.io"},
+		ModelPrefix:      "ollama/",
+		AllowedConsumers: []string{"manager"},
+	})
+	if err != nil {
+		t.Fatalf("CreateProviderRoute: %v", err)
+	}
+
+	// Verify the route body shape.
+	if createdBody["name"] != "hiclaw-ollama-route" {
+		t.Errorf("route name = %v", createdBody["name"])
+	}
+	mp, ok := createdBody["modelPredicate"].(map[string]interface{})
+	if !ok || mp["matchValue"] != "ollama/" {
+		t.Errorf("modelPredicate = %v", createdBody["modelPredicate"])
+	}
+	auth, ok := createdBody["authConfig"].(map[string]interface{})
+	if !ok {
+		t.Fatal("missing authConfig")
+	}
+	consumers, _ := auth["allowedConsumers"].([]interface{})
+	if len(consumers) != 1 || consumers[0] != "manager" {
+		t.Errorf("allowedConsumers = %v", consumers)
+	}
+}
+
+func TestDeleteProviderRoute_ReservedName(t *testing.T) {
+	c := NewHigressClient(Config{ConsoleURL: "http://test", AdminUser: "admin", AdminPassword: "pass"}, nil)
+	if err := c.DeleteProviderRoute(context.Background(), "default"); err == nil {
+		t.Error("expected error for reserved name")
+	}
+}
+
+// Compile-time interface compliance.
+var (
+	_ Client = (*HigressClient)(nil)
+	_ Client = (*AIGatewayClient)(nil)
+)

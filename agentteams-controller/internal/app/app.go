@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sync"
@@ -714,6 +715,7 @@ func (a *App) initHTTPServer(_ context.Context) error {
 		Backend:             a.registry,
 		Gateway:             a.gateway,
 		GatewayDataPlaneURL: a.cfg.GatewayConfig().DataPlaneURL,
+		AIGatewayDomains:    aiGatewayDomainsFromURL(a.cfg.GatewayConfig().DataPlaneURL),
 		OSS:                 a.oss,
 		STS:                 a.stsService,
 		AuthMw:              a.authMw,
@@ -937,4 +939,18 @@ func buildWorkerBackends(cfg *config.Config, scheme *runtime.Scheme, remoteCache
 	}
 
 	return workers
+}
+
+// aiGatewayDomainsFromURL extracts the hostname from the AI gateway data-plane
+// URL to use as the domain list for provider-specific AI routes. Returns nil
+// if the URL is empty or unparseable.
+func aiGatewayDomainsFromURL(dataPlaneURL string) []string {
+	if dataPlaneURL == "" {
+		return nil
+	}
+	u, err := url.Parse(dataPlaneURL)
+	if err != nil || u.Hostname() == "" {
+		return nil
+	}
+	return []string{u.Hostname()}
 }

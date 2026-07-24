@@ -84,12 +84,14 @@ function renderManagerCards(el, managers) {
       </div>
       <div class="card-meta">
         ${m.model ? `Model: ${escapeHtml(m.model)}<br/>` : ''}
+        ${m.modelProvider ? `Provider: ${escapeHtml(m.modelProvider)}<br/>` : ''}
         ${m.runtime ? `Runtime: ${escapeHtml(m.runtime)}<br/>` : ''}
         State: ${escapeHtml(m.state || 'unknown')}<br/>
         Welcome sent: ${m.welcomeSent ? 'yes' : 'no'}
       </div>
       <div class="card-actions">
         <button class="action-btn" data-message-kind="manager" data-name="${escapeHtml(m.name)}">Message</button>
+        <button class="action-btn" data-set-provider-kind="managers" data-name="${escapeHtml(m.name)}">Set Provider</button>
       </div>
     </div>`,
     )
@@ -97,6 +99,9 @@ function renderManagerCards(el, managers) {
 
   el.querySelectorAll('button[data-message-kind]').forEach((btn) => {
     btn.addEventListener('click', () => onMessageAction(btn));
+  });
+  el.querySelectorAll('button[data-set-provider-kind]').forEach((btn) => {
+    btn.addEventListener('click', () => onSetProvider(btn));
   });
 }
 
@@ -115,11 +120,13 @@ function renderTeamCards(el, teams) {
       </div>
       <div class="card-meta">
         Leader: ${escapeHtml(t.leaderName || 'n/a')}<br/>
+        ${t.modelProvider ? `Provider: ${escapeHtml(t.modelProvider)}<br/>` : ''}
         Workers ready: ${t.readyWorkers ?? 0} / ${t.totalWorkers ?? 0}<br/>
         Leader ready: ${t.leaderReady ? 'yes' : 'no'}
       </div>
       <div class="card-actions">
         <button class="action-btn" data-message-kind="team" data-name="${escapeHtml(t.name)}">Message</button>
+        <button class="action-btn" data-set-provider-kind="teams" data-name="${escapeHtml(t.name)}">Set Provider</button>
       </div>
     </div>`,
     )
@@ -127,6 +134,9 @@ function renderTeamCards(el, teams) {
 
   el.querySelectorAll('button[data-message-kind]').forEach((btn) => {
     btn.addEventListener('click', () => onMessageAction(btn));
+  });
+  el.querySelectorAll('button[data-set-provider-kind]').forEach((btn) => {
+    btn.addEventListener('click', () => onSetProvider(btn));
   });
 }
 
@@ -146,6 +156,7 @@ function renderWorkerCards(el, workers) {
       </div>
       <div class="card-meta">
         ${w.team ? `Team: ${escapeHtml(w.team)}<br/>` : ''}
+        ${w.modelProvider ? `Provider: ${escapeHtml(w.modelProvider)}<br/>` : ''}
         State: ${escapeHtml(w.state || 'unknown')}<br/>
         Container: ${escapeHtml(w.containerState || 'unknown')}<br/>
         ${renderFreshnessLine('Heartbeat', w.lastHeartbeat)}<br/>
@@ -157,13 +168,17 @@ function renderWorkerCards(el, workers) {
         <button class="action-btn" data-action="wake" data-name="${escapeHtml(w.name)}">Wake</button>
         <button class="action-btn" data-action="sleep" data-name="${escapeHtml(w.name)}">Sleep</button>
         <button class="action-btn" data-action="ensure-ready" data-name="${escapeHtml(w.name)}">Ensure Ready</button>
+        <button class="action-btn" data-set-provider-kind="workers" data-name="${escapeHtml(w.name)}">Set Provider</button>
       </div>
     </div>`,
     )
     .join('');
 
-  el.querySelectorAll('button.action-btn').forEach((btn) => {
+  el.querySelectorAll('button.action-btn[data-action]').forEach((btn) => {
     btn.addEventListener('click', () => onWorkerAction(btn));
+  });
+  el.querySelectorAll('button[data-set-provider-kind]').forEach((btn) => {
+    btn.addEventListener('click', () => onSetProvider(btn));
   });
 }
 
@@ -243,5 +258,45 @@ async function onWorkerAction(btn) {
     showToast(`${name}: ${action} failed -- ${err.message}`, { error: true });
   } finally {
     allButtons.forEach((b) => (b.disabled = false));
+  }
+}
+
+async function onSetProvider(btn) {
+  const kind = btn.dataset.setProviderKind; // 'workers' | 'teams' | 'managers'
+  const name = btn.dataset.name;
+
+  let providers;
+  try {
+    const data = await api.listProviders();
+    providers = data.providers || [];
+  } catch (err) {
+    showToast(`Failed to load providers: ${err.message}`, { error: true });
+    return;
+  }
+
+  if (providers.length === 0) {
+    showToast('No providers registered. Register one in the Providers tab first.', { error: true });
+    return;
+  }
+
+  const names = providers.map((p) => p.name);
+  const choice = window.prompt(
+    `Set provider for ${kind} "${name}".\nAvailable providers: ${names.join(', ')}\n\nEnter provider name (or leave empty to clear):`,
+    '',
+  );
+  if (choice === null) return; // cancelled
+
+  const modelProvider = choice.trim();
+  btn.disabled = true;
+  try {
+    const patch = { modelProvider };
+    if (kind === 'workers') await api.updateWorker(name, patch);
+    else if (kind === 'teams') await api.updateTeam(name, patch);
+    else if (kind === 'managers') await api.updateManager(name, patch);
+    showToast(`${name}: provider set to ${modelProvider || '(default)'}`);
+  } catch (err) {
+    showToast(`${name}: provider update failed -- ${err.message}`, { error: true });
+  } finally {
+    btn.disabled = false;
   }
 }

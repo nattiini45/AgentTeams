@@ -67,3 +67,22 @@ type AIRouteRequest struct {
 	PathPrefix string // e.g. "/v1"
 	Provider   string // upstream provider name
 }
+
+// AIProviderInfo describes a registered AI provider (tokens omitted for security).
+type AIProviderInfo struct {
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Route string `json:"route,omitempty"` // e.g. "hiclaw-ollama-route"
+}
+
+// ProviderRouteRequest describes a provider-specific AI route to create.
+// Unlike AIRouteRequest, this carries modelPredicate, domains, and
+// allowedConsumers — the full shape needed for extra provider registration
+// (matching register-provider.sh's route body).
+type ProviderRouteRequest struct {
+	Name             string   // route name, e.g. "hiclaw-ollama-route"
+	Provider         string   // upstream provider name
+	Domains          []string // AI gateway domains
+	ModelPrefix      string   // e.g. "ollama/" for modelPredicate PRE match
+	AllowedConsumers []string // initial consumers, e.g. ["manager"]
+}

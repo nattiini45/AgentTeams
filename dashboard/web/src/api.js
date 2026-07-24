@@ -72,4 +72,35 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ body }),
     }),
+
+  // Provider management (gateway CRUD)
+  listProviders: () => request('/api/gateway/providers'),
+  registerProvider: (name, url, key) =>
+    request('/api/gateway/providers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, url, key }),
+    }),
+  deleteProvider: (name) =>
+    request(`/api/gateway/providers/${encodeURIComponent(name)}`, { method: 'DELETE' }),
+
+  // Model/provider assignment (uses existing controller PUT endpoints)
+  updateWorker: (name, patch) =>
+    request(`/api/workers/${encodeURIComponent(name)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    }),
+  updateTeam: (name, patch) =>
+    request(`/api/teams/${encodeURIComponent(name)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    }),
+  updateManager: (name, patch) =>
+    request(`/api/managers/${encodeURIComponent(name)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    }),
 };

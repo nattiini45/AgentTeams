@@ -17,6 +17,7 @@
           <button class="tab-btn" data-tab="board">Board</button>
           <button class="tab-btn" data-tab="projects">Projects</button>
           <button class="tab-btn" data-tab="files">Files</button>
+          <button class="tab-btn" data-tab="providers">Providers</button>
         </nav>
       </header>
       <main id="main"></main>
@@ -37,6 +38,18 @@
           <div class="dialog-actions">
             <button type="button" id="message-cancel">Cancel</button>
             <button type="submit" id="message-send">Send</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="provider-dialog">
+        <form method="dialog" id="provider-form">
+          <p>Register AI Provider</p>
+          <label>Name <input id="provider-name" required pattern="[a-z0-9][a-z0-9-]*" title="lowercase alphanumeric and hyphens" /></label>
+          <label>Base URL <input id="provider-url" type="url" required placeholder="https://api.example.com/v1" /></label>
+          <label>API Key <input id="provider-key" type="password" required /></label>
+          <div class="dialog-actions">
+            <button type="button" id="provider-cancel">Cancel</button>
+            <button type="submit">Register</button>
           </div>
         </form>
       </dialog>

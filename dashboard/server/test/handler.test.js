@@ -465,3 +465,67 @@ test('/docker/ is never proxied even with a static file resolver present', async
     server.close();
   }
 });
+
+// --- Provider management handler tests ---
+
+test('POST /api/gateway/providers forwards body to controller and logs without key material', async () => {
+  const controllerClient = fakeControllerClient({ statusCode: 201, body: '{"name":"ollama","type":"openai"}' });
+  const minioClient = fakeMinioClient();
+  const logs = [];
+  const server = await startServer({ controllerClient, minioClient, logWrite: (e) => logs.push(e) });
+  try {
+    const payload = JSON.stringify({ name: 'ollama', url: 'https://ollama.com/v1', key: 'sk-secret-123' });
+    const res = await request(server, 'POST', '/api/gateway/providers', payload);
+    assert.equal(res.statusCode, 201);
+    // Body forwarded to controller
+    assert.equal(controllerClient.calls.length, 1);
+    assert.equal(controllerClient.calls[0].method, 'POST');
+    assert.equal(controllerClient.calls[0].path, '/api/v1/gateway/providers');
+    assert.equal(controllerClient.calls[0].body, payload);
+    // Audit log: no bodyPreview, no bodyLen (key safety)
+    assert.equal(logs.length, 1);
+    assert.equal(logs[0].action, 'register-provider');
+    assert.equal(logs[0].bodyPreview, undefined);
+    assert.equal(logs[0].bodyLen, undefined);
+    assert.ok(!JSON.stringify(logs[0]).includes('sk-secret'));
+  } finally {
+    server.close();
+  }
+});
+
+test('DELETE /api/gateway/providers/ollama forwards to controller and logs', async () => {
+  const controllerClient = fakeControllerClient({ statusCode: 204, body: '' });
+  const minioClient = fakeMinioClient();
+  const logs = [];
+  const server = await startServer({ controllerClient, minioClient, logWrite: (e) => logs.push(e) });
+  try {
+    const res = await request(server, 'DELETE', '/api/gateway/providers/ollama');
+    assert.equal(res.statusCode, 204);
+    assert.equal(controllerClient.calls[0].method, 'DELETE');
+    assert.equal(controllerClient.calls[0].path, '/api/v1/gateway/providers/ollama');
+    assert.equal(logs[0].action, 'delete-provider');
+    assert.equal(logs[0].provider, 'ollama');
+  } finally {
+    server.close();
+  }
+});
+
+test('PUT /api/workers/alice forwards body to controller and logs update', async () => {
+  const controllerClient = fakeControllerClient({ statusCode: 200, body: '{"name":"alice"}' });
+  const minioClient = fakeMinioClient();
+  const logs = [];
+  const server = await startServer({ controllerClient, minioClient, logWrite: (e) => logs.push(e) });
+  try {
+    const payload = JSON.stringify({ modelProvider: 'ollama' });
+    const res = await request(server, 'PUT', '/api/workers/alice', payload);
+    assert.equal(res.statusCode, 200);
+    assert.equal(controllerClient.calls[0].method, 'PUT');
+    assert.equal(controllerClient.calls[0].path, '/api/v1/workers/alice');
+    assert.equal(controllerClient.calls[0].body, payload);
+    assert.equal(logs[0].action, 'update');
+    assert.equal(logs[0].kind, 'workers');
+    assert.equal(logs[0].target, 'alice');
+  } finally {
+    server.close();
+  }
+});

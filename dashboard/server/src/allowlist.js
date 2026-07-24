@@ -34,6 +34,9 @@ const WRITE_ACTIONS = new Set(['wake', 'sleep', 'ensure-ready']);
 // /api/<managers|teams>/{name}/message.
 const MESSAGE_KINDS = new Set(['managers', 'teams']);
 
+// Kinds that support PUT update (model/provider assignment via dashboard).
+const ASSIGN_KINDS = new Set(['workers', 'teams', 'managers']);
+
 // MinIO-backed prefixes the file/task browsers may read under.
 const MINIO_ALLOWED_ROOTS = new Set(['shared', 'agents']);
 
@@ -130,6 +133,48 @@ function classify(method, pathname) {
     };
   }
 
+  // /api/gateway/providers -> controller (list GET, register POST, delete DELETE)
+  if (segments[1] === 'gateway' && segments[2] === 'providers') {
+    if (segments.length === 3) {
+      if (method === 'GET') return { ok: true, route: { target: 'controller', kind: 'get', controllerPath: '/api/v1/gateway/providers' } };
+      if (method === 'POST') return { ok: true, route: { target: 'controller', kind: 'write', controllerPath: '/api/v1/gateway/providers', action: 'register-provider' } };
+      return { ok: false, status: 405 };
+    }
+    if (segments.length === 4 && method === 'DELETE') {
+      const providerName = segments[3];
+      if (!providerName) return { ok: false, status: 404 };
+      return {
+        ok: true,
+        route: {
+          target: 'controller',
+          kind: 'write',
+          controllerPath: `/api/v1/gateway/providers/${encodeURIComponent(providerName)}`,
+          action: 'delete-provider',
+          providerName,
+        },
+      };
+    }
+    return { ok: false, status: 405 };
+  }
+
+  // /api/workers|teams|managers/{name} with PUT -> controller PUT (model/provider assignment)
+  if (ASSIGN_KINDS.has(segments[1]) && segments.length === 3 && method === 'PUT') {
+    const targetKind = segments[1];
+    const targetName = segments[2];
+    if (!targetName) return { ok: false, status: 404 };
+    return {
+      ok: true,
+      route: {
+        target: 'controller',
+        kind: 'write',
+        controllerPath: `/api/v1/${targetKind}/${encodeURIComponent(targetName)}`,
+        action: 'update',
+        targetKind,
+        targetName,
+      },
+    };
+  }
+
   // /api/managers|teams|workers|manager-tasks|projects[/...]  -> controller GET passthrough
   if (CONTROLLER_LIST_KINDS.has(segments[1])) {
     if (method !== 'GET') return { ok: false, status: 405 };
@@ -178,4 +223,4 @@ function normalizeMinioKey(segments) {
   return key;
 }
 
-module.exports = { classify, MINIO_ALLOWED_ROOTS, WRITE_ACTIONS, MESSAGE_KINDS };
+module.exports = { classify, MINIO_ALLOWED_ROOTS, WRITE_ACTIONS, MESSAGE_KINDS, ASSIGN_KINDS };

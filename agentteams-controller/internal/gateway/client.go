@@ -53,6 +53,24 @@ type Client interface {
 	// EnsureAIRoute creates an AI route with consumer auth.
 	EnsureAIRoute(ctx context.Context, req AIRouteRequest) error
 
+	// ListAIProviders returns all registered AI providers (tokens redacted).
+	ListAIProviders(ctx context.Context) ([]AIProviderInfo, error)
+
+	// DeleteAIProvider removes an AI provider by name. No-op if not found.
+	DeleteAIProvider(ctx context.Context, name string) error
+
+	// CreateProviderRoute creates a provider-specific AI route with
+	// modelPredicate, domains, and initial allowedConsumers.
+	// Idempotent: GET-then-PUT/POST upsert.
+	CreateProviderRoute(ctx context.Context, req ProviderRouteRequest) error
+
+	// DeleteProviderRoute removes a provider-specific AI route by provider name.
+	// Constructs the route name as "hiclaw-<name>-route". No-op if not found.
+	DeleteProviderRoute(ctx context.Context, name string) error
+
+	// DeleteServiceSource removes a DNS service source by name. No-op if not found.
+	DeleteServiceSource(ctx context.Context, name string) error
+
 	// ResolveModelProvider looks up a named APIG Model API (HttpApi) and returns
 	// its basePath, Intranet subdomain URL, and httpApiId. Only meaningful for
 	// the ai-gateway provider; Higress returns ErrUnsupportedOp.

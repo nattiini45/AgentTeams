@@ -258,6 +258,11 @@ func (fakeGateway) DeleteRoute(context.Context, string) error                   
 func (fakeGateway) EnsureAIProvider(context.Context, gateway.AIProviderRequest) error { return nil }
 func (fakeGateway) EnsureStreamIdleTimeout(context.Context, int) error                { return nil }
 func (fakeGateway) EnsureAIRoute(context.Context, gateway.AIRouteRequest) error       { return nil }
+func (fakeGateway) ListAIProviders(context.Context) ([]gateway.AIProviderInfo, error)  { return nil, nil }
+func (fakeGateway) DeleteAIProvider(context.Context, string) error                    { return nil }
+func (fakeGateway) CreateProviderRoute(context.Context, gateway.ProviderRouteRequest) error { return nil }
+func (fakeGateway) DeleteProviderRoute(context.Context, string) error                 { return nil }
+func (fakeGateway) DeleteServiceSource(context.Context, string) error                 { return nil }
 func (fakeGateway) ResolveModelProvider(context.Context, string) (*gateway.ModelProviderInfo, error) {
 	return nil, gateway.ErrUnsupportedOp
 }

@@ -699,3 +699,51 @@ dialog::backdrop {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* --- Provider management panel --- */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 24px 0 10px;
+}
+
+.section-header .section-title {
+  margin: 0;
+}
+
+button.action-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+#provider-dialog {
+  max-width: 420px;
+  width: 100%;
+}
+
+#provider-dialog label {
+  display: block;
+  margin: 10px 0;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+#provider-dialog input {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px;
+  font: inherit;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+#provider-dialog input:focus {
+  outline: none;
+  border-color: var(--accent);
+}

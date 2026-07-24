@@ -307,6 +307,26 @@ func (a *AIGatewayClient) EnsureAIRoute(_ context.Context, _ AIRouteRequest) err
 	return ErrUnsupportedOp
 }
 
+func (a *AIGatewayClient) ListAIProviders(_ context.Context) ([]AIProviderInfo, error) {
+	return nil, ErrUnsupportedOp
+}
+
+func (a *AIGatewayClient) DeleteAIProvider(_ context.Context, _ string) error {
+	return ErrUnsupportedOp
+}
+
+func (a *AIGatewayClient) CreateProviderRoute(_ context.Context, _ ProviderRouteRequest) error {
+	return ErrUnsupportedOp
+}
+
+func (a *AIGatewayClient) DeleteProviderRoute(_ context.Context, _ string) error {
+	return ErrUnsupportedOp
+}
+
+func (a *AIGatewayClient) DeleteServiceSource(_ context.Context, _ string) error {
+	return ErrUnsupportedOp
+}
+
 // Healthy makes a lightweight ListConsumers call to verify that both the
 // SDK credential (via the sidecar) and the APIG endpoint are reachable.
 // Any error is bubbled up so that the initializer's waitForGateway can

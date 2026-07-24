@@ -441,6 +441,15 @@ func (g *healthTestGateway) EnsureStreamIdleTimeout(context.Context, int) error 
 func (g *healthTestGateway) EnsureAIRoute(context.Context, gateway.AIRouteRequest) error {
 	return nil
 }
+func (g *healthTestGateway) ListAIProviders(context.Context) ([]gateway.AIProviderInfo, error) {
+	return nil, nil
+}
+func (g *healthTestGateway) DeleteAIProvider(context.Context, string) error { return nil }
+func (g *healthTestGateway) CreateProviderRoute(context.Context, gateway.ProviderRouteRequest) error {
+	return nil
+}
+func (g *healthTestGateway) DeleteProviderRoute(context.Context, string) error { return nil }
+func (g *healthTestGateway) DeleteServiceSource(context.Context, string) error { return nil }
 func (g *healthTestGateway) ResolveModelProvider(context.Context, string) (*gateway.ModelProviderInfo, error) {
 	return nil, gateway.ErrUnsupportedOp
 }

@@ -140,6 +140,15 @@ func (g *workerTestGateway) EnsureStreamIdleTimeout(context.Context, int) error 
 func (g *workerTestGateway) EnsureAIRoute(context.Context, gateway.AIRouteRequest) error {
 	return nil
 }
+func (g *workerTestGateway) ListAIProviders(context.Context) ([]gateway.AIProviderInfo, error) {
+	return nil, nil
+}
+func (g *workerTestGateway) DeleteAIProvider(context.Context, string) error { return nil }
+func (g *workerTestGateway) CreateProviderRoute(context.Context, gateway.ProviderRouteRequest) error {
+	return nil
+}
+func (g *workerTestGateway) DeleteProviderRoute(context.Context, string) error  { return nil }
+func (g *workerTestGateway) DeleteServiceSource(context.Context, string) error { return nil }
 func (g *workerTestGateway) ResolveModelProvider(context.Context, string) (*gateway.ModelProviderInfo, error) {
 	return g.modelInfo, g.modelErr
 }
