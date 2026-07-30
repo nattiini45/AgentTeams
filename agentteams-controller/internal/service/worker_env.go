@@ -149,6 +149,14 @@ func (b *WorkerEnvBuilder) applyClusterDefaults(env map[string]string) {
 	if b.defaults.NacosAuthType != "" {
 		env["NACOS_AUTH_TYPE"] = b.defaults.NacosAuthType
 	}
+
+	// Weekly better-harness self-review: ON by default. When the controller was
+	// started with AGENTTEAMS_BETTER_HARNESS_ENABLED set to a falsy value, propagate
+	// an explicit "0" so every agent's run-weekly.sh skips the review. When enabled
+	// we leave it unset and let the script default to on.
+	if b.defaults.BetterHarnessDisabled {
+		env["AGENTTEAMS_BETTER_HARNESS_ENABLED"] = "0"
+	}
 }
 
 // valueOrPlaceholder returns v if non-empty, otherwise a harmless placeholder.

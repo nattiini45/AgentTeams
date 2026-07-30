@@ -29,6 +29,7 @@ from typing import Any, Dict, Optional
 from rich.console import Console
 from rich.panel import Panel
 
+from hermes_worker.better_harness import run_better_harness_weekly_loop
 from hermes_worker.bridge import (
     _is_in_container,
     _port_remap,
@@ -52,6 +53,7 @@ class Worker:
         self._gateway_task: Optional[asyncio.Task] = None
         self._sync_task: Optional[asyncio.Task] = None
         self._push_task: Optional[asyncio.Task] = None
+        self._better_harness_task: Optional[asyncio.Task] = None
         self._stopping = False
         self._skipped_local_skills_logged: set[str] = set()
 
@@ -80,7 +82,7 @@ class Worker:
                 await self._gateway_task
             except (asyncio.CancelledError, Exception):
                 pass
-        for task in (self._sync_task, self._push_task):
+        for task in (self._sync_task, self._push_task, self._better_harness_task):
             if task and not task.done():
                 task.cancel()
                 try:
@@ -177,6 +179,16 @@ class Worker:
             )
         )
         self._push_task = asyncio.create_task(push_loop(self.sync, check_interval=5))
+
+        # Native weekly better-harness self-review trigger. The loop invokes the
+        # builtin skill's run-weekly.sh; the script's 7-day cadence guard makes
+        # the effective cadence weekly. Best-effort and self-guarding.
+        self._better_harness_task = asyncio.create_task(
+            run_better_harness_weekly_loop(
+                self._hermes_home,
+                worker_name=self.worker_name,
+            )
+        )
 
         console.print("[bold green]Hermes worker initialized.[/bold green]")
         return True

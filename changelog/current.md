@@ -6,6 +6,12 @@ changes here before the next release.
 
 ---
 
+**What's New**
+
+- **Better Harness weekly self-review**: Bake the pinned `QoderAI/better-harness` CLI into the `openclaw-base`, `hermes`, and `qwenpaw` images (Node 22 via NodeSource for the Python images; `npm install --omit=dev` since the project is npm-managed) and ship a builtin `better-harness` skill in every agent template (Manager, OpenClaw/CoPaw/Hermes/OpenHuman/QwenPaw workers, Team Leader). Each agent runs a deterministic, read-only `better-harness harness source` evidence collection at most once per 7 days (deterministic `run-weekly.sh` cadence guard), authors findings from that evidence, and reports them to the Manager — never the human admin. The weekly trigger is native to each runtime: the QwenPaw and Hermes worker daemons run a supervised `run_better_harness_weekly_loop` background task (state persisted to MinIO, so the cadence survives restarts), while OpenClaw/CoPaw/Manager/Team Leader invoke `run-weekly.sh` from their existing heartbeat / session-wake.
+- **Manager-mediated harness integration**: Add a `harness-integration` Manager skill (`aggregate-reports.sh`) that pulls `shared/harness-reports/`, aggregates all agents' findings into one consolidated summary, and presents a single fleet-wide integration plan to the admin for approval. Approved changes are written to the manager-owned builtin templates / controller-owned config so they propagate to every agent via `upgrade-builtins.sh` / `pushBuiltinSkills`; agents never self-apply hooks/loops/skill edits.
+- **`AGENTTEAMS_BETTER_HARNESS_ENABLED` kill switch**: New controller env gate (default on). Setting it to a falsy value propagates `AGENTTEAMS_BETTER_HARNESS_ENABLED=0` to every worker and manager container so the weekly review is skipped fleet-wide.
+
 **Bug Fixes**
 
 - **QwenPaw file:// package refs on Windows**: Resolve `file://C:\\...` agent package refs correctly instead of treating an empty urlparse path as `.` (cwd).

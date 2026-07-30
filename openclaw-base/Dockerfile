@@ -123,6 +123,20 @@ RUN git init /opt/openclaw && \
 RUN npm install -g mcporter skills @nacos-group/cli && \
     rm -rf /root/.npm
 
+# Install better-harness CLI (pinned ref, offline-capable at runtime).
+# Provides the `better-harness` headless report command used by the builtin
+# better-harness skill for weekly agent self-review. Node 22 (installed above
+# via NodeSource) satisfies the CLI's >=22.20 engine constraint. The project is
+# npm-managed (packageManager: npm), so install with npm, not pnpm.
+ARG BETTER_HARNESS_REF=main
+ARG BETTER_HARNESS_REPO=https://github.com/QoderAI/better-harness.git
+RUN git clone --depth 1 --branch "${BETTER_HARNESS_REF}" "${BETTER_HARNESS_REPO}" /opt/better-harness && \
+    cd /opt/better-harness && \
+    npm install --omit=dev && \
+    ln -sf /opt/better-harness/scripts/better-harness.mjs /usr/local/bin/better-harness && \
+    chmod +x /usr/local/bin/better-harness && \
+    rm -rf /opt/better-harness/.git /root/.npm
+
 # Clear proxy env vars (they're only needed during build, not at runtime)
 # Without this, curl in the container would try to use the proxy for localhost
 ENV HTTP_PROXY= \

@@ -183,6 +183,33 @@ def test_push_local_uploads_worker_files_but_skips_controller_owned_state(tmp_pa
     }
 
 
+def test_push_local_persists_better_harness_state(tmp_path: Path, monkeypatch) -> None:
+    """The weekly better-harness cadence state ($HOME/.better-harness/state.json,
+    where HOME == worker_home) must be pushed to MinIO so the 7-day cadence
+    survives container restarts. Assert the push policy does not exclude it."""
+    sync = _sync(tmp_path)
+    uploads = []
+
+    state = sync.local_dir / ".better-harness" / "state.json"
+    state.parent.mkdir(parents=True, exist_ok=True)
+    state.write_text('{"last_run_at": 1785408627}', encoding="utf-8")
+
+    monkeypatch.setattr(sync, "ensure_alias", lambda: None)
+    monkeypatch.setattr(sync, "_cat_bytes", lambda _key: None)
+
+    def fake_mc(*args, **_kwargs):
+        if args[0] == "cp":
+            uploads.append(args[2])
+        return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+
+    monkeypatch.setattr("qwenpaw_worker.sync._mc", fake_mc)
+
+    pushed = push_local(sync, since=0)
+
+    assert ".better-harness/state.json" in pushed
+    assert "agentteams/agentteams-storage/agents/worker-a/.better-harness/state.json" in uploads
+
+
 def test_push_local_does_not_remove_remote_files_missing_from_local_state(tmp_path: Path, monkeypatch) -> None:
     sync = _sync(tmp_path)
     commands = []

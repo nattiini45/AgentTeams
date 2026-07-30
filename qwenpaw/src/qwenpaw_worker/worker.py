@@ -12,6 +12,7 @@ import sys
 import time
 from typing import Optional
 
+from qwenpaw_worker.better_harness import run_better_harness_weekly_loop
 from qwenpaw_worker.config import WorkerConfig, _relative_storage_prefix
 from qwenpaw_worker.heartbeat import WorkerHeartbeat, run_worker_heartbeat_loop
 from qwenpaw_worker.plugin_bootstrap import PluginBootstrap
@@ -62,6 +63,7 @@ class Worker:
         self._heartbeat_probe_task: Optional[asyncio.Task] = None
         self._push_task: Optional[asyncio.Task] = None
         self._update_task: Optional[asyncio.Task] = None
+        self._better_harness_task: Optional[asyncio.Task] = None
         self._stopping = False
         self._workspace_shared_dir: Optional[Path] = None
         self._runtime = RuntimeConfigurator(config)
@@ -210,6 +212,18 @@ class Worker:
             stage_started,
             interval_seconds=self.config.runtime_config_poll_interval,
         )
+
+        # Native weekly better-harness self-review trigger. The loop invokes the
+        # builtin skill's run-weekly.sh; the script's 7-day cadence guard makes
+        # the effective cadence weekly. Best-effort and self-guarding.
+        self._better_harness_task = asyncio.create_task(
+            run_better_harness_weekly_loop(
+                self.config.worker_home,
+                worker_name=self.config.worker_name,
+            ),
+            name=f"qwenpaw-worker-{self.config.worker_name}-better-harness-loop",
+        )
+
         logger.info("qwenpaw worker startup complete component=worker worker=%s", self.config.worker_name)
         return True
 
@@ -224,7 +238,7 @@ class Worker:
             self._update_task is not None,
             self._heartbeat_probe_task is not None,
         )
-        for attr in ("_update_task", "_push_task", "_heartbeat_probe_task"):
+        for attr in ("_update_task", "_push_task", "_heartbeat_probe_task", "_better_harness_task"):
             task = getattr(self, attr)
             if task is not None:
                 task.cancel()
