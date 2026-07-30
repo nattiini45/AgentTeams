@@ -870,6 +870,16 @@ func (c *HigressClient) CreateProviderRoute(ctx context.Context, req ProviderRou
 		return fmt.Errorf("create provider route %s: check existence: %w", req.Name, err)
 	}
 
+	// Strip the "<provider>/" prefix before forwarding upstream. OpenAI-compatible
+	// upstreams reject prefixed model names (e.g. "ollama/glm-5.2") with a 404.
+	// Higress modelMapping supports regex keys (leading ~) with Go $1 captures.
+	// Mirrors the fix in manager/scripts/init/setup-higress.sh (PR #8).
+	prefix := strings.TrimSuffix(req.ModelPrefix, "/")
+	modelMapping := map[string]interface{}{}
+	if prefix != "" {
+		modelMapping["~^"+prefix+"/(.+)$"] = "$1"
+	}
+
 	body := map[string]interface{}{
 		"name":    req.Name,
 		"domains": req.Domains,
@@ -883,7 +893,7 @@ func (c *HigressClient) CreateProviderRoute(ctx context.Context, req ProviderRou
 			"matchValue": req.ModelPrefix,
 		},
 		"upstreams": []map[string]interface{}{
-			{"provider": req.Provider, "weight": 100, "modelMapping": map[string]interface{}{}},
+			{"provider": req.Provider, "weight": 100, "modelMapping": modelMapping},
 		},
 		"authConfig": map[string]interface{}{
 			"enabled":                true,
