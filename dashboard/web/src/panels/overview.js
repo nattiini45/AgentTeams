@@ -91,7 +91,7 @@ function renderManagerCards(el, managers) {
       </div>
       <div class="card-actions">
         <button class="action-btn" data-message-kind="manager" data-name="${escapeHtml(m.name)}">Message</button>
-        <button class="action-btn" data-set-provider-kind="managers" data-name="${escapeHtml(m.name)}">Set Provider</button>
+        <button class="action-btn" data-set-provider-kind="managers" data-name="${escapeHtml(m.name)}" data-current-model="${escapeHtml(m.model || '')}" data-current-provider="${escapeHtml(m.modelProvider || '')}">Set Provider</button>
       </div>
     </div>`,
     )
@@ -126,7 +126,7 @@ function renderTeamCards(el, teams) {
       </div>
       <div class="card-actions">
         <button class="action-btn" data-message-kind="team" data-name="${escapeHtml(t.name)}">Message</button>
-        <button class="action-btn" data-set-provider-kind="teams" data-name="${escapeHtml(t.name)}">Set Provider</button>
+        <button class="action-btn" data-set-provider-kind="teams" data-name="${escapeHtml(t.name)}" data-current-provider="${escapeHtml(t.modelProvider || '')}">Set Provider</button>
       </div>
     </div>`,
     )
@@ -168,7 +168,7 @@ function renderWorkerCards(el, workers) {
         <button class="action-btn" data-action="wake" data-name="${escapeHtml(w.name)}">Wake</button>
         <button class="action-btn" data-action="sleep" data-name="${escapeHtml(w.name)}">Sleep</button>
         <button class="action-btn" data-action="ensure-ready" data-name="${escapeHtml(w.name)}">Ensure Ready</button>
-        <button class="action-btn" data-set-provider-kind="workers" data-name="${escapeHtml(w.name)}">Set Provider</button>
+        <button class="action-btn" data-set-provider-kind="workers" data-name="${escapeHtml(w.name)}" data-current-model="${escapeHtml(w.model || '')}" data-current-provider="${escapeHtml(w.modelProvider || '')}">Set Provider</button>
       </div>
     </div>`,
     )
@@ -261,9 +261,55 @@ async function onWorkerAction(btn) {
   }
 }
 
+// --- Model/Provider dialog ---
+
+const mpDialog = document.getElementById('model-provider-dialog');
+const mpForm = document.getElementById('model-provider-form');
+const mpTitle = document.getElementById('model-provider-title');
+const mpModel = document.getElementById('mp-model');
+const mpProvider = document.getElementById('mp-provider');
+const mpCancel = document.getElementById('mp-cancel');
+
+let mpResolve = null; // resolves { model, modelProvider } or null (cancelled)
+
+mpCancel.addEventListener('click', () => {
+  if (mpResolve) mpResolve(null);
+  mpResolve = null;
+  mpDialog.close();
+});
+
+mpForm.addEventListener('submit', () => {
+  if (mpResolve) mpResolve({ model: mpModel.value.trim(), modelProvider: mpProvider.value });
+  mpResolve = null;
+});
+
+mpDialog.addEventListener('cancel', () => {
+  if (mpResolve) mpResolve(null);
+  mpResolve = null;
+});
+
+function openModelProviderDialog(title, currentModel, currentProvider, providers) {
+  mpTitle.textContent = title;
+  mpModel.value = currentModel || '';
+  mpProvider.innerHTML = '<option value="">(default)</option>';
+  for (const p of providers) {
+    const opt = document.createElement('option');
+    opt.value = p.name;
+    opt.textContent = p.name;
+    if (p.name === currentProvider) opt.selected = true;
+    mpProvider.appendChild(opt);
+  }
+  return new Promise((resolve) => {
+    mpResolve = resolve;
+    mpDialog.showModal();
+  });
+}
+
 async function onSetProvider(btn) {
   const kind = btn.dataset.setProviderKind; // 'workers' | 'teams' | 'managers'
   const name = btn.dataset.name;
+  const currentModel = btn.dataset.currentModel || '';
+  const currentProvider = btn.dataset.currentProvider || '';
 
   let providers;
   try {
@@ -274,28 +320,41 @@ async function onSetProvider(btn) {
     return;
   }
 
-  if (providers.length === 0) {
-    showToast('No providers registered. Register one in the Providers tab first.', { error: true });
+  const kindLabel = kind === 'workers' ? 'worker' : kind === 'teams' ? 'team' : 'manager';
+  const result = await openModelProviderDialog(
+    `Set model / provider for ${kindLabel} "${name}"`,
+    currentModel,
+    currentProvider,
+    providers,
+  );
+  if (!result) return; // cancelled
+
+  const { model, modelProvider } = result;
+  if (!model && !modelProvider) {
+    showToast('Nothing to update — both fields empty.', { error: true });
     return;
   }
 
-  const names = providers.map((p) => p.name);
-  const choice = window.prompt(
-    `Set provider for ${kind} "${name}".\nAvailable providers: ${names.join(', ')}\n\nEnter provider name (or leave empty to clear):`,
-    '',
-  );
-  if (choice === null) return; // cancelled
-
-  const modelProvider = choice.trim();
   btn.disabled = true;
   try {
-    const patch = { modelProvider };
-    if (kind === 'workers') await api.updateWorker(name, patch);
-    else if (kind === 'teams') await api.updateTeam(name, patch);
-    else if (kind === 'managers') await api.updateManager(name, patch);
-    showToast(`${name}: provider set to ${modelProvider || '(default)'}`);
+    if (kind === 'teams') {
+      // Teams: modelProvider is applied to the leader via the backend.
+      const patch = {};
+      if (modelProvider) patch.modelProvider = modelProvider;
+      await api.updateTeam(name, patch);
+    } else {
+      const patch = {};
+      if (model) patch.model = model;
+      if (modelProvider) patch.modelProvider = modelProvider;
+      if (kind === 'workers') await api.updateWorker(name, patch);
+      else await api.updateManager(name, patch);
+    }
+    const parts = [];
+    if (model) parts.push(`model=${model}`);
+    if (modelProvider) parts.push(`provider=${modelProvider}`);
+    showToast(`${name}: updated (${parts.join(', ')})`);
   } catch (err) {
-    showToast(`${name}: provider update failed -- ${err.message}`, { error: true });
+    showToast(`${name}: update failed -- ${err.message}`, { error: true });
   } finally {
     btn.disabled = false;
   }

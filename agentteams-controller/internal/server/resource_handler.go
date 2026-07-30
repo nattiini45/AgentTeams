@@ -539,6 +539,11 @@ func (h *ResourceHandler) UpdateTeam(w http.ResponseWriter, r *http.Request) {
 		if req.TeamName != "" {
 			team.Spec.TeamName = req.TeamName
 		}
+		if req.ModelProvider != "" {
+			// Team-level provider is applied to the leader spec (TeamSpec has
+			// no top-level ModelProvider field; the leader carries it).
+			team.Spec.Leader.ModelProvider = req.ModelProvider
+		}
 		if req.Admin != nil {
 			team.Spec.Admin = req.Admin
 		}
@@ -1148,6 +1153,7 @@ func teamToResponse(t *v1beta1.Team) TeamResponse {
 		TeamName:          t.Spec.EffectiveTeamName(t.Name),
 		Phase:             t.Status.Phase,
 		Description:       t.Spec.Description,
+		ModelProvider:     t.Spec.Leader.ModelProvider,
 		Admin:             t.Spec.Admin,
 		HumanMembers:      t.Spec.HumanMembers,
 		LeaderName:        t.Spec.Leader.Name,

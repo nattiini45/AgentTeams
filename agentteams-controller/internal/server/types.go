@@ -181,6 +181,7 @@ type TeamWorkerRequest struct {
 type UpdateTeamRequest struct {
 	TeamName      string                     `json:"teamName,omitempty"`
 	Description   string                     `json:"description,omitempty"`
+	ModelProvider string                     `json:"modelProvider,omitempty"` // team-level provider, applied to the leader
 	Admin         *v1beta1.TeamAdminSpec     `json:"admin,omitempty"`
 	HumanMembers  []v1beta1.TeamMemberSpec   `json:"humanMembers,omitempty"`
 	Leader        *TeamLeaderRequest         `json:"leader,omitempty"`
@@ -194,6 +195,7 @@ type TeamResponse struct {
 	TeamName           string                           `json:"teamName,omitempty"`
 	Phase              string                           `json:"phase"`
 	Description        string                           `json:"description,omitempty"`
+	ModelProvider      string                           `json:"modelProvider,omitempty"` // team-level provider (from leader spec)
 	Admin              *v1beta1.TeamAdminSpec           `json:"admin,omitempty"`
 	HumanMembers       []v1beta1.TeamMemberSpec         `json:"humanMembers,omitempty"`
 	LeaderName         string                           `json:"leaderName"`

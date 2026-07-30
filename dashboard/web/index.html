@@ -54,6 +54,17 @@
           </div>
         </form>
       </dialog>
+      <dialog id="model-provider-dialog">
+        <form method="dialog" id="model-provider-form">
+          <p id="model-provider-title"></p>
+          <label>Model <input id="mp-model" placeholder="e.g. deepseek-v4-pro" /></label>
+          <label>Provider <select id="mp-provider"><option value="">(default)</option></select></label>
+          <div class="dialog-actions">
+            <button type="button" id="mp-cancel">Cancel</button>
+            <button type="submit" class="primary">Save</button>
+          </div>
+        </form>
+      </dialog>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>
