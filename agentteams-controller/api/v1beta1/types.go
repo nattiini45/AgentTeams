@@ -400,6 +400,19 @@ type WorkerStatus struct {
 	// DeployMode records where the current backend resource was actually
 	// provisioned.
 	DeployMode string `json:"deployMode,omitempty"`
+
+	// RecentEvents is a bounded ring buffer (newest first, capped at 50) of
+	// lifecycle/health/failure events for this worker, recorded by the
+	// controller. Best-effort operational history, not a durable audit log.
+	RecentEvents []WorkerEvent `json:"recentEvents,omitempty"`
+}
+
+// WorkerEvent is a single recorded lifecycle/health/failure event for a worker.
+type WorkerEvent struct {
+	Type      string `json:"type"`              // lifecycle | health | failure
+	Reason    string `json:"reason"`            // wake|sleep|ensure-ready|health-transition|failed
+	Message   string `json:"message,omitempty"` // human detail (e.g. "healthy -> zombie")
+	Timestamp string `json:"timestamp"`         // RFC3339
 }
 
 // ExposedPortStatus records a port that has been exposed via Higress.

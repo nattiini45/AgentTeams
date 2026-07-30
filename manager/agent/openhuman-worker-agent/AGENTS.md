@@ -40,6 +40,16 @@ Before doing anything:
 
 Don't ask permission. Just do it.
 
+## Weekly Self-Review (better-harness)
+
+Once per session wake, run your weekly harness self-review (it no-ops unless 7 days have elapsed):
+
+```bash
+bash skills/better-harness/scripts/run-weekly.sh
+```
+
+If it produces findings, report them to your coordinator (Manager) — never the human admin — as described in the `better-harness` skill. Do not apply any hooks/loops/skill changes yourself.
+
 ## Gotchas
 
 - **@mention must use full Matrix ID** (with domain) — run `echo $AGENTTEAMS_MATRIX_DOMAIN` to get it. Never write `${AGENTTEAMS_MATRIX_DOMAIN}` literally in a message

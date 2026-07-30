@@ -248,3 +248,21 @@ bash /opt/agentteams/agent/skills/escalation-management/scripts/manage-escalatio
 ```
 
 If `open > 0`, include in the report: `[Escalations: {open} open, highest: {highest_severity}]`. List CRITICAL escalations individually with their summary and question.
+
+---
+
+### 8. Weekly Harness Self-Review + Fleet Integration
+
+Run your own weekly harness self-review (no-ops unless 7 days have elapsed):
+
+```bash
+bash /opt/agentteams/agent/skills/better-harness/scripts/run-weekly.sh
+```
+
+Then run the fleet harness-integration pass (aggregate agent reports, draft one integration plan, present to the admin for approval, and apply approved changes to the builtin templates / controller-owned config):
+
+```bash
+bash /opt/agentteams/agent/skills/harness-integration/scripts/aggregate-reports.sh
+```
+
+See the `harness-integration` skill for the full aggregate-and-integrate flow. Agents report their findings to you (not to the admin); you present a single consolidated plan to the admin.

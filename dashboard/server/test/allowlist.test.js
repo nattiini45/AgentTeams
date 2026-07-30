@@ -23,6 +23,16 @@ test('GET single-resource paths pass through with name segment', () => {
   assert.equal(d.route.controllerPath, '/api/v1/workers/alice');
 });
 
+test('GET worker events/status sub-resources pass through to controller', () => {
+  for (const sub of ['events', 'status']) {
+    const d = classify('GET', `/api/workers/alice/${sub}`);
+    assert.equal(d.ok, true, `${sub} should be allowed`);
+    assert.equal(d.route.target, 'controller');
+    assert.equal(d.route.kind, 'get');
+    assert.equal(d.route.controllerPath, `/api/v1/workers/alice/${sub}`);
+  }
+});
+
 test('unknown top-level path is 404', () => {
   const d = classify('GET', '/api/nonsense');
   assert.equal(d.ok, false);

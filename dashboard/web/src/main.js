@@ -1,4 +1,5 @@
 import { renderOverview } from './panels/overview.js';
+import { renderWorkers } from './panels/workers.js';
 import { renderTasks } from './panels/tasks.js';
 import { renderBoard } from './panels/board.js';
 import { renderProjects } from './panels/projects.js';
@@ -8,6 +9,7 @@ import { renderProviders } from './panels/providers.js';
 
 const panels = {
   overview: renderOverview,
+  workers: renderWorkers,
   tasks: renderTasks,
   board: renderBoard,
   projects: renderProjects,

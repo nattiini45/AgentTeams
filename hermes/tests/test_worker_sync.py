@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import subprocess
 import time
 
@@ -64,11 +65,12 @@ def test_pull_all_skips_local_skill_absent_from_minio(monkeypatch, tmp_path, cap
 class _FakeSync:
     """Minimal stand-in for FileSync, only exposing what _sync_skills needs."""
 
-    def __init__(self, local_dir):
+    def __init__(self, local_dir, skills=None):
         self.local_dir = local_dir
+        self._skills = list(skills or [])
 
     def list_skills(self) -> list[str]:
-        return []
+        return list(self._skills)
 
 
 def _make_worker(tmp_path):
@@ -181,6 +183,41 @@ def test_push_local_detects_changed_binary_file(monkeypatch, tmp_path):
 
     assert "blob.bin" in pushed
     assert pushed_paths, "expected mc cp to be invoked for the changed binary file"
+
+
+def test_sync_skills_installs_better_harness_from_minio(tmp_path):
+    """When the better-harness builtin skill is published in MinIO (listed by
+    list_skills) and present in the local mirror, _sync_skills must install it
+    into HERMES_HOME/skills/better-harness/ and mark run-weekly.sh executable.
+    This is the Hermes-side path by which the builtin skill reaches the agent."""
+    config = WorkerConfig(
+        worker_name="tt",
+        minio_endpoint="minio:9000",
+        minio_access_key="tt",
+        minio_secret_key="secret",
+        install_dir=tmp_path / "agents",
+    )
+    worker = Worker(config)
+    local_dir = tmp_path / "agents" / "tt"
+    worker.sync = _FakeSync(local_dir=local_dir, skills=["better-harness"])
+
+    # Seed the local MinIO mirror with the better-harness skill.
+    skill_src = local_dir / "skills" / "better-harness"
+    script = skill_src / "scripts" / "run-weekly.sh"
+    script.parent.mkdir(parents=True, exist_ok=True)
+    (skill_src / "SKILL.md").write_text("name: better-harness", encoding="utf-8")
+    script.write_text("#!/bin/bash\nexit 0\n", encoding="utf-8")
+
+    worker._sync_skills()
+
+    installed = worker._hermes_home / "skills" / "better-harness"
+    assert (installed / "SKILL.md").is_file()
+    installed_script = installed / "scripts" / "run-weekly.sh"
+    assert installed_script.is_file()
+    # Unix permission bits are only honored on POSIX filesystems; on Windows the
+    # chmod is a no-op, so only assert the exec bit where it is meaningful.
+    if os.name != "nt":
+        assert installed_script.stat().st_mode & 0o111, "run-weekly.sh should be executable"
 
 
 def test_stop_cancels_sync_and_push_tasks():

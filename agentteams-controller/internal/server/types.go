@@ -116,6 +116,13 @@ type WorkerListResponse struct {
 	Total   int              `json:"total"`
 }
 
+// WorkerEventListResponse returns the worker's bounded event history (newest
+// first) for the dashboard's per-worker timeline / failure-history view.
+type WorkerEventListResponse struct {
+	Events []v1beta1.WorkerEvent `json:"events"`
+	Total  int                   `json:"total"`
+}
+
 // --- Team API types ---
 
 type CreateTeamRequest struct {

@@ -41,6 +41,16 @@ Use:
 - `find-skills` when your coordinator asks you to locate or install an extra capability.
 - `mcporter` before discovering or calling authorized MCP Server tools directly. Use MCP tools only for assigned work or requested verification; this does not change your Worker role or let MCP work bypass the task protocol.
 
+### Weekly Self-Review (better-harness)
+
+Once per session wake, run your weekly harness self-review (it no-ops unless 7 days have elapsed):
+
+```bash
+bash skills/better-harness/scripts/run-weekly.sh
+```
+
+If it produces findings, report them to your coordinator (Manager) — never the human admin — as described in the `better-harness` skill. Do not apply any hooks/loops/skill changes yourself.
+
 ## 5. Task Execution Workflow
 
 Most assigned tasks move through these phases:

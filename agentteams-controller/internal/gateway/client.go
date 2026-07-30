@@ -65,7 +65,7 @@ type Client interface {
 	CreateProviderRoute(ctx context.Context, req ProviderRouteRequest) error
 
 	// DeleteProviderRoute removes a provider-specific AI route by provider name.
-	// Constructs the route name as "hiclaw-<name>-route". No-op if not found.
+	// Constructs the route name as "agentteams-<name>-route". No-op if not found.
 	DeleteProviderRoute(ctx context.Context, name string) error
 
 	// DeleteServiceSource removes a DNS service source by name. No-op if not found.

@@ -36,11 +36,15 @@ RUN if [ -n "${APT_MIRROR}" ]; then \
         git \
         jq \
         libjemalloc2 \
-        nodejs \
-        npm \
         socat \
         tzdata \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 22 via NodeSource (the Debian-packaged nodejs is too old for
+# the better-harness CLI's >=22.20 engine constraint).
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y --no-install-recommends nodejs && \
+    rm -rf /var/lib/apt/lists/*
 
 # jemalloc reduces Python memory fragmentation and matches the CoPaw worker base.
 RUN JEMALLOC=$(find /usr/lib -name 'libjemalloc.so.2' -print -quit) \
@@ -98,6 +102,24 @@ RUN /opt/venv/qwenpaw/bin/pip install \
 RUN npm config set registry ${NPM_REGISTRY} && \
     npm install -g mcporter skills @nacos-group/cli@1.1.2 && \
     rm -rf /root/.npm
+
+# Install better-harness CLI (pinned ref, offline-capable at runtime).
+# Used by the builtin better-harness skill for weekly agent self-review.
+# The project is npm-managed (packageManager: npm), so install with npm.
+# BETTER_HARNESS_REF is pinned to a commit SHA for reproducible builds; to
+# bump, pick a new upstream commit and update the default here (branch/tag
+# names also work via the init/fetch/checkout pattern below).
+ARG BETTER_HARNESS_REF=4b871d9b402bcccc3a31e1b18247c088de854b0f
+ARG BETTER_HARNESS_REPO=https://github.com/QoderAI/better-harness.git
+RUN git init /opt/better-harness && \
+    cd /opt/better-harness && \
+    git remote add origin "${BETTER_HARNESS_REPO}" && \
+    git fetch --depth 1 origin "${BETTER_HARNESS_REF}" && \
+    git checkout FETCH_HEAD && \
+    npm install --omit=dev && \
+    ln -sf /opt/better-harness/scripts/better-harness.mjs /usr/local/bin/better-harness && \
+    chmod +x /usr/local/bin/better-harness && \
+    rm -rf /opt/better-harness/.git /root/.npm
 
 # Overlay AgentTeams Matrix channel behavior while keeping QwenPaw as the base runtime.
 COPY qwenpaw/scripts/qwenpaw_site_packages_gate.py \

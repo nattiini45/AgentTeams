@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	v1beta1 "github.com/agentscope-ai/AgentTeams/agentteams-controller/api/v1beta1"
 	"github.com/agentscope-ai/AgentTeams/agentteams-controller/internal/backend"
@@ -72,6 +73,12 @@ func (h *LifecycleHandler) Wake(w http.ResponseWriter, r *http.Request) {
 	}
 	worker.Status.Phase = "Running"
 	worker.Status.Message = ""
+	v1beta1.AppendWorkerEvent(&worker, v1beta1.WorkerEvent{
+		Type:      "lifecycle",
+		Reason:    "wake",
+		Message:   "worker woken",
+		Timestamp: time.Now().UTC().Format(time.RFC3339),
+	})
 	if err := h.k8s.Status().Update(r.Context(), &worker); err != nil {
 		log.Printf("[WARN] wake status update worker %s: %v", name, err)
 	}
@@ -118,6 +125,12 @@ func (h *LifecycleHandler) Sleep(w http.ResponseWriter, r *http.Request) {
 	}
 	worker.Status.Phase = "Sleeping"
 	worker.Status.Message = ""
+	v1beta1.AppendWorkerEvent(&worker, v1beta1.WorkerEvent{
+		Type:      "lifecycle",
+		Reason:    "sleep",
+		Message:   "worker put to sleep",
+		Timestamp: time.Now().UTC().Format(time.RFC3339),
+	})
 	if err := h.k8s.Status().Update(r.Context(), &worker); err != nil {
 		log.Printf("[WARN] sleep status update worker %s: %v", name, err)
 	}
@@ -166,6 +179,12 @@ func (h *LifecycleHandler) EnsureReady(w http.ResponseWriter, r *http.Request) {
 		}
 		worker.Status.Phase = "Running"
 		worker.Status.Message = ""
+		v1beta1.AppendWorkerEvent(&worker, v1beta1.WorkerEvent{
+			Type:      "lifecycle",
+			Reason:    "ensure-ready",
+			Message:   "worker ensured ready",
+			Timestamp: time.Now().UTC().Format(time.RFC3339),
+		})
 		if err := h.k8s.Status().Update(r.Context(), &worker); err != nil {
 			log.Printf("[WARN] ensure-ready status update worker %s: %v", name, err)
 		}

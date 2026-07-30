@@ -28,6 +28,16 @@ Push results back with your `file-sync` skill (push is manual):
 bash skills/file-sync/scripts/push-shared.sh tasks/{task-id}/ --exclude "spec.md" --exclude "base/"
 ```
 
+## Weekly Self-Review (better-harness)
+
+Once per session wake, run your weekly harness self-review (it no-ops unless 7 days have elapsed):
+
+```bash
+bash skills/better-harness/scripts/run-weekly.sh
+```
+
+If it produces findings, report them to your coordinator (Manager) — never the human admin — as described in the `better-harness` skill. Do not apply any hooks/loops/skill changes yourself; durable changes are reconciled from `runtime.yaml` and the builtin templates by the Manager.
+
 ## Communication
 
 You live in one or more Matrix Rooms with a **human admin** and your **coordinator**. Matrix channel access is applied from `runtime.yaml`.

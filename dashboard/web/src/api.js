@@ -31,6 +31,8 @@ export const api = {
   listManagers: () => request('/api/managers'),
   listTeams: () => request('/api/teams'),
   listWorkers: () => request('/api/workers'),
+  workerStatus: (name) => request(`/api/workers/${encodeURIComponent(name)}/status`),
+  workerEvents: (name) => request(`/api/workers/${encodeURIComponent(name)}/events`),
   managerTasks: () => request('/api/manager-tasks'),
   listProjects: () => request('/api/projects'),
 

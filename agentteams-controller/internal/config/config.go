@@ -246,6 +246,12 @@ type WorkerEnvDefaults struct {
 	// Sourced from NACOS_AUTH_TYPE.
 	// Typical value: "sts-agentteams".
 	NacosAuthType string
+
+	// BetterHarnessDisabled is propagated to workers and managers as
+	// AGENTTEAMS_BETTER_HARNESS_ENABLED=0. Sourced from AGENTTEAMS_BETTER_HARNESS_ENABLED.
+	// The weekly better-harness self-review is ON by default; setting the env var
+	// to a falsy value (0/false/no) disables it fleet-wide from the controller.
+	BetterHarnessDisabled bool
 }
 
 type managerSpecEnv struct {
@@ -435,6 +441,10 @@ func LoadConfig() *Config {
 			CMSWorkspace:      os.Getenv("AGENTTEAMS_CMS_WORKSPACE"),
 			SkillsAPIURL:      envOrDefault("SKILLS_API_URL", os.Getenv("AGENTTEAMS_SKILLS_API_URL")),
 			NacosAuthType:     os.Getenv("NACOS_AUTH_TYPE"),
+
+			// Weekly better-harness self-review is ON by default; an explicit falsy
+			// AGENTTEAMS_BETTER_HARNESS_ENABLED disables it fleet-wide.
+			BetterHarnessDisabled: !envBoolDefault("AGENTTEAMS_BETTER_HARNESS_ENABLED", true),
 		},
 	}
 
@@ -830,6 +840,9 @@ func (c *Config) ManagerAgentEnv() map[string]string {
 	}
 	if c.WorkerEnv.MatrixDebug {
 		env["AGENTTEAMS_MATRIX_DEBUG"] = "1"
+	}
+	if c.WorkerEnv.BetterHarnessDisabled {
+		env["AGENTTEAMS_BETTER_HARNESS_ENABLED"] = "0"
 	}
 	if c.CMSTracesEnabled {
 		env["AGENTTEAMS_CMS_TRACES_ENABLED"] = "1"

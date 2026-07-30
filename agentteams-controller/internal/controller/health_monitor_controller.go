@@ -144,8 +144,27 @@ func (c *HealthMonitorController) setHealthState(ctx context.Context, name, stat
 		if worker.Status.HealthState == state {
 			return nil
 		}
+		oldState := worker.Status.HealthState
 		worker.Status.HealthState = state
 		worker.Status.LastHealthTransition = now.UTC().Format(time.RFC3339)
+
+		// Record the transition in the worker's bounded event history so the
+		// dashboard can show a health/failure timeline.
+		ts := now.UTC().Format(time.RFC3339)
+		v1beta1.AppendWorkerEvent(&worker, v1beta1.WorkerEvent{
+			Type:      "health",
+			Reason:    "health-transition",
+			Message:   oldState + " -> " + state,
+			Timestamp: ts,
+		})
+		if state == HealthStateZombie {
+			v1beta1.AppendWorkerEvent(&worker, v1beta1.WorkerEvent{
+				Type:      "failure",
+				Reason:    "failed",
+				Message:   "worker became unresponsive (zombie): no heartbeat",
+				Timestamp: ts,
+			})
+		}
 		return c.Status().Update(ctx, &worker)
 	})
 }

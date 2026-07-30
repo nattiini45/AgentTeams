@@ -15,6 +15,7 @@ Use heartbeat as a periodic team check and anomaly notifier. Do not do domain wo
 3. Check active Project state.
 4. Apply the monitoring strategy below.
 5. Report only meaningful changes.
+6. Run your weekly harness self-review (no-ops unless 7 days have elapsed): `bash skills/better-harness/scripts/run-weekly.sh`. If it produces findings, report them to the Manager (not the requester) per the `better-harness` skill. Do not apply any hooks/loops/skill changes yourself.
 
 ## 1. Check Team Health
 

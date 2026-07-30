@@ -6,9 +6,20 @@ changes here before the next release.
 
 ---
 
+**What's New**
+
+- **Better Harness weekly self-review**: Bake the pinned `QoderAI/better-harness` CLI into the `openclaw-base`, `hermes`, and `qwenpaw` images (Node 22 via NodeSource for the Python images; `npm install --omit=dev` since the project is npm-managed) and ship a builtin `better-harness` skill in every agent template (Manager, OpenClaw/CoPaw/Hermes/OpenHuman/QwenPaw workers, Team Leader). Each agent runs a deterministic, read-only `better-harness harness source` evidence collection at most once per 7 days (deterministic `run-weekly.sh` cadence guard), authors findings from that evidence, and reports them to the Manager — never the human admin. The weekly trigger is native to each runtime: the QwenPaw and Hermes worker daemons run a supervised `run_better_harness_weekly_loop` background task (state persisted to MinIO, so the cadence survives restarts), while OpenClaw/CoPaw/Manager/Team Leader invoke `run-weekly.sh` from their existing heartbeat / session-wake.
+- **Manager-mediated harness integration**: Add a `harness-integration` Manager skill (`aggregate-reports.sh`) that pulls `shared/harness-reports/`, aggregates all agents' findings into one consolidated summary, and presents a single fleet-wide integration plan to the admin for approval. Approved changes are written to the manager-owned builtin templates / controller-owned config so they propagate to every agent via `upgrade-builtins.sh` / `pushBuiltinSkills`; agents never self-apply hooks/loops/skill edits.
+- **`AGENTTEAMS_BETTER_HARNESS_ENABLED` kill switch**: New controller env gate (default on). Setting it to a falsy value propagates `AGENTTEAMS_BETTER_HARNESS_ENABLED=0` to every worker and manager container so the weekly review is skipped fleet-wide.
+- **Worker overview dashboard page**: New **Workers** tab in the dashboard web UI listing every worker; clicking a worker opens a drill-down detail with current health (reusing the health-probe strip), an event/failure timeline, and the worker's better-harness weekly findings (read from the existing MinIO `shared/harness-reports/<name>/` space). Backed by a new controller event-history store: `WorkerStatus.RecentEvents` is a bounded ring buffer (newest first, capped at 50) recorded by the health monitor (health transitions, zombie failures) and the lifecycle handlers (wake/sleep/ensure-ready), exposed via `GET /api/v1/workers/{name}/events`. CRD schema updated and synced to Helm.
+
 **Bug Fixes**
 
-- **QwenPaw file:// package refs on Windows**: Resolve `file://C:\\...` agent package refs correctly instead of treating an empty urlparse path as `.` (cwd).
+- **Pinned better-harness ref**: Pin `BETTER_HARNESS_REF` to a commit SHA in the `openclaw-base`, `hermes`, and `qwenpaw` Dockerfiles (init/fetch/checkout pattern that also accepts branch/tag overrides) so image builds are reproducible instead of floating on upstream `main`.
+- **harness-integration jq guard**: Fail fast with a clear error in `aggregate-reports.sh` when `jq` is missing from PATH instead of surfacing a raw "command not found".
+- **Dashboard worker cards keyboard access**: Activate worker cards (`role="button"`) with Enter/Space in addition to click on the Workers tab.
+- **AI provider route naming**: Rename AI provider route names from the retired `hiclaw-<name>-route` prefix to `agentteams-<name>-route` across the gateway client, Higress driver, gateway handler, and their tests, restoring the AgentTeams rename-contract check (helm-lint).
+- **QwenPaw file:// package refs on Windows**: Resolve `file://C:\...` agent package refs correctly instead of treating an empty urlparse path as `.` (cwd).
 - **CoPaw Team coordination routing**: Route Team Leader worker assignments sent through the `message` tool from Leader DM to Team Room, matching the Matrix channel send path. ([92c8145](https://github.com/agentscope-ai/AgentTeams/commit/92c8145))
 - **Pinned OpenClaw source fetch**: Fetch the pinned OpenClaw commit directly so the base image build does not depend on a retired-brand external branch name. ([b0081c2](https://github.com/agentscope-ai/AgentTeams/commit/b0081c2))
 - **Higress extra providers**: Restore OPT-IN `AGENTTEAMS_EXTRA_LLM_PROVIDERS` registration with `modelMapping` that strips the `<provider>/` prefix before upstream calls.

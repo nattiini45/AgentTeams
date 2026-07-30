@@ -346,6 +346,25 @@ spec:
                   description: |
                     The backend type currently deployed for this worker.
                     Set by the controller after successful creation or backend switch.
+                recentEvents:
+                  type: array
+                  description: |
+                    Bounded ring buffer (newest first, capped at 50) of
+                    lifecycle/health/failure events recorded by the controller.
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: Event category (lifecycle | health | failure)
+                      reason:
+                        type: string
+                        description: Machine reason (wake|sleep|ensure-ready|health-transition|failed)
+                      message:
+                        type: string
+                      timestamp:
+                        type: string
+                        format: date-time
       subresources:
         status: {}
       additionalPrinterColumns:
