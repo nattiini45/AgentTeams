@@ -207,7 +207,7 @@ func (h *GatewayHandler) RegisterProvider(w http.ResponseWriter, r *http.Request
 	}
 
 	// Step 3: Provider-specific AI route.
-	routeName := "hiclaw-" + req.Name + "-route"
+	routeName := "agentteams-" + req.Name + "-route"
 	routeReq := gateway.ProviderRouteRequest{
 		Name:             routeName,
 		Provider:         req.Name,

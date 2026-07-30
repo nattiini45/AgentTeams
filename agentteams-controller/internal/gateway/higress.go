@@ -808,7 +808,7 @@ func (c *HigressClient) ListAIProviders(ctx context.Context) ([]AIProviderInfo, 
 		}
 		info := AIProviderInfo{Name: p.Name, Type: p.Type}
 		// Check if a provider-specific route exists.
-		routeName := "hiclaw-" + p.Name + "-route"
+		routeName := "agentteams-" + p.Name + "-route"
 		_, rsc, rerr := c.doJSON(ctx, http.MethodGet, "/v1/ai/routes/"+routeName, nil)
 		if rerr == nil && rsc == http.StatusOK {
 			info.Route = routeName
@@ -892,7 +892,7 @@ func (c *HigressClient) DeleteProviderRoute(ctx context.Context, name string) er
 	if isReservedProviderName(name) {
 		return fmt.Errorf("cannot delete route for reserved provider %q", name)
 	}
-	routeName := "hiclaw-" + name + "-route"
+	routeName := "agentteams-" + name + "-route"
 	_, sc, err := c.doJSON(ctx, http.MethodDelete, "/v1/ai/routes/"+routeName, nil)
 	if err != nil {
 		return fmt.Errorf("delete provider route %s: %w", routeName, err)

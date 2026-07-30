@@ -718,11 +718,11 @@ func TestListAIProviders_Higress(t *testing.T) {
 		case r.URL.Path == "/v1/ai/providers" && r.Method == "GET":
 			w.Header().Set("Content-Type", "application/json")
 			w.Write([]byte(`{"data":[{"name":"qwen","type":"qwen"},{"name":"ollama","type":"openai"}]}`))
-		case r.URL.Path == "/v1/ai/routes/hiclaw-qwen-route":
+		case r.URL.Path == "/v1/ai/routes/agentteams-qwen-route":
 			w.WriteHeader(http.StatusNotFound)
-		case r.URL.Path == "/v1/ai/routes/hiclaw-ollama-route":
+		case r.URL.Path == "/v1/ai/routes/agentteams-ollama-route":
 			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"data":{"name":"hiclaw-ollama-route"}}`))
+			w.Write([]byte(`{"data":{"name":"agentteams-ollama-route"}}`))
 		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
@@ -739,7 +739,7 @@ func TestListAIProviders_Higress(t *testing.T) {
 	if providers[0].Name != "qwen" || providers[0].Route != "" {
 		t.Errorf("providers[0] = %+v", providers[0])
 	}
-	if providers[1].Name != "ollama" || providers[1].Route != "hiclaw-ollama-route" {
+	if providers[1].Name != "ollama" || providers[1].Route != "agentteams-ollama-route" {
 		t.Errorf("providers[1] = %+v", providers[1])
 	}
 }
@@ -787,7 +787,7 @@ func TestCreateProviderRoute_Higress(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 		case r.URL.Path == "/session/login":
 			w.WriteHeader(http.StatusOK)
-		case r.Method == "GET" && r.URL.Path == "/v1/ai/routes/hiclaw-ollama-route":
+		case r.Method == "GET" && r.URL.Path == "/v1/ai/routes/agentteams-ollama-route":
 			w.WriteHeader(http.StatusNotFound) // route doesn't exist yet
 		case r.Method == "POST" && r.URL.Path == "/v1/ai/routes":
 			json.NewDecoder(r.Body).Decode(&createdBody)
@@ -799,7 +799,7 @@ func TestCreateProviderRoute_Higress(t *testing.T) {
 
 	c := NewHigressClient(Config{ConsoleURL: "http://test", AdminUser: "admin", AdminPassword: "pass"}, client)
 	err := c.CreateProviderRoute(context.Background(), ProviderRouteRequest{
-		Name:             "hiclaw-ollama-route",
+		Name:             "agentteams-ollama-route",
 		Provider:         "ollama",
 		Domains:          []string{"aigw-local.agentteams.io"},
 		ModelPrefix:      "ollama/",
@@ -810,7 +810,7 @@ func TestCreateProviderRoute_Higress(t *testing.T) {
 	}
 
 	// Verify the route body shape.
-	if createdBody["name"] != "hiclaw-ollama-route" {
+	if createdBody["name"] != "agentteams-ollama-route" {
 		t.Errorf("route name = %v", createdBody["name"])
 	}
 	mp, ok := createdBody["modelPredicate"].(map[string]interface{})

@@ -93,7 +93,7 @@ func TestListProviders(t *testing.T) {
 	gw := &fakeProviderGateway{
 		providers: []gateway.AIProviderInfo{
 			{Name: "qwen", Type: "qwen", Route: ""},
-			{Name: "ollama", Type: "openai", Route: "hiclaw-ollama-route"},
+			{Name: "ollama", Type: "openai", Route: "agentteams-ollama-route"},
 		},
 	}
 	h := NewGatewayHandler(gw, "aigw-local.agentteams.io")
@@ -113,7 +113,7 @@ func TestListProviders(t *testing.T) {
 	if resp.Total != 2 {
 		t.Errorf("total = %d, want 2", resp.Total)
 	}
-	if resp.Providers[1].Name != "ollama" || resp.Providers[1].Route != "hiclaw-ollama-route" {
+	if resp.Providers[1].Name != "ollama" || resp.Providers[1].Route != "agentteams-ollama-route" {
 		t.Errorf("unexpected provider[1]: %+v", resp.Providers[1])
 	}
 }
@@ -140,7 +140,7 @@ func TestRegisterProvider_Success(t *testing.T) {
 	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if resp.Name != "ollama" || resp.Type != "openai" || resp.Route != "hiclaw-ollama-route" {
+	if resp.Name != "ollama" || resp.Type != "openai" || resp.Route != "agentteams-ollama-route" {
 		t.Errorf("unexpected response: %+v", resp)
 	}
 
@@ -158,7 +158,7 @@ func TestRegisterProvider_Success(t *testing.T) {
 		t.Fatalf("CreateProviderRoute calls: %d", len(gw.createRouteCalls))
 	}
 	routeReq := gw.createRouteCalls[0]
-	if routeReq.Name != "hiclaw-ollama-route" || routeReq.ModelPrefix != "ollama/" {
+	if routeReq.Name != "agentteams-ollama-route" || routeReq.ModelPrefix != "ollama/" {
 		t.Errorf("unexpected route request: %+v", routeReq)
 	}
 	if len(routeReq.Domains) != 1 || routeReq.Domains[0] != "aigw-local.agentteams.io" {
