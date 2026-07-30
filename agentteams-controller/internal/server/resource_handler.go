@@ -164,6 +164,29 @@ func (h *ResourceHandler) GetWorker(w http.ResponseWriter, r *http.Request) {
 	httputil.WriteJSON(w, http.StatusOK, resp)
 }
 
+// GetWorkerEvents handles GET /api/v1/workers/{name}/events. It returns the
+// worker's bounded event history (newest first) recorded in WorkerStatus by
+// the health monitor and lifecycle handlers.
+func (h *ResourceHandler) GetWorkerEvents(w http.ResponseWriter, r *http.Request) {
+	name := r.PathValue("name")
+	if name == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "worker name is required")
+		return
+	}
+
+	var worker v1beta1.Worker
+	if err := h.client.Get(r.Context(), client.ObjectKey{Name: name, Namespace: h.namespace}, &worker); err != nil {
+		writeK8sError(w, "get worker events", err)
+		return
+	}
+
+	events := worker.Status.RecentEvents
+	if events == nil {
+		events = []v1beta1.WorkerEvent{}
+	}
+	httputil.WriteJSON(w, http.StatusOK, WorkerEventListResponse{Events: events, Total: len(events)})
+}
+
 func (h *ResourceHandler) ListWorkers(w http.ResponseWriter, r *http.Request) {
 	teamFilter := r.URL.Query().Get("team")
 
