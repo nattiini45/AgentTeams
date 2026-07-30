@@ -88,6 +88,7 @@ type WorkerResponse struct {
 	ContainerManaged      bool                `json:"containerManaged,omitempty"`
 	State                 string              `json:"state,omitempty"` // desired lifecycle state
 	Model                 string              `json:"model,omitempty"`
+	ModelProvider         string              `json:"modelProvider,omitempty"`
 	Runtime               string              `json:"runtime,omitempty"`
 	Image                 string              `json:"image,omitempty"`
 	ContainerState        string              `json:"containerState,omitempty"`
@@ -274,11 +275,12 @@ type UpdateManagerRequest struct {
 }
 
 type ManagerResponse struct {
-	Name         string `json:"name"`
-	Phase        string `json:"phase"`
-	State        string `json:"state,omitempty"` // desired lifecycle state
-	Model        string `json:"model,omitempty"`
-	Runtime      string `json:"runtime,omitempty"`
+	Name          string `json:"name"`
+	Phase         string `json:"phase"`
+	State         string `json:"state,omitempty"` // desired lifecycle state
+	Model         string `json:"model,omitempty"`
+	ModelProvider string `json:"modelProvider,omitempty"`
+	Runtime       string `json:"runtime,omitempty"`
 	Image        string `json:"image,omitempty"`
 	MatrixUserID string `json:"matrixUserID,omitempty"`
 	RoomID       string `json:"roomID,omitempty"`
@@ -353,6 +355,25 @@ type ConsumerResponse struct {
 	ConsumerID string `json:"consumer_id"`
 	APIKey     string `json:"api_key,omitempty"`
 	Status     string `json:"status"`
+}
+
+// --- Provider management API types ---
+
+type RegisterProviderRequest struct {
+	Name string `json:"name"`
+	URL  string `json:"url"` // OpenAI-compatible base URL
+	Key  string `json:"key"` // write-only, NEVER returned in responses
+}
+
+type ProviderResponse struct {
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Route string `json:"route,omitempty"`
+}
+
+type ProviderListResponse struct {
+	Providers []ProviderResponse `json:"providers"`
+	Total     int                `json:"total"`
 }
 
 // --- Lifecycle API types ---

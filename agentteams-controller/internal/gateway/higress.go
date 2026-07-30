@@ -774,6 +774,149 @@ func (c *HigressClient) deleteDomain(ctx context.Context, name string) {
 	c.doJSON(ctx, http.MethodDelete, "/v1/domains/"+name, nil)
 }
 
+// --- Provider management methods (dashboard/API-driven provider CRUD) ---
+
+// isReservedProviderName returns true if the name must never be used for
+// provider CRUD operations (protects the boot-time default-ai-route).
+func isReservedProviderName(name string) bool {
+	return name == "default" || name == ""
+}
+
+func (c *HigressClient) ListAIProviders(ctx context.Context) ([]AIProviderInfo, error) {
+	respBody, sc, err := c.doJSON(ctx, http.MethodGet, "/v1/ai/providers", nil)
+	if err != nil {
+		return nil, fmt.Errorf("list AI providers: %w", err)
+	}
+	if sc != http.StatusOK {
+		return nil, fmt.Errorf("list AI providers: HTTP %d", sc)
+	}
+
+	var listResp struct {
+		Data []struct {
+			Name string `json:"name"`
+			Type string `json:"type"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(respBody, &listResp); err != nil {
+		return nil, fmt.Errorf("list AI providers: decode: %w", err)
+	}
+
+	providers := make([]AIProviderInfo, 0, len(listResp.Data))
+	for _, p := range listResp.Data {
+		if p.Name == "" {
+			continue
+		}
+		info := AIProviderInfo{Name: p.Name, Type: p.Type}
+		// Check if a provider-specific route exists.
+		routeName := "hiclaw-" + p.Name + "-route"
+		_, rsc, rerr := c.doJSON(ctx, http.MethodGet, "/v1/ai/routes/"+routeName, nil)
+		if rerr == nil && rsc == http.StatusOK {
+			info.Route = routeName
+		}
+		providers = append(providers, info)
+	}
+	return providers, nil
+}
+
+func (c *HigressClient) DeleteAIProvider(ctx context.Context, name string) error {
+	if isReservedProviderName(name) {
+		return fmt.Errorf("cannot delete reserved provider %q", name)
+	}
+	_, sc, err := c.doJSON(ctx, http.MethodDelete, "/v1/ai/providers/"+name, nil)
+	if err != nil {
+		return fmt.Errorf("delete AI provider %s: %w", name, err)
+	}
+	if sc != http.StatusOK && sc != http.StatusNoContent && sc != http.StatusNotFound {
+		return fmt.Errorf("delete AI provider %s: HTTP %d", name, sc)
+	}
+	return nil
+}
+
+func (c *HigressClient) CreateProviderRoute(ctx context.Context, req ProviderRouteRequest) error {
+	if isReservedProviderName(req.Provider) {
+		return fmt.Errorf("cannot create route for reserved provider %q", req.Provider)
+	}
+
+	// GET existing route for idempotent upsert.
+	_, sc, err := c.doJSON(ctx, http.MethodGet, "/v1/ai/routes/"+req.Name, nil)
+	if err != nil {
+		return fmt.Errorf("create provider route %s: check existence: %w", req.Name, err)
+	}
+
+	body := map[string]interface{}{
+		"name":    req.Name,
+		"domains": req.Domains,
+		"pathPredicate": map[string]interface{}{
+			"matchType":     "PRE",
+			"matchValue":    "/",
+			"caseSensitive": false,
+		},
+		"modelPredicate": map[string]interface{}{
+			"matchType":  "PRE",
+			"matchValue": req.ModelPrefix,
+		},
+		"upstreams": []map[string]interface{}{
+			{"provider": req.Provider, "weight": 100, "modelMapping": map[string]interface{}{}},
+		},
+		"authConfig": map[string]interface{}{
+			"enabled":                true,
+			"allowedCredentialTypes": []string{"key-auth"},
+			"allowedConsumers":       req.AllowedConsumers,
+		},
+	}
+
+	if sc == http.StatusOK {
+		// Update existing route.
+		_, psc, perr := c.doJSON(ctx, http.MethodPut, "/v1/ai/routes/"+req.Name, body)
+		if perr != nil {
+			return fmt.Errorf("create provider route %s: update: %w", req.Name, perr)
+		}
+		if psc != http.StatusOK && psc != http.StatusCreated {
+			return fmt.Errorf("create provider route %s: update: HTTP %d", req.Name, psc)
+		}
+		return nil
+	}
+
+	// Create new route.
+	_, psc, perr := c.doJSON(ctx, http.MethodPost, "/v1/ai/routes", body)
+	if perr != nil {
+		return fmt.Errorf("create provider route %s: create: %w", req.Name, perr)
+	}
+	if psc != http.StatusOK && psc != http.StatusCreated && psc != http.StatusConflict {
+		return fmt.Errorf("create provider route %s: create: HTTP %d", req.Name, psc)
+	}
+	return nil
+}
+
+func (c *HigressClient) DeleteProviderRoute(ctx context.Context, name string) error {
+	if isReservedProviderName(name) {
+		return fmt.Errorf("cannot delete route for reserved provider %q", name)
+	}
+	routeName := "hiclaw-" + name + "-route"
+	_, sc, err := c.doJSON(ctx, http.MethodDelete, "/v1/ai/routes/"+routeName, nil)
+	if err != nil {
+		return fmt.Errorf("delete provider route %s: %w", routeName, err)
+	}
+	if sc != http.StatusOK && sc != http.StatusNoContent && sc != http.StatusNotFound {
+		return fmt.Errorf("delete provider route %s: HTTP %d", routeName, sc)
+	}
+	return nil
+}
+
+func (c *HigressClient) DeleteServiceSource(ctx context.Context, name string) error {
+	if isReservedProviderName(name) {
+		return fmt.Errorf("cannot delete service source for reserved provider %q", name)
+	}
+	_, sc, err := c.doJSON(ctx, http.MethodDelete, "/v1/service-sources/"+name, nil)
+	if err != nil {
+		return fmt.Errorf("delete service source %s: %w", name, err)
+	}
+	if sc != http.StatusOK && sc != http.StatusNoContent && sc != http.StatusNotFound {
+		return fmt.Errorf("delete service source %s: HTTP %d", name, sc)
+	}
+	return nil
+}
+
 // doJSON performs an HTTP request with session cookies.
 func (c *HigressClient) doJSON(ctx context.Context, method, path string, reqBody interface{}) ([]byte, int, error) {
 	if err := c.ensureSession(ctx); err != nil {

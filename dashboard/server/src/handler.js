@@ -91,6 +91,22 @@ function createRequestHandler(deps) {
               bodyLen: body ? body.length : 0,
               bodyPreview: bodyPreview(body),
             });
+          } else if (route.action === 'register-provider' || route.action === 'delete-provider') {
+            // Provider writes: NEVER log body content (contains API key).
+            logWrite({
+              action: route.action,
+              provider: route.providerName || undefined,
+              status: upstream.statusCode,
+              remoteAddr: req.socket ? req.socket.remoteAddress : undefined,
+            });
+          } else if (route.action === 'update') {
+            logWrite({
+              action: 'update',
+              kind: route.targetKind,
+              target: route.targetName,
+              status: upstream.statusCode,
+              remoteAddr: req.socket ? req.socket.remoteAddress : undefined,
+            });
           } else {
             logWrite({
               action: route.action,

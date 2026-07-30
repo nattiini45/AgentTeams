@@ -165,3 +165,84 @@ test('message action requires exactly the "message" literal at the 4th segment',
   assert.equal(d.ok, false);
   assert.equal(d.status, 405); // falls through to list-kinds GET-passthrough branch, non-GET
 });
+
+// --- Provider management routes ---
+
+test('GET /api/gateway/providers maps to controller GET', () => {
+  const d = classify('GET', '/api/gateway/providers');
+  assert.equal(d.ok, true);
+  assert.equal(d.route.target, 'controller');
+  assert.equal(d.route.kind, 'get');
+  assert.equal(d.route.controllerPath, '/api/v1/gateway/providers');
+});
+
+test('POST /api/gateway/providers maps to controller write (register-provider)', () => {
+  const d = classify('POST', '/api/gateway/providers');
+  assert.equal(d.ok, true);
+  assert.equal(d.route.target, 'controller');
+  assert.equal(d.route.kind, 'write');
+  assert.equal(d.route.action, 'register-provider');
+  assert.equal(d.route.controllerPath, '/api/v1/gateway/providers');
+});
+
+test('DELETE /api/gateway/providers/ollama maps to controller write (delete-provider)', () => {
+  const d = classify('DELETE', '/api/gateway/providers/ollama');
+  assert.equal(d.ok, true);
+  assert.equal(d.route.target, 'controller');
+  assert.equal(d.route.kind, 'write');
+  assert.equal(d.route.action, 'delete-provider');
+  assert.equal(d.route.providerName, 'ollama');
+  assert.equal(d.route.controllerPath, '/api/v1/gateway/providers/ollama');
+});
+
+test('PUT /api/gateway/providers is 405', () => {
+  const d = classify('PUT', '/api/gateway/providers');
+  assert.equal(d.ok, false);
+  assert.equal(d.status, 405);
+});
+
+test('GET /api/gateway/providers/name is 405 (no single-provider GET)', () => {
+  const d = classify('GET', '/api/gateway/providers/ollama');
+  assert.equal(d.ok, false);
+  assert.equal(d.status, 405);
+});
+
+// --- PUT passthrough for model/provider assignment ---
+
+test('PUT /api/workers/alice maps to controller write (update)', () => {
+  const d = classify('PUT', '/api/workers/alice');
+  assert.equal(d.ok, true);
+  assert.equal(d.route.target, 'controller');
+  assert.equal(d.route.kind, 'write');
+  assert.equal(d.route.action, 'update');
+  assert.equal(d.route.targetKind, 'workers');
+  assert.equal(d.route.targetName, 'alice');
+  assert.equal(d.route.controllerPath, '/api/v1/workers/alice');
+});
+
+test('PUT /api/teams/myteam maps to controller write (update)', () => {
+  const d = classify('PUT', '/api/teams/myteam');
+  assert.equal(d.ok, true);
+  assert.equal(d.route.action, 'update');
+  assert.equal(d.route.targetKind, 'teams');
+  assert.equal(d.route.targetName, 'myteam');
+});
+
+test('PUT /api/managers/mgr maps to controller write (update)', () => {
+  const d = classify('PUT', '/api/managers/mgr');
+  assert.equal(d.ok, true);
+  assert.equal(d.route.action, 'update');
+  assert.equal(d.route.targetKind, 'managers');
+});
+
+test('DELETE /api/workers/alice is 405 (not allowed)', () => {
+  const d = classify('DELETE', '/api/workers/alice');
+  assert.equal(d.ok, false);
+  assert.equal(d.status, 405);
+});
+
+test('PUT /api/projects/foo is 405 (projects not in ASSIGN_KINDS)', () => {
+  const d = classify('PUT', '/api/projects/foo');
+  assert.equal(d.ok, false);
+  assert.equal(d.status, 405);
+});

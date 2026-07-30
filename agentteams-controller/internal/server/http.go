@@ -22,6 +22,7 @@ type ServerDeps struct {
 	Client         client.Client
 	Backend        *backend.Registry
 	Gateway        gateway.Client
+	AIGatewayDomains    []string // domains for provider-specific AI routes
 	OSS            oss.StorageClient
 	STS            *credentials.STSService
 	AuthMw         *authpkg.Middleware
@@ -128,10 +129,15 @@ func NewHTTPServer(addr string, deps ServerDeps) *HTTPServer {
 	mux.Handle("GET /api/v1/workers/{name}/status", mw.RequireAuthz(authpkg.ActionStatus, "worker", nameFn)(http.HandlerFunc(lh.GetWorkerRuntimeStatus)))
 
 	// --- Gateway ---
-	gh := NewGatewayHandler(deps.Gateway)
+	gh := NewGatewayHandler(deps.Gateway, deps.AIGatewayDomains...)
 	mux.Handle("POST /api/v1/gateway/consumers", mw.RequireAuthz(authpkg.ActionCreate, "gateway", nil)(http.HandlerFunc(gh.CreateConsumer)))
 	mux.Handle("POST /api/v1/gateway/consumers/{id}/bind", mw.RequireAuthz(authpkg.ActionUpdate, "gateway", nil)(http.HandlerFunc(gh.BindConsumer)))
 	mux.Handle("DELETE /api/v1/gateway/consumers/{id}", mw.RequireAuthz(authpkg.ActionDelete, "gateway", nil)(http.HandlerFunc(gh.DeleteConsumer)))
+
+	// --- AI Provider management ---
+	mux.Handle("GET /api/v1/gateway/providers", mw.RequireAuthz(authpkg.ActionList, "gateway", nil)(http.HandlerFunc(gh.ListProviders)))
+	mux.Handle("POST /api/v1/gateway/providers", mw.RequireAuthz(authpkg.ActionCreate, "gateway", nil)(http.HandlerFunc(gh.RegisterProvider)))
+	mux.Handle("DELETE /api/v1/gateway/providers/{name}", mw.RequireAuthz(authpkg.ActionDelete, "gateway", nil)(http.HandlerFunc(gh.DeleteProvider)))
 
 	// --- Credentials ---
 	// STS is self-scoped: no {name} in path; handler uses CallerIdentity to scope the issued token.
