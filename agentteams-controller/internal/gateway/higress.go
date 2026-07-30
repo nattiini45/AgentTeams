@@ -818,6 +818,33 @@ func (c *HigressClient) ListAIProviders(ctx context.Context) ([]AIProviderInfo, 
 	return providers, nil
 }
 
+// GetAIProvider fetches the full provider config (including tokens) from the
+// Higress Console API.
+func (c *HigressClient) GetAIProvider(ctx context.Context, name string) (*AIProviderDetail, error) {
+	body, sc, err := c.doJSON(ctx, http.MethodGet, "/v1/ai/providers/"+name, nil)
+	if err != nil {
+		return nil, fmt.Errorf("higress: get AI provider %q: %w", name, err)
+	}
+	if sc == http.StatusNotFound {
+		return nil, fmt.Errorf("higress: AI provider %q not found", name)
+	}
+	if sc != http.StatusOK {
+		return nil, fmt.Errorf("higress: get AI provider %q: HTTP %d", name, sc)
+	}
+	var resp struct {
+		Success bool            `json:"success"`
+		Data    json.RawMessage `json:"data"`
+	}
+	if err := json.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("higress: decode provider response: %w", err)
+	}
+	var detail AIProviderDetail
+	if err := json.Unmarshal(resp.Data, &detail); err != nil {
+		return nil, fmt.Errorf("higress: decode provider detail: %w", err)
+	}
+	return &detail, nil
+}
+
 func (c *HigressClient) DeleteAIProvider(ctx context.Context, name string) error {
 	if isReservedProviderName(name) {
 		return fmt.Errorf("cannot delete reserved provider %q", name)

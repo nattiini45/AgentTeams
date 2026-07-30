@@ -3,11 +3,14 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/agentscope-ai/AgentTeams/agentteams-controller/internal/gateway"
 	"github.com/agentscope-ai/AgentTeams/agentteams-controller/internal/httputil"
@@ -266,4 +269,98 @@ func (h *GatewayHandler) DeleteProvider(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// ListProviderModels proxies the upstream provider's /v1/models endpoint and
+// returns a sorted list of model ids. Tokens never leave the controller —
+// the upstream call is made server-side with the stored credential.
+func (h *GatewayHandler) ListProviderModels(w http.ResponseWriter, r *http.Request) {
+	if h.gw == nil {
+		httputil.WriteError(w, http.StatusNotImplemented, "no gateway backend available")
+		return
+	}
+	name := r.PathValue("name")
+	if name == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "provider name is required")
+		return
+	}
+
+	detail, err := h.gw.GetAIProvider(r.Context(), name)
+	if err != nil {
+		httputil.WriteError(w, http.StatusNotFound, "provider not found: "+err.Error())
+		return
+	}
+	if len(detail.Tokens) == 0 {
+		httputil.WriteError(w, http.StatusConflict, "provider has no stored tokens")
+		return
+	}
+
+	// Resolve the upstream base URL.
+	baseURL := ""
+	if detail.RawConfigs != nil {
+		if u, ok := detail.RawConfigs["openaiCustomUrl"].(string); ok {
+			baseURL = u
+		}
+	}
+	if baseURL == "" {
+		httputil.WriteError(w, http.StatusConflict, "provider has no upstream base URL")
+		return
+	}
+
+	modelsURL := strings.TrimRight(baseURL, "/") + "/models"
+	client := &http.Client{Timeout: 15 * time.Second}
+	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, modelsURL, nil)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "build models request: "+err.Error())
+		return
+	}
+	req.Header.Set("Authorization", "Bearer "+detail.Tokens[0])
+
+	resp, err := client.Do(req)
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadGateway, "upstream models request failed: "+err.Error())
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		httputil.WriteError(w, http.StatusBadGateway, fmt.Sprintf("upstream returned HTTP %d", resp.StatusCode))
+		return
+	}
+
+	// Parse OpenAI-style {"data":[{"id":...}]} — fall back to a bare array of
+	// strings/objects for non-conforming providers.
+	var ids []string
+	bodyBytes, _ := io.ReadAll(io.LimitReader(resp.Body, 4<<20))
+	var openaiResp struct {
+		Data []struct {
+			ID string `json:"id"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(bodyBytes, &openaiResp); err == nil && len(openaiResp.Data) > 0 {
+		for _, m := range openaiResp.Data {
+			if m.ID != "" {
+				ids = append(ids, m.ID)
+			}
+		}
+	} else {
+		var bare []json.RawMessage
+		if err := json.Unmarshal(bodyBytes, &bare); err == nil {
+			for _, raw := range bare {
+				var s string
+				if json.Unmarshal(raw, &s) == nil {
+					ids = append(ids, s)
+					continue
+				}
+				var obj struct {
+					ID string `json:"id"`
+				}
+				if json.Unmarshal(raw, &obj) == nil && obj.ID != "" {
+					ids = append(ids, obj.ID)
+				}
+			}
+		}
+	}
+
+	sort.Strings(ids)
+	httputil.WriteJSON(w, http.StatusOK, map[string]interface{}{"models": ids})
 }

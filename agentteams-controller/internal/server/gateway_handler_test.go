@@ -65,6 +65,9 @@ func (f *fakeProviderGateway) EnsureAIRoute(context.Context, gateway.AIRouteRequ
 func (f *fakeProviderGateway) ListAIProviders(context.Context) ([]gateway.AIProviderInfo, error) {
 	return f.providers, f.listErr
 }
+func (f *fakeProviderGateway) GetAIProvider(context.Context, string) (*gateway.AIProviderDetail, error) {
+	return nil, gateway.ErrUnsupportedOp
+}
 func (f *fakeProviderGateway) DeleteAIProvider(_ context.Context, name string) error {
 	f.deleteProvCalls = append(f.deleteProvCalls, name)
 	return f.deleteErr

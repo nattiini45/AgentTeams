@@ -143,6 +143,9 @@ func (g *workerTestGateway) EnsureAIRoute(context.Context, gateway.AIRouteReques
 func (g *workerTestGateway) ListAIProviders(context.Context) ([]gateway.AIProviderInfo, error) {
 	return nil, nil
 }
+func (g *workerTestGateway) GetAIProvider(context.Context, string) (*gateway.AIProviderDetail, error) {
+	return nil, nil
+}
 func (g *workerTestGateway) DeleteAIProvider(context.Context, string) error { return nil }
 func (g *workerTestGateway) CreateProviderRoute(context.Context, gateway.ProviderRouteRequest) error {
 	return nil

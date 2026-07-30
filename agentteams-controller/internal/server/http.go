@@ -138,6 +138,7 @@ func NewHTTPServer(addr string, deps ServerDeps) *HTTPServer {
 	mux.Handle("GET /api/v1/gateway/providers", mw.RequireAuthz(authpkg.ActionList, "gateway", nil)(http.HandlerFunc(gh.ListProviders)))
 	mux.Handle("POST /api/v1/gateway/providers", mw.RequireAuthz(authpkg.ActionCreate, "gateway", nil)(http.HandlerFunc(gh.RegisterProvider)))
 	mux.Handle("DELETE /api/v1/gateway/providers/{name}", mw.RequireAuthz(authpkg.ActionDelete, "gateway", nil)(http.HandlerFunc(gh.DeleteProvider)))
+	mux.Handle("GET /api/v1/gateway/providers/{name}/models", mw.RequireAuthz(authpkg.ActionList, "gateway", nil)(http.HandlerFunc(gh.ListProviderModels)))
 
 	// --- Credentials ---
 	// STS is self-scoped: no {name} in path; handler uses CallerIdentity to scope the issued token.

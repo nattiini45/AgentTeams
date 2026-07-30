@@ -85,6 +85,8 @@ export const api = {
     }),
   deleteProvider: (name) =>
     request(`/api/gateway/providers/${encodeURIComponent(name)}`, { method: 'DELETE' }),
+  listProviderModels: (name) =>
+    request(`/api/gateway/providers/${encodeURIComponent(name)}/models`),
 
   // Model/provider assignment (uses existing controller PUT endpoints)
   updateWorker: (name, patch) =>

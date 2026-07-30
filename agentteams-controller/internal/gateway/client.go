@@ -56,6 +56,9 @@ type Client interface {
 	// ListAIProviders returns all registered AI providers (tokens redacted).
 	ListAIProviders(ctx context.Context) ([]AIProviderInfo, error)
 
+	// GetAIProvider fetches the full provider config including tokens.
+	GetAIProvider(ctx context.Context, name string) (*AIProviderDetail, error)
+
 	// DeleteAIProvider removes an AI provider by name. No-op if not found.
 	DeleteAIProvider(ctx context.Context, name string) error
 

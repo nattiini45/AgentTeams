@@ -444,6 +444,9 @@ func (g *healthTestGateway) EnsureAIRoute(context.Context, gateway.AIRouteReques
 func (g *healthTestGateway) ListAIProviders(context.Context) ([]gateway.AIProviderInfo, error) {
 	return nil, nil
 }
+func (g *healthTestGateway) GetAIProvider(context.Context, string) (*gateway.AIProviderDetail, error) {
+	return nil, nil
+}
 func (g *healthTestGateway) DeleteAIProvider(context.Context, string) error { return nil }
 func (g *healthTestGateway) CreateProviderRoute(context.Context, gateway.ProviderRouteRequest) error {
 	return nil

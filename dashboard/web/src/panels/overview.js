@@ -267,6 +267,8 @@ const mpDialog = document.getElementById('model-provider-dialog');
 const mpForm = document.getElementById('model-provider-form');
 const mpTitle = document.getElementById('model-provider-title');
 const mpModel = document.getElementById('mp-model');
+const mpCustomRow = document.getElementById('mp-custom-row');
+const mpCustomModel = document.getElementById('mp-custom-model');
 const mpProvider = document.getElementById('mp-provider');
 const mpCancel = document.getElementById('mp-cancel');
 
@@ -279,7 +281,13 @@ mpCancel.addEventListener('click', () => {
 });
 
 mpForm.addEventListener('submit', () => {
-  if (mpResolve) mpResolve({ model: mpModel.value.trim(), modelProvider: mpProvider.value });
+  if (!mpResolve) return;
+  const provider = mpProvider.value; // "" for default
+  const isCustom = mpModel.value === '__custom__';
+  const bareModel = isCustom ? mpCustomModel.value.trim() : mpModel.value;
+  // Prefix logic: default provider sends bare model; extras get provider/model
+  const finalModel = provider ? `${provider}/${bareModel}` : bareModel;
+  mpResolve({ model: finalModel, modelProvider: provider });
   mpResolve = null;
 });
 
@@ -288,9 +296,76 @@ mpDialog.addEventListener('cancel', () => {
   mpResolve = null;
 });
 
+// Toggle custom input visibility based on model select value.
+mpModel.addEventListener('change', () => {
+  mpCustomRow.style.display = mpModel.value === '__custom__' ? '' : 'none';
+});
+
+// Re-fetch models when provider changes.
+mpProvider.addEventListener('change', () => {
+  loadModelsForProvider(mpProvider.value, '', '');
+});
+
+/**
+ * Fetch models for the given provider value and populate #mp-model.
+ * providerValue: "" = default (maps to openai-compat), else the provider name.
+ * currentModel: bare model id to pre-select ("" = none).
+ */
+async function loadModelsForProvider(providerValue, currentModel, currentProvider) {
+  const fetchName = providerValue || 'openai-compat';
+  mpModel.innerHTML = '<option value="">Loading…</option>';
+  mpModel.disabled = true;
+  mpCustomRow.style.display = 'none';
+
+  try {
+    const data = await api.listProviderModels(fetchName);
+    const models = data.models || [];
+    mpModel.innerHTML = '';
+    for (const id of models) {
+      const opt = document.createElement('option');
+      opt.value = id;
+      opt.textContent = id;
+      mpModel.appendChild(opt);
+    }
+    // Add Custom… option
+    const customOpt = document.createElement('option');
+    customOpt.value = '__custom__';
+    customOpt.textContent = 'Custom…';
+    mpModel.appendChild(customOpt);
+
+    // Pre-select current model if it's in the list
+    if (currentModel) {
+      const found = models.includes(currentModel);
+      if (found) {
+        mpModel.value = currentModel;
+      } else {
+        mpModel.value = '__custom__';
+        mpCustomModel.value = currentModel;
+        mpCustomRow.style.display = '';
+      }
+    }
+  } catch {
+    // Fetch failed — fall back to custom-only
+    mpModel.innerHTML = '';
+    const customOpt = document.createElement('option');
+    customOpt.value = '__custom__';
+    customOpt.textContent = 'Custom…';
+    mpModel.appendChild(customOpt);
+    mpModel.value = '__custom__';
+    if (currentModel) {
+      mpCustomModel.value = currentModel;
+      mpCustomRow.style.display = '';
+    }
+    showToast('Could not load model list — enter model manually.', { error: true });
+  } finally {
+    mpModel.disabled = false;
+  }
+}
+
 function openModelProviderDialog(title, currentModel, currentProvider, providers) {
   mpTitle.textContent = title;
-  mpModel.value = currentModel || '';
+
+  // Populate provider select
   mpProvider.innerHTML = '<option value="">(default)</option>';
   for (const p of providers) {
     const opt = document.createElement('option');
@@ -299,6 +374,21 @@ function openModelProviderDialog(title, currentModel, currentProvider, providers
     if (p.name === currentProvider) opt.selected = true;
     mpProvider.appendChild(opt);
   }
+
+  // Strip provider prefix from currentModel to get the bare id
+  let bareModel = currentModel || '';
+  if (currentProvider && bareModel.startsWith(currentProvider + '/')) {
+    bareModel = bareModel.slice(currentProvider.length + 1);
+  }
+
+  // Reset custom input
+  mpCustomModel.value = '';
+  mpCustomRow.style.display = 'none';
+
+  // Load models for the selected provider
+  const selectedProvider = currentProvider || '';
+  loadModelsForProvider(selectedProvider, bareModel, currentProvider);
+
   return new Promise((resolve) => {
     mpResolve = resolve;
     mpDialog.showModal();

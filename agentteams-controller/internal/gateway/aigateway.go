@@ -311,6 +311,10 @@ func (a *AIGatewayClient) ListAIProviders(_ context.Context) ([]AIProviderInfo, 
 	return nil, ErrUnsupportedOp
 }
 
+func (a *AIGatewayClient) GetAIProvider(_ context.Context, _ string) (*AIProviderDetail, error) {
+	return nil, ErrUnsupportedOp
+}
+
 func (a *AIGatewayClient) DeleteAIProvider(_ context.Context, _ string) error {
 	return ErrUnsupportedOp
 }

@@ -75,6 +75,16 @@ type AIProviderInfo struct {
 	Route string `json:"route,omitempty"` // e.g. "agentteams-ollama-route"
 }
 
+// AIProviderDetail describes a registered AI provider including its tokens
+// and raw config (used for proxying /v1/models upstream).
+type AIProviderDetail struct {
+	Name       string                 `json:"name"`
+	Type       string                 `json:"type"`
+	Protocol   string                 `json:"protocol,omitempty"`
+	Tokens     []string               `json:"tokens,omitempty"`
+	RawConfigs map[string]interface{} `json:"rawConfigs,omitempty"`
+}
+
 // ProviderRouteRequest describes a provider-specific AI route to create.
 // Unlike AIRouteRequest, this carries modelPredicate, domains, and
 // allowedConsumers — the full shape needed for extra provider registration

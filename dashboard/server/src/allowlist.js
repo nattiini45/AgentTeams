@@ -154,6 +154,19 @@ function classify(method, pathname) {
         },
       };
     }
+    // GET /api/gateway/providers/{name}/models -> controller (list models for a provider)
+    if (segments.length === 5 && segments[4] === 'models' && method === 'GET') {
+      const providerName = segments[3];
+      if (!providerName) return { ok: false, status: 404 };
+      return {
+        ok: true,
+        route: {
+          target: 'controller',
+          kind: 'get',
+          controllerPath: `/api/v1/gateway/providers/${encodeURIComponent(providerName)}/models`,
+        },
+      };
+    }
     return { ok: false, status: 405 };
   }
 

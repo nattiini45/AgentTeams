@@ -57,7 +57,8 @@
       <dialog id="model-provider-dialog">
         <form method="dialog" id="model-provider-form">
           <p id="model-provider-title"></p>
-          <label>Model <input id="mp-model" placeholder="e.g. deepseek-v4-pro" /></label>
+          <label>Model <select id="mp-model"><option value="">Loading…</option></select></label>
+          <label id="mp-custom-row" style="display:none">Custom model <input id="mp-custom-model" placeholder="model-id" /></label>
           <label>Provider <select id="mp-provider"><option value="">(default)</option></select></label>
           <div class="dialog-actions">
             <button type="button" id="mp-cancel">Cancel</button>
