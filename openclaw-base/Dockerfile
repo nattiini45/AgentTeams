@@ -128,10 +128,16 @@ RUN npm install -g mcporter skills @nacos-group/cli && \
 # better-harness skill for weekly agent self-review. Node 22 (installed above
 # via NodeSource) satisfies the CLI's >=22.20 engine constraint. The project is
 # npm-managed (packageManager: npm), so install with npm, not pnpm.
-ARG BETTER_HARNESS_REF=main
+# BETTER_HARNESS_REF is pinned to a commit SHA for reproducible builds; to
+# bump, pick a new upstream commit and update the default here (branch/tag
+# names also work via the init/fetch/checkout pattern below).
+ARG BETTER_HARNESS_REF=4b871d9b402bcccc3a31e1b18247c088de854b0f
 ARG BETTER_HARNESS_REPO=https://github.com/QoderAI/better-harness.git
-RUN git clone --depth 1 --branch "${BETTER_HARNESS_REF}" "${BETTER_HARNESS_REPO}" /opt/better-harness && \
+RUN git init /opt/better-harness && \
     cd /opt/better-harness && \
+    git remote add origin "${BETTER_HARNESS_REPO}" && \
+    git fetch --depth 1 origin "${BETTER_HARNESS_REF}" && \
+    git checkout FETCH_HEAD && \
     npm install --omit=dev && \
     ln -sf /opt/better-harness/scripts/better-harness.mjs /usr/local/bin/better-harness && \
     chmod +x /usr/local/bin/better-harness && \

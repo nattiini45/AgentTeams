@@ -15,6 +15,9 @@ changes here before the next release.
 
 **Bug Fixes**
 
+- **Pinned better-harness ref**: Pin `BETTER_HARNESS_REF` to a commit SHA in the `openclaw-base`, `hermes`, and `qwenpaw` Dockerfiles (init/fetch/checkout pattern that also accepts branch/tag overrides) so image builds are reproducible instead of floating on upstream `main`.
+- **harness-integration jq guard**: Fail fast with a clear error in `aggregate-reports.sh` when `jq` is missing from PATH instead of surfacing a raw "command not found".
+- **Dashboard worker cards keyboard access**: Activate worker cards (`role="button"`) with Enter/Space in addition to click on the Workers tab.
 - **AI provider route naming**: Rename AI provider route names from the retired `hiclaw-<name>-route` prefix to `agentteams-<name>-route` across the gateway client, Higress driver, gateway handler, and their tests, restoring the AgentTeams rename-contract check (helm-lint).
 - **QwenPaw file:// package refs on Windows**: Resolve `file://C:\...` agent package refs correctly instead of treating an empty urlparse path as `.` (cwd).
 - **CoPaw Team coordination routing**: Route Team Leader worker assignments sent through the `message` tool from Leader DM to Team Room, matching the Matrix channel send path. ([92c8145](https://github.com/agentscope-ai/AgentTeams/commit/92c8145))

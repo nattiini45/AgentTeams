@@ -94,7 +94,14 @@ function renderWorkerList(el, workers, onOpen) {
   }
   el.innerHTML = workers.map((w) => workerRow(w)).join('');
   el.querySelectorAll('[data-worker-name]').forEach((card) => {
-    card.addEventListener('click', () => onOpen(card.dataset.workerName));
+    const open = () => onOpen(card.dataset.workerName);
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        open();
+      }
+    });
   });
 }
 

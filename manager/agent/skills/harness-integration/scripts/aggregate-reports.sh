@@ -22,6 +22,11 @@ if [ -z "${PREFIX}" ]; then
     exit 1
 fi
 
+if ! command -v jq >/dev/null 2>&1; then
+    log "ERROR: jq is required but not found on PATH"
+    exit 1
+fi
+
 FS_ROOT="${AGENTTEAMS_FS:-/root/agentteams-fs}"
 LOCAL_DIR="${FS_ROOT}/shared/harness-reports"
 mkdir -p "${LOCAL_DIR}"
