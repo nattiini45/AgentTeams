@@ -1,3 +1,18 @@
+---
+type: "Reference"
+title: "AgentTeams OpenWiki"
+description: "Main entrypoint for the AgentTeams knowledge base. Covers architecture, components, workflows, and navigation for humans and AI agents."
+tags: [entrypoint, navigation, overview]
+openwiki:
+  roles: [repository, architecture]
+  change_kinds: [documentation, navigation]
+  source_paths: [README.md, AGENTS.md]
+  symbols: [AgentTeams, Manager, Worker]
+  test_paths: []
+  invariants: ["All major sections are linked from quickstart", "Repository map is accurate"]
+  validation_commands: ["grep -r 'openwiki' README.md"]
+---
+
 # AgentTeams OpenWiki
 
 AgentTeams is an open-source collaborative multi-agent runtime platform. A **Manager** agent coordinates multiple **Worker** agents in Matrix IM rooms, with full human visibility and intervention. The system does not implement agent logic itself — it orchestrates and manages agent containers across multiple runtimes.
@@ -87,5 +102,5 @@ The `docs/` directory contains the original project documentation:
 ## Git Context
 
 - **Repository:** `agentscope-ai/AgentTeams` (GitHub)
-- **Latest documented commit:** `f37b50c` — feat(agt): rewrite status as one-screen cluster overview
-- **Key recent work:** Gastown-inspired features (escalation, health monitoring, dispatch gating, session recovery), QwenPaw runtime wiring, remediation gates CI
+- **Latest documented commit:** `1d9dc9c` — ci: run OpenWiki with Xiaomi MiMo
+- **Key recent work:** v1.2.0-beta.1 release (plugin platform, TeamHarness/WorkerFlow, Matrix AppService/Human SSO, model-provider routing, LLM preflight), v1.1.2 (QwenPaw-first installer, Team human coordinators, Nacos remote skills), v1.1.1 (declarative MCP, custom env, Token Plan)

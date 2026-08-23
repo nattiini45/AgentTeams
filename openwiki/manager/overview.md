@@ -1,3 +1,18 @@
+---
+type: "Reference"
+title: "Manager"
+description: "Coordinator agent in AgentTeams. Covers runtimes (OpenClaw, CoPaw), 19 skills, bootstrap chain, prompt fragments, and agent-facing content conventions."
+tags: [manager, agent, coordination, skills]
+openwiki:
+  roles: [domain, architecture]
+  change_kinds: [agent-config, skills]
+  source_paths: [manager/agent/, manager/scripts/]
+  symbols: [Manager, skills, AGENTS.md, HEARTBEAT.md, SOUL.md]
+  test_paths: [manager/tests/]
+  invariants: ["Manager orchestrates Workers via Matrix", "19 skill modules", "Skills shared across runtimes"]
+  validation_commands: ["ls manager/agent/skills/"]
+---
+
 # Manager
 
 The Manager is the coordinator agent in AgentTeams. It orchestrates Workers, manages Teams, handles Human interactions, and configures the Higress gateway. The Manager runs as a dedicated container and communicates with Workers and Humans through Matrix rooms.

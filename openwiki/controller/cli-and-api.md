@@ -1,3 +1,18 @@
+---
+type: "Reference"
+title: "Controller: CLI & API"
+description: "agt CLI commands and REST API endpoints for managing AgentTeams resources. Covers resource CRUD, worker lifecycle, status monitoring, and gateway management."
+tags: [cli, api, rest, operations]
+openwiki:
+  roles: [domain, operations]
+  change_kinds: [public-api, cli]
+  source_paths: [agentteams-controller/cmd/agt/, agentteams-controller/internal/server/]
+  symbols: [agt, REST API, /api/v1/]
+  test_paths: [agentteams-controller/internal/server/*_test.go]
+  invariants: ["CLI baked into Manager and Worker images", "REST API on port 8090"]
+  validation_commands: ["cd agentteams-controller && go test ./internal/server/..."]
+---
+
 # Controller: CLI & API
 
 The `agt` CLI and REST API are the primary interfaces for managing AgentTeams resources. The CLI is baked into Manager and Worker images. The REST API runs on the controller at port 8090.

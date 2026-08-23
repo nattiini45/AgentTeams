@@ -1,3 +1,18 @@
+---
+type: "Reference"
+title: "Architecture Overview"
+description: "System architecture of AgentTeams: Manager-Workers pattern, component relationships, deployment shapes, CRD model, and communication patterns."
+tags: [architecture, system-design, deployment]
+openwiki:
+  roles: [architecture, domain]
+  change_kinds: [architecture, deployment]
+  source_paths: [docs/architecture.md, agentteams-controller/api/v1beta1/]
+  symbols: [Manager, Worker, Team, Human, Project]
+  test_paths: []
+  invariants: ["Workers are stateless", "All communication via Matrix rooms", "Credentials stay in gateway"]
+  validation_commands: ["grep -r 'Manager-Workers' docs/architecture.md"]
+---
+
 # Architecture Overview
 
 AgentTeams uses a **Manager-Workers architecture** where a central Manager agent orchestrates multiple Worker agents. Communication happens over Matrix IM rooms, with human participants having full visibility. The system is designed so that Workers are stateless and disposable — all state lives in object storage and the Matrix homeserver.

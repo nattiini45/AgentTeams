@@ -1,3 +1,18 @@
+---
+type: "Reference"
+title: "Operations: Install & Deploy"
+description: "Installation and deployment guide for AgentTeams: local Docker/Podman install, Kubernetes via Helm, building from source, and registry configuration."
+tags: [operations, installation, deployment, helm]
+openwiki:
+  roles: [operations, delivery]
+  change_kinds: [installation, deployment]
+  source_paths: [install/, helm/agentteams/]
+  symbols: [agentteams-install.sh, helm install, make build]
+  test_paths: [tests/]
+  invariants: ["Two deployment modes: local and Kubernetes", "Same container images for both modes"]
+  validation_commands: ["make helm-lint"]
+---
+
 # Operations: Install & Deploy
 
 AgentTeams supports two deployment modes: local Docker/Podman install and Kubernetes via Helm. Both modes use the same container images but differ in how infrastructure components are orchestrated.

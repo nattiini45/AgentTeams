@@ -1,3 +1,18 @@
+---
+type: "Reference"
+title: "Worker Runtimes"
+description: "Five worker runtimes in AgentTeams: OpenClaw, CoPaw, Hermes, OpenHuman, QwenPaw. Covers architecture, configuration, and key files for each runtime."
+tags: [workers, runtimes, agent-frameworks]
+openwiki:
+  roles: [domain, architecture]
+  change_kinds: [runtime, configuration]
+  source_paths: [worker/, copaw/, hermes/, openhuman/, qwenpaw/]
+  symbols: [openclaw, copaw, hermes, openhuman, qwenpaw]
+  test_paths: [copaw/tests/, hermes/tests/, qwenpaw/tests/]
+  invariants: ["All runtimes join Matrix rooms and call LLMs through Higress", "Workers are stateless"]
+  validation_commands: ["ls manager/agent/worker-agent/"]
+---
+
 # Worker Runtimes
 
 AgentTeams supports five worker runtimes. Each runtime implements the same core contract — join Matrix rooms, respond to messages, call LLMs through the Higress gateway — but uses a different language and agent framework. The runtime is selected per Worker CR via `spec.runtime`.

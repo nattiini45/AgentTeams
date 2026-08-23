@@ -1,3 +1,18 @@
+---
+type: "Reference"
+title: "Controller: CRDs & Reconcilers"
+description: "Go operator that reconciles five CRD types (Worker, Manager, Team, Human, Project). Covers reconciler logic, service layers, gateway and Matrix integration."
+tags: [controller, kubernetes, operator, crd]
+openwiki:
+  roles: [architecture, domain]
+  change_kinds: [public-api, lifecycle]
+  source_paths: [agentteams-controller/api/v1beta1/, agentteams-controller/internal/controller/]
+  symbols: [WorkerReconciler, TeamReconciler, ManagerReconciler, HumanReconciler, ProjectReconciler]
+  test_paths: [agentteams-controller/internal/controller/*_test.go]
+  invariants: ["Five CRD types under agentteams.io/v1beta1", "Workers are stateless and disposable"]
+  validation_commands: ["cd agentteams-controller && go test ./internal/controller/..."]
+---
+
 # Controller: CRDs & Reconcilers
 
 The `agentteams-controller` is a Go-based Kubernetes operator that reconciles five Custom Resource Definitions. It runs as a standalone binary and can operate in two modes: as a Kubernetes Deployment (using CRDs) or as an embedded process in a local Docker container (using a simulated CRD store).
@@ -32,6 +47,7 @@ Represents an AI agent worker. The most feature-rich CRD.
 
 **Status fields:** `phase`, `matrixUserId`, `roomId`, `containerState`, `heartbeatInfo`, `healthState`
 
+<!-- openwiki: broken internal link [../../agentteams-controller/api/v1beta1/worker_types.go] file "../../agentteams-controller/api/v1beta1/worker_types.go" does not exist. Fix the href or restore the target, then delete this comment. -->
 **Source:** [`worker_types.go`](../../agentteams-controller/api/v1beta1/worker_types.go)
 
 ### Manager (`managers.agentteams.io`)
@@ -48,6 +64,7 @@ Represents the coordinator agent.
 - `state` — `Running`, `Sleeping`, `Stopped`
 - `accessEntries` — Access control
 
+<!-- openwiki: broken internal link [../../agentteams-controller/api/v1beta1/manager_types.go] file "../../agentteams-controller/api/v1beta1/manager_types.go" does not exist. Fix the href or restore the target, then delete this comment. -->
 **Source:** [`manager_types.go`](../../agentteams-controller/api/v1beta1/manager_types.go)
 
 ### Team (`teams.agentteams.io`)
@@ -66,6 +83,7 @@ Groups workers under a team with coordination rules.
 
 **Status fields:** `phase`, `leaderRoomId`, `teamRoomId`, `adminDmRoomId`, `memberStates`
 
+<!-- openwiki: broken internal link [../../agentteams-controller/api/v1beta1/team_types.go] file "../../agentteams-controller/api/v1beta1/team_types.go" does not exist. Fix the href or restore the target, then delete this comment. -->
 **Source:** [`team_types.go`](../../agentteams-controller/api/v1beta1/team_types.go)
 
 ### Human (`humans.agentteams.io`)
@@ -81,6 +99,7 @@ Represents a human participant.
 - `accessibleWorkers` — Workers this human can access
 - `identitySource` — Authentication source (legacy/external SSO)
 
+<!-- openwiki: broken internal link [../../agentteams-controller/api/v1beta1/human_types.go] file "../../agentteams-controller/api/v1beta1/human_types.go" does not exist. Fix the href or restore the target, then delete this comment. -->
 **Source:** [`human_types.go`](../../agentteams-controller/api/v1beta1/human_types.go)
 
 ### Project (`projects.agentteams.io`)
@@ -101,6 +120,7 @@ Represents a team-scoped project with repositories and worker assignments.
 
 ## Shared Types
 
+<!-- openwiki: broken internal link [../../agentteams-controller/api/v1beta1/types_shared.go] file "../../agentteams-controller/api/v1beta1/types_shared.go" does not exist. Fix the href or restore the target, then delete this comment. -->
 Common types defined in [`types_shared.go`](../../agentteams-controller/api/v1beta1/types_shared.go):
 - `ResourceRequirements` — CPU/memory requests and limits
 - `MCPServerConfig` — MCP server connection configuration
@@ -264,6 +284,7 @@ Matrix clients in [`agentteams-controller/internal/matrix/`](../../agentteams-co
 
 ## Package Organization
 
+<!-- openwiki: broken internal link [../../agentteams-controller/internal/AGENTS.md] file "../../agentteams-controller/internal/AGENTS.md" does not exist. Fix the href or restore the target, then delete this comment. -->
 The internal package map is documented in [`agentteams-controller/internal/AGENTS.md`](../../agentteams-controller/internal/AGENTS.md). Key packages:
 
 | Package | Purpose |
@@ -287,4 +308,5 @@ The internal package map is documented in [`agentteams-controller/internal/AGENT
 - Services: [`agentteams-controller/internal/service/`](../../agentteams-controller/internal/service/)
 - Gateway: [`agentteams-controller/internal/gateway/`](../../agentteams-controller/internal/gateway/)
 - Matrix: [`agentteams-controller/internal/matrix/`](../../agentteams-controller/internal/matrix/)
+<!-- openwiki: broken internal link [../../agentteams-controller/internal/AGENTS.md] file "../../agentteams-controller/internal/AGENTS.md" does not exist. Fix the href or restore the target, then delete this comment. -->
 - Package map: [`agentteams-controller/internal/AGENTS.md`](../../agentteams-controller/internal/AGENTS.md)

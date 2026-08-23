@@ -1,3 +1,18 @@
+---
+type: "Reference"
+title: "Development: Build & Test"
+description: "Development workflow for AgentTeams: Makefile targets, image building, testing, CI/CD, and contribution guidelines."
+tags: [development, build, testing, ci-cd]
+openwiki:
+  roles: [repository, testing]
+  change_kinds: [build, testing]
+  source_paths: [Makefile, .github/workflows/, tests/]
+  symbols: [make build, make test, make push]
+  test_paths: [tests/]
+  invariants: ["Makefile is unified build/test/push interface", "Integration tests run against full embedded stack"]
+  validation_commands: ["make help"]
+---
+
 # Development: Build & Test
 
 This page covers the development workflow for AgentTeams: building images, running tests, CI/CD, and contribution guidelines.
@@ -76,6 +91,7 @@ agentteams-controller/
 **Key entry points:**
 - [`agentteams-controller/cmd/agt/main.go`](../../agentteams-controller/cmd/agt/main.go) — CLI entry
 - [`agentteams-controller/internal/app/app.go`](../../agentteams-controller/internal/app/app.go) — Application setup
+<!-- openwiki: broken internal link [../../agentteams-controller/internal/AGENTS.md] file "../../agentteams-controller/internal/AGENTS.md" does not exist. Fix the href or restore the target, then delete this comment. -->
 - [`agentteams-controller/internal/AGENTS.md`](../../agentteams-controller/internal/AGENTS.md) — Package routing map
 
 ### Worker Development (Python)
@@ -186,7 +202,9 @@ Any change that affects built image content **must** be recorded in [`changelog/
 
 Format:
 ```
+<!-- openwiki: broken internal link [url] file "url" does not exist. Fix the href or restore the target, then delete this comment. -->
 - feat(manager): add task-management skill ([a1b2c3d](url))
+<!-- openwiki: broken internal link [url] file "url" does not exist. Fix the href or restore the target, then delete this comment. -->
 - fix(controller): fix worker reconciliation loop ([e4f5g6h](url))
 ```
 
