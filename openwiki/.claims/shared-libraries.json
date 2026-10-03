@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:832a5414312bbefbfa61d14d095d3b8f0977c2ebeaaa28070e603727e87c706c",
+  "claims": [
+    {
+      "id": "claim_1a0ba5cdd8ec43cf9b87bc07d6e627d9",
+      "statement": "There are 5 independently-installable Python packages in shared/python/ with agentteams_* prefix: agentteams_protocol, agentteams_sync, agentteams_openclaw_merge, agentteams_matrix_format, and agentteams_matrix_policies.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/AGENTS.md#L6-L7",
+          "version": "repo-lines-v1:sha256:4d93b68eb9391673cfd053275f4a596bfd18fd1ff573f77c188dcd7dcba8f61d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDk0ZGM2ZDZiYzZkMTQzYWY2OTA5NDI2YTAxOTM5M2FlZDA2ZTFlNGFjN2RlM2JmMGEyODUxY2M2NGMwZGQxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDIzMjlmZjhiZjlhYjBhZTE1MWQ3ZWI5ZmM0YmE1ZTIyMjU4NjMwZDQxYzJmZjIwNjBkYzA1NGNmMzViMGZjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTVkNjlhNjNmZTliZGU5MTBlN2U4ZjVlOTkwZjI4MjQ5NDdjMzA0YTM5YWY2MDhlZDA2ODg3NzA0ZjJkNGFhYyJ9"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_matrix_format/pyproject.toml",
+          "version": "repo-file-v1:sha256:c722e3c5000c6c64b0297f7d2a1877f0ca6c706bccfd22d17412ef2a748241c4"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_matrix_policies/pyproject.toml",
+          "version": "repo-file-v1:sha256:df92c6b8867028baa5c78e18eb7ba3a708bd0543a0b43b9e31dee0a6a860c113"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_openclaw_merge/pyproject.toml",
+          "version": "repo-file-v1:sha256:805a27faccced50d1a026a2359d023b33467bebe6575ae226345d11a062ead21"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_protocol/pyproject.toml",
+          "version": "repo-file-v1:sha256:92fbe5a53e2c05c3d4150d8b7afc5d975493465066183dca4af9caf8f79b631c"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_sync/pyproject.toml",
+          "version": "repo-file-v1:sha256:496f7474d543ef18971565a629980b3f4b7a9215fee963bd6f52ac2a2bc792be"
+        }
+      ]
+    },
+    {
+      "id": "claim_3b6ac30ab8504415a6c9ca3b038471de",
+      "statement": "agentteams_protocol is the foundation package; other packages may import it but no cross-imports are allowed between non-protocol packages.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/AGENTS.md#L43-L43",
+          "version": "repo-lines-v1:sha256:6b0e37863a02a101b516cb7c1001807785caa32effe4cb10be52fd1c3389dbfe:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmIwZTM3ODYzYTAyYTEwMWI1MTZjYjdjMTAwMTgwNzc4NWNhYTMyZWZmZTRjYjEwYmU1MmZkMWMzMzg5ZGJmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmIwZTM3ODYzYTAyYTEwMWI1MTZjYjdjMTAwMTgwNzc4NWNhYTMyZWZmZTRjYjEwYmU1MmZkMWMzMzg5ZGJmZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2U0YTQ1Nzk4MzZjYjgxZTcxNzM0OWRmYzA4M2Q4YjBhNzA2MjIzYmM5ZjA0MzhjMDM4ODJkOGNhOGJmYzY2MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjMwODhjYmQzM2E1NmEyN2Q0NWQyMzVkMzczY2M2M2FiMGY3MWY5NmFhYjNlYjM4YjI3NzlhYjEzODE1NjNiNiJ9"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_sync/src/agentteams_sync/filesync.py#L14-L14",
+          "version": "repo-lines-v1:sha256:611b79c32cafec68311b7ec8ba810c13fbee0de6e6b0f9f596014bcbf7e1647f:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjExYjc5YzMyY2FmZWM2ODMxMWI3ZWM4YmE4MTBjMTNmYmVlMGRlNmU2YjBmOWY1OTYwMTRiY2JmN2UxNjQ3ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjExYjc5YzMyY2FmZWM2ODMxMWI3ZWM4YmE4MTBjMTNmYmVlMGRlNmU2YjBmOWY1OTYwMTRiY2JmN2UxNjQ3ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzJiYzJhNzljOTIzZmNlNGI2MWJiNzhmZDZhZGE1NmYyZmRjNjA4NDI4MmE1NjM5ZWRhN2EyYWU0YjUyZWYyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTM3MjkxZDQzOWU5NWVlYmMxNjE4YzFjNDM4Zjk0MWM5YjQxZjYzNDdjMTYyZmYyYmY0MTQwMDljNzg0ODgwMCJ9"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_sync/src/agentteams_sync/openclaw.py#L11-L11",
+          "version": "repo-lines-v1:sha256:611b79c32cafec68311b7ec8ba810c13fbee0de6e6b0f9f596014bcbf7e1647f:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjExYjc5YzMyY2FmZWM2ODMxMWI3ZWM4YmE4MTBjMTNmYmVlMGRlNmU2YjBmOWY1OTYwMTRiY2JmN2UxNjQ3ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjExYjc5YzMyY2FmZWM2ODMxMWI3ZWM4YmE4MTBjMTNmYmVlMGRlNmU2YjBmOWY1OTYwMTRiY2JmN2UxNjQ3ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2JiMmUzYzI2MGY4YzgyZmM2NDRiODU0ZGMzYTVhMzgwODViMTMxNGY2NmE4OGI2OWM4ZjMwODcxZDM0Mjg4ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDI4ZWVlMmRkZDVhNWRhYWMxODdiODU0MWFhMTk1YWUwNTM0MDRkNDdjYzJkYTUyMjkzOWQ4ZTVmYzVjMWUxYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b51cddf1026c4086aa6b63ebb623e9ca",
+      "statement": "agentteams_sync depends on agentteams_openclaw_merge for openclaw.json merge functionality during file synchronization.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/agentteams_sync/pyproject.toml#L10-L12",
+          "version": "repo-lines-v1:sha256:56c59d9e530d7c47f2782cc94e020d2cb3a580aedf94146a4cd97ece1b37a465:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQ5NWY1ZTllZGUwMTgxNjA0M2MwNzk3YWNlOGRhMmFjNGU5OWE4YTZhNjEwZmE5ODU3MGVmMzRiOTM1NjEwOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjk0MTZlMDlmNzhiYTMxNmMwMzI1NjgyMTNiODU1ZWU3NTZlNDE1NjVkOTE4ZjA5NTE5YzgxZmQ2MjBmNDA2MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTNiZjcyNGNhMjhkYWZhMzRkY2U3ZGYzODE0MGUxY2ZkNTZjNDMzZGIyMzc0NzUzYTdmMzEyMzc5MjFlMjZmMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQ3NTRiOGVmMmQ1YTZlN2IxMWI1OGRhYmU2YmRhNzljOTgyMWQwZGY2Zjc1NWI5NWQ4MzFhN2Y3MjZjYTg0MCJ9"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_sync/src/agentteams_sync/filesync.py#L14-L14",
+          "version": "repo-lines-v1:sha256:611b79c32cafec68311b7ec8ba810c13fbee0de6e6b0f9f596014bcbf7e1647f:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjExYjc5YzMyY2FmZWM2ODMxMWI3ZWM4YmE4MTBjMTNmYmVlMGRlNmU2YjBmOWY1OTYwMTRiY2JmN2UxNjQ3ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjExYjc5YzMyY2FmZWM2ODMxMWI3ZWM4YmE4MTBjMTNmYmVlMGRlNmU2YjBmOWY1OTYwMTRiY2JmN2UxNjQ3ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzJiYzJhNzljOTIzZmNlNGI2MWJiNzhmZDZhZGE1NmYyZmRjNjA4NDI4MmE1NjM5ZWRhN2EyYWU0YjUyZWYyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTM3MjkxZDQzOWU5NWVlYmMxNjE4YzFjNDM4Zjk0MWM5YjQxZjYzNDdjMTYyZmYyYmY0MTQwMDljNzg0ODgwMCJ9"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_sync/src/agentteams_sync/openclaw.py#L11-L11",
+          "version": "repo-lines-v1:sha256:611b79c32cafec68311b7ec8ba810c13fbee0de6e6b0f9f596014bcbf7e1647f:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjExYjc5YzMyY2FmZWM2ODMxMWI3ZWM4YmE4MTBjMTNmYmVlMGRlNmU2YjBmOWY1OTYwMTRiY2JmN2UxNjQ3ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjExYjc5YzMyY2FmZWM2ODMxMWI3ZWM4YmE4MTBjMTNmYmVlMGRlNmU2YjBmOWY1OTYwMTRiY2JmN2UxNjQ3ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2JiMmUzYzI2MGY4YzgyZmM2NDRiODU0ZGMzYTVhMzgwODViMTMxNGY2NmE4OGI2OWM4ZjMwODcxZDM0Mjg4ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDI4ZWVlMmRkZDVhNWRhYWMxODdiODU0MWFhMTk1YWUwNTM0MDRkNDdjYzJkYTUyMjkzOWQ4ZTVmYzVjMWUxYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6c42a6dbe4164245b8718db4112e525b",
+      "statement": "There are 7 shell libraries in shared/lib/: agentteams-env.sh, oss-credentials.sh, mc-wrapper.sh, merge-openclaw-config.sh, render-skills.sh, resolve-model-params.sh, and sync-shared-worker-skills.sh.",
+      "evidence": [
+        {
+          "resource": "repo://shared/lib/agentteams-env.sh",
+          "version": "repo-file-v1:sha256:1209bf7942b6f4890c69f1f6a2ac8d993abcdd93cba1b36ef0750e797aef8144"
+        },
+        {
+          "resource": "repo://shared/lib/mc-wrapper.sh",
+          "version": "repo-file-v1:sha256:56f8ef4101b0d22eede3f1aa4649a150f0e2b48eb5b68ef4a33765d7f03b0096"
+        },
+        {
+          "resource": "repo://shared/lib/merge-openclaw-config.sh",
+          "version": "repo-file-v1:sha256:93f07daf6c44607d9977078214bd893b0582920e83e23aecb2bb2729905a472f"
+        },
+        {
+          "resource": "repo://shared/lib/oss-credentials.sh",
+          "version": "repo-file-v1:sha256:07142b9457d8118385f66fcf18357d025b048ee9fa4faae79b523cb086155d9e"
+        },
+        {
+          "resource": "repo://shared/lib/render-skills.sh",
+          "version": "repo-file-v1:sha256:67232447a921f14563fae739a8808122ef54787a03a192cce5c3272c039c8a61"
+        },
+        {
+          "resource": "repo://shared/lib/resolve-model-params.sh",
+          "version": "repo-file-v1:sha256:5c9434993d6dc16700aa8c28cbad058b5b4c850f1a9b22ce178e8540f5a8a500"
+        },
+        {
+          "resource": "repo://shared/lib/sync-shared-worker-skills.sh",
+          "version": "repo-file-v1:sha256:0854e6a3568fe1c8ec210e35b3adba96ce9eb85d0c6ce9b934b6aed18675c189"
+        }
+      ]
+    },
+    {
+      "id": "claim_878b0bca89af4c3a8167c094affd4375",
+      "statement": "Changes to shared packages trigger rebuilds of all dependent runtime images: copaw, hermes, qwenpaw, openhuman, worker, and manager-copaw.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/AGENTS.md#L46-L48",
+          "version": "repo-lines-v1:sha256:c63ce1bad1514b374934468c313664466d8afcd0cbcdad5adc46dfb205ebf071:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWU0ZjNjNTgyMDY3OGNkYTg4OGM1MzkyNGVmZDBkZmQyOTA3MjkxYzA1ZDY2MmE1ZWEyNTkzYmJjMjhkYzhhZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjI1NWViZjUzZGE5MmE4YzM5ZGIzYWZlYmMwNjhmNDAzZGZkZjk4MTJmZGZmMjgwMzQyYzJmYTE0MTM5YTljZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTE5YTk1Y2YxMTIwM2QwN2RkY2U2ZDNhMjg4N2Y4ODBlODU4YzhlNDJlMTRlNzBlYWM2OTIzNmMzMWUwM2Q1YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c71711b3e23a4379b11a42102ff63d93",
+      "statement": "The merge_openclaw_config function implements documented merge rules where local is authoritative base, remote wins wholesale for models and gateway, and channels/plugins have specific merge semantics.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/agentteams_openclaw_merge/src/agentteams_openclaw_merge/merge.py#L1-L49",
+          "version": "repo-lines-v1:sha256:a78806bc718ba148c59d5efb21c30ea3bc1e707db058b36f6789da2d05259ab6:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NTA4ZTRiYmFhYWE5YWNiMzc1OTQ0MmNjODUzYTUwZDBmMzEzYmI2ZjM3YmY5MTU1NzJiNTY2YzFjYWZkOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkYWQzNDI5YzAzZDRmMDJhMjE4MjdmMjY2MWZjZGFiZDk0YjA0ZTU5YTJmNTNhZDgwYzg0NzI3NDZjMWEwMDgifQ"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_openclaw_merge/src/agentteams_openclaw_merge/merge.py#L56-L106",
+          "version": "repo-lines-v1:sha256:a5e359af72070e983f5dcf6166bff95d33976b6ed8450608052117cac4871e00:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0YTU3ZDQ2YjRhMmIzZDM1ZDg3MjBkNTA3NDQzNjVjM2YwN2M3ODNmMjU1ODE1YzM2NzBkYjYxZmRlNTdmOWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2NmEzZWI1YzJjNjlmN2Q5ODRhNGMzOTVlMmVhNDVlMDFmMjUxZGJhNDkwNTIxOGYyMjM1MDRmNzJlNTZhZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkMzdhMzNkMDczYWI4ZGEyOWRjNzRjZTZhODkxMzE4MThhNTJhNWMxNjVkMTZmMzFkOTkxOTk3ZjBlNjZjZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_16e1706ef2914fd7871db1d1c106e594",
+      "statement": "agentteams_protocol provides DAG validation with cycle detection, task result parsing from markdown format, and file-based task storage.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/agentteams_protocol/src/agentteams_protocol/task.py#L150-L213",
+          "version": "repo-lines-v1:sha256:cb7d3d88b9b9821b5de08715d2030de43ad6cede1fb7dc07e1329cd7b04fc757:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJlOGEyN2Q5ZGJmYTBiNDM0ZDM2ZjI0ZjI2ZjFkN2RhZjc2ZjYwZmQ5ZGM2ZjhhZDAwMTgxYWVmMmM5ZGZlZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5YjljNWJhNTNlMWRkZTQ3OGYyMjYwNjMzNGJmOGUxYjFkZTlkZDRhNDgwMjY1ZWU2YWVmZTYxNDRjOWJkMTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0YjRlMzEzZTZhZjlhYWViOGJjOWZhNzZkZTI0ODNkODhhOTA3NzllYWUxNmMwMzA2ZmU5MGQyNjU2OGM2ODcifQ"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_protocol/src/agentteams_protocol/task.py#L792-L822",
+          "version": "repo-lines-v1:sha256:fe26e1b6262e8dfc2a6e4f92c451fb9a84c06aa66bb1a2a2498aaebdde6f030f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZWJlZDRiNjE4MDRlYWYwODRiMzI0YjY0MThjMjM5OGRhZTU1MzczMmVhMWRlOTVkMjAxMGRkYTRhMTE1NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MmM2MjkyYTMyMjg4M2QwZGMwN2MxNDE1YzYxYTYxMzc2MTJlMWMyNTIwNDgxZjg3ZWU4ODY3YjNjZDRhZjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhM2Y0MWJlNWE5MGEzMTc5OTk0ZWZlMjUxN2Y0NzllMWE4MjY5ZDAzYmRiNzU4NzBjYWJmMGJhZDM2MWM4YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZmYmEwMDg3ZGY4ZGM1NWNjNGYzYzI3Yzk4OWMzYWEwY2JlODA1OTcyY2FkNWI4NjlhYmVmNzQ5NjM1NjU5MDkifQ"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_protocol/src/agentteams_protocol/task.py#L825-L900",
+          "version": "repo-lines-v1:sha256:72f62b1fdfa1e2d3c1e48d73a9d5c89ebc1a9953f7e95274ec51ae25b7f62acd:eyJzZWxlY3RlZExpbmVDb3VudCI6NzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjMTY4M2VkNzEwY2MxYmMyNzQ5MmZmNjUxNWUxODQ5NTE4ZDNhODg0NTY1MmNlYzVlMjIxYmIxMjdlYmYwYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0MGI3MGRkYWNlMDIzMDM4NDk1MzBmM2E3N2QwY2E1NTg1ZjQ2ODNiZjc0MGQwOTQyY2ZkOWQyOTdhZmIwMWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0MjNhZTRlMzI5ODRmMGU5YzY5MWU5ZDUxMjIwNjQ1MmRiZjUwMmUwMDU1N2Q0ZDYwZWFiODFjMjViNzMzZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5NzAwMDhiMGViNDVmNjY0NjQ4MWMwNjA5NWU1MmY2NjNlODc2ODNkYTYzZmU3MjA1ZTE1OTY3ZjZmMjkyNDAifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

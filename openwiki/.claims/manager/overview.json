@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:13feade2f3669f2d4209058e5a90a2337f26d81e4ef18bc482d8220703c99f2b",
+  "claims": [
+    {
+      "id": "claim_f1bb0a7403684788becd102604c7cea6",
+      "statement": "The Manager supports two runtimes: openclaw (default) and copaw, selected via AGENTTEAMS_MANAGER_RUNTIME environment variable or Helm manager.runtime setting.",
+      "evidence": [
+        {
+          "resource": "repo://manager/Dockerfile",
+          "version": "repo-file-v1:sha256:e58dbfb84dd1470c87d0bf892c03223f99a1f58be353410309a7867208081b31"
+        },
+        {
+          "resource": "repo://manager/Dockerfile.copaw",
+          "version": "repo-file-v1:sha256:618e880a995e328036b28e7e5995d6feae39bbfec2acbd22954707c9d811acb5"
+        },
+        {
+          "resource": "repo://manager/scripts/init/start-manager-agent.sh#L7-L10",
+          "version": "repo-lines-v1:sha256:5b437ae465d5e89abd3f3a5fc6856bc06208e02dae30d94932f997d1a5684343:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzIxMDEyMzliYTEwZWM4Y2EzNzA1YzU3ODlmZWNmMjZhNjkxYWIxYmY1ZDYwZjc3MmUwYzVmNDkzNjc3YzVmZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgzZmNmZGQ2NjU3MWNkNTE2NWNlOWU3NGIyOTVhZjIyYmZiNzllZGQ5MDY2OGZkYjJmM2Q3ZTdjOGZlOTRmYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDdkYTU0MjkwNDk4Nzk0YTQ0YzhkNTk1OWMyMzBjMTZmYTU4YmI1OTUyMTFjNzI1NTUyZTEyMDVkZGZlMWE0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODE5ZTI5MDQxNzlmNzg3YWUyYzQyOTg4MTk1YjQ0N2Q0OGQwMjRkZTc1Yjk2MGRjM2U2ZGQzYTk0MTg3ZTViNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_24e6474473b34e629898f0a73a2b127f",
+      "statement": "The Manager has 21 skill modules in manager/agent/skills/ directory, not 19 as previously documented.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/skills/agentteams-find-worker/SKILL.md",
+          "version": "repo-file-v1:sha256:415339663b3b98003b6a351039ee3a573fb7f2897cb23571f2b6acf1ee7c198a"
+        },
+        {
+          "resource": "repo://manager/agent/skills/better-harness/SKILL.md",
+          "version": "repo-file-v1:sha256:87c7e014eabaccf6a1650d47510e9b02fa32f462aabc1f1eb8c37b71a82539bd"
+        },
+        {
+          "resource": "repo://manager/agent/skills/channel-management/SKILL.md",
+          "version": "repo-file-v1:sha256:885142586f376c95705ad34ac0a6c0a6dab1f58d1d89b5e6d76570e067b4aea1"
+        },
+        {
+          "resource": "repo://manager/agent/skills/escalation-management/SKILL.md",
+          "version": "repo-file-v1:sha256:341247f23aa9f10a1a2bfad95ba5f8542939c79e6e323fdc74e5ba5cdbe2cb5f"
+        },
+        {
+          "resource": "repo://manager/agent/skills/file-sync-management/SKILL.md",
+          "version": "repo-file-v1:sha256:dede3a6e23393b173cb77559975e14ec08cd21fa88d9e4eb4c90f7d5778c1edc"
+        },
+        {
+          "resource": "repo://manager/agent/skills/git-delegation-management/SKILL.md",
+          "version": "repo-file-v1:sha256:3c281233584db20149263323a09dc3ad2040ef9b4eb84ec523d907bfdb102b9d"
+        },
+        {
+          "resource": "repo://manager/agent/skills/harness-integration/SKILL.md",
+          "version": "repo-file-v1:sha256:a09b69969f18d770cabb1c4b698232d1b5a1211c7205b6f33b2968c7a9d47322"
+        },
+        {
+          "resource": "repo://manager/agent/skills/human-management/SKILL.md",
+          "version": "repo-file-v1:sha256:e9b33f70b0b37fb64e968a0db7b65c6ab60b482e1f1250184803ce900eaf4ec9"
+        },
+        {
+          "resource": "repo://manager/agent/skills/matrix-server-management/SKILL.md",
+          "version": "repo-file-v1:sha256:aaccc601fa0b850f137e93f905bda1af277e294d12f5b94098db9eb94a3d9ae9"
+        },
+        {
+          "resource": "repo://manager/agent/skills/mcp-server-management/SKILL.md",
+          "version": "repo-file-v1:sha256:7a1a56befaefa8d4a9068e8d55509ddf1183fbe3f2219fdcdfe21ff032e7f09b"
+        },
+        {
+          "resource": "repo://manager/agent/skills/mcporter/SKILL.md",
+          "version": "repo-file-v1:sha256:0a01dca74a5562710f130d3ae4c51b4b838f7a49c765239cd2a783d3b753dfa9"
+        },
+        {
+          "resource": "repo://manager/agent/skills/model-switch/SKILL.md",
+          "version": "repo-file-v1:sha256:c1cc5460084bd678d31e04c0cf7e4dc22a07a9586a2418b965bbfa7d436877e7"
+        },
+        {
+          "resource": "repo://manager/agent/skills/project-management/SKILL.md",
+          "version": "repo-file-v1:sha256:436f6181d7dacb24dbbe5544b63c53aedc428d48fce2a26e8f08cf553e8249ea"
+        },
+        {
+          "resource": "repo://manager/agent/skills/provider-management/SKILL.md",
+          "version": "repo-file-v1:sha256:0af05960b3f6d0bb912d5124c68aa54246252a655a61a51f4aacab32529ef001"
+        },
+        {
+          "resource": "repo://manager/agent/skills/service-publishing/SKILL.md",
+          "version": "repo-file-v1:sha256:9b2e137dc07fac941f4375f9a31fe96b1af21f84c2f0bd641b6aa0f254d353da"
+        },
+        {
+          "resource": "repo://manager/agent/skills/session-recovery/SKILL.md",
+          "version": "repo-file-v1:sha256:fcaafd978d91b0ec8efa2f5b272dd984ae6f963233a45575bbdce561874c342f"
+        },
+        {
+          "resource": "repo://manager/agent/skills/task-coordination/SKILL.md",
+          "version": "repo-file-v1:sha256:cc43404226a68ed0512cf78234c0f953390db41f4708638eeb258d60c2fc4ef1"
+        },
+        {
+          "resource": "repo://manager/agent/skills/task-management/SKILL.md",
+          "version": "repo-file-v1:sha256:7fc3447ae5b689eddab65ed625206da46af86f36031fd31bf00289322dd30439"
+        },
+        {
+          "resource": "repo://manager/agent/skills/team-management/SKILL.md",
+          "version": "repo-file-v1:sha256:fb7df656df9027aa429ad03639345f311b64d8fe5991c2a8a75bd01543a8cbc0"
+        },
+        {
+          "resource": "repo://manager/agent/skills/worker-management/SKILL.md",
+          "version": "repo-file-v1:sha256:79cfec63654d1b473f03d1ada27f5c9bb3dec7bc0aa7976c46d6b57110e97850"
+        },
+        {
+          "resource": "repo://manager/agent/skills/worker-model-switch/SKILL.md",
+          "version": "repo-file-v1:sha256:caa3095605eafa9aa6777d547df48a20dd7fb3d45ba771f88e23ec99e400b270"
+        }
+      ]
+    },
+    {
+      "id": "claim_aa8fe49e30814fdb8b0352074c3317ce",
+      "statement": "The Manager bootstrap chain follows this sequence: container entrypoint → start-manager-agent.sh → upgrade-builtins.sh → render-manager-prompts.sh → runtime start (OpenClaw or CoPaw).",
+      "evidence": [
+        {
+          "resource": "repo://manager/scripts/init/start-manager-agent.sh#L1124-L1291",
+          "version": "repo-lines-v1:sha256:0a96abcb7252d245deb1179b913d13863f5ebe8c1dfe75a40c75bdea7b13153f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyNzA4NzNlYTFjZDJkM2VlMDFjZGY5OGZmZWNkMWE5Nzk2MGRhNDQ0ZjkyNDlhMzlmZDlkMTM4ODNmMTg3MTcwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzNzY5ZDIzN2NkNDIwYjlkMzhiOTgxYTBhNGY2NzcwMTkwYTRhODNkY2ExZmU1NmM0ZjViYTFlMmNiYzBlZjc2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MTRiMjYxNTU5MTIxNWU0OGUzNTMzNWFkNTUwOGU4NjM3YmJlNjRiOTllNDJhMWY3NzExMTUwMzg1MzIyM2RjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://manager/scripts/init/upgrade-builtins.sh",
+          "version": "repo-file-v1:sha256:b0683e4309fc50218bd8c42f084543bdf094f13cd4eea3583ccb66480b7c526f"
+        },
+        {
+          "resource": "repo://manager/scripts/lib/render-manager-prompts.sh",
+          "version": "repo-file-v1:sha256:a430b2424087357209775e69b5f46e45fba81edb7e23ad94f1a60b950edbc8a4"
+        }
+      ]
+    },
+    {
+      "id": "claim_8fa0775fdeed458398986c0a9decd082",
+      "statement": "The Manager's agent-facing content lives in manager/agent/ directory and is copied to /opt/agentteams/agent/ in the container image.",
+      "evidence": [
+        {
+          "resource": "repo://manager/Dockerfile#L53-L54",
+          "version": "repo-lines-v1:sha256:88fbc80a4cd4d68c000877555a21faa078891af79fb8e2009e625d4f46f9b3b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzkxNGMyOTljMDhlZjVhZGFkZjZjMzEwYTRjZmI0YWIzN2VmMzc4ZjBmMTM1OTkzM2EzNWYxOTU5MDdmZTY1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmE2YmMxNjg4NTYyNjUzMTVlMjI5YTc4ZTY4OTlkNDkyZThlMzI5NDljYzJkMmYyYzM2MzI1MTFmMjYyYmMwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmU2MGE5YTJiYjk4ZWMwY2YyMzc4MjU2YzMzODRkMmFlMmYyMzc4ZmQxNjU5ZDAwYmI0NGMzYmJjZmQ3ZGQ2MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDQzODdiM2NhMWFmYmQxMzhmYzk0ZDEwZTI0ZDNjYzY3MWJkZjY3ZjFhODg4M2VkMDU5NTJlNWQ4NzFkMGExYiJ9"
+        },
+        {
+          "resource": "repo://manager/Dockerfile.copaw#L119-L120",
+          "version": "repo-lines-v1:sha256:88fbc80a4cd4d68c000877555a21faa078891af79fb8e2009e625d4f46f9b3b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzkxNGMyOTljMDhlZjVhZGFkZjZjMzEwYTRjZmI0YWIzN2VmMzc4ZjBmMTM1OTkzM2EzNWYxOTU5MDdmZTY1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmE2YmMxNjg4NTYyNjUzMTVlMjI5YTc4ZTY4OTlkNDkyZThlMzI5NDljYzJkMmYyYzM2MzI1MTFmMjYyYmMwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmMwNTk1NjU1NmI5ZjQ2MDQ3NWJiZDIxN2UxMzc1NGNkN2QzZDAxOGYxMTUyMzY2ZWNjYjJhN2ViZGUxMjliMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDQzODdiM2NhMWFmYmQxMzhmYzk0ZDEwZTI0ZDNjYzY3MWJkZjY3ZjFhODg4M2VkMDU5NTJlNWQ4NzFkMGExYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_31165ecd566d427f8f457e5b22671d0b",
+      "statement": "Prompt fragments are assembled into final AGENTS.md and HEARTBEAT.md files using runtime-specific fragment lists for openclaw and copaw runtimes.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/fragments/AGENTS/header-openclaw.md",
+          "version": "repo-file-v1:sha256:9c7979381e04ac794d8baa6d799db30cb9eeba45a95e2aa6e4c46c483d0baab6"
+        },
+        {
+          "resource": "repo://manager/agent/fragments/HEARTBEAT/header-openclaw.md",
+          "version": "repo-file-v1:sha256:97a398fdf645056faf79f23f23eb5b4aeadac6974c92a78e5afe37b835b6ae08"
+        },
+        {
+          "resource": "repo://manager/scripts/lib/render-manager-prompts.sh#L44-L94",
+          "version": "repo-lines-v1:sha256:79c5fe1a000796f3e68341ee2325af32412e2e2bdc8ac0e7349cd2b471ae4503:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3MDM3ZGE2NzJmZDljMzVhYjNmNjgzM2RmNWQ4ZTQ0YzY2YWM0OTAzYTI2YzU5ODcwNjlkN2I5MzJjNTliM2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRmM2YzYjA3OWFjNDU2OWY2MDIwOGNkMTgwNDMwNTc4OWMxNTI3ZTg2OTdjM2FiMWUzYTc5MmFhMTlkMTYyOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiNDM0NTYzYjEzMWRhM2RiZDMzMGM2NjNjNjU4NWVhNWE3MDU1ZmE2ZTljOTE1ODFhNjczNTAxN2NiZTYyNjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3ec035e7b688471ab305493e22911c94",
+      "statement": "The upgrade-builtins.sh script syncs built-in agent files to workspace on first boot or when image version changes, using marker-based merge strategy for .md files.",
+      "evidence": [
+        {
+          "resource": "repo://manager/scripts/init/upgrade-builtins.sh#L1-L10",
+          "version": "repo-lines-v1:sha256:54eb5c6ca28ab593b30d42a6f8561f31e59aafcf671845342986f88aefe97136:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NzVmOTI4NTQ2YWVlNzg1NWNiMWRiOWFmYzhhYjNmMWE4YTM0ZDQzZGU1YmJkNjJmNzA3NmQ3YmE5ZjM5MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhOTBhZmQ4ZjE2M2ZlMGJhODY1MTFlYjRhODA4OWMxNzIzNjk4ZGNhZGE4YTExMjc0N2UwZDdmNmQyNWUzYmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBhZjRiODhkZWMzZTJlZmZjNjJlNGY5MTM0NjlhYjhjOGRmMjIxNDRhMTM0MjA2ZmFmMjI5OGQ0NTc2NmYyOTEifQ"
+        },
+        {
+          "resource": "repo://manager/scripts/init/upgrade-builtins.sh#L27-L33",
+          "version": "repo-lines-v1:sha256:7aeb251c693cd05cdf42597c26e94be45b3fff7b059194fcb12f45b38cd1ed99:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjcwODczZWExY2QyZDNlZTAxY2RmOThmZmVjZDFhOTc5NjBkYTQ0NGY5MjQ5YTM5ZmQ5ZDEzODgzZjE4NzE3MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzc2OWQyMzdjZDQyMGI5ZDM4Yjk4MWEwYTRmNjc3MDE5MGE0YTgzZGNhMWZlNTZjNGY1YmExZTJjYmMwZWY3NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDFlZWFjMzJlZGEwYzk1MzIxNGY2M2IzM2EwNzE0YTgxMWM5ZmJlYjNkNTYwOTY3MzBjMWFiM2ViMzQ1ZjY3YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjQ1Yjc3N2JmOTYwZTkxNTZiY2Q4MjZmZjU2MzRlNjY2YWNmNGZiYmIxNTVjMzk1MzZhODExYTQ0ZWZkZDBkNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_601c27665fdf42b9a70327ea083e7dfd",
+      "statement": "Hermes, OpenHuman, and QwenPaw are Worker-only runtimes that cannot serve as Manager.",
+      "evidence": [
+        {
+          "resource": "repo://manager/scripts/init/start-manager-agent.sh#L7-L10",
+          "version": "repo-lines-v1:sha256:5b437ae465d5e89abd3f3a5fc6856bc06208e02dae30d94932f997d1a5684343:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzIxMDEyMzliYTEwZWM4Y2EzNzA1YzU3ODlmZWNmMjZhNjkxYWIxYmY1ZDYwZjc3MmUwYzVmNDkzNjc3YzVmZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgzZmNmZGQ2NjU3MWNkNTE2NWNlOWU3NGIyOTVhZjIyYmZiNzllZGQ5MDY2OGZkYjJmM2Q3ZTdjOGZlOTRmYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDdkYTU0MjkwNDk4Nzk0YTQ0YzhkNTk1OWMyMzBjMTZmYTU4YmI1OTUyMTFjNzI1NTUyZTEyMDVkZGZlMWE0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODE5ZTI5MDQxNzlmNzg3YWUyYzQyOTg4MTk1YjQ0N2Q0OGQwMjRkZTc1Yjk2MGRjM2U2ZGQzYTk0MTg3ZTViNyJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

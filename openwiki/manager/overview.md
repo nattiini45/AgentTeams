@@ -1,3 +1,71 @@
+---
+type: "Reference"
+title: "Manager"
+description: "The Manager coordinator agent: two runtime options, agent-facing content tree, 21 skills, prompt fragments system, container build files, and the full bootstrap chain."
+tags: ["manager", "coordinator", "agent", "runtime", "bootstrap", "skills", "fragments"]
+verified:
+  - by: openwiki/0.7.0
+    at: 2026-10-03T08:15:26.963Z
+sources:
+  - id: openwiki-source-5cb8bb35ecf530982cca8f10
+    resource: repo://manager/agent/fragments/AGENTS/header-openclaw.md
+  - id: openwiki-source-ead64f1fedfc0a1856ac046b
+    resource: repo://manager/agent/fragments/HEARTBEAT/header-openclaw.md
+  - id: openwiki-source-bd935243cb80b19e5af48e26
+    resource: repo://manager/agent/skills/agentteams-find-worker/SKILL.md
+  - id: openwiki-source-6c98406b155f001cfe1c1af4
+    resource: repo://manager/agent/skills/better-harness/SKILL.md
+  - id: openwiki-source-d176670f85482acfd34d80b3
+    resource: repo://manager/agent/skills/channel-management/SKILL.md
+  - id: openwiki-source-73efadc0d65afc45b2216658
+    resource: repo://manager/agent/skills/escalation-management/SKILL.md
+  - id: openwiki-source-5bb16d035cfaee794f11065e
+    resource: repo://manager/agent/skills/file-sync-management/SKILL.md
+  - id: openwiki-source-dacdb9473d2f51efb87d6ae0
+    resource: repo://manager/agent/skills/git-delegation-management/SKILL.md
+  - id: openwiki-source-ea711b3c0bdf0421bea25263
+    resource: repo://manager/agent/skills/harness-integration/SKILL.md
+  - id: openwiki-source-14574d60db7aa9e0adac9886
+    resource: repo://manager/agent/skills/human-management/SKILL.md
+  - id: openwiki-source-91f38128a7577bc970214780
+    resource: repo://manager/agent/skills/matrix-server-management/SKILL.md
+  - id: openwiki-source-aa5c96c0511359ca0f5d7155
+    resource: repo://manager/agent/skills/mcp-server-management/SKILL.md
+  - id: openwiki-source-017a362fd50c002c853eb356
+    resource: repo://manager/agent/skills/mcporter/SKILL.md
+  - id: openwiki-source-ec87a91937629867d11d488e
+    resource: repo://manager/agent/skills/model-switch/SKILL.md
+  - id: openwiki-source-efee142d9be954ebd3612b03
+    resource: repo://manager/agent/skills/project-management/SKILL.md
+  - id: openwiki-source-b840bdef352cba678783b51d
+    resource: repo://manager/agent/skills/provider-management/SKILL.md
+  - id: openwiki-source-a61246be4150b8c31c706424
+    resource: repo://manager/agent/skills/service-publishing/SKILL.md
+  - id: openwiki-source-3ed95f3a68bbecda21ed8751
+    resource: repo://manager/agent/skills/session-recovery/SKILL.md
+  - id: openwiki-source-242eb3fd7389d5d50b53dcd7
+    resource: repo://manager/agent/skills/task-coordination/SKILL.md
+  - id: openwiki-source-f7351402557f85527745f95d
+    resource: repo://manager/agent/skills/task-management/SKILL.md
+  - id: openwiki-source-9343338dac9e0db3261ddbb1
+    resource: repo://manager/agent/skills/team-management/SKILL.md
+  - id: openwiki-source-bed23d37c56b5ece6f13b7b5
+    resource: repo://manager/agent/skills/worker-management/SKILL.md
+  - id: openwiki-source-3b8d90091d7def12b4e00a4e
+    resource: repo://manager/agent/skills/worker-model-switch/SKILL.md
+  - id: openwiki-source-dd465491e55b1279d45f6c83
+    resource: repo://manager/Dockerfile
+  - id: openwiki-source-494c025c9fff5d4dedb2c591
+    resource: repo://manager/Dockerfile.copaw
+  - id: openwiki-source-f21f802391622e0ea8356731
+    resource: repo://manager/scripts/init/start-manager-agent.sh
+  - id: openwiki-source-b28e752bb4e9a94966ef8c1d
+    resource: repo://manager/scripts/init/upgrade-builtins.sh
+  - id: openwiki-source-66196c857a5d6a61116a24f0
+    resource: repo://manager/scripts/lib/render-manager-prompts.sh
+generated: { by: "openwiki/0.7.0", at: "2026-10-03T08:15:26.963Z" }
+---
+
 # Manager
 
 The Manager is the coordinator agent in AgentTeams. It orchestrates Workers, manages Teams, handles Human interactions, and configures the Higress gateway. The Manager runs as a dedicated container and communicates with Workers and Humans through Matrix rooms.
@@ -23,7 +91,7 @@ manager/agent/
 ├── HEARTBEAT.md                 # OpenClaw Manager periodic duties
 ├── SOUL.md                      # Manager personality (filled by onboarding)
 ├── TOOLS.md                     # Available tools reference
-├── skills/                      # 19 Manager skills (shared by both runtimes)
+├── skills/                      # 21 Manager skills (shared by both runtimes)
 ├── skills-alpha/                # Experimental skills
 ├── fragments/                   # Composable prompt fragments
 │   ├── AGENTS/                  # AGENTS.md fragments by topic
@@ -43,15 +111,17 @@ manager/agent/
 
 ## Manager Skills
 
-The Manager has 19 skill modules in [`manager/agent/skills/`](../../manager/agent/skills/). Each skill directory contains a `SKILL.md` (instructions for the agent), optional `scripts/` (executable helpers), and optional `references/` (detailed docs).
+The Manager has 21 skill modules in [`manager/agent/skills/`](../../manager/agent/skills/). Each skill directory contains a `SKILL.md` (instructions for the agent), optional `scripts/` (executable helpers), and optional `references/` (detailed docs).
 
 | Skill | Purpose |
 |-------|---------|
+| `agentteams-find-worker` | Find and query workers |
+| `better-harness` | Enhanced worker harness integration |
 | `channel-management` | Create and manage Matrix channels |
 | `escalation-management` | Handle escalation protocols |
 | `file-sync-management` | Manage MinIO file synchronization |
 | `git-delegation-management` | Delegate git operations to workers |
-| `agentteams-find-worker` | Find and query workers |
+| `harness-integration` | Worker harness integration |
 | `human-management` | Manage human participants |
 | `matrix-server-management` | Matrix server administration |
 | `mcp-server-management` | Create and configure MCP servers |
@@ -125,6 +195,29 @@ The Manager startup sequence is:
 3. **`upgrade-builtins.sh`** — Syncs built-in agent files to workspace
 4. **`render-manager-prompts.sh`** — Renders prompt templates with variable substitution
 5. **Runtime start** — Launches OpenClaw or CoPaw manager process
+
+```mermaid
+sequenceDiagram
+    participant Entrypoint as Container Entrypoint
+    participant Bootstrap as start-manager-agent.sh
+    participant Upgrade as upgrade-builtins.sh
+    participant Render as render-manager-prompts.sh
+    participant Runtime as OpenClaw/CoPaw
+
+    Entrypoint->>Bootstrap: Execute bootstrap script
+    Bootstrap->>Bootstrap: Detect runtime (AGENTTEAMS_RUNTIME)
+    Bootstrap->>Bootstrap: Validate environment variables
+    Bootstrap->>Bootstrap: Initialize workspace
+    Bootstrap->>Upgrade: Run upgrade-builtins.sh
+    Upgrade->>Upgrade: Sync built-in files to workspace
+    Upgrade->>Upgrade: Merge skills and references
+    Upgrade->>Render: Run render-manager-prompts.sh
+    Render->>Render: Assemble AGENTS.md from fragments
+    Render->>Render: Assemble HEARTBEAT.md from fragments
+    Render-->>Bootstrap: Templates rendered
+    Bootstrap->>Runtime: Launch OpenClaw or CoPaw
+    Runtime->>Runtime: Start manager agent process
+```
 
 ### Bootstrap Steps
 

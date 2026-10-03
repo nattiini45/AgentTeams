@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:13c8bc51ae83f48365c05a8f4a934c996b890ae7374753357342f4d2ccdea1d3",
+  "claims": [
+    {
+      "id": "claim_1c81dd9f1ee148249a10d4b54df6b74f",
+      "statement": "The Makefile is the unified build/test/push/install interface with specific targets for building images, running tests, pushing multi-arch images, and utility operations.",
+      "evidence": [
+        {
+          "resource": "repo://Makefile",
+          "version": "repo-file-v1:sha256:5c305ef4bf7720f094c26acf5277ed759696fcf91450b7a64bdd272afbfde48e"
+        }
+      ]
+    },
+    {
+      "id": "claim_4eb97daa8cf644f2ad46a62a6b93bc59",
+      "statement": "Integration tests live in tests/ and run against a full embedded stack, verifying container startup, Manager-Worker communication via Matrix, task delegation, file sync with MinIO, and gateway routing.",
+      "evidence": [
+        {
+          "resource": "repo://tests/README.md",
+          "version": "repo-file-v1:sha256:557f8438f8da936a8b56db2f79499e5ac9f06e532501c2a02d90f24c216fbc7d"
+        }
+      ]
+    },
+    {
+      "id": "claim_ac45c7464ecf4ea098d89a664a99da97",
+      "statement": "Tests simulate human interaction by calling the Matrix API directly, then verify system responses and side effects including Higress Console state and MinIO files.",
+      "evidence": [
+        {
+          "resource": "repo://tests/README.md#L9-L19",
+          "version": "repo-lines-v1:sha256:6a66538a38adab4d21729fde0a6549d16c9f55e777cce4b55dc2a043f02c1ea2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzN2QyYWIwYTIxZWY1NWRiMmMyYTVjMjI3NDJmMzgxNjNkNTYzYzc2MjJmYjdiYjk0ZTM5YzcwMTljODI4MzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwNTA1MWY1ZmRmOWE5ZjdhNTk3N2I5OTM3ZTdkNGNhNDM1MDVhZGFmYjVhZmUyNjNmOWQ3ZGUxOGVjYmQ1MDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_650a525bf0d54980a701c024647d65c0",
+      "statement": "The integration test suite includes test cases test-01 through test-26 plus test-100 covering Manager boot, Worker creation, task assignment, human intervention, GitHub operations, team configuration, and runtime switching.",
+      "evidence": [
+        {
+          "resource": "repo://tests/README.md#L23-L36",
+          "version": "repo-lines-v1:sha256:d7913e108b5ef69f0d8dcacb2c5faec8a1bb3f69bced3748c9ba64541c1c5869:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0M2U0ZGRlZWNlZTEyYjI4N2QxNWYyNzUxNjI2ZjZkMDRmYWQ1NzI3M2U0M2Q1NjIwZGI4MjY3Y2M3MzE3MWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwNTA1MWY1ZmRmOWE5ZjdhNTk3N2I5OTM3ZTdkNGNhNDM1MDVhZGFmYjVhZmUyNjNmOWQ3ZGUxOGVjYmQ1MDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlmNWMxMmY5NmY5MmUxYjM1MTEzNzljNGMyNWRlNDhkYTIwYjc5YjI0NmVmNjcwYTk0ZTMzYzUzMTllYTQ3YWIifQ"
+        },
+        {
+          "resource": "repo://tests/run-all-tests.sh",
+          "version": "repo-file-v1:sha256:d36423cf9302546053ae15a74092923e844117f00b88d7c52a877314fd7adec7"
+        }
+      ]
+    },
+    {
+      "id": "claim_c7b59143cbeb4abd9b2929558c7150db",
+      "statement": "Integration tests require AGENTTEAMS_LLM_API_KEY (mandatory) and optionally AGENTTEAMS_GITHUB_TOKEN for GitHub-related tests (08-11).",
+      "evidence": [
+        {
+          "resource": "repo://tests/README.md#L76-L80",
+          "version": "repo-lines-v1:sha256:cf4110b66b037fd161e42bc7b117e441f37f1ddfb54946b96f4438403c263307:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjE4NjJiYTViZGUwYTVkZDhmMWQxNjAwYWU4NTE2NWE1MTJmZjY1NTgxMWZhMjJjMWQxYzM3OWZiMGNhOWM0MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTI0ZmUzOWJkYzRlYjE3M2E2YjE2MTgxM2UwYTUyYzA5N2Q4NjM4YzdmNjM1MzkyN2UyYTM2NTkyYTU5ZjJjNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGNiYTUxMTYxNTE0NjY2ZTQxYzQxZjI2NDFjYjNhNmUyMTM3NGFmYTNjOTY3ZTRhYTk1ZTk4NjhiMjc4MzMzNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_df2bd0c90255461b98c316b397b86250",
+      "statement": "Shared Python packages use agentteams_* namespace prefix, setuptools src-layout, are independently installable via pip install -e, and have a dependency rule that only agentteams_protocol may be imported by other packages.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/AGENTS.md#L40-L44",
+          "version": "repo-lines-v1:sha256:2264bdf7ff5dd44fbcf588ec7833757b5238832f11cfce59f156ce0d29592378:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjMwYmQ3OTU0ZWQzZTFjZTQyZjZhOWEyNDIzZmYzMjMwZjM5ZWU2NDNmZjdjNGQ5MDUyMjdkNWVjNDU0OWVhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDAwZTQyYzNiNjlhNmRkMTU5OWIyZDg0NmU3OTY4NTNmNDE3N2M2MWI3ZWE3NWY5ZjY5ZTc2MDE5NjE4NGUwNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTdmYzQ1Mjg3ZjcwYmI1NWNkNTA0ZjUxYWE1ODIxOGVhNTBjNzkwZGU4NmFjNGEzZmE3MDlhN2QzODg3YmZmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjAyZmY5NTMyNGI0MzgyYzBmNTZjZWRlZWQ3ZGVkNTUzMzZjNjk3YjUwOGYxMTAwNjUwZTA1YmQ2ZTFmMjBhNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2bda742da41e49ef8b0c184ce3ff12b8",
+      "statement": "The integration test workflow uses four parallel shards: Shard A (01 02 03 04 05 06) for LLM interaction tests with sequential dependency, Shard B (14) for additional LLM tests, Shard C (15 17 18 19 20 22 23 24 25 100) for independent controller/CR tests, and Shard D (21) for team project DAG tests.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/test-integration.yml#L70-L79",
+          "version": "repo-lines-v1:sha256:e7504eeeaa5820ff1bfad07f06bc13069039886f484c664857db0421ac984e28:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxZTgzNmE5MjU4ZmYyMDk4YWUzNDk3NGM2YzQ5ZWU3ZDliOGIwYjdiYjVjZjUyZWIzMTE4NTFjZjYxOWUzNjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NjY4ZmMxNTNiNjZlY2VkODA3MmY1Yjk1YjYzZjFmMTBmMDFmNzRhODdiYWY2ZWU2NTcyODlmNDMxZjdmZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlNmMyODUyYjBhOWE3MWUzN2U2ZmFhNjE0YjVmMzEyNjY5OTBjYzVjMTFjMGMxNjdmYjYyN2M2MGFiM2M4OTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiZmNmYzdiOTA1YjJjNDdjZjI0ODJiYzZmMjlmZWYzY2M1MmI1NjM1OTI2MWM2ZTY3NWRiZDRkNTUzODRkNWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a4bcc37dec2540589f3b2caab4a82030",
+      "statement": "Pre-commit hooks are defined in .pre-commit-config.yaml and include trailing-whitespace, end-of-file-fixer, check-yaml, check-json, check-merge-conflict, and go-fmt hooks, excluding manager/agent/ and .qoder/ directories.",
+      "evidence": [
+        {
+          "resource": "repo://.pre-commit-config.yaml",
+          "version": "repo-file-v1:sha256:62020f832a09ff8b9155898f7ffef3efc8b76be56225328c76c675862a17b0be"
+        }
+      ]
+    },
+    {
+      "id": "claim_617629cf1559499092d0dc1b3016022f",
+      "statement": "Any change that affects built image content must be recorded in changelog/current.md before committing.",
+      "evidence": [
+        {
+          "resource": "repo://changelog/current.md",
+          "version": "repo-file-v1:sha256:7f8cbb0e2199bef08f16da77f550721418f27c5df85e8e18e6d50e25ee20fb78"
+        }
+      ]
+    },
+    {
+      "id": "claim_24c15070f2984b0db5193a1ee110d29d",
+      "statement": "The agentteams-controller Makefile provides test targets including test-unit (go test ./internal/... ./cmd/...), test-integration (with envtest setup), and test-all.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/Makefile#L32-L41",
+          "version": "repo-lines-v1:sha256:7bb7a3ba57462316ce56a98a04f690342ecc1935f1c2e028643e4747493ee0cf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRkZTRlNWM0ZGU1ZDAwZTA4NzlhY2M4OGZjOTNiMDBmZGViNDdjN2JmNzZhNTA1ZGM2MzU2ZjFlZDdlYWFjY2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNWZiN2FlOTU5YmIxNTYxYjk3ZWEwZGM2NWZhMjUwZTkxMDk2Zjc1MTQwNzZjZGFlMzFiMTVmODlkZDI2MjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiZGY0ZmYxOWMxYzRlNDAyOGY0ZmViY2M1OWQ4NTM4MDE1NDUxYzI0Y2I1NWNlMmZlMmUxMjNiOTQ4MTA5MDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVlODkwOGViYmU1Y2RkM2EwYjM4ZTRiOGMxYzBiOThhOGY3N2RkMTE5NGJkYzc1ZTlkYzYyZGI2NTI4Yzk1MGQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

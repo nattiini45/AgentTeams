@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:2221369437355fdaf3f30d641d6669180e016b0ea7951086bf3578020405063d",
+  "claims": [
+    {
+      "id": "claim_457c6303c0794cacbeeefa4a637843ee",
+      "statement": "The Higress consumer lifecycle manages API key authentication for workers and managers via the gateway.Client interface, with HigressClient implementing self-hosted Higress Console API and AIGatewayClient implementing Alibaba Cloud APIG.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/aigateway.go#L114-L161",
+          "version": "repo-lines-v1:sha256:7d094676a0f8189bea69397ffe8038937ceee90f7895475655097db2455043be:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiM2E1OWVmYzM4NmY0NmEwZGIwYTJlMTNhYWQzOWVjYmU2N2ZkNWIwNDM4ZDI2Y2YwYzc0NDk4ZWQ2ZDdhMmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyYWI5YjE1NGVjMzNlMmEwZmFlNTQwYzZiOTQzZmZhNjAzN2VjYTQ2YTk2Y2ZiYTE4ZDUxZTM2YWE4NGNlYjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxMDlmZjlkMjA2Y2RiZjJmODM0YTY5NzNkYWEwZmZjM2U3M2Y1NTlkMDMwMGMwMDFlZDQ1MjFjYjU1ZmYwOTIifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/client.go#L7-L88",
+          "version": "repo-lines-v1:sha256:409d1ce8508691d6bee5f4ceb2896d1f18588b73ba5c4daff9aaa81c5929254c:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2NjI3OGU1MTNlMDhlNjRjMTMyOTU0ZWVjMjYwNzE4MjY4NzFlNWUzNjVhOTdjNDY2MjJkZDc2OTk1ZDlmZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2YWQwNWFmMjk3N2Q5MDg4Nzk1NzA2MTJjNmM0NmI1OGRmOGIyYmRlZWZhMDIyODE2ODJmZDdiNzJhYmFkZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4ZTU0YTAwZTNiY2NkM2FjZjMwMjJlNmQ5NWQ5NGRhNDM3ZjJhZjgxNWNmMGE2M2I5NWRhNzNmN2I3MzU5OWUifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L140-L168",
+          "version": "repo-lines-v1:sha256:90efd20344589ec7c7bf863011188ae5a640bca34c18a6e8dcce0db9ed7dd0e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiY2U1OGFlOWZkMWEwYmM4MjFmODIzNTRlNjcxN2Q0MTFhZTEyNTQyNWUxYWQ2ZTE3NjM0YTMzOGQxNmNjODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiN2ZkZGYxYzg1OGI2MDQ5NjRmYWY5OTg2YjdmMmRlYjQwZDI2ZjVkNzQ5YzA0OTJmZGFkNWQ3MWUyYzJiODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmYTgzYmYxNDk2N2NhNmY5Y2ZmOTcxMDQyZTEwYTk0ZDRiZDMzYWIzYTk3M2RmN2QyMGI3ZjcyZWNmOWVlMmMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cfde519a26c64598b92741f38feb2c96",
+      "statement": "The gateway implements a consumer-token model where workers receive consumer API keys while real provider API keys stay in the gateway, with the key-auth WASM plugin validating bearer tokens against allowed consumers per route.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L140-L168",
+          "version": "repo-lines-v1:sha256:90efd20344589ec7c7bf863011188ae5a640bca34c18a6e8dcce0db9ed7dd0e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiY2U1OGFlOWZkMWEwYmM4MjFmODIzNTRlNjcxN2Q0MTFhZTEyNTQyNWUxYWQ2ZTE3NjM0YTMzOGQxNmNjODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiN2ZkZGYxYzg1OGI2MDQ5NjRmYWY5OTg2YjdmMmRlYjQwZDI2ZjVkNzQ5YzA0OTJmZGFkNWQ3MWUyYzJiODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmYTgzYmYxNDk2N2NhNmY5Y2ZmOTcxMDQyZTEwYTk0ZDRiZDMzYWIzYTk3M2RmN2QyMGI3ZjcyZWNmOWVlMmMifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L194-L323",
+          "version": "repo-lines-v1:sha256:0fe4b5267512cf4e4ba1e6baa2b7e2627a3b18bef386b8feffd28f24f845f6b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhMzA4YjQ4NTg3ZDZmZWUxMjI0NTFmMDdhYWViMGY2ZjMwYTI2MmE1NTJjMWFhNDdhMmZhMTE3YjRmYjcxZDY0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzNTNjYTQ4MzViMjMzYzJlOTVlNDFlZTRmYzA1Mzg1MDA0YmI5NTdjY2U5OTIyNjJmYzRjMDc3ZTA5YmQxZDhkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzMWI1MDIzMjA1MDI0YjUwMmMwZDhjNDgzZDZkYWJlNzBjZTAzZjBjNjk1NTkzYzcyZTdjMDE1MjViZDUzMTlhIn0"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L493-L562",
+          "version": "repo-lines-v1:sha256:6db177bc5bc4d1777e5f32dbbf8d7a8117a5c8a3f8d8f047bf059d67f11f860f:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxOWM5ZDNjMzVlZDY3ZjRlZWJmNzM5ZTU2MmQ2NjY2ZGQ0NTBkNTMwYjc4YzIwNjhiNThmM2VlOGY0ZjU3OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2NjZmNGFmMWFlN2E2ZTEyMDRhYWNjZThjN2M5ODk0Y2JmZDM2NDgzNWQyZTI4ZWUxZGQzNjRmNWQ1MWRjZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1ZDZjNjU5N2QxNmY5MDA3MjQxM2UzNTNhMGVhYzRmYmZmNzA3MDBlNTJhMGU4NDI1M2NiODYwNmM1N2MxNjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_50895530ca7e4273b05ca92b041ce2ab",
+      "statement": "Route authorization manages which consumers can access which AI routes via allowedConsumers lists, with AuthorizeAIRoutes handling idempotent updates, WASM resync triggers, and retry logic for 409 conflicts.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L181-L323",
+          "version": "repo-lines-v1:sha256:18d2b4e5c4b0746305c87130bd2461c9b27ed0a2a77a845430a842f0b1daced1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhYzgyYzFmYmRhMzhlMjkyYTgwM2RjZTRkZTAxZDY3ZGZmMjRhODY1YzlhMWVjNjdhNWY3ZmEyMzYxYWZmMTk4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxNjMxYjZlMmNhMDdkOGJhZjBlYjQ0ZTc0OWRiZjQ5MGIzOTJlM2E1MzRlZjYxMDIyNzcxMTQ2Y2RmOWFmMWEyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzMWI1MDIzMjA1MDI0YjUwMmMwZDhjNDgzZDZkYWJlNzBjZTAzZjBjNjk1NTkzYzcyZTdjMDE1MjViZDUzMTlhIn0"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L278-L294",
+          "version": "repo-lines-v1:sha256:090d08b59f30eb3b1cd7f974049bffc175d82e10fb60f3cfd70bf0ae8a425219:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhNTFkZTBlMzA4ZjQyYTgzYjNmYTMxMjFkNmQxMDNhYTRkYjdkZmMwYzhiMThlODMyNzRjZTNkM2Q5NGUwN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwNDc2ZWJhYmUxNzgxMTY2YzMzYzI5MjBlMTcwMTljNjBhMmZhYzgzZGExYzllMGIwODJiMDlhMzYwY2NmMjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExMmIxOTAxMjA2MjcxYzc2Y2YyMmFmZjhkMTViNzgwZDMyYTczYzEyYzJlYTZjM2Q3OTY1MTQyYjU3MjhmZWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dc329798c363445ea3ff457e34156a06",
+      "statement": "AI providers represent upstream LLM endpoints managed via Higress Console API, supporting qwen, openai, and custom OpenAI-compatible types with provider-specific routes using modelPredicate for model prefix matching.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L400-L418",
+          "version": "repo-lines-v1:sha256:c6bff0ab0962313052fb3519dbc56cf167201219e0fa5f931f842f8ac79548a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZjA5YjEwODk2ZGIxMWU4ZDE2ODkzNzg0ODk1NGUzMjk0YmVlYmJhOWUxNTk5ZTAzOWI0YmU0ODdhOGQyZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2MzFiNmUyY2EwN2Q4YmFmMGViNDRlNzQ5ZGJmNDkwYjM5MmUzYTUzNGVmNjEwMjI3NzExNDZjZGY5YWYxYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI5MTliYWNjYzcwZTU1OTk0ZjkzNGVmNzljODRkNWU0NjNjNTNlNDFjNTI4ZjNiYzBjZDBiODZlZmYxOWY3MDUifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L777-L926",
+          "version": "repo-lines-v1:sha256:9e27f8439dd34bf9fefbe367730659fdb196f40bcf8be14b4f5fad23336ae3ec:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI4ODRmOTkwMDJiMThjNGI4ZjJmYzA0ZTM3OWRkZGFjZGZmNjQzZTViMGE1NmE0Mzc4YTNmZGJlMDcyYWI2YWU0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzZjYxNTllMGY5OWYwZjhiNzk2YzA3OTBhMjhmNmEzYzMyMDgzOGI1OWJmYTUyMjA1ODU3Y2NhMzkyYjZjZGI3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJjNTkzZDliZjEyNTIyNTg4ZjcyYWU2OTM5ZTRjMjZiMTk3NzMxY2VjZjM2MTFiOTE3MGFhY2RlYzQyNmI3ZmJlIn0"
+        },
+        {
+          "resource": "repo://manager/scripts/init/setup-higress.sh#L185-L281",
+          "version": "repo-lines-v1:sha256:cd15731be624a5a542fac9f5e7f2a11780cc4c5f8d0d1d2bc7cf3f02d43c39fb:eyJzZWxlY3RlZExpbmVDb3VudCI6OTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4NDU4MmI3N2QxNWE4ZDJjNjMzMDBjMDc2NTdiODAzYzgyZjllOTYwODE3ZTRhNTM5YzY4ZDhlMjYxMjY1ZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0ZTc2MDQyNmE4ZTNhODYwZGQxNTBlNmMxMTc4YmFhNmJmMTgyNGM1N2ZlODI3M2IwMmI0YTVjZTQ1M2FhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1YjNjZWViNDQ0OThiYzA3N2IxNmRiMWYwOTAzZmM4YmNkNjk4OTQwYjUzNTA3ZmNkOGYzYzM2MmYyYjk3OGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5ZWM0NDliNTBlYTAwM2JmNjAzNzNlNWY5ZjZiYThkMWMzMjZlNmFjMjgyMTRiN2RiMTk3OWMyZDE3MWI4YTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_503d976541cc4c8da3b7770eca419cc6",
+      "statement": "MCP servers provide tool capabilities to AI agents, registered via POST /v1/mcpServer with consumer authorization managed via PUT /v1/mcpServer/consumers.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L645-L679",
+          "version": "repo-lines-v1:sha256:7aeab6edcc7027f284b0ee22ab11631ce4dda0dc2eee8b33b6e301da3d774cc4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2OWE0ZGM1Yjc5NjNkOTUxMjZlNWU0NjEyMGE0NGZkMzU1YmM3MDZiNzVjMDRmM2YzMzBhMzUyNTZjMzA4NmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkZWM3YzIwNTk1ZDE2NThiY2E5Y2I4NWQ0N2VkMjY3MDJkM2RmYTMyZDRlODVjYzJmYmNlZDJjZmE4Y2Y1ZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkOWM1N2Q5Y2I0NTEyYjllYzRmNThmMDZiODQxNWExZjUyNmQ2YjJkZGZkNWU4ZGIwMGQ2ZmM0OTQxNzEwOGUifQ"
+        },
+        {
+          "resource": "repo://manager/scripts/init/setup-higress.sh#L400-L430",
+          "version": "repo-lines-v1:sha256:2568b024270c616fb90a6e5f309d9704e3cd855933eafb27b6123234d3406f45:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiN2VmZTFmZjQzMGJiYzU3MTE2OTMzZjk5YzJkZmUxY2U3ZmU3ZjFkYzU4MzlhMDg0Y2NkYmM4MGNmYjA1MjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NjlkMjM3Y2Q0MjBiOWQzOGI5ODFhMGE0ZjY3NzAxOTBhNGE4M2RjYTFmZTU2YzRmNWJhMWUyY2JjMGVmNzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmZDJmYWU2MGYzYTg1Mjk0MmM3N2I5MGE1MDgwNGQzN2ZmYTA3NjdkN2Q0YjBkZDMxYWMxODc5NDIzYzhiYzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4OGFiYzE1YTIwNTQ3NGVmOTQwMTZkOTU4Y2IxM2JlMjAyYWE0NzA4MmE1MDNkZTEzYjNlNDBmYzU4MjM4OWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4a0d471fdef94b8fb45ebcb211117e78",
+      "statement": "Port exposure creates dynamic gateway resources (domain, service source, route) to expose worker ports externally, with naming convention worker-{name}-{port} and cleanup on unexpose.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L343-L379",
+          "version": "repo-lines-v1:sha256:f845d7e710618b3c85ad77216c689a52c0df7ba64b1ece1c7f03248a19e46a3d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4MTc4MjkyODA5MTU2ODQ1NDBhNDFmNTRmNDc2MjFkZGE1MzdhNTFiNGFhY2Y3ZmFhMDc2YzBhM2NhOTA2MWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNjU5NzA4NjNkNTgxM2JmOTcwYjAyZTM0YjU1YTIxMDIyZmY5MWZiYjM3NjAwYmM5ZjZhNzY2NzkwZWVkMjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkZWJkODRjZDJhYjdhYTk1MDkxZjIzNTg5MjkwNmRjNWQ1Njg3MTk0MzlkZWI1Nzc5MzE3ZDJmYzU1NzJmNTAifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/service/provisioner_expose.go",
+          "version": "repo-file-v1:sha256:2e62678e2256672261c1b0027b40650b444a15ca5d82ac7b8599bc8b9dcb242a"
+        }
+      ]
+    },
+    {
+      "id": "claim_1d23110e87454782a6e242a02a35557b",
+      "statement": "Matrix user provisioning supports two modes: password-based registration via m.login.registration_token and AppService mode via m.login.application_service, with orphan recovery using admin bot reset-password command.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/client.go#L214-L308",
+          "version": "repo-lines-v1:sha256:cf1c4113779b2349916cbf4a4c5bf4061da2b2d7c9713b770591a5605067d9c8:eyJzZWxlY3RlZExpbmVDb3VudCI6OTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkMWM5NjNkYTg5M2ViNzQ1ZTliMmY2NDkwM2Y0ZGI1N2FmMjljZDU4ZjNlZjVhYTZmYjc3NWZkNTA5NDcxZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1NzU2OWYxNzkxNDE5ZDQwMGI0ZjAxMDQxNzA4MTc3ZGM3MGI4ZDE5MjI5OGE4ODgyYTEzNDZiMTA1NmM0ZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4ZDM3YjQ5ZTUzYzgzNDY2OWNlZmE0ODg4NjVkZmU4MjFmZWY2OTBmNzQzNGQ3YzA3ZDhjMTEyNGY1OWE4Y2MifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/client.go#L340-L404",
+          "version": "repo-lines-v1:sha256:1a377de10f1f007cfd98af14b138b2262a90ef6a394c2578619242c6b53d6d2c:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxYTA3Y2E2ZjQwZDQ4YTEwNWEwZWI5NTIxNmFkNDI3MzJjODZlYmQyN2Q3YWY2YmQwN2VkNzI2NWQ2ZWYzMGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmZWVhODZmYzVjNjQ2OTc2ZWEyOTQ3ZjkyYWM2MGNkNTg0NmViY2Q3ZDJiNjgyNjgxNDIzM2U2OGIzYjMyMjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyYjc1ZjQ0NTBjZWM5ZTBmZDdhYjcyNWI2NDc0ZDY3MjMwZTk2ZjQwMGJiZjk1N2EwM2QzYjFhM2EyZjUzNmIifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/types.go#L6-L37",
+          "version": "repo-lines-v1:sha256:dc5e6e10b283a0d6b69f6fa26e894741eddac8365467f8ce071f660365df456f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxNjY4MTQ2Mzk0YmY2NjQ0ZDJjYWExYzdkYWQ5ZGU1MWUzY2RiZWFhYjY1ZGFiNWYwYTE1ZWU4OGRkOTRmNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJmMTQ4YzQwN2Q0NjZmOTQ3Mzc1ZjI3YTMzODJlYTA5ZGM3MzZkNDFmNzlmZWYzODI0MjFkMzI4OGRiNTkwZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ2ZTQ2NTg0OTYwMTY5MDg2OWQ5M2Y3MTU0ZGQ1YWFhNjc4NzNhMzk2ZGIyMjMyMmZmNWRiNjBjNzQxZjg2MTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bd87f7c1a81e497782656fe464da6f11",
+      "statement": "Room creation uses room_alias_name for idempotency (agentteams-{kind}-{name} format), with power level configuration, E2EE support, and stale alias recovery via DeleteRoomAlias and recreation.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/client.go#L482-L568",
+          "version": "repo-lines-v1:sha256:18a53790a6da3df2948e668f72d120a9d7ad0c8bd2848b62a6c7c40fc34f7990:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0ZWZlNTFmYjA4MDE2M2I5ZGY1M2Y5ODM2NDkxMjQ5MGJhMWM3ZjM4YTA5NzdiNDdmMjRlNzIxMDNkOTZiYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2MzFiNmUyY2EwN2Q4YmFmMGViNDRlNzQ5ZGJmNDkwYjM5MmUzYTUzNGVmNjEwMjI3NzExNDZjZGY5YWYxYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExZjgxZjA5YjA1NjUxMTUzY2VhYzFjNTY1NjA4NzgzNmNiZGFkYzM5NDI3YTI5ZDVhNzc1NTk3MmI1ODAyNzEifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/types.go#L60-L87",
+          "version": "repo-lines-v1:sha256:60c296e04c102d1c9e58a50af57f82c48d4743b923db58b13ac78abae6351fae:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3ZmRkOTZjYTgxYTlkNGUzOWFjMDVkOTZlNjFkZDhiOTQyNjk0NzQzYTEyZjM4ZmZjYmRhYjJjNGY3ODkzYjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRjZGZlNDBjZjhjNGU5Y2U4Mjg4MDgzMWIwOTAwZTc4ZDcxMzM1OTY0YjM1ZDA2ZjBlMzZhM2UwMTIwMzY5MjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4ZWQxOWE3MzQxYmExMWE0ZTYxNWYzZDlmNzk5ZThhNWI4OGFkNzg3MDI4N2U1YWI3NWE2ODU4YjJmMzNkMGEifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/service/provisioner.go#L430-L460",
+          "version": "repo-lines-v1:sha256:2e35b2626f4c41510775c1e8019aedf8b9f14b5577c0720203d1833beac500ea:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ZmY3ZjI1MTg1Y2I0MzI2YThkZWJiNGJmMTI3NDQ2YmYwZmQ1YjgxMDdmN2RhOTg5NmMzODVmZGZlNWRmMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwODcyZWVjZTYyMmE1N2FiZTI5OWU3ZDFhZDA2Njc0MTRiZjY4NmY0YzBmZjdmMTU4ZWRkZWY1MjJkZGMwYTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiYWJmMDNiM2RmMmE3ZjgyOWFkOGFjN2RlM2Y5MTE3YWZmZjkzMzAwNzQ1NzhjMmQ0YWE3MmZmNDMyMWQxYjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlhOTIyYmYyYWQyMGE0YTg1ODhjNTRlMzE3MWQ2NDAyZTEwYWUyYzBlNDc1MDRiNTYwODUxN2M5YWQ1MDVhYTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1b159d99346243c38cca1107735b7b2c",
+      "statement": "AppService registration uses admin bot command !admin appservices register with YAML payload, including smoke-test-first idempotency and unregister-before-register fallback for safe token rotation.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/appservice.go#L109-L133",
+          "version": "repo-lines-v1:sha256:df569ee0e91a045e74b8f8740589df9b303bb02f0a53ab23397c39ce7351474e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5NDQ2ZGFlNDU0MjYxYzUxODI4OGIyYTUyMmNiZDgxMTM4OWI0YWFhYmYzYzViMjdkNzQzMDA2MWE5NWFjYjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxNDg1M2UwYThiNzEwZTJiNDljNzhiMTM2NTdkODg4Y2JkNmU0NWUwY2RjOTQ1N2ExM2Q1NDY0YTkwYTEyNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/appservice.go#L30-L96",
+          "version": "repo-lines-v1:sha256:02f80ad6c69661192a95d326bc3339a3ec0758cd3ea54c62996876547248b847:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4MjIwNmJkNmI1YzNiZGZhYWZkZmNmNWFhZWY5YmNhMGZjNWJiNThkZmM1ZTMxODFkZmI1MTM2MWRhYWRmODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyMzJlZmZlNDgwNmExYWY4MDZjZGExNzBlNTUxYmYxNmE4NzhjNjc1ZDY0YTRiYjhlMzMzOGU5Mzg3ZjM5OWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4OWQ4NDk3ZGQ4YWJkMDFkY2RhMjYzMDQ1YzI1ZGI4MWVhODNjMjliODNjMzMxZTBiNzgxOTJiYjQ3M2QzMzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_722483e17d09411f9df8b520a2a25209",
+      "statement": "AppService mode claims exclusive @.*:{domain} user namespace by default, which is only safe for AgentTeams-managed homeservers, with configurable regex for shared homeservers via AGENTTEAMS_MATRIX_APPSERVICE_USER_NAMESPACE_REGEX.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/appservice.go#L11-L29",
+          "version": "repo-lines-v1:sha256:3ff8d11a0067c20fc7664865468a691b4255ca9c756012dd32c4880de9957893:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlNGU2ZGY1MjFmNzNkNThhNTAwNGRjZjM5NmJlZjljNTYzMGRhMmFjOTY5MTJiYWEwNTNkYzJmZGQ0MTQxMzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MmIwNmFlY2M3MDc4ZTI2YzU1MzdjMWE4ZDQ1NDhmZjZmY2FmZGYwNWZjYmJmYTE0NmUwZmY3NGJjOTk3YjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NTA0ZDU0ZmQ1ZDBmODQ1ZTgxYzA4NjkxMzRiOTNjYWFlNjAzZTQxNmIxNTk5NGFkYWFjYmZlOTg4N2MwYWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIxY2VjZjMxMmJhZjk5OWVkNzMyYjY4MTY1Zjg2MWM5NzBjNzk5ZGEyMWIzZDZiMTM5MmU4NmZmY2I1NTA4ZTkifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/types.go#L23-L31",
+          "version": "repo-lines-v1:sha256:8bd3aa1b2c242424f3e5b7bcdc1f1e1cfcc5aedacb488ef61fb0b361c1c22a41:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmQ5YzA0MmEwMWI5NjZmYmNiMTBjYzhhMGI2MGI5OGQzMmVlNzQwNGYwNmM3NzI0YTI5ZmE5MDEwOGNjOTk0ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTdjZDRiYzQ1OTI3ZWU4NWViMzA5NGM4NWZjMzdhODFmMzUyODdiMzhjNTkzNGM5ODk3NDg0MzM4YTU3YjhjYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTY0ZmYyZGE4NjgxMGU0MjQyOTEzM2M5ZTE1N2FiYmFlYzVhYzhkZjE3MDE2MTAwMjdkNWQ3N2I4YmQ0NjkyYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjFlZDc4N2Y1MDg5MTI5NDNlZGE5OTBjMTM0Y2E3MDBjN2U2ZTFkNmY3ZDI4NmFiYWZkYWI2NjhlMDg3NmZhOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ca0c8eaca21049e5a18a07a6416b8380",
+      "statement": "Access tokens are cached and reused to avoid invalidating running workers, with invalidation on 401/403 responses and orphan recovery via admin bot reset-password with exponential backoff retry.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/client.go#L201-L212",
+          "version": "repo-lines-v1:sha256:c4ffd85dd9ee408261a37b668174ae58856a2e6ebc4b73c6c9cda919c6091a75:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0YmNjN2FhZDQ3YWQ0NWVlYzJkYTYxMjFlYmE4MWY4OGIwODI4Mzc0Mzc4NTM3OTNkZTZiMmFmOGRhMjlkNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRjMGMzZDAwOGEzZTQ3ODk4Njg1MDRiYWUyZjdhMjY0MzdjMDAyOWYxYWFkMjljYThmMWU2ZjY5MTlhNzZkZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5NTExZjFiZTEyNGE3MTgzMGUxY2Y1NTcxYzcxNTAwYmU5ZDY5YmZmZGQxYTk1ZmU3OGIxZjE3MzQ5ZjkyNjgifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/matrix/client.go#L260-L308",
+          "version": "repo-lines-v1:sha256:bb586d1a3ee9f1868f39c5689020988d0b61148c330dbe45f6e703ac9ec060c9:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMjFkZjc1YjRjNTQyY2YxZGM3OWM1MDFjNmFmZjYwNmMzNGFjNTEyNmE0N2I2Y2EwM2M1NmFmZmNmMmM0ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyZmE5OWE4MTBmMDNjNjgzNTg4ZmEzYTc5MGYxMzc5MGJkOGNhZmJmMWUzMjBkNWQ5ZDhlMDM4MTg1ZWQ1MmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4ZDM3YjQ5ZTUzYzgzNDY2OWNlZmE0ODg4NjVkZmU4MjFmZWY2OTBmNzQzNGQ3YzA3ZDhjMTEyNGY1OWE4Y2MifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/service/provisioner.go#L580-L600",
+          "version": "repo-lines-v1:sha256:c7986c455eed89b25446a1b508b7447b4d9e8aeb83e5621b0cc9fe1390c021cd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhZjFmZWM4NjgwZDFlOTFkYmU2MWY4ZjQ2MTE0M2E3YWIzM2ZjOTYzMzIyMGRkNWEyNGU2YzQ0MGZjYWY3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0MzUyMjQxNmE3YTI3Yjk4NmRkMWM1MTRmZDlhZmVmNWEyMjJkNWE5M2QyOWRiNjdhZmJmMzE1MzY5ZWYzMWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2MzFiNmUyY2EwN2Q4YmFmMGViNDRlNzQ5ZGJmNDkwYjM5MmUzYTUzNGVmNjEwMjI3NzExNDZjZGY5YWYxYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3N2JhYzdiNmZjOGZlOGQ3Nzc2ZjM1ZDE2NDgxNTg1MDNiOWNkOWUzYzE3YzQwYmM5OTJkZmM3YzQyYzY2NmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a259158021aa4affa39007d40fde7ac9",
+      "statement": "MinIO storage organizes agent data into logical prefixes: agents/{worker-name}/ for worker files, shared/ for team and global shared data, manager/ for manager workspace, and teams/{team-name}/ for team workspace.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/oss/minio_admin.go#L169-L249",
+          "version": "repo-lines-v1:sha256:5c70431a810b0f1f42dff6d2635db5d388e3865865042a83655466095c2bc523:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4ODRlMTNjZmMzMzliM2E5ZWE3NmJlODM4NDI0ZDAwNDNlMmVkOWMwOTQ0MmYwNWJlOGJiYWEzMjdmNTI2MWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUxMmZhODE2ZTA1ODg2YmU1MThlYTFhMDMwNzExOWY1YjZmMTBmODc3ZDA3YjQxMTJmY2Q2MWU2YzJiMTdlNWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5MDU4N2ZkNzY2YTc0OTBlYzAwY2U1YTg3YjExNjU0MjI0ZDNlYjVjN2Y5NGM1OTg5MjQyNDljMTA5YmU4OWYifQ"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_sync/src/agentteams_sync/filesync.py#L83-L84",
+          "version": "repo-lines-v1:sha256:4e18ead3e950161e359b959b215bae116fad94872ee82162b3f4ad84c9c4ab28:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjc1YmE1MmVjNjBiZDgwNGVmYTcwNzM5NDRjZDY0OWY5ZDExMzc1ZDE1MzhiMjkyNjkxZDJkOWUwNmY0YzljNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2UzNDI3OTcwYzk2ODU5N2JmY2FmMTc1NmE3NDZkYTliYjhmN2I0NTYyMTlhMThhMzBjMTEyYWM0ZDAyMTc0NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTQ3ZDM2NzhiNjk1YWMwNjYwNGZiMWFjNGM4MWU4MzRjOGQ3ZGUwNDZlZTI4MmNlMWRhMWI0NGQ0NzUyNTNjZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTJiNjYwOWExNTIzN2M4NjZjMGQ3NjhhNDI0YWM5YzFlMDE0ODA0ZDQ2NjYzNTVmMmQ5N2MwNDA4M2E4NDlhZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e1c9ca9bcb947a59878cbd27bff74ad",
+      "statement": "The agentteams_sync package provides file synchronization with runtime-specific contracts defining startup mirror, background pull/push intervals, and on-demand pull semantics, using mc CLI for MinIO operations.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/agentteams_sync/src/agentteams_sync/contract.py#L10-L160",
+          "version": "repo-lines-v1:sha256:1ccf80a425a9b7a6f9a242fb92e4c8a5775cafe87c1d656bf9ed7952d0f6bede:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmNjlhMTM5NzVjMjU2ZWM4MzIwZTIwMTYwODNjOTZkZjYzN2NhM2QzNWJlYmRlMjMxNGJlZTNhNDcxMWI1NmNhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5ZGZmMWYwNzY0MjRmMWQ0NGVmOWM1NmE2MDczZWM5ZDE4ZmQ2YWE2MzU0YjQyZGE2MDY0MzM1NjRiOTU5NzEyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_sync/src/agentteams_sync/filesync.py#L31-L156",
+          "version": "repo-lines-v1:sha256:a71b8185ec5776bf4d9fb2e7b3a70e3c5c591efd3717a7518289d0618780cb9c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhNDVjMTM0NzdjY2RjM2E1OWFhOWNhNTNlYjg5YjNlMDJjN2U0YTQ5YmFkZGY0NmY5NTBkYzk0ZWJiMmUzYzQ2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwMWJhNDcxOWM4MGI2ZmU5MTFiMDkxYTdjMDUxMjRiNjRlZWVjZTk2NGUwOWMwNThlZjhmOTgwNWRhY2E1NDZiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyMDAzZTVkNzA0NGU0MTZmYTQ4YWVkNGI4ZWFkMjBjMWQwODQxMDc2ZGI2ZDkxZjkyMzAwYTU5ODI0NWFlNzEzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1NDJlNmFhOTAyOTI1ZjUzOWQ2ZDFmMmNkOGRjOGFhMTMwZmJkNDdhNjI5N2M2NGIwNzEyZmVmMTc2NGNiMDQ1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_46b3b7ba8e09460d8f5d033b4a74c437",
+      "statement": "MinIO supports two credential modes: static credentials for embedded MinIO (mc alias set) and dynamic STS tokens for external OSS (MC_HOST_{alias} environment variable with controller-mediated refresh).",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/oss/minio.go#L13-L29",
+          "version": "repo-lines-v1:sha256:dfc2d4e79918da7c3a4dc12040da4b3c9452fa1ce016bbbc2a86173a00af0d26:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmZmYyYzMxMGY4NDM4ZmMyMTUwNDU0ZWNiMzZlZTNkNTU1MjY2NDFmMDA3Y2YzZWI4ZWQ4N2YxYmRjZGMwZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkNWRlNjczOTBjZTMyYmZmZWYwZGU5NjRjMWM3MjAwOTk1ZDY4Y2EzZWVjYWRlYjNkZDA5Yjg3MmE1NGViNzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1ZWI0YjRhYmEyMGY3ZDRiZTYzNTg2NDFiNmVkOWVhYzBkYzhiNWFiZDJjODQyODU5ZTM1NGUwMTQ4NGU4NGEifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/oss/types.go#L16-L38",
+          "version": "repo-lines-v1:sha256:ade2ca7674426f231af4bf76e17a7d2dee8fcdac914b3cdba384ea8030ac4200:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyNzc1ZGZkM2I4NjdjOWU3NTliZGRjZjczZjY1YzRmOTFiMGE5ZWVjNjcyZWFjYWM3Mjc5NjZkYWEzN2Q3MzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxMmQ5Y2M2NWJhYTVhZTE0YTQ3ZGZlYmQxZWJlN2IwNGJjN2U0ZDk4NjE2NGE0OWNlZTQ2OTIzYmQ4NzlmMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYmIxYzU1MjZlMmZjNmRkMWI4ODJhNzI4ZTE0N2E3M2JmYTYxMjM2ZDljZTUyZWZmYjE2MzA2MDYzZjMwNzgifQ"
+        },
+        {
+          "resource": "repo://shared/lib/oss-credentials.sh#L1-L196",
+          "version": "repo-lines-v1:sha256:03c0938a40a2c3be10f89ad0bd78b7fece1aaa251cefd03c4d14f0082a33cfa8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTk2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiODc1ZjkyODU0NmFlZTc4NTVjYjFkYjlhZmM4YWIzZjFhOGEzNGQ0M2RlNWJiZDYyZjcwNzZkN2JhOWYzOTE3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2MGY1ZmI1OTViMTQ3YTliODIzZDY3OTBlM2EyN2VhMWYyZGZkNmZmMWQ2YTI3ZTY4MmEzMmE1MzYxMTcwNDU4In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_d8d5d46ce36d4e118758a02b14f7f30a",
+      "statement": "Embedded MinIO uses JSON policies to restrict workers to their own agent prefix and shared data, with additional team and manager scoping via PolicyRequest parameters.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/oss/minio_admin.go#L169-L249",
+          "version": "repo-lines-v1:sha256:5c70431a810b0f1f42dff6d2635db5d388e3865865042a83655466095c2bc523:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4ODRlMTNjZmMzMzliM2E5ZWE3NmJlODM4NDI0ZDAwNDNlMmVkOWMwOTQ0MmYwNWJlOGJiYWEzMjdmNTI2MWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUxMmZhODE2ZTA1ODg2YmU1MThlYTFhMDMwNzExOWY1YjZmMTBmODc3ZDA3YjQxMTJmY2Q2MWU2YzJiMTdlNWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5MDU4N2ZkNzY2YTc0OTBlYzAwY2U1YTg3YjExNjU0MjI0ZDNlYjVjN2Y5NGM1OTg5MjQyNDljMTA5YmU4OWYifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/oss/minio_admin.go#L62-L117",
+          "version": "repo-lines-v1:sha256:3e1d57202673effbb7d61518a7d2d257c7eb9352050154e86213be62f79471cb:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRkMDliMTg4ZTI2YjYyMTc4YTQ0MWI4MzJmNmE3ZGI1Y2ZlNWU2MTEyODNkNzI2MjdjMDk3OGNmZmFjOGZhNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2MzFiNmUyY2EwN2Q4YmFmMGViNDRlNzQ5ZGJmNDkwYjM5MmUzYTUzNGVmNjEwMjI3NzExNDZjZGY5YWYxYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyNGZkMGNhYzY4Mjc3ZjQzODZlZjNiZTg1NTkzMGQwNjFmY2ZkODg0NzNlODZiY2UxZDU3YTVjZDI5ZjljMDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2826181c91b0449a94600448045700f7",
+      "statement": "The Provisioner orchestrates infrastructure provisioning for workers: Matrix account/room creation, gateway consumer/authorization, MinIO user/policy creation, and K8s ServiceAccount management.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/service/provisioner.go#L149-L207",
+          "version": "repo-lines-v1:sha256:259659a1c0b0efe64056a4c84d1d2fc9a8b46d826a5d4e94e4a0dcb2c14646a3:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhMjJlY2JmYmFmMzQ0ZTY3YTE0ZjBmYzgzOTkxM2ZlMzA0MGY4MmU2N2MwZDdjZWQ0M2M5MGI4Yzc4ZjVmNGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1MzU3MDgwMjgyMmU5ZDYxMDY5Yjk0Yzg4NGQ5YWQ5Njg4NjJiZDIzMTIxZWVjMzljNzM4YjlhZmEyMjhkZDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2ZjVhYzBiNjMxZWZmMWIxYzAzMTJlODEyZWYwZTNlNmI2MzVlYzJjMzU5NWNlZTkzZmFiNDg1MDVhZTI3OWMifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/service/provisioner.go#L400-L537",
+          "version": "repo-lines-v1:sha256:497a1c79d8536ce97c753b9ab0976d8c151cf0fd6d3bfa8fed1cff252a281a2a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxZjQzNTQ2OGQ5MzJhMzM1ZGEwNTYxMWU1ZDUyZjZmZTkzYjE2NDExZGU4ZDM0ZDdlMzNiMTYxNGU3MTVjMjExIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmNWJjZmM4MWYwOTZjODg0YzBlYmRjZTNjNGViMjU1MmVmMmMyYjQzZWJhZTg4MzgyNzFhZTNkMjM4M2VjNTk0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhM2MzYTA3OTFlYjI0MTRlNTQ3YmQ1NGMxN2ExODVkYjQ5ZTY2ODFlYTkyM2IyMDk1YjEwNGJiZjZlNGEwNDkzIn0"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

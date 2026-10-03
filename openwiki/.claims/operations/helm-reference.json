@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:35ca8b1e96641775824b36d1e236c68b58d941951a90b74a9993258b7a01bcdd",
+  "claims": [
+    {
+      "id": "claim_bcddefaa242f420e93ebc72014f66168",
+      "statement": "The AgentTeams Helm chart (agentteams) is version 1.1.1 with appVersion 1.1.1, has a dependency on higress 2.2.1 from https://higress.io/helm-charts conditioned on gateway.higress.enabled, and includes keywords ai-agent, multi-agent, matrix, collaboration, llm.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/Chart.yaml",
+          "version": "repo-file-v1:sha256:9a7e5c4a486ba5e8ace70ead703bee5bd71a0a756d27508497d93aed4490125e"
+        }
+      ]
+    },
+    {
+      "id": "claim_b635b802c2bf4d7f94b869a4c24280fa",
+      "statement": "The chart includes five CRDs in crds/: humans.agentteams.io, managers.agentteams.io, projects.agentteams.io, teams.agentteams.io, and workers.agentteams.io, all at v1beta1 version under the agentteams.io group.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/crds/humans.agentteams.io.yaml",
+          "version": "repo-file-v1:sha256:853c89ec2508773f5f3dbf4f0fb6b5a9688e6e5724c1db4277f6ff15939c5bcd"
+        },
+        {
+          "resource": "repo://helm/agentteams/crds/managers.agentteams.io.yaml",
+          "version": "repo-file-v1:sha256:ab448686305ffc665eb2c2e57490cc2d29655605dc6fc7757c1e893c6fd354ec"
+        },
+        {
+          "resource": "repo://helm/agentteams/crds/projects.agentteams.io.yaml",
+          "version": "repo-file-v1:sha256:b809214c5791e8b5ecd0d9c7fc75c4aa166b9dc374a8f3e1737cc5a350fa5db8"
+        },
+        {
+          "resource": "repo://helm/agentteams/crds/teams.agentteams.io.yaml",
+          "version": "repo-file-v1:sha256:da61ebb7e38dc80ddbc3298c14fac4a7793986c77dbf98e9b4810da3e899d7c3"
+        },
+        {
+          "resource": "repo://helm/agentteams/crds/workers.agentteams.io.yaml",
+          "version": "repo-file-v1:sha256:7d1f84d663471f84bdf34dd021c2aa33779cd125bf740f7911f0055775706376"
+        }
+      ]
+    },
+    {
+      "id": "claim_55a6c0a53e8745709b15be1cdc7bfaed",
+      "statement": "The chart organizes templates into functional directories: controller (deployment, rbac, service, serviceaccount, servicemonitor, uninstall-hook), dashboard, element-web, gateway, matrix, preflight, secrets, and storage, with shared helpers in _helpers.tpl and _helpers.infra.tpl.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/templates/_helpers.infra.tpl",
+          "version": "repo-file-v1:sha256:efaf876a24cda22436cd3a633e745f565a39673f6393677e7cfa69e162c0ba2c"
+        },
+        {
+          "resource": "repo://helm/agentteams/templates/_helpers.tpl",
+          "version": "repo-file-v1:sha256:5928b944c32e6a8d8ffc87072069d3db1aaca8ba08622fc1ee025e0c9f0fecb8"
+        },
+        {
+          "resource": "repo://helm/agentteams/templates/controller/deployment.yaml",
+          "version": "repo-file-v1:sha256:456b60e77c0722f8f2ec2a9126c40fde50cfbf0aef3449c4b7b0c1288a87d445"
+        },
+        {
+          "resource": "repo://helm/agentteams/templates/controller/uninstall-hook.yaml",
+          "version": "repo-file-v1:sha256:9f2d2ab5b35763d27b2fb71e685a45737474386f985f5577adb09cff49919c2e"
+        }
+      ]
+    },
+    {
+      "id": "claim_c7510be6a9194868b45faa6c8a2c6e92",
+      "statement": "The credential provider sidecar (credentialProvider.*) issues scoped STS tokens to the controller for APIG/OSS SDK calls and to workers via POST /api/v1/credentials/sts, is required when gateway.provider=ai-gateway or storage.provider=oss, runs on port 17070, and is auto-forced to enabled when any cloud provider is selected.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/templates/controller/deployment.yaml",
+          "version": "repo-file-v1:sha256:456b60e77c0722f8f2ec2a9126c40fde50cfbf0aef3449c4b7b0c1288a87d445"
+        },
+        {
+          "resource": "repo://helm/agentteams/values.yaml#L169-L190",
+          "version": "repo-lines-v1:sha256:72bc22d5a911287089ede82d6bd3b43a8b612cc8b53d8f833a52d52cfca3a81f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3NGY5M2I2ODgwNDZjYWJhZTU0NzM1YWZmM2Q5OWU4NmVjYjZmMmJjNjQxMDE2YjFhNjQ1MzJkOTUyNjNiYWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0Y2Y4YzQ4ODQzMTVkZDFiNDcyMTRkNWRlOWEzNGU4YTBiMTEyZGI1Yzg4YmRlY2NkMjQ3YzNkY2QzMDczM2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1ODk3Nzc2MDU2ZmFjYzVmY2NmM2I5NGI1NmU2NTU2OTdkZDNiMDg5YTA3NDIyNDhlY2MyYjkxYjc0OTAwZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVhOTcxZjc4YzBiNDlkOTg5NzViOTZhMjVhNDg5NGUyMzgxNDAyYjg0Y2ZjNDkwYzJjZjUxNmIwMjI1OTkzYjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3cf488a790da46da9fa70088c8497a80",
+      "statement": "The preflight LLM check (preflight.llm.*) runs a Helm pre-install/pre-upgrade Job that validates LLM connectivity with configurable retries, timeouts, and strict mode that fails install/upgrade when the probe fails.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/templates/preflight/llm-job.yaml",
+          "version": "repo-file-v1:sha256:7bfafcac41389b2a6fa2749206223be36c6d1be73c2592aff60f3d67649ae66e"
+        },
+        {
+          "resource": "repo://helm/agentteams/values.yaml#L28-L36",
+          "version": "repo-lines-v1:sha256:32e0bbd3ef96693d851e90b13bf8aeffca232b46a217aeb8ae17c9581f5bbc89:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzdhNWIzODA4MzkxNDBkOTM5NGE2YzkwNWU4NzliNTk5ZjU1YzFmZWUzNjQwNDZlOTM5MzU1ZDAwYjQxOTY1OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjU2NTk2ZjhlNjI3ZDlkODBiMGExOWRhODhhN2JjNmQzZDZhNzU4NzQ5YWI1YWY4YmQxNWJkMTM5NDU4ZDliOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTBjMTVhZWJiYzZmMWQ4MDZlODljNWU5NTVlNDY0MWZmMWQxODlhNzVmOTE5ZTNkMzA4MzZjODQ2YmM4N2U2OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWRmMDA0ZTQ2YzUwNmM4NjEzMjdmMmY5ODExOWE0OTI3ZmY0MmI0OTdjMzNmYWU0NTU3MzRlNDYyZTU0MTk1ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ec75bc71977547d99fd68ecc218c6109",
+      "statement": "The uninstall hook (controller.uninstallHook.*) runs a pre-delete Job that deletes all Manager/Worker/Team/Human CRs while the controller is still alive, enabling finalizer logic to clean up Pods, Matrix users, and OSS data, with configurable timeout (300s), backoff limit (1), and active deadline (1500s).",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/templates/controller/uninstall-hook.yaml",
+          "version": "repo-file-v1:sha256:9f2d2ab5b35763d27b2fb71e685a45737474386f985f5577adb09cff49919c2e"
+        },
+        {
+          "resource": "repo://helm/agentteams/values.yaml#L229-L242",
+          "version": "repo-lines-v1:sha256:48e13e6581a402d0790f145ef426858e50da2898cd400cf37d6c02ac72cba202:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyZGFkN2ExZmE4M2E2MGUyMmRmNDQ0MDQyMGVhMGQ1OGZkODVmNDI2ODdmMzNkZmY3YzE1MzdmOWY1ZGQ5YmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0YmM3NjAyOWRlYmMwNzFkYmVlNDFmZWM4ZmI0YWQ5NTE0YTdiZjk4ODFiNWQ0Yjk4YmMzZTczM2M4MWUyNTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyZjlhOTZhYjQxODExYzVlMGZjMjZlNzk2OGU0YjcwMzA4ZWM3YjUxMjA1YmMxNDhjNDgzYjA5MWY1ODEwYjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE4MGQxOTY1MTkyNWYwMDhlNmRjMzA0YzcwZmVlZWI1M2ZjNWI5MDAxYzFmMTZmOTRkOTljNjViZGU1N2ZhNWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_53ff0cc90ebe4b61ad0c854719a07235",
+      "statement": "The worker.defaultImage section maps five runtimes (openclaw, copaw, hermes, openhuman, qwenpaw) to their container images, with worker.defaultRuntime defaulting to openclaw when Worker CR omits spec.runtime.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/templates/_helpers.tpl#L182-L207",
+          "version": "repo-lines-v1:sha256:b31087d863dd77100f26b8d46f8a8e93ac7c988e89ff1e9d1e8acafe37ae7fec:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0YTc1NTgxOTY2NTEwM2JjZmY2OTMzNTkxYmZiYTQ0ODBlYWJiZmI3YmQ1Zjc4YWRmNjgzMGE0ZDVmOGUyY2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjM2VkZjJlYzRlOGRiYWVjYTg5OTJmYmMwMWE3NzdiNmQ5NTFlMTYzZDEzMWU5NmRmMTUzY2NkNThkZmRiYTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhZWQzMzZhZTU1NjE1YjgxNGYzZDA0OGJmYzFlNWVhNjhiNzA3YmQzY2ZlNTJiMjUxNzJlZjdmY2E2M2I5M2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://helm/agentteams/values.yaml#L330-L355",
+          "version": "repo-lines-v1:sha256:3906c26449fa036af86b0215544de441b59de6dcc5f02ddc3059cdf25a0fcdd6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyYmJiNDc1Y2Y0MDRmNWY2NTI4NTA0MmNiNTgyNWEwYzA0YWMyNmI0NmRmNzZjZDE0NGY4ZDQzMGEzYmI4ZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhZDYyNjRjMjMxNzVkN2YwNzIwOTJkZGFlZmFjZmE1ODhkNTgwZDNiYWNlZDIxMTJmYmYwZTE3YTQ3NzYwY2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMDc2NjM4NmJkYTZkNjFjZjc4ZGFhYjQ4YWZlOTQ2ZDc2NjRlMzQyMDY5YTU3YWYxYTAyNjUzNzJmNTY3NTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1dc33fb8bec2490eb9c24a1f3d081dae",
+      "statement": "The _helpers.infra.tpl provides infrastructure abstraction for matrix, gateway, and storage URLs, supporting managed (tuwunel, higress, minio) and existing (external) deployment modes with auto-derivation of internal URLs for managed components.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/templates/_helpers.infra.tpl",
+          "version": "repo-file-v1:sha256:efaf876a24cda22436cd3a633e745f565a39673f6393677e7cfa69e162c0ba2c"
+        }
+      ]
+    },
+    {
+      "id": "claim_ed77c836aad24fc489791dbc0ed0da8b",
+      "statement": "The values.yaml uses a public API structure with matrix.*, gateway.*, storage.*, credentials.*, preflight.*, credentialProvider.*, controller.*, manager.*, elementWeb.*, dashboard.*, cms.*, worker.*, and higress.* sections, where higress.* is passed directly to the Higress subchart dependency.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/values.yaml",
+          "version": "repo-file-v1:sha256:f52d51dff4624be0a1762ff95f5c2e9d1370af4b4efaf5f23c8d21da60a55184"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

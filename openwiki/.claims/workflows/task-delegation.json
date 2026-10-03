@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:06edd6103b9629d4070af8b28a3e210a88b7c2a1a96b3fe51f4c1225f24786d1",
+  "claims": [
+    {
+      "id": "claim_1fff5dfe7fca48dc91fdc21dffb9dddb",
+      "statement": "AgentTeams supports two task types: finite tasks with clear end states and infinite tasks that repeat on cron schedules until cancelled.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/skills/task-management/SKILL.md#L19-L20",
+          "version": "repo-lines-v1:sha256:a9b6307aa3e4717fc0cb3866e56f894eda29c90a94c72b68bb8e2c1322398881:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmZjNzg2ZDJlMjg1MWQwNTg1NjU3YjEzYmQyMDQ1ZWU3ZGQ5MTZiYjk1NDk3ODY2MmMxYzM2MjZiZGVkM2Y0NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjFkY2U1NTZjZmUxNThlY2Q2NmNmNjkxOTRlZmQ3NmMxNThlYmFkNDNiMjY0OThlZjJmNjc3YzEwN2ExMTMwZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjVjNWM4OGI4YzdiOGUwYTFhMTBhMmZmNGU5MDc2OTJkZDI4ZjZhZDcyNjVkOGRlZmRlNzBkZjI2MTJjZWFkOSJ9"
+        },
+        {
+          "resource": "repo://manager/agent/skills/task-management/references/finite-tasks.md#L5-L8",
+          "version": "repo-lines-v1:sha256:f47ca74cbe5193e6a7419f1149eeb68f56892faa22d7b09caed13426970e2cf6:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTgyNmNhZTVjZTI3NGUzYjdhOWZlMDA4MDRiODgwYzAxZGQxODQ0ZmIxYzRmYTRmMTJiNTE1OTZlOTNhODNhYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTUxZGFkZTZmMjZhN2VmMThiM2U3ZmE5YmEwYTQ0ZTU0MTE4M2I5NmZkMTExOTdkYzQ0MmQwMjE0YTY2NDU2ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODFkNmY2MWRkYmY0MzA1MjgwYjQwYmE2NTlkMWI3MzBlMjQzZGU3ZmExMjFlNTI1ZTViZDg2MmU0M2Y2OTQyZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2EwNmIxN2Q4MWE2OGM5YjVjZWU5YzNjOGNiYjA1NjUxN2IyZDRlY2E2ZGIwZTg1ZmQyNzhkZGY4NWQ2NDM4NCJ9"
+        },
+        {
+          "resource": "repo://manager/agent/skills/task-management/references/infinite-tasks.md#L1-L23",
+          "version": "repo-lines-v1:sha256:2f57eb96daea0ff76e261dfad6a92fe641483e719f7b5c28904a69630a5ea369:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczYTVjOTE3ODViMGE2NWNhNzdlYTdlNDI5NDMwZGU2MmM2MzZmN2I3ZDJhYjA5OTJhODBjOGRhMTFmYmU3OTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwMTliOTI5M2EzYTU1NmY4MDVhOWY1YzVhZGZkNGQ4N2ZmYmNmYTkzYzliODBjOGVmNjkzZmM4ODkwY2M0OWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwZjIzOTRiMjE4YTExOGM3MWI4Mjc1YTZmMzY1ZjkxNzk3MDNmMjBmMjIxZmFmMjE1Nzg5ODY0NzQyNDZmOWIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

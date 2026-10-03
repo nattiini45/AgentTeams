@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:6e5153694c0e25ed533c2e9c070cede961e30326a1047da697a0a5527b6c675a",
+  "claims": [
+    {
+      "id": "claim_a10f92ab50734ee5b48af9a4248ce2b0",
+      "statement": "Local Docker/Podman installation uses an embedded controller container that bundles Higress (AI gateway), Tuwunel (Matrix homeserver), MinIO (object storage), Element Web (browser client), and the Go operator, with separate manager and worker containers.",
+      "evidence": [
+        {
+          "resource": "repo://install/agentteams-install.sh#L1042-L1049",
+          "version": "repo-lines-v1:sha256:48328d7a4907ab784ea664a995dbfeb4ffe4dd8218fc12971387970adf793b5c:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWMwODQxYmMyYWZkNmM4MzU4Njg5YWU3Mzk0YjM5NGZkY2QxMzUzZjY1MTE4ODRhMjkzMzdiZmQxZmQ1ZTQ3OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg5YzA2NDljMjJiM2QyODQ5MDA0MTIzN2IyZGU2N2Y5MDNhYmVlM2ZhMzJjMDQxYmY4ZDA3OGE3NTIwZDMwNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzI0NTA3OGFhZTc4Njc3NmUwMjRlY2YzNmZlMWFhZDlmNmFmMzc1OTBlZWYxYzcxYTE1YWY3YWU0NDIxYTk2ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDhkNzIyODYzZGNhMjlhMzUwNGU2NjE3MTdkMWJhNDFjNmY4ZjY2M2I3OGEyY2Y4MjUxYjU3NDQwNGY2MmFlZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1496306ac5b647a592ad36ad82d4eb49",
+      "statement": "The AgentTeams Helm chart depends on Higress 2.2.1 from higress.io/helm-charts, controlled by the gateway.higress.enabled condition.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/Chart.yaml#L23-L27",
+          "version": "repo-lines-v1:sha256:9f2385a4b8c605723bcd5c35f9e5bd0453914c9e1ac22079b95446a2b79cec29:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODY2ZTdhMjkyYTg3MGFkMzQyYjYxNWE1NWM5YjMyMmZjYjZlYWQyZTA5NzU4YTVmZmE5NTQ0N2RiODQyMTZkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGUxNGQ4ZGU2MmZiYTM2YWI3Yjg0NDcwNjY2N2ZmZjYzZjU4ZmEyMjYyZTY4NmQ2NzE0YTU0NTdiMmNiYzdmOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTIwNGZmN2RkYzU1M2QxZjAzZTBmZWU0NjkwODc2YmMwNzk5ZjYzYjFiZjdiZWY3MDc0N2M5M2NlZDU4M2NiZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a3dd4bc9f2b14ac1899c0efb439e056f",
+      "statement": "The image dependency chain shows openclaw-base provides the foundation for manager and worker images, with controller built separately and used by the embedded image, while standalone runtime images (copaw, hermes, openhuman, qwenpaw) are independent.",
+      "evidence": [
+        {
+          "resource": "repo://Makefile#L131-L132",
+          "version": "repo-lines-v1:sha256:ffc3e17b88e6297567f3cfe7772cfd2c3e11b1ea7e7dc8e74580d33da354b2b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ3YTBlMjVkNjYyYjNjNWFmMjY0ZWFkNmM3MGYwOGIwOTU1MDk3ZDQzZDAxMmFkMzIwZDFlNDYzMTIyZWE3MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjZjMzE2ZGU0ZjRlZGM4YTViNTRhY2M1ODZkMTgyMTc5ODI2ODgxMzA4ZGIxZWMzYTYzOWFkNzA4MjhhN2QxNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2EzYmExNmYxNjg1M2Y5MDcxNmI4ZWIzNGFiNDAzY2Y3NmM4NGJlMzNjN2U5NWM3ZGFhMDA3NjRjODlkZmM2MyJ9"
+        },
+        {
+          "resource": "repo://Makefile#L154-L156",
+          "version": "repo-lines-v1:sha256:9cc4b85014b4165749ce12387698ebf3e62bf513df8eed3cf1b7d92c72457549:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRiNGZjM2FmZWNmNjVlOGU0OGY4N2JiYzE3YjM1Y2YzZTM1YjBhNTQ1ZDE3YjFlYmNiMzFlM2NlZjY4ZjkwZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmVkZTg4YjZiZDE1OGM4ZWFkYmNjYmNiNWVhNWY1YTAxODViNzI4NDBmZDNkOWJkMDc2MjU2MjI3Zjk0NTI3NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODhlOGM0OWVjMjg5OTQ1NDZhYjE1ZDAzZDg2OTg1Yzg1ZDFkOGYwNjFlYjYwYzM4MjlkY2FkMzZlMjQwNGFhNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDUxZDdjMmM0MWE4OGUyNWE5MDdmZDk2ZDBjMjQ2ZDI4MWQxMzAxOWMyZjk4YjY0YTY3YzJmYTEwM2IxMjRmNCJ9"
+        },
+        {
+          "resource": "repo://Makefile#L178-L183",
+          "version": "repo-lines-v1:sha256:0afee72ea21097784a9f207756ceb04f773394287fef1093f175a0c29e98b42d:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTdlOGU3NDcwNzgyOTkyZTZlZGFlMTE1NDhjN2ZhOWI2MDg1ODNjMjViMDMwNWI5N2E3NmNhM2FkYWRjODlmNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmNTkzOTI3YTIxMGMwZjk1NGEyOTk3NTdmZjU2ZDY2MWNiNWIwMDI5YzA3NGZjNmE5ZDU5YjI4NWMyYjc4NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTdkNGJiZGNkYzcyNjMxNmQxYzc0OTBjOTE2NTJjMTM5ODNmZDUyMWQ2NWI3NjJkMTVkYmFkNTI4ZDRlZjA0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWEzZGI4NjBiZDY0MDI0Zjk5MzRhZTlkNTc4NmRjNDQ1MzAxZWY4NDNkNjE5ZWE0NGRlYzg4ZTM5MmJiNGU5MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b57b2a9a117e4cad8672330e53408fae",
+      "statement": "Building manager or worker images without setting OPENCLAW_BASE_IMAGE=agt/openclaw-base will pull the remote registry's image instead of using a locally-built base.",
+      "evidence": [
+        {
+          "resource": "repo://Makefile#L142-L142",
+          "version": "repo-lines-v1:sha256:b4cf1f419e98f1d0a1deb7af1582bb5b893eb4ccae028d529ccd3e840c48a12c:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRjZjFmNDE5ZTk4ZjFkMGExZGViN2FmMTU4MmJiNWI4OTNlYjRjY2FlMDI4ZDUyOWNjZDNlODQwYzQ4YTEyYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRjZjFmNDE5ZTk4ZjFkMGExZGViN2FmMTU4MmJiNWI4OTNlYjRjY2FlMDI4ZDUyOWNjZDNlODQwYzQ4YTEyYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTNhZWI2NWY1MjYzYzYwMDQ0ZWQ1YTlhMDE4ZDY4MzRhMGEzNTYwZmY0NTRkMTg4YTNiNTY0MTllMjQ2NzVhYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjI0MGI3MjVjZTdmZGU4MzNkZDRjYWVhNTRiZmUyNGM2ODM4NDU0NmFkMGYyYjIwYzU3MWFmY2UzNTJlOGZkNCJ9"
+        },
+        {
+          "resource": "repo://Makefile#L156-L156",
+          "version": "repo-lines-v1:sha256:fede88b6bd158c8eadbccbcb5ea5f5a0185b72840fd3d9bd076256227f945275:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmVkZTg4YjZiZDE1OGM4ZWFkYmNjYmNiNWVhNWY1YTAxODViNzI4NDBmZDNkOWJkMDc2MjU2MjI3Zjk0NTI3NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmVkZTg4YjZiZDE1OGM4ZWFkYmNjYmNiNWVhNWY1YTAxODViNzI4NDBmZDNkOWJkMDc2MjU2MjI3Zjk0NTI3NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmRjMjY3ZjVkOWI5MGIyNzNlODg4NmRiMjlmM2Q0M2NjYWNjOTdmMjY1NWQ2MGVhM2U5ZGMzZDRiZWQ1NjhlOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDUxZDdjMmM0MWE4OGUyNWE5MDdmZDk2ZDBjMjQ2ZDI4MWQxMzAxOWMyZjk4YjY0YTY3YzJmYTEwM2IxMjRmNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6b44d6c6e5094ee89b93923cbb11a713",
+      "statement": "Default registry is higress-registry.cn-hangzhou.cr.aliyuncs.com/higress/ with regional mirrors for China (cn-hangzhou), North America (us-west-1), and Southeast Asia (ap-southeast-7).",
+      "evidence": [
+        {
+          "resource": "repo://Makefile#L24-L24",
+          "version": "repo-lines-v1:sha256:1b7b71dfa53d9af169d4ec06572507c10959e653bac6cb8a41110febe45e82fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWI3YjcxZGZhNTNkOWFmMTY5ZDRlYzA2NTcyNTA3YzEwOTU5ZTY1M2JhYzZjYjhhNDExMTBmZWJlNDVlODJmYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWI3YjcxZGZhNTNkOWFmMTY5ZDRlYzA2NTcyNTA3YzEwOTU5ZTY1M2JhYzZjYjhhNDExMTBmZWJlNDVlODJmYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmE5ZmEwMmMzMTE2NmRiOWI3N2EyZTFlNWQ3NmI0ZjAzYjEyZTUwOWUwOWFhMGZmNjQ4NmQ1ZDkwMTI1ZWRkYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTJiM2YwMmNiZjIxNGU0ODljMDhhMTA2ZjkxZWU5NDc4Yjk3NTIxYjlhMWJlNWVmOGNmNmM0OGEyNjdiOTE5NyJ9"
+        },
+        {
+          "resource": "repo://Makefile#L63-L66",
+          "version": "repo-lines-v1:sha256:e5c8ca6cfa71734f8ca5e2c3db60f34ac3e747592c997daaf001e8100322615c:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ZmMzY5ZjNjNmMzNjk0ZmU4YjdkOTcxNjYwNmU2OTNjMWYwODRiNzM3ZGEyMTZkMGE3NzhiMDllYjUwODE4OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjRmNmJkYmQ0OTA5MTIyN2VkMDdlYzIwMTdhMGQ1NzRiYTAzZWRmMzVhNWE1Y2YwMmM4ZWRkNmU3MzdlMzY1YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmViMjY2NjJlZGIwNDE0Y2YxZDNlNTY0MTU5MzI0OTEyZjE4ODY1MTg3ODYxNTZjM2E2MzY1NmQ1NzRlYWJlMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDExYzA1OTIyMTc5NTY3ZjNlZDBhYTljZWFmYjczOTJmNGE4ZmY4ZTJlYWViZGZmYjU3OWZhOWY1MWMzMzNhNyJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

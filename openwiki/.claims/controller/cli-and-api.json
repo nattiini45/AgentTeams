@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:03809434567b78ea65f2527086e2c763ad69b4429e146038274f899d1a829e56",
+  "claims": [
+    {
+      "id": "claim_44c7c8d22e654d7f81f02858c329c663",
+      "statement": "The `agt` CLI and REST API are the primary interfaces for managing AgentTeams resources; the CLI is baked into Manager and Worker images and the REST API runs on the controller at port 8090.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/main.go#L10-L15",
+          "version": "repo-lines-v1:sha256:fd4bb7417fcb8a125b1766996051e8d4c7d5b6a199f3f8156055ff49894f95c3:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzE1ZDY0Zjk3MWIyNGY3MDFkMzRjNzdmMTI1YWQ5M2Q3MGI3YjQwYTAyYzAyMzZiMDQ1MzkzZTI0YmY2YjVmZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTQ0ODRkYjA3MTY5Nzg4Y2UzZTA3NWMwZWE4YzlkNWYwMjQ5N2UzNDE3ZjQ5YWYxYjQ2ZTUyM2RhYTczMDUwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzAyYTlmNjgwNjA0MTgxZGRkY2MzNmU0MWM2MmNmMzYwZDE0YjljYzNmNjFkMWRhZGE0MDgxN2M1ZWMxM2UyZiJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/server/http.go#L47-L56",
+          "version": "repo-lines-v1:sha256:3f527f415889199d4936655aef6cc2e86fc11f2f554194f0e5592699d0f5c144:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmMDI0NzkyZDA4MjMzMTBkNThhODM0YmY1Y2ZkMGFhMmFkMjJhODM0YjI2NzE3NDgzMTA1NjQxMmE3MDlhY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1MzBkMmVlMjBjNDkyOTQ1M2FkZGU0NjI5YjNlZjI5ODZjYTg1ZmIwOGY5OTgzMzcwMWE0N2ZhZDRhZjlmMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0NTY1NDQ4YWQxMDM1ZjZmZDdjMmUzNzFmOGRhZmNlZGVlYjg4MGNkMmIyYTkzYmM0MTE2Y2U0YTQxMGFjODcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f557d72ddb584b28ae056cb93f257be8",
+      "statement": "The CLI authenticates with the controller REST API using environment variables: AGENTTEAMS_CONTROLLER_URL (default http://localhost:8090), AGENTTEAMS_AUTH_TOKEN, and AGENTTEAMS_AUTH_TOKEN_FILE.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/main.go#L24-L30",
+          "version": "repo-lines-v1:sha256:3c3b92317df013e9ce966a0b3bc73ab8c2f0c2a0e5b8d32a895572a3c12a3ae3:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzMyZTY1Y2EwMzZjNjQyZmFlMWE0MjQyNDk5NjRjMTI3ZDMwOTkyYWQwMTI4ZDI4OWI2YTdjOGRhOWYyMjViNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTFkYWIzNGVmZTk3ODYxOWE4OWI5NWNmOGRlMzk2NzU4ODA0MGNjZmYxZTEyNmM3MThmN2ZhM2FkMDRkMzI1NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWM0NTIwZDg5MDliNjFlYmNiYTQzMDY4MmJmMTY4MTRlYjQ4YWNkYTlkYmEyYTRlNzc5YzRhOTgyZTI2ODFiYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmVmZTYxMjFlNmU1MGIwYjM5ODI0ZDI1YmU3YTE2ODI4N2UxZWE2MzJiZDEyMTAyN2M2YWRmOTdmMzE2NDgzYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1c2dabc8618144e783784c5d1e05b9a6",
+      "statement": "The CLI provides resource CRUD commands (create, get, update, delete) for Workers, Teams, Humans, and Managers, with support for JSON output and team filtering.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/create.go#L14-L24",
+          "version": "repo-lines-v1:sha256:5bad45a6571bdbad32e0687fd51084c0efadec4c9531862702bf23ad1f72bc94:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0NDgxYjE3Y2JhMDljYzE3ZTVmOGZhYTAwOWM3OGU2NjViYjI4NDQ1YzExZWVmMjRmZTQ0MzkxZGI5MjU1YzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0NDg0ZGIwNzE2OTc4OGNlM2UwNzVjMGVhOGM5ZDVmMDI0OTdlMzQxN2Y0OWFmMWI0NmU1MjNkYWE3MzA1MDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkNWM5ZTEwZDM5YjA2ODM2ZWQ5ZDViNmZiOGQ1NDRiY2ViZDFhMzBkYzY3YzliMTVkNjRlMzk0M2IxNWQ0OGUifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/delete.go#L9-L19",
+          "version": "repo-lines-v1:sha256:8662a699a889a4c6bd06d1bd95c0a8307bedf5538293c95c11fa04873364252e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyOWEyZTk3ODZiNTExNzYyMWM5YmZmOTE5MDk1YzMwOWQxZTIxYTIyYzM5MDk3NDlmYzAxYmYzYjFmZWQ5NmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0NDg0ZGIwNzE2OTc4OGNlM2UwNzVjMGVhOGM5ZDVmMDI0OTdlMzQxN2Y0OWFmMWI0NmU1MjNkYWE3MzA1MDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkODkwNWJiYjM5NDAxNmIyYTk1YTQ2OGVlMDU0ZWJhZjVmNjMyZjk5ZGM3MGJlNjFkMTA0ZTZlMTI5YjhjYjgifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/get.go#L11-L21",
+          "version": "repo-lines-v1:sha256:41971f4d186b53f47ca8eb2a6dbf8b92d356b0d3a02cdd1e4907192f4e21943d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjNmE5Y2RmODVkYWYyZWMyNDBmYmU1MzRlZDQ2NzBkOGI0MjYxYWM2OThjZDljY2ZiMGI3MmQxMjU4NzJlNTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0NDg0ZGIwNzE2OTc4OGNlM2UwNzVjMGVhOGM5ZDVmMDI0OTdlMzQxN2Y0OWFmMWI0NmU1MjNkYWE3MzA1MDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4MTIyNjg3ZWM1MmUzODNjMTRjNmRiN2JlN2RmMzA5NjY3ZWU0Yjg3ZTJhM2U5NmRhOTJmNmM4ZGJiZjA5ZDEifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/update.go#L9-L18",
+          "version": "repo-lines-v1:sha256:d92dfacd2720dd6b2278d597f60b54740d7736eb4ee2bb1c0c5352824b64d857:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTE1MWRiY2M3YmVkN2Y5YWIzMGM3ZGQxODUzNjRlOGZkNGU5Y2JmMjIxNjNhMzFiMzJkY2RlYTVhOTQ4MzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0NDg0ZGIwNzE2OTc4OGNlM2UwNzVjMGVhOGM5ZDVmMDI0OTdlMzQxN2Y0OWFmMWI0NmU1MjNkYWE3MzA1MDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMGE2ZmM0ZTNhNmEzY2ZiZTY4YjMzNTIzZjMxODY1Mjg0ZTY0YTUzZjFhODQ4MzhhNDE3NjNkODliMzU0NjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_538f8a51a5544b458d36678b459fdcb7",
+      "statement": "The CLI provides worker lifecycle commands (wake, sleep, ensure-ready, report-ready, status) with support for team context filtering and periodic heartbeat reporting.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/worker_cmd.go#L11-L22",
+          "version": "repo-lines-v1:sha256:85366c90628733ab432a69b1fe511795c5d33959878a2e908dc253e467cc97a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4Njk0ZDI5ZjExNWI4YTY5NTNiZGJiOTVhNmNiYmI5NmFjYTBiZTlkZWY5ZTcyN2ZlYzgyMGRjNWY5ZGE0OTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0NDg0ZGIwNzE2OTc4OGNlM2UwNzVjMGVhOGM5ZDVmMDI0OTdlMzQxN2Y0OWFmMWI0NmU1MjNkYWE3MzA1MDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgxZWZhYWZhNjFjMDhkNDExYTIxZTliZTU0Njk3OTc3NWNhNmRlMDlmMTMyNWIxMzJlOWFmMDZiMzllNWUyYWIifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/worker_cmd.go#L216-L292",
+          "version": "repo-lines-v1:sha256:146cc6ea405842bb39381e87bdea76cffb35a2a5c5ee39dc9a5b42a20d1359a7:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NDA3YWQ5ODNjNDBkYWFkMWQ3OTcyNTExMjUxOGVmMDY4YjE0YTA3ZWE5OGQ5YTQ2NzJlNzVhZThjN2RmZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzMWJmNGEzZjE0OGQ3ZDAxY2I0YzVlYjlkMmJjYTNjODA4NDk4NGI5ZDkwN2QyNjViNTVmZjMyMDJlYmE0YzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxZTcyYTYwZTcyZTgyOTIxMzEzMGU2ODQxMGZmNjljMmIxMzY2NzY1NmUyYjFhZTI0YzY3N2YzYmUzNjI4ODEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_03698fb9a7f044728542f1cce6f20762",
+      "statement": "The `agt status` command displays a one-screen cluster overview with phase breakdowns per resource type (Workers, Teams, Managers, Humans), sorted with non-Ready rows first, and supports watch mode (--watch) and JSON output (--output json).",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/status_cmd.go#L20-L48",
+          "version": "repo-lines-v1:sha256:02a0a0bc5d1e41c9ff7411c1a0f89dd8e307ee8014b58c18846005996d33dc87:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjODI1ZWQ4YzkwMzkyZmRhNjFkY2FjZmM4NzY2OWE0MTMyN2YzMzE0MzFlZWVmOWJjOTIzNTkzYzFjNDQyYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4ZTAxNzg1ZWJmYWM3NzAzYjQzZWJjZGNjYTY2NDE4ZTYwMzU5YzkxOWUwYTc0YTc0M2U1N2EzYzI4OGI2NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkMjY4YWRkN2YyYzc4ODU5YzUzYTdiNDU0NzFiNzEwN2RjMmY0MDRkZDZmYzZmNWI4ODVkOTE3MTA0NGQ4ZmEifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/status_cmd.go#L238-L316",
+          "version": "repo-lines-v1:sha256:cb623ac5feafd963b2ce9754fbd901c07e4cee44783d7d4048bae63b8f77a46e:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlNjlhMjJkNWZkOTc1ZmM2NDk1ZWM3MWJhZWVjYmZmZGE3MDI0NzQxNmNjMDZlNmZiYWRhNjNkOTg0YzA4YmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxNjE5NjhkMGMzYWE3MjgxNzA3NDYxZTNkZjMzN2I4ZTBlZWI3NzliZWI2ZTAzMmZhZDI4ZTljM2ViNzJkMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0ZTJiYzA2MmY1Y2QwYjhmNjZmNjI0MzI0ZWIxZDMxYWE0MzlkNDNkMGFlZWU5ODQ3YmU2MmVhNDA2NzYxYjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e9e8ead63fd441c0814ea5932504847e",
+      "statement": "The REST API endpoints are organized into categories: resource CRUD (workers, teams, humans, managers, projects), lifecycle (wake/sleep/ensure-ready/ready/status), message injection, gateway management (consumers and providers), credentials (STS and Matrix token), appservice management, manager tasks, packages, and status/health.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/http.go#L60-L167",
+          "version": "repo-lines-v1:sha256:2267e729184fce543af611e7e6e6714594157ce842a3587c295f23ca073a104f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2M2NiMzc1MDVmNmNlN2JlYzk3NWY0NWMwYmI3YjU4ZGNmNzRjMzQ4ZjE4ZWY4NmU5OGRlNjRhMjFlNDc0MDI3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI1NDU2NTQ0OGFkMTAzNWY2ZmQ3YzJlMzcxZjhkYWZjZWRlZWI4ODBjZDJiMmE5M2JjNDExNmNlNGE0MTBhYzg3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxOGRlNWI3NTY5NTgyM2MwNjc0OWYxMGNmM2U3OTA0ZmE0OTVmNzI0N2JmM2QxNWE1NDkxZjJlMjAwMDQ0Y2Q4In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_33fb6e8d532b426a910518641ba4cb17",
+      "statement": "Message injection endpoints (POST /api/v1/managers/{name}/message and POST /api/v1/teams/{name}/message) post system-level messages directly into a Manager's Admin DM room or a Team's leader channel, bypassing the normal agent chat loop. For team messages, the endpoint prefers the leader↔admin DM room (Status.LeaderDMRoomID) and falls back to the shared team room (Status.TeamRoomID) when the DM hasn't been provisioned yet.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/message_handler.go#L53-L93",
+          "version": "repo-lines-v1:sha256:e68119f5d161a552c6ec4ee7857da2dbcca2669b731b7658b5556a84d9532682:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjYTBlYTkzMmY5ZGM0YmRiYTliYTlmNDM2MmM0MDA0YTQ2NGRkZDA3YWIwYmQ2NTJiMDE0NWYzODQ1ZDI0YzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyNTY2ZjYzYmE3ZWIwMzc2MDlkZGUzMWZkNDk2ZWFiZjgxNTJjNzE1MmJlOTM0MWE5ZTQ0ZjQ1N2M0MTZhNTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2NjRkNzkzZWI5MGQxZmU3MGQ2OGE4NzgxNjE5MWQyOTcwZjYxOTYyOWM3Mzg2ODRmNGYyYzUzZjZiM2U4MDYifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/server/message_handler.go#L95-L141",
+          "version": "repo-lines-v1:sha256:92096094c4ac3679e0b0c726364119f45b6273b075e785330e4500a089b80937:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxMGJlYzE5NjE5MzRjNmRmMjcyNzg1ODBjYTE0ZmRkODI2MzA0N2IxYjI3MzYwYTYzMmY1NTVkNWI2NTNjN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0NTI4MGQ0NzZjMTk1NWU2Y2UwZmYyODBkZDU4ZDUzOGYyNDY0NTYyZDkwNWY1MDZhODFjMzI0NmQwMzA1YTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c3c5ef4970ed4d379fcb40606ade4508",
+      "statement": "The `agt apply -f` command supports declarative resource management with multi-document YAML files (separated by ---), performing create-or-update semantics by checking resource existence before issuing POST or PUT requests.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/apply.go#L16-L86",
+          "version": "repo-lines-v1:sha256:607b70ac0664ad6f1aa365602fbf8794b2a96c3ea8b123f76c0fb571c584d89b:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2MDE1ZDZmZjhjOWQxMGMxYzdmYTFiMGQwZGFjZDMxOWFmM2I4NzdmZjQwZTk2NzgxOTIwZmZmMjBjM2EyN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2ZTRjNDRmODgwMmUzMzNlNDAyMmUwYzliMDRiZWZkZjQxNjliM2YwMThjZjc4MmI1NzY2OTMxMWIwNDJkNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIyZmFlMjA1ZjVhNTRlNjRlM2ZjMzc5NGQ1YmJlMTA4OTkzZDA1ZTEwOTBkYzE3MTQwYzU5YWRhZGUzNjkyYWQifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/apply.go#L88-L117",
+          "version": "repo-lines-v1:sha256:ac6a8667241bfadfc77676c0506f7ccdc614e1b1aa5815f3f9ce285fc469e5c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmZDZmZTYzOGFlMDc2N2MzN2RkYWU5OTE0Mjk5NGVhZTcwOGM5OTM1OWU3Nzc2MzQzYWY5ZDY0ZTk1Y2NlOWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2MzFiNmUyY2EwN2Q4YmFmMGViNDRlNzQ5ZGJmNDkwYjM5MmUzYTUzNGVmNjEwMjI3NzExNDZjZGY5YWYxYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkNDBmMjBjOWM2MTAxZmRkZGFmYjdhZTdmMTU1MWVmMWY1NzQwM2M1MmY3MjI0NjEyMGVkZDAxYzhhMzA2ZGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1a68ab1710d944018bc98d6a415cf501",
+      "statement": "The controller acts as a Matrix AppService for event push when AppServiceEnabled is true, exposing transaction push (PUT /_matrix/app/v1/transactions/{txnId}), user query (GET /_matrix/app/v1/users/{userId}), and room query (GET /_matrix/app/v1/rooms/{roomAlias}) endpoints.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/http.go#L152-L157",
+          "version": "repo-lines-v1:sha256:7ac65e21993d95e5ca6b39827f1a84163749724e0145ce5b95428aa61d581231:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDI4OWYxNTQwZTJkMGJkMjA4ZjgxMmE3MDRmMDg3NTcwMTI0MmEwODVjNWE4YmY3MDQyNGRiZTE2YThkNGJhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTg2MTU2N2M5YzllOThhNmIyZGY2YWQ2MDFiYzNjMDMzZGNkZDRlMWY5NTJjOGFiYTBjMWM3MjdhNjYyNTI5NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjk1M2I2NTZmNDY3MmIyYWFjNWVhNTM1MTkxOGQ1ZWYyZmJhZTRkNmVjMDgxZDUzN2NhMWI3ZDM2MjdjMzI3OCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_321503e4f0c9496d94329ac8eaab9afd",
+      "statement": "The HTTP server uses authentication and authorization middleware with different action types (ActionCreate, ActionGet, ActionList, ActionUpdate, ActionDelete, ActionWake, ActionSleep, ActionEnsureReady, ActionReady, ActionStatus, ActionSTS, ActionRefreshMatrixToken) for different endpoints.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/http.go#L58-L164",
+          "version": "repo-lines-v1:sha256:3b40fc819f356c88c7642e3616ba3a6802facc620469199fae054a2d39dba13e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwYWJkZGY0NjhlOWIxNzYyNzFkMzY3MWIxOTI4MTJmMDk0ZTYxMzIxYjc1Nzg0ZGRhYTQwNzI2NjlkNmFkZTlhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhYTNlMTBiNmQ1MTc0YTEwNTMwYTQyNzk5NWFjODdiNWZkMmIwYjFiOGNmYjIwNDg1MGU3YjI2NzRjOTUyYzIyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwZjliNjM5ODFhNDkzMTllZGJiNGJjOTg3NmNjYTRlYWY4MWQyMmY3MjM2ZjAyZDU3ZGEyMGQwZWY1YTUzN2I2In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_690d6ce9e659412cb4cad2fc30ecf15a",
+      "statement": "The package upload endpoint (POST /api/v1/packages) accepts multipart/form-data with a 64 MB maximum upload size and stores packages in OSS with SHA256-based keys.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/package_handler.go#L28-L70",
+          "version": "repo-lines-v1:sha256:a04b8b301459ac8c7cbd6379a67ccf042ab4950dd8e4f66018d1a029f5b0abec:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkNTEyYTI0NmZjY2EzMjY4NjI0OTU3MjkxOTliYmFiYjFkMjU5ODEzYjRjZGMzOTU1ZmMwMWY1OGNiZWNjMGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmMjBlN2E3OTg3Y2QwNzVkOGM4ZjgxZWZhNTBhMzNhNjYyMzJmNjIwYjU2MGQ1ZjJjN2NiMDAyZGIwNDI5MTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_736a84b403174cee8a9bc7373fc34ffb",
+      "statement": "The manager tasks endpoint (GET /api/v1/manager-tasks) serves the Manager's state.json from disk and is only available in embedded mode; in incluster (k8s) mode the file will not be found and the endpoint returns 404 by design.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/managertasks_handler.go#L42-L68",
+          "version": "repo-lines-v1:sha256:b6982f98d430a383ff50d68bff625c555826321043fec3b9a535b82a15ed427c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0ZTdlNTFhNWM0M2RmYWZmMTA0OWMwZWEwYTE0OTgxNTBmMGZmZDZhYjcyODlhYjk4MzljNmMxMzQxMTZiYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3MDAzODIwY2VkOTdjZmM3MmYwZDY3NjNmYTExNDA3N2MzMmU1ZGNlMTkzZDVjNzU1Nzg5MDcxMDFlZTc4YjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUyZWNlNzFjZTY0MjI3NzY0MDk3N2Y1MzM0N2I3NzdlZTYzZGEyYjA2YjlkNjk5ZWU5MDcwODQ1MmY3NDc1NDEifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/server/managertasks_handler.go#L9-L24",
+          "version": "repo-lines-v1:sha256:e65e7e230bf6b6c04bc2783256d6eb278ba93eb445818c41c25a1a6741d147e0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1N2FkOWRmMjgzYjU3YTBiMjI3MWVmNjdkMzlhNWM4NjdhZGI2ZWIzODM1MGQxZThmZDZjNzM2OWZiZjI5MmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5ZjVjZmUwODA3MTgyYjBhNzdjYzRjZWFmZWJjZTRlYTk2ZTNhZWZlZGQ2NWMyOWI5YTFmOWRmMzYwM2U3MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwMDE4NTljMzhmZjJjNzM2MWJmM2JiNDg4NDNiMzhjZjRmMjBiN2UyMjY4YzA1YThjMDEyYWM2NmRjYTc0MDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlMDk3MjliNjE4OTAyNDA4MmY1NzJkYmJmM2I5MzNhOTYzZDAzOWUxMzk1NTgzZjFmZTZjNTlkM2U1YTA5M2MifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

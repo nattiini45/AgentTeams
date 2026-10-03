@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4c90fc3a06a8b33fac9cb26eec2dc60c2edeb56a7db0774892ea4940d198e713",
+  "claims": [
+    {
+      "id": "claim_f9483c6158e541238283ba187a70d1b0",
+      "statement": "AgentTeams is an open-source collaborative multi-agent runtime platform where a Manager agent coordinates multiple Worker agents in Matrix IM rooms with full human visibility and intervention, orchestrating agent containers across multiple runtimes without implementing agent logic itself.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L6-L8",
+          "version": "repo-lines-v1:sha256:a985d5b104f6696c84727df21b5586a7d5666fc17e910ba3e9fa7148e685a1da:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDE0YjI0ZWJiM2E0NTc4M2M3NjY5NjdiYmQyOWM0NWFjYWMyZjI3MzljZTM1MGIwN2VhNzU3NjBhOGVlMTNjZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWQ2ODdkMzkwNTU4NmM1NGRkZDg2ZjM4YWQzMDU2OTUwZTI2YWQ2MzE1NDkyOTc1YmEwZDM0MWQ5MTRmMGE4MiJ9"
+        },
+        {
+          "resource": "repo://README.md#L13-L17",
+          "version": "repo-lines-v1:sha256:2a0e0fb0859b63d601018e25aec6b921ce310789e8e99e43e0f4a0025bcadbd2:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWMxZWQ1YWU0M2M5MjE5YThiMjc1MGU4ZGUwNTBkZGMxOTFkNGY4YTYxNzEwMDY2MWE2ZDYyZDkwYWVmY2QwYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTUzZGE0ZTU5NzFkZWQxNTdlZjAzYjkwNDA2MjNhNzVlMTg2MzkzYzM3MzdmYzMwMDA3MGE4YjJiMGMxMmFjMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDI3OGM0Y2VkYjE1NjU3MjRmODYwZWIxOTVkZDUzNzllM2M1N2RmOTk0YTlhZGJkNmVhNmI2YzBhZjhkMTYyOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWRjOTE2N2QyMzRiNGEzYzdhMjQ1MDNjZWEyM2Q3M2E2MzZlYzRjNmE2NjI2Y2E3ZWIzNTNiNmJlYWZhYzkwMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_96e4c7c852aa4565bb4a5a1a86cc2c87",
+      "statement": "AgentTeams supports two deployment modes: local Docker/Podman (one embedded controller container bundling Higress, Tuwunel, MinIO, Element Web, and controller process with Manager and Worker as separate containers via Docker API) and Kubernetes Helm (each component as its own Pod with controller reconciling CRDs to dynamically create Manager and Worker pods).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L115-L234",
+          "version": "repo-lines-v1:sha256:236b6f233ad75c8b1902752160d6a44926c93ce386c967eed4c48f784f435842:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MWM2ZTQ1MTJjNTEyNDgyZTRlZmEyNzZkN2Q0NTJiYWZjNmQ3NGZhMGM1NTUyZmRiMmFjNmY5ZjM3ZjU0MjZiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmM2ZkMWM1ZmVjNTQyMzAyNzU5ZmY5MTQyYjg2ZDUxZTcwZjhmZGMzMTY0NDRkOTU4OGViZGVhZmE3ZTNlNDk0IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhZGM3OTU3YjM2ZDU3ZjczZDE4N2QwNzU0MDU2ODVjZmQ4MzI3Yzk1OWJkZTQyMTBmOGQ2Mjg2MjQyYjE2YjZiIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwOTNkNzlhZDA5OWRlMjIwYTZkNGEyOTJiZjg5ZWU4M2NiMTRmZDIxNjkxOTJiMDgzOWIwZDdiMTQwYjFiNzkzIn0"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L86-L115",
+          "version": "repo-lines-v1:sha256:3dc7501bbe694603b162e27d288d33ca3ec041e023d98209f5423bb715fc5074:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyMDIyNzI3MmVhMTM5MTNjYzE1MGI5ZGE4M2VmNjc0ODAxNTNiOTE3NzU5YjI0MDg2MDgyOWM1ZjU1MmUxZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5OTU3MDc5NmVmMTI0ZTExOTlhM2UyNzdlZGFhMWEyNzUyNzJhOTg2Y2Q3MjNlZDE2ZmU1NGE4ODRhMzMyYjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxNjRhMWMyZTE3OWYyNzZmMDIxMjVjZWFkNTM4NGZmYjU4NTRkZGZhZmYxODBjODc5MDhiNzM1MmQ5YzQ1MjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d7c3280938b74173b9a9b4653ae64bbf",
+      "statement": "The technology stack includes Go for the Kubernetes operator, Higress for AI gateway, Tuwunel for Matrix server, MinIO or Alibaba Cloud OSS for file storage, and five agent frameworks: OpenClaw, CoPaw, Hermes, OpenHuman, and QwenPaw.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L216-L228",
+          "version": "repo-lines-v1:sha256:cad20a20e1d1f6e5e5085b7b36ee28224ca13c3cd8945fdfd905c27bced81d20:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0N2M2YTU4NTAxY2M2MGYxZmJmYjQ1ODhjMzE5MDcxMTg4MjMyNzIzMDA2M2Q5NzllYzM5MDJlZTM5MzY5YTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMmVmOGE1NzgyYzEyMmNjNmFmNTk4ODhmZDJlZTQ2MjQzMTVkMzYyZGQ1ZTI3YjUwOGE4ODExZmZhMzYzNzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2MzY0MDI2MjUxYmJlMmMyYmM3ZDNlZDNhNGZlNTBiY2RmZGZhODgzMTMyMWNiMjZiNzA5ZDdmMDk1NjI5ZmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8aad0c91633a417f84df43dd0e91ffd0",
+      "statement": "The repository includes agentteams-controller (Go operator), helm/agentteams (Helm chart), manager (images and agent configs), worker (OpenClaw base), copaw/hermes/openhuman/qwenpaw (Worker runtimes), openclaw-base (base image), plugins, shared libraries, dashboard, install scripts, docs, tests, and GitHub workflows.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L12-L32",
+          "version": "repo-lines-v1:sha256:90b74e89b67ca282c18db385d0d61a0a9c15a8d415cbdf5a2201c7c1d28902be:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZTUwNDY1N2M0ZjI1YmNkNDAwZTMyNDhiOTE2NWQzY2M5NWE2ODlmNTUxOWIzYmRlZjNkNzcwN2Q2ZTE2ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNjg3ZDM5MDU1ODZjNTRkZGQ4NmYzOGFkMzA1Njk1MGUyNmFkNjMxNTQ5Mjk3NWJhMGQzNDFkOTE0ZjBhODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2YWM1MWEzYzc5Y2YxNWJlYWFmMmQyNGI5YTRjMzJhOTkwMGRmYTQxNTk4YmFiNzNhMWQ4MTZkNzY2ZmIxZWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_64d3fe751cc947c9a5b2c576817e259f",
+      "statement": "The four infrastructure components are Higress AI gateway (LLM proxy, MCP server hosting, consumer auth), Tuwunel Matrix homeserver (IM between agents and humans), MinIO object storage (centralized file storage for workspaces), and Element Web UI (browser-based IM interface).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L408-L414",
+          "version": "repo-lines-v1:sha256:dd33912978ada478d4bc415513270a92e73b2749c702c3e758b04f7bb275d4dc:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTA2Mzg5MjJmOGUwZTkxZjIyMGM4ZjAyMjMwYmE0Mzg5ZTM5MDk2MGNjNjA1M2FmMmNiZTFmNTQzMDUxYTMxMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDg4NzFiNWU3OTc4M2E3NTZlMzY2MjU1OWZjZDE4NmUxMWRlNjgzNzk2NjcxOGEyOWE5MzFiMTU5YWJmYTllYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDY5ZTYxNjQzYmZjYTVhZGMzODZmMDgwODk3ZDI5Y2QwNWY0MzI4Y2Y2Mzc3M2Y5OWMwMjRhMzVmNjJiNzYwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGQyYmI4NmQ0NDRmOTU5YzY4NDQwY2E4MjlmNDJhNjAzNDQ2NTI2MmE0NDAzM2U0MjhmMzFmNjQ5YmEyMmViNSJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L29-L34",
+          "version": "repo-lines-v1:sha256:a7f1a5f785050376f8d3fb172400bc64d580f05a8e3432b5ce5e27bb0457a11d:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWVlYWZmYWNiMDBkYTc3NWIzMzIzODgzNTU1YjRmY2RhNmUyOTk3YmFhMTlmYTk3ZTZlZjk3MTMyYTUyYmEzMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzc5ODExYzVmYmUyNWMzZDRlNWYzZDFmZDM1YWI5ZGE2YmNmOGE2OGM1ZWRmOWQ2YmE5N2Y2ODY4NmMzOTY4MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDg3YTBlNzA4YmYyOGNlNGQzZjUxYjQ2ZGFlNmZhMWFmODczZmYwNzI3ODBlYzgwMDg5MGM5MjI0ODM2ZTRiNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjNiYWNlNTdlMzViMTk5NTljYzBhYjM5M2RkOGIxZWI4YWMzMmQ2MmU4YzgzZmQxOTZiMjhhYTE1ZjM4YjI3ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4486943e5d6848e8b96405809309d438",
+      "statement": "The agentteams-controller is a Go Kubernetes operator that reconciles Worker, Manager, Team, Human, and Project CRDs and exposes a REST API on port 8090 for lifecycle management and resource CRUD.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L13-L14",
+          "version": "repo-lines-v1:sha256:ba3cee8ab897948d0def66ca3d5b73778f55e36f9704bccc6f4fdebcc849db6d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTlmOWQzNDc4NWRmN2YwNmNiNGU5NTA3MmZmMGViYjI0N2RhMTg0ZjA0YzBhYWU3YjRhNTVlZWIzZWVlNzhjNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTc3ZDMyMjllOGM4YjIyNTJmMDRhMWI5NzE2YTM5YTdkN2ZlMzc1N2ExZWMyZjhhNzllZDkxN2NhMTBlYTEzMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDJkYzgzOWJkMzI5MTUxNjMyODk4MWI2NDZmMGQ0YTQ3NDFlODNiNTBmMDdkZDYyOGJhZTBjYmE4Nzk5ZjYzYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzM3M2ZkNzRiMjdlZTU4YzIwNTU5Yjg3MWYxYzZlZmQzOGMyMWJmZjFlMDlkNmY5NmM0Y2QyNzYzZDZmYmU3MSJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L9-L14",
+          "version": "repo-lines-v1:sha256:2e9e18d8a8edbad36a144cd037802c1d3420c08196d39f5025a185adf119d745:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOThlOWRmODZhNmViZjVmZjE2MTdmNzNhZmRjOGE2Zjc2ZTU5NzdmOTA2OWRjMDY5OTRjODM3OWQ2NDkwNWFiZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGQ4MTAzNGUwODcyNGM5NmQ5NmQ3Mjk2YTE2YzgzMDA1YTlmZTdiNjgwZDMzYWUzYzcyMWQwNWNjYmFiYjI0YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTliMWNmNGVmMTIyNWFhYWJhOWZjMjZmOTE2MjRjMDZlZjQ3NTMzODk2ODc1OTkyZjU2MGY4NTgwYjJjMDQ0NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_039f868e17e14fa9bbeaf24bbcc40191",
+      "statement": "Five Worker runtimes are supported: OpenClaw (Node.js, default), CoPaw (Python/AgentScope), Hermes (Python/hermes-worker), OpenHuman (Rust with native Matrix), and QwenPaw (TeamHarness plugin with runtime.yaml desired-state).",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L38-L45",
+          "version": "repo-lines-v1:sha256:0b29f6fdbf9e0d43305cbe6facdfa511daa6d3d998c1975443d0e81fb1d0848d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTNiMDAxMzAxYzIwYmNhNDdkMmQ1ZGU5NGI4NmU5ZWI4Njk3YTRjMDgwOTI1MTEyM2YyZjUwYzE3MGM4OGM5MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDE3YzI5NmM1YmI1MTEyYTYzNGQ1ZWY1ZDE4Yjk1M2Y3NjAwZGM1MWJhYzQ3ZTdkZDU4MjA5YTZlNDlhNGU1YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWIxNTVhOTBkOGNkMGY2NmY4MWQyYmIxODY4NzIyMDFkNDU4NTM0YzE2YmEzZjFkZjQyMDVhYmFkZjA5N2IxOSJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L142-L150",
+          "version": "repo-lines-v1:sha256:388fc91b3a6ac392148937792e1798f39e4bc3e8e2bf84c0a53181d336e104ab:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDA0NzRmNzk3YmQ2MWZjNTJkZWQ1YmM1MjA3ZWFjNWM1NDBmNDRmMWUxNmI1YWIyMmViN2QyZWI3YThhNjUxYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2EwMzBjZTAzYTJmYmU3MWY3NTg4NWYxY2MyMjg2OTRlODA5NTJlYWE1N2VlMzhhZTFhMGNiNjE1YzZmNWMzNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDE3YzI5NmM1YmI1MTEyYTYzNGQ1ZWY1ZDE4Yjk1M2Y3NjAwZGM1MWJhYzQ3ZTdkZDU4MjA5YTZlNDlhNGU1YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTdlOGJlN2JkN2Q3ZTA0MDMwNTY0NTVhODRhMmQ1YmU5NzlmN2U5MmNhMjBhNmNmMDM2M2Q4MWUyODk5ODk4NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_77bf54fbf3574f82b35a8ffa5eae9af4",
+      "statement": "The high-level architecture diagram shows Human layer (Browser/Matrix client), Infrastructure layer (Higress Gateway, Tuwunel, MinIO, Element Web), Controller layer (REST API and Reconcilers), and Agent containers (Manager, Workers, optional Team Leader), with connections to LLM providers and MCP servers.",
+      "evidence": [
+        {
+          "resource": "repo://docs/architecture.md#L24-L82",
+          "version": "repo-lines-v1:sha256:45ff0dec5dfa92df08317623cbfd85848a94a672e6fe31ab266b15e8081e6a28:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5ZDFjMDJlODM0YmQzMDI3MTNlM2VkZTgzOWRlYTE2OWZjOTJkZTdjMTRhMTUxZDIwZmU4NmJkZTEwOGUzYWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlYTM4MTkzZmVhNzE5NzFjZTllZmU4Yzc3NzFiNjkyMGU4YTFmZTA2OGIzMWNmNDM5NzBhZjA2ZWMzODdkM2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxNjRhMWMyZTE3OWYyNzZmMDIxMjVjZWFkNTM4NGZmYjU4NTRkZGZhZmYxODBjODc5MDhiNzM1MmQ5YzQ1MjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6a09456bffbc4b339205ad4d8d8735bc",
+      "statement": "Local installation uses a one-command bash script that pulls the embedded controller image and sets up the complete stack, providing access via Element Web at http://127.0.0.1:18088.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L58-L87",
+          "version": "repo-lines-v1:sha256:970dabaf7e20dbe73b6e5650f117e3bd40930ea3b4bf3b39917c9a9b3bedd679:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3YTI1OTQ4NjkzYzk0YmEyOWJkMWUxM2E1NWMzNTAwMDAxMzg0NGE0Mzg5ZDFhNTU3NzAwOTBiZDVlNGNiMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMDNlNjY2ZGQ1YzQ5MTA2MzAzMzQyZjg4YjM2MTU3OGI3M2M3NDRlZmE2OTA5NjQxNzZlOGZkNDRkNDAwNTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU2ZTE0YjNmOGM3MTQ0ZTQ2OTkxYzAwYmU0YTdhYjU2NzZiMmY5Y2ZkMTIxY2JlYzQ4OTkxZDdhMDg1YTQzYTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5502bcf2f5b64034b5fd319530e98916",
+      "statement": "Kubernetes installation uses the Helm chart from higress.io repository requiring credentials.llmApiKey, credentials.adminPassword, and gateway.publicURL values, with LLM preflight validation enabled by default.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L126-L134",
+          "version": "repo-lines-v1:sha256:753961a56981ee1849540c4e660653f877aff0ef26be129a0d2c12890105219d:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjFkNTBmNjNiYjU4MWFlM2U3MTBkOTcyYmEwZDVlYjAyYzVkMjVhY2RhNjIzYjA5OTMzZWVlMDA2YzA5MmMxYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWVkY2IzMGQzMGEwOGY3MWM1MDUwYmViNWMyNmZmNTc2YzljZDM5NjQxNTZjYWM2MWIyN2ZhMzNmNGJhNDE0ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWQyYmU2YWM2YTJlYmQwZGVmZTEzZTRmNDQ0ODNhZDBiZmRlMDFiYTJlY2MzODAyZTExMThiM2IyZDhmY2RiNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTFlNDcxYjNkZDg3NDVlYzUxYTdjZWJlNjVlNmRjM2U5YTVjNjdlNmYxMzQ4ZWM5MTA4YThhYWJlNDYyZmZiNCJ9"
+        },
+        {
+          "resource": "repo://README.md#L166-L182",
+          "version": "repo-lines-v1:sha256:f9f9d06e4ac6632ec8d6f9fe36916cac926de835575b5ddb840a107b84e115a1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0YmY4ZGRhMDJjM2Q0NWFjZGQ5YmJiZjQ0NmU0ZjM5M2I0YTBiMjJhZTE3NTg0MzUxOGMzNDdjYTFiYzg3OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjOGVkNDk0ZWEzZDFlODE4MzM0YTU1M2JhNWNlMTFlNDBiNWI4MjVmOWRjMDRjN2YwM2VhYTU0ZGU4Y2UyZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMjg1MTk1MWYyZDZhM2I1NDE4MGY2NWZkZmMzODNlYzc5MDQ4NmQ5ODMyMWFlNjJiYTRlZGVjNWYwNDBmOWEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

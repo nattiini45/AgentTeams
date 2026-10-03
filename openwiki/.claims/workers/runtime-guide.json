@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:7e4b53e1eb030a69083f839591cff21543f494b0e08c87045e7431cfb85f55a9",
+  "claims": [
+    {
+      "id": "claim_db509fb1ad2c4787b473bfe266b0b0ee",
+      "statement": "The controller selects the runtime image from Worker CR spec.runtime. If spec.runtime is not set, the controller uses Helm worker.defaultRuntime value (defaulting to openclaw). The image is then selected from worker.defaultImage.<runtime> in the Helm values.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/backend/interface.go#L65-L89",
+          "version": "repo-lines-v1:sha256:ba9cac1a9af8c1fa187ce23086ac852aad60b5f857b854a6b4ac9090fb5cdc57:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0Yjg4OGQ5MGUwNzBlMjQ5NjI0NDgwM2IzMGIxZjc5ODkxNWQ3ZTFkZDlmMjA0YjY2MWIyYTkyZDIyNGY5YWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MDQzMThmOTk1MTJiYjQ3MDhjMDk1Y2Q2OTczMWVkYjkyMzA2ZDcwM2JiMDg4NTg4YzJmYzcwYzcxNWVmOTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY5OTI1NmMwNjhmNWY1MjBjYzQ1NjU5MTdhNTVmOWQ3MTczNjg0ZTQ3N2ZjNmI2YWE1NzlhOTRjNDgwMDlhNzIifQ"
+        },
+        {
+          "resource": "repo://helm/agentteams/values.yaml#L331-L348",
+          "version": "repo-lines-v1:sha256:98739b27bd97d5cdac6fb9c7432597723d50f59ef2a3233a74d13e86fe3b9aa4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1OTJmNjMwMzgyNmMzNjgyNGQ3MjBhNmY2NDhjYjY2Y2ZkZDIwNDViOWVjYjJhNzVmYjAwYWVlZWZkZTgyNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhODNhNzE5NGY5OTc4Y2ZjYjY1OTJiNGI1NjU5YzNjOTgwNjMwNDZlMzNiZGM0MmYwMDc3NjZiYTMxZTMxODAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYwZjdiMzA5ZjBjNzdmYjk3YTZlZDViMzE1YmZhMGU2MjI0OTk5YjMwNjQzNGE0MWE1YzllODU0ZmI3ODY0NDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3YWRjMjRlYjVjMDgyOWE3OWZlYzJhZWEwMWVhODBlMGNkZWU5MDIxMjk0YzlkYjI5MTQ1MmJkMTg3MDk4MmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_495a1b55e63d40b6b341b5622ac13f2b",
+      "statement": "AgentTeams supports 5 worker runtimes: openclaw (Node.js, default), copaw (Python, dual-venv), hermes (Python, worker-only), openhuman (Rust, worker-only), qwenpaw (Python, plugin system). Only openclaw and copaw can serve as Manager agents.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L36-L55",
+          "version": "repo-lines-v1:sha256:ac041484c2a55c1fb75aa10e6aa7e6b66f700d2ee08d7ddb4d2979d9a31ebd24:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlOTdmMjYxYjdjNzRkY2NiMWY4YjMxNmY0OTJiZjdiYjM3ZTQxZmVmZTFiNTEwZGY3YzkxZGE2ZDU1NTIxMzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5ZTY2ZGFmZTdjODYzYWVlODJlMjIwYWFmODg5ZDM0OWFjNzE2YzFhMzQxNjI0YjkxNTM3MDhiMDEyOWQ5ZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg2YWM1MWEzYzc5Y2YxNWJlYWFmMmQyNGI5YTRjMzJhOTkwMGRmYTQxNTk4YmFiNzNhMWQ4MTZkNzY2ZmIxZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjMTQ1OTdhNWZmYTgxZTJjNDIxNzc1MTJjYmM0NzRmMDYyMWFjYTc1MTZlNzgxYWMwNGFkOGVjYTlhMjc1YTAifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/interface.go#L33-L39",
+          "version": "repo-lines-v1:sha256:c11f2dc4192c518ce983f374499a661ad67a8665610d152c739dee658c879fb2:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDBkOTg2YjBkZjdlOWM0N2FhNzgyYjA2NjA5NDY5YmM4ZWVjYTQ3NjEyYjgzOGNmODI5ZGRhNGJjZGRkMzMyOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmFmYmEwNTI3YzM5NTNjNGI2ZTBlNWI1NzM5YmE4MzYxMmY4MDUzYmNkYzk0NjY3MzAxOTNjZDFkNTkwYjQwOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmY0MTNlMWY1ZTFkODgxODI0MmNiNWIzOWRkOWMyOTUwNmZlMTg3MmZkZTY5NWNkOWE0OTk3ZjFiNDlkYWI5NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDI0Y2FhNTU0MzY4YjJiOTJjYmZkNjg5Njg3NWI3OGQzMjU1M2NkYmE2ZWY2NGYwMjcyM2RjM2NiOGVmZGYxZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f978b4d331154be8b0f7ede9cc4269b0",
+      "statement": "The controller's ResolveRuntime() function implements runtime resolution: explicit runtime from request > caller-provided fallback (AGENTTEAMS_DEFAULT_WORKER_RUNTIME for workers) > RuntimeOpenClaw default.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/backend/interface.go#L65-L89",
+          "version": "repo-lines-v1:sha256:ba9cac1a9af8c1fa187ce23086ac852aad60b5f857b854a6b4ac9090fb5cdc57:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0Yjg4OGQ5MGUwNzBlMjQ5NjI0NDgwM2IzMGIxZjc5ODkxNWQ3ZTFkZDlmMjA0YjY2MWIyYTkyZDIyNGY5YWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MDQzMThmOTk1MTJiYjQ3MDhjMDk1Y2Q2OTczMWVkYjkyMzA2ZDcwM2JiMDg4NTg4YzJmYzcwYzcxNWVmOTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY5OTI1NmMwNjhmNWY1MjBjYzQ1NjU5MTdhNTVmOWQ3MTczNjg0ZTQ3N2ZjNmI2YWE1NzlhOTRjNDgwMDlhNzIifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/kubernetes.go#L217-L224",
+          "version": "repo-lines-v1:sha256:ad74f812720000ca75d1bdc9d88b333acc38246ea22501bc0102442e5de7b2f1:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRlMWZjNGYyNGZkZTQ4MTE4MDE1NTk3OTZlMjhiNzQ2ZjM0YmZjM2I2MmZkNTliM2VhZGQxOTk2MjI4MjcxZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmM3ZDUyMDYzMDcyMzc2MzIwMjAzMDQ0YjMzMjhmOWQwYzY1MDhhYzE1MWExMTFkMGQ4ZjE0YTYxMmE4YzY1ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmRkYTMxZGU2YWVmYjM5NjExYzMyNjgxNDVlMmVlMDBkMjEyYTBlOTRhZTdjNzQyNGQ5MTI4ZWRiZmMwNTZhMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmU5MGM1NzNmMjVlYjVjNDkzNWYyNWJkOWUxYjEzOTQxMDMzMTk5MjIzNzNmN2FhMTM3ODVkZWE4ZTczZmNiNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f3ea9128a94f47e9a289ae6444ee745c",
+      "statement": "Each runtime has a corresponding agent template directory under manager/agent/: worker-agent (openclaw), copaw-worker-agent, hermes-worker-agent, openhuman-worker-agent, qwenpaw-worker-agent. These templates are copied into worker workspaces during provisioning.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/copaw-worker-agent/AGENTS.md",
+          "version": "repo-file-v1:sha256:a362f6ec8c4a4c72e2be90f90f2112c98c253293f2d9ee648b536549b66a5f6f"
+        },
+        {
+          "resource": "repo://manager/agent/hermes-worker-agent/AGENTS.md",
+          "version": "repo-file-v1:sha256:e3375d7963c5628972fea1cf6dd434af319e55df83f171e39a508c2c3448932c"
+        },
+        {
+          "resource": "repo://manager/agent/openhuman-worker-agent/AGENTS.md",
+          "version": "repo-file-v1:sha256:9da0eeedfda7c583e6b019724621d00dbd951dd5eb93b0f72f3bd0338902494e"
+        },
+        {
+          "resource": "repo://manager/agent/qwenpaw-worker-agent/AGENTS.md",
+          "version": "repo-file-v1:sha256:01cedefe87dea720766821a0bac0cab2a907569a74976072c6e68ba949539b90"
+        },
+        {
+          "resource": "repo://manager/agent/worker-agent/AGENTS.md",
+          "version": "repo-file-v1:sha256:bd4164edef2756e26578995a3b7d25c0eb50a2f8b3418d91b97cac42dfd2aef1"
+        }
+      ]
+    },
+    {
+      "id": "claim_9e0fe78886a34e4787004628a04adf3a",
+      "statement": "All runtimes share common patterns: Matrix connection, gateway auth via Higress, MinIO sync (change-triggered + fallback), health reporting via agt CLI, skill loading from workspace/skills/, file sync with agentteams_sync, credential management via mc-wrapper.sh, and workspace isolation.",
+      "evidence": [
+        {
+          "resource": "repo://copaw/Dockerfile#L1-L210",
+          "version": "repo-lines-v1:sha256:d175b4210757464b9bb96b91546747f6c46b5b0f575b5a5fd6259799bee14ff2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyNzA4NzNlYTFjZDJkM2VlMDFjZGY5OGZmZWNkMWE5Nzk2MGRhNDQ0ZjkyNDlhMzlmZDlkMTM4ODNmMTg3MTcwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwMWJhNDcxOWM4MGI2ZmU5MTFiMDkxYTdjMDUxMjRiNjRlZWVjZTk2NGUwOWMwNThlZjhmOTgwNWRhY2E1NDZiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiIyMzhiMzFhZmI1YjY3ZmEzMWJhMjAwNzgwZTM2ZDVkOThjNGNkZmNhYWYxOTVmMDRjYmUxMDE0ODVlNjQ1YjNiIn0"
+        },
+        {
+          "resource": "repo://hermes/Dockerfile#L1-L202",
+          "version": "repo-lines-v1:sha256:1a031c0a233922b98f9598cd00f4f87bde9a03e37c0d652eecb08a5c2278a806:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyNzA4NzNlYTFjZDJkM2VlMDFjZGY5OGZmZWNkMWE5Nzk2MGRhNDQ0ZjkyNDlhMzlmZDlkMTM4ODNmMTg3MTcwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2M2M4OGIyMzE4NTFhNDdiYjk2YzBkY2ZjYTk0YWMzMTg0ZTg4M2RhZTE2ZTc2YzIyNWEyYWNjYzAyZDUyMDNhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://openhuman/Dockerfile#L1-L198",
+          "version": "repo-lines-v1:sha256:1e3ac8154bd8e041e852a51a3a838556788efaa282af742fe8ff75fdb9b59744:eyJzZWxlY3RlZExpbmVDb3VudCI6MTk4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmYTBjMjFhZWMyOGU2NjIwZmVjMjI0NTg5ZTlhMDI0Njk5ZWYzYmU4ZWZjYWRkYWExNmI0MzUzYmVhYjJlNTVlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJjMjI2NjQ4MWVjOTJhMGY2YTE2MDBhN2YwNDgzOGE0N2Q1MmU2NjE3NDE0MjMzNzcxYzFjZGUxMjk3ZWYzMmJjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://qwenpaw/Dockerfile#L1-L172",
+          "version": "repo-lines-v1:sha256:8282fda0841133a10171e49cd09871b8f4427bd5eb701f9acf1dd7d5f0c1c321:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyNzA4NzNlYTFjZDJkM2VlMDFjZGY5OGZmZWNkMWE5Nzk2MGRhNDQ0ZjkyNDlhMzlmZDlkMTM4ODNmMTg3MTcwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwMWJhNDcxOWM4MGI2ZmU5MTFiMDkxYTdjMDUxMjRiNjRlZWVjZTk2NGUwOWMwNThlZjhmOTgwNWRhY2E1NDZiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxYzY3ZWM2OGQwYjc5Y2IwMjgzZWYzNDYzNzNmMzRiNjUyNzA1MDhiMWM2MWI1Y2E4YWIwYjNhY2M1YzllOTY1In0"
+        },
+        {
+          "resource": "repo://worker/scripts/worker-entrypoint.sh#L1-L370",
+          "version": "repo-lines-v1:sha256:3e086716470ce0e3501ad9b4434fc842bece8f5cbfd6773d377a0106fdbf4b04:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiODc1ZjkyODU0NmFlZTc4NTVjYjFkYjlhZmM4YWIzZjFhOGEzNGQ0M2RlNWJiZDYyZjcwNzZkN2JhOWYzOTE3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmEyODA0N2U3NWIyZTkzY2RjYmQxNDU2YjkwMWVlMmM3NzFhYzE4Yjc1NDMyZjFmYTdlYTEyZjA2NWIwYjgzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_74a518f6a33b49929a7ff6bea5ea9049",
+      "statement": "QwenPaw runtime has special integration with TeamHarness plugin system: TeamHarness MCP server, WorkerFlow plugin for internal workflows, plugin bootstrap system, runtime configurator for dynamic updates, and security bootstrap for credential isolation.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/teamharness/plugin.yaml",
+          "version": "repo-file-v1:sha256:0c740c91b19c249796409d1d66de37cec135edcf40c0924a254d32f4351e70b8"
+        },
+        {
+          "resource": "repo://qwenpaw/src/qwenpaw_worker/plugin_bootstrap.py",
+          "version": "repo-file-v1:sha256:9bbce90ee9163f5ef8b9ce9e45d4083b05c0973c172b7801eddb16483a27edb1"
+        },
+        {
+          "resource": "repo://qwenpaw/src/qwenpaw_worker/runtime_configurator.py",
+          "version": "repo-file-v1:sha256:9bfa8711377d9a9f7d0aca600a9d2a21c1354868ece62e4804d41767805f2ce5"
+        },
+        {
+          "resource": "repo://qwenpaw/src/qwenpaw_worker/security_bootstrap.py",
+          "version": "repo-file-v1:sha256:f160485611ef990bc67e03dec01edc49919db65ed9bb058b83b90fc7f1dc41d5"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

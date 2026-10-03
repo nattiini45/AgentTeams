@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:f378a96b6ea127890e98ad3eecddae7a2ebb7750503ac3109b5af1a367ce7e91",
+  "claims": [
+    {
+      "id": "claim_34abe7552759496aabc405cd07ea3da5",
+      "statement": "The agent content model uses specific file types: AGENTS.md (bootstrap instructions), SOUL.md (identity/personality), HEARTBEAT.md (periodic duties), TOOLS.md (skill quick reference), and SKILL.md (skill definitions).",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/AGENTS.md",
+          "version": "repo-file-v1:sha256:0156dddd1d539029bdb8cfa735a0188858d969975380a8cf29f06730ef5afae1"
+        },
+        {
+          "resource": "repo://manager/agent/HEARTBEAT.md",
+          "version": "repo-file-v1:sha256:9d68aaa9dd46d458bb531332908336f38d12f98e36f992668bad9c63c64e1536"
+        },
+        {
+          "resource": "repo://manager/agent/SOUL.md",
+          "version": "repo-file-v1:sha256:aa406da363b3ce95ee242cdfa21178b2b582c8b221a53d21a845f6d7efdcd6c6"
+        },
+        {
+          "resource": "repo://manager/agent/TOOLS.md",
+          "version": "repo-file-v1:sha256:51d16d37f68af380c1cfc360a11be31ba169fff305ca95941bb5fb0dc58a9725"
+        }
+      ]
+    },
+    {
+      "id": "claim_e022d9bf48b84b84b744f7f5684b400e",
+      "statement": "Skills are structured with a SKILL.md file containing YAML frontmatter (name, description) and Markdown content, plus scripts/ and references/ directories for executable scripts and detailed documentation.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/skills/task-management/SKILL.md",
+          "version": "repo-file-v1:sha256:7fc3447ae5b689eddab65ed625206da46af86f36031fd31bf00289322dd30439"
+        },
+        {
+          "resource": "repo://manager/agent/skills/task-management/references/finite-tasks.md",
+          "version": "repo-file-v1:sha256:e2b4ebbb36089b17ad2b113eccd63aefc984ef8608ac7f2d204dbef929e505c2"
+        },
+        {
+          "resource": "repo://manager/agent/skills/task-management/scripts/manage-state.sh",
+          "version": "repo-file-v1:sha256:5a0bf8069b24a335fb64771ab9f3dde95c04759a2cdba6bcf321f9b64108a132"
+        }
+      ]
+    },
+    {
+      "id": "claim_0359add0966442aa9276f392fbd2190d",
+      "statement": "Skills are auto-loaded based on description field matching: the agent loads a skill's SKILL.md when encountering a situation that matches its description.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/TOOLS.md",
+          "version": "repo-file-v1:sha256:51d16d37f68af380c1cfc360a11be31ba169fff305ca95941bb5fb0dc58a9725"
+        }
+      ]
+    },
+    {
+      "id": "claim_b4023bda74ba4465b1f4c7e3e5f4037a",
+      "statement": "Prompt fragments in fragments/AGENTS/ and fragments/HEARTBEAT/ are assembled into runtime-specific AGENTS.md and HEARTBEAT.md files by render-manager-prompts.sh.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/fragments/AGENTS/gotchas-openclaw.md",
+          "version": "repo-file-v1:sha256:6a4c4f61d444fe62937bb6b83ba2014161016cccfeae91c2883a16bdfe13c4b5"
+        },
+        {
+          "resource": "repo://manager/agent/fragments/HEARTBEAT/openclaw-body.md",
+          "version": "repo-file-v1:sha256:3fc1690aeb96200d5155a6d86295a0e6ccb865a16d2a65cb8a22f2041377eb70"
+        },
+        {
+          "resource": "repo://manager/scripts/lib/render-manager-prompts.sh",
+          "version": "repo-file-v1:sha256:a430b2424087357209775e69b5f46e45fba81edb7e23ad94f1a60b950edbc8a4"
+        }
+      ]
+    },
+    {
+      "id": "claim_8d2381cc8de8467280744bdf196627b1",
+      "statement": "Workspace templates differ per runtime: OpenClaw Manager uses manager/agent/, CoPaw Manager uses manager/agent/copaw-manager-agent/, and workers use runtime-specific templates (worker-agent/, copaw-worker-agent/, hermes-worker-agent/, etc.).",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/copaw-manager-agent/AGENTS.md",
+          "version": "repo-file-v1:sha256:097a4b911dc2ee2f064f2994f062140c42971039a898a64f85e08160a28c290e"
+        },
+        {
+          "resource": "repo://manager/agent/worker-agent/AGENTS.md",
+          "version": "repo-file-v1:sha256:bd4164edef2756e26578995a3b7d25c0eb50a2f8b3418d91b97cac42dfd2aef1"
+        }
+      ]
+    },
+    {
+      "id": "claim_789832731d72486ba735bc998b9bfcfb",
+      "statement": "The render pipeline includes upgrade-builtins.sh (syncs builtins to workspace and MinIO), render-skills.sh (variable substitution), and render-manager-prompts.sh (fragment assembly).",
+      "evidence": [
+        {
+          "resource": "repo://manager/scripts/init/upgrade-builtins.sh",
+          "version": "repo-file-v1:sha256:b0683e4309fc50218bd8c42f084543bdf094f13cd4eea3583ccb66480b7c526f"
+        },
+        {
+          "resource": "repo://manager/scripts/lib/render-manager-prompts.sh",
+          "version": "repo-file-v1:sha256:a430b2424087357209775e69b5f46e45fba81edb7e23ad94f1a60b950edbc8a4"
+        },
+        {
+          "resource": "repo://shared/lib/render-skills.sh",
+          "version": "repo-file-v1:sha256:67232447a921f14563fae739a8808122ef54787a03a192cce5c3272c039c8a61"
+        }
+      ]
+    },
+    {
+      "id": "claim_05e79e302c7142a0a1fa994439412154",
+      "statement": "All agent-facing content uses second-person writing convention: addressing the agent directly with 'you' and imperative mood for instructions.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/AGENTS.md",
+          "version": "repo-file-v1:sha256:0156dddd1d539029bdb8cfa735a0188858d969975380a8cf29f06730ef5afae1"
+        },
+        {
+          "resource": "repo://manager/agent/SOUL.md",
+          "version": "repo-file-v1:sha256:aa406da363b3ce95ee242cdfa21178b2b582c8b221a53d21a845f6d7efdcd6c6"
+        }
+      ]
+    },
+    {
+      "id": "claim_3bbc5f5e500141cba538cd3f55eff7df",
+      "statement": "The controller deploys agent content to MinIO for workers during upgrade-builtins.sh step 3, syncing AGENTS.md, HEARTBEAT.md, and skills/ directories to each worker's MinIO workspace.",
+      "evidence": [
+        {
+          "resource": "repo://manager/scripts/init/upgrade-builtins.sh",
+          "version": "repo-file-v1:sha256:b0683e4309fc50218bd8c42f084543bdf094f13cd4eea3583ccb66480b7c526f"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

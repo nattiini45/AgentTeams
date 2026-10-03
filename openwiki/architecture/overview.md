@@ -1,3 +1,31 @@
+---
+type: "Reference"
+title: "Architecture Overview"
+description: "System-wide architecture: layers, deployment shapes, component relationships, CRD model, credential flow, and key design principles for the AgentTeams platform."
+tags: ["architecture", "overview", "kubernetes", "multi-agent", "matrix", "operator"]
+verified:
+  - by: openwiki/0.7.0
+    at: 2026-10-03T08:15:26.963Z
+sources:
+  - id: openwiki-source-8037e2358a2c4f9b2c722a11
+    resource: repo://AGENTS.md
+  - id: openwiki-source-845528493cc1e45f815a725f
+    resource: repo://agentteams-controller/api/v1beta1/project_types.go
+  - id: openwiki-source-219d13a95e1a93cb4e24f3f0
+    resource: repo://agentteams-controller/api/v1beta1/types.go
+  - id: openwiki-source-ac1fad14305f05f407449680
+    resource: repo://agentteams-controller/internal/backend/interface.go
+  - id: openwiki-source-f5a7095836a694a5470ff87a
+    resource: repo://agentteams-controller/internal/controller/member_reconcile.go
+  - id: openwiki-source-c6e3d9c361de5a9f2632f908
+    resource: repo://agentteams-controller/internal/controller/worker_controller.go
+  - id: openwiki-source-115b2dad781e2a2c5b5a980d
+    resource: repo://docs/architecture.md
+  - id: openwiki-source-23775c3de52f3ab95a13cb8b
+    resource: repo://README.md
+generated: { by: "openwiki/0.7.0", at: "2026-10-03T08:15:26.963Z" }
+---
+
 # Architecture Overview
 
 AgentTeams uses a **Manager-Workers architecture** where a central Manager agent orchestrates multiple Worker agents. Communication happens over Matrix IM rooms, with human participants having full visibility. The system is designed so that Workers are stateless and disposable — all state lives in object storage and the Matrix homeserver.
@@ -9,6 +37,8 @@ AgentTeams uses a **Manager-Workers architecture** where a central Manager agent
 | **agentteams-controller** | Go operator: reconciles CRDs, REST API, worker/manager lifecycle | `agentteams-controller` (K8s) or `agentteams-embedded` (local) |
 | **Manager** | Coordinator agent: tasks, workers, teams, humans, gateway config | `agentteams-manager` (OpenClaw) or `agentteams-manager-copaw` |
 | **Worker** | Task executor: one container per worker, stateless, created on demand | `agentteams-worker`, `agentteams-copaw-worker`, `agentteams-hermes-worker`, `agentteams-openhuman-worker`, `agentteams-qwenpaw-worker` |
+
+The **openclaw-base** image supplies Ubuntu 24.04, Node.js 22, OpenClaw, and mcporter for OpenClaw-based Manager/Worker images. It does not ship infrastructure services — those run in the controller (embedded) or as separate Helm subcharts (Kubernetes).
 
 ## Component Relationships
 
@@ -73,6 +103,33 @@ flowchart TB
   REC --> TL
 ```
 
+Component relationship diagram: Human accesses Element Web and the Matrix homeserver; agents communicate via Matrix rooms; the controller reconciles CRDs and manages infrastructure connections.
+
+## Worker Lifecycle
+
+The controller derives each Worker's lifecycle phase from the desired `spec.state`, the observed container status, and any reconcile error. The `computeMemberPhase` function in `member_reconcile.go` is the single source of truth for both standalone Workers and Team members.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending : CR created
+    Pending --> Running : container running
+    Pending --> Failed : reconcile error
+    Running --> Sleeping : spec.state = Sleeping
+    Running --> Stopped : spec.state = Stopped
+    Running --> Failed : container failed
+    Running --> Pending : container lost
+    Sleeping --> Running : spec.state = Running
+    Sleeping --> Stopping : container stopping
+    Stopping --> Sleeping : container stopped
+    Stopping --> Stopped : container stopped
+    Stopped --> Running : spec.state = Running
+    Stopped --> Stopping : container stopping
+    Failed --> Running : reconcile succeeds
+    Failed --> Pending : reconcile retry
+```
+
+Worker lifecycle states: Pending (provisioning), Running (active), Sleeping (paused, config preserved), Stopped (terminated, config preserved), Stopping (transition), Failed (error, controller retries).
+
 ## Deployment Shapes
 
 ### Local Single Host (Docker/Podman)
@@ -109,17 +166,17 @@ Install via: `helm install agt higress.io/agentteams -n agentteams-system`
 
 ## Custom Resource Definitions (CRDs)
 
-The controller reconciles five CRD types under the `agentteams.io` API group:
+The controller reconciles five CRD types under the `agentteams.io` API group (`v1beta1`):
 
 | CRD | Purpose | Key Spec Fields |
 |-----|---------|----------------|
-| **Worker** | AI agent worker | `runtime`, `model`, `image`, `soul`, `skills`, `mcpServers`, `expose`, `channelPolicy` |
-| **Manager** | Coordinator agent | `runtime`, `model`, `image`, `soul`, `skills`, `mcpServers`, `state` |
-| **Team** | Group of workers with a leader | `teamName`, `workerMembers`, `humanMembers`, `channelPolicy`, `heartbeatEvery` |
-| **Human** | Human participant | `username`, `permissionLevel`, `accessibleTeams`, `accessibleWorkers` |
+| **Worker** | AI agent worker | `model`, `runtime`, `image`, `soul`, `skills`, `mcpServers`, `expose`, `channelPolicy`, `state`, `idleTimeout`, `deployMode`, `containerManaged` |
+| **Manager** | Coordinator agent | `model`, `runtime`, `image`, `soul`, `agents`, `skills`, `mcpServers`, `state`, `config` (heartbeatInterval, workerIdleTimeout, notifyChannel) |
+| **Team** | Group of workers with a leader | `teamName`, `workerMembers`, `humanMembers`, `admin`, `channelPolicy`, `heartbeatEvery`, `peerMentions` |
+| **Human** | Human participant | `displayName`, `username`, `permissionLevel` (1=Admin, 2=Team, 3=Worker), `accessibleTeams`, `accessibleWorkers`, `identitySource` |
 | **Project** | Team-scoped project with repos | `team`, `projectName`, `repos`, `workers`, `dependsOn` |
 
-All CRDs share common status fields: `phase`, `matrixUserId`, `roomId`, `containerState`.
+All CRDs share common status fields: `phase`, `matrixUserId`, `roomId`, `containerState`. Worker and Manager CRs also carry `state` in spec (Running, Sleeping, Stopped) for lifecycle control.
 
 See [Controller: CRDs & Reconcilers](../controller/crds-and-reconcilers.md) for full type definitions and reconciler logic.
 
@@ -133,12 +190,6 @@ All agent communication happens in Matrix rooms. The pattern is:
 4. **Manager** can delegate tasks to Workers by mentioning them in rooms
 5. **Human** can observe everything and intervene at any time
 
-Key design principles:
-- **Human-in-the-loop by default** — every room includes the human, manager, and relevant workers
-- **Workers are stateless** — destroy and recreate freely; config and artifacts live in MinIO
-- **Centralized credentials** — Workers use consumer tokens only; real API keys stay in the gateway
-- **Skills as documentation** — each `SKILL.md` tells the agent how to use an API or tool
-
 ## Credential Flow
 
 ```
@@ -147,7 +198,7 @@ Worker ──(consumer token)──► Higress Gateway ──(real API key)─�
                                       └──(real PAT/token)──► MCP Servers
 ```
 
-Workers never see real credentials. The controller provisions a Higress consumer with key-auth, and the gateway injects the real API key on the proxy path.
+Workers never see real credentials. The controller provisions a Higress consumer with key-auth, and the gateway injects the real API key on the proxy path. The same consumer token authorizes MCP server calls — the controller translates `spec.mcpServers` into mcporter-servers.json with a Bearer header using the same gateway consumer key.
 
 ## Data Flow
 
@@ -159,7 +210,16 @@ MinIO (object storage)
 └── packages/<worker>/           # Deployed agent packages
 ```
 
-Workers sync their workspace from MinIO on startup. The `agentteams_sync` Python package handles bidirectional file sync between local workspaces and MinIO.
+Workers sync their workspace from MinIO on startup. The `agentteams_sync` Python package handles bidirectional file sync between local workspaces and MinIO. Workers are designed to be replaceable because all durable state lives in the bucket.
+
+## Key Design Principles
+
+- **Human-in-the-loop by default** — every room includes the human, manager, and relevant workers. Full visibility, intervention at any time.
+- **Workers are stateless** — destroy and recreate freely; config and artifacts live in MinIO. The controller reconciles actual state toward desired state.
+- **Centralized credentials** — Workers use consumer tokens only; real API keys stay in the gateway. Enterprise-grade security without credential exposure.
+- **Skills as documentation** — each `SKILL.md` tells the agent how to use an API or tool. Agents load skills from workspace or image paths.
+- **Declarative resources** — all Worker, Manager, Team, Human, and Project definitions are Kubernetes CRDs. The `agt` CLI provides operator-facing commands built from the controller REST API.
+- **Multi-runtime support** — OpenClaw, CoPaw/QwenPaw, Hermes, and OpenHuman workers coexist in the same Matrix room. Each runtime does what it's best at.
 
 ## Source References
 
@@ -167,5 +227,7 @@ Workers sync their workspace from MinIO on startup. The `agentteams_sync` Python
 - K8s-native design: [`docs/k8s-native-agent-orch.md`](../../docs/k8s-native-agent-orch.md)
 - CRD definitions: [`agentteams-controller/api/v1beta1/`](../../agentteams-controller/api/v1beta1/)
 - Reconcilers: [`agentteams-controller/internal/controller/`](../../agentteams-controller/internal/controller/)
+- Backend interface: [`agentteams-controller/internal/backend/interface.go`](../../agentteams-controller/internal/backend/interface.go)
 - Helm chart: [`helm/agentteams/`](../../helm/agentteams/)
 - Install scripts: [`install/`](../../install/)
+- Integration contracts: [Higress, Matrix, MinIO](../integrations/higress-matrix-minio.md)

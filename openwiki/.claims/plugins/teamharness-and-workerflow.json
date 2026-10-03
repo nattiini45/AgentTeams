@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:64bfe0a34e7b28061a438bf43d9c7a3f54fca71e6329990471cb710c28dfae63",
+  "claims": [
+    {
+      "id": "claim_1e8d89b10f78401aadc5c6f9f297cfbc",
+      "statement": "AgentTeams plugins follow a shared contract defined by the `agentteams.agentteam/v1alpha1` API version, distributed as tarballs containing plugin.yaml manifest, prompts, skills, mcp, hooks, adapters, and scripts directories.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/README.md#L73-L89",
+          "version": "repo-lines-v1:sha256:2a0e357535468fd9229bdede0f7780f31ac42a3f80364e7bd943ed615993ff96:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkYWRkYjQ1ODZmODIxZjg2ZDkyOTkxZWIwMjRkMDAxNjVhZDdmOTI5ZTUzMzQzZGVlMjhiNzA4MzVlYzE5MmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0ZTI1MDlmNjZhY2E5YmJjYWQ1MmQzNTQ2NWJhZjMyODJiNzBhMzRmZDc2ZmQ2ZjFjZGQ2YjJlMTkxMDYxYmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4ZDQ0MDU5M2U4YmYwYjkwZGYzZjdiZjE5YmVlNzhkMzk4MGJkNDM3MzY5NDM5MmY2ODY2YmVkOTI5MDNlYjMifQ"
+        },
+        {
+          "resource": "repo://plugins/schemas/plugin.schema.json",
+          "version": "repo-file-v1:sha256:2734650120175db283c6b5b4fb9886e41c786a0be2e48117b6a6ee9ff062849d"
+        }
+      ]
+    },
+    {
+      "id": "claim_3526f9fe97e54cc4ab9e6b2ec509a1db",
+      "statement": "TeamHarness MCP server exposes seven tools: health, message, roomflow, filesync, artifact, projectflow, and taskflow for team-based task orchestration.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/teamharness/mcp/server.py#L47-L47",
+          "version": "repo-lines-v1:sha256:4dee58d5d75097c6a616c1656339efd92121b3ba6230c8b96c4037870f71d519:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRlZTU4ZDVkNzUwOTdjNmE2MTZjMTY1NjMzOWVmZDkyMTIxYjNiYTYyMzBjOGI5NmM0MDM3ODcwZjcxZDUxOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRlZTU4ZDVkNzUwOTdjNmE2MTZjMTY1NjMzOWVmZDkyMTIxYjNiYTYyMzBjOGI5NmM0MDM3ODcwZjcxZDUxOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjZiYjVmZmIzODBmMGJiZWM4NzVhODk4OWU1NGQ2NzNkZDliNjM5YjIyZTdmMThkZGMzMzA1N2RmODkzMTUxNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTllOGViMDQ2ZDQwM2ZkZTg4ZDQ5OGYzMmU2ZjZiYjA1MThmODUyZDA5NjQ3Y2E3ZTYwN2U3YjBlYjI1NTFiYSJ9"
+        },
+        {
+          "resource": "repo://plugins/teamharness/plugin.yaml#L46-L60",
+          "version": "repo-lines-v1:sha256:5dad4a53af8efb1bdcbc04a404e5b3e64e61e6150bc8dffdb66b01711088141a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYjk0ODc4MmNmYjRkODRlODczMDk3MmFjNTZhNmVlY2NhYTY0NzJjNzAwMTVjYzVjNTJhOTVlY2MzNzViMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwMTg0Y2NiNGNhYTgyN2Y1NmFhNmIwYWIwNDhlMGZiNmFhODEyYWEzMjhiYjQ1MGY5MGE0M2ZmNTczZDVhMDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkNDkxY2UwZTI5MjA3MTY3MDYyY2VlNjRhNGY2OWEzZDYxN2Q4ZmU5YzgwN2MyNWIxMGZlNmQ2N2E0OGJhODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzMDJjOGQ2MjZmYTUyYzNkZjNlYTk4ZmNjZDg4NDU0OWFhNGI1ZDJkNzYxYWE0NjFkZjRhNzEwYTExMGE1ZDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_52d8af906d54459ea5d40d62fc365f0a",
+      "statement": "WorkerFlow plugin enables per-worker internal workflow routing through the worker_agentflow tool, supporting fan-out plans with temporary QwenPaw agents and DAG-based dependency execution.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/workerflow/mcp/server.py#L28-L148",
+          "version": "repo-lines-v1:sha256:4719e5bfbc3ef0f05289bd1887b12d54677b897d71e1fb4ec5735bf208d95c65:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiYWNmMGRmOWI5N2FlN2FjNjZlYTFjYTRkMThhYTBkODFhM2FlODQ0MDc1NWZkYmNjZTEwMzRjN2ZhZDE4YTI5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4NjcyODM2ZTQ5NTAzYjdmYzU2ZjA2MDhhMjI2YWFjNTU2NTg1ZWNhN2Y3NjljMDA5ODE4OWU5Y2M0ODExNjRjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhMDBhY2M5MjU2OTFkOGJiZjkzY2UwYzhjZWM3NTZhNDFkNDBhMzlhNjk3ZTExNTBlMmNkMDEzZmE4ODkzYzlmIn0"
+        },
+        {
+          "resource": "repo://plugins/workerflow/plugin.yaml#L18-L27",
+          "version": "repo-lines-v1:sha256:0e990922f0c3cc25f08770740657a480b23a793d05f15ab56d21386d6400c8b7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYjk0ODc4MmNmYjRkODRlODczMDk3MmFjNTZhNmVlY2NhYTY0NzJjNzAwMTVjYzVjNTJhOTVlY2MzNzViMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5OWJiMzBiYTQyNDdjMjAzNjkyZjEyYTU2ZmFmNzE2M2RhNTg3YzU0YzI3NzA4NzFjMjUxZWMxYWE4ZmE5OTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzZmY0ZGMzMjliMDE1ZjFmMjFkMDg4MGFlNDNlN2UxN2Y1Yjc1MTRmNWU4NWViODUwZGEwYjBlODZlZGRiOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjNDdlN2YyZmM5YjUyZTIxMWVmZGZlMzZiNzJiMmZkOWJhZWU3OTBmN2FlZmZlMjIwZTM3NmMyZjA1MTBmNzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_15d3e015e9ac46269abeff9b10850bc1",
+      "statement": "Plugin lifecycle entrypoints are scripts/install.sh and scripts/uninstall.sh, which detect supported local runtimes and dispatch to matching adapter scripts, called by both agentteams CLI and LoongSuite plugin-probe.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/README.md#L91-L99",
+          "version": "repo-lines-v1:sha256:82ef7b000af5fc19c3232b09d488a468e3efe5a49e1edc169d479c0b4603e29f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWI2YjIwM2FjYzU0MjYwN2E5ZjY3OGVhNDI3ZTU4ZDk0ZTcxMDQ2NTc4YjQxNzg0ZWIwOWFhNjMyOTk4MzlhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDk3MmNlZjU0MDc0N2Q5NDRmOWNkMmExM2I2OTk5MjhjODlhYTAwOTQ2ZjBiMGU2YmEzNmQzYjlkMzBmNzMwNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTc0MTFkOGQ0Y2NiNjM0MTgwMDIyOWM0MWVhNGU1ZTU5YjYxNDAyOTI1ZjQyYmEwNjJjZThjYjRjZGJjZmUzMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmM0NThjNjAyNDg1MjQyZmIyYzgyNGZiOGM0ZjAyNDBjNWYzMmVkZDNjYTgyZmU3MzI0NmFlYjM4ZGYzZTljNCJ9"
+        },
+        {
+          "resource": "repo://plugins/teamharness/scripts/install.sh",
+          "version": "repo-file-v1:sha256:340296da5bb8d7669d41f7726991f4aa4fe41198f654a9b7ff0083aa1a3407e0"
+        },
+        {
+          "resource": "repo://plugins/teamharness/scripts/uninstall.sh",
+          "version": "repo-file-v1:sha256:99cd3156a97fc8857ddebd2e359b7a1f81b98db3eea2d2b22db2ea12155ff9d7"
+        }
+      ]
+    },
+    {
+      "id": "claim_bc5f6a56933942aeb925414573498e5d",
+      "statement": "TeamHarness is compatible with LoongSuite/Pilot's plugin-probe convention through agents.d/teamharness.json descriptor, which only discovers runtime, unpacks tarball, and runs lifecycle scripts without parsing plugin internals.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/README.md#L32-L71",
+          "version": "repo-lines-v1:sha256:438e3e01145184e1e1f32ffa6fee268949d84c27f71ecb048086e57f49631540:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkNWFmNGMxN2RlNmQyMjZjNmI2NTVhODU3NzE3NWU1ZDNmNzI3YTU1ZjU0ZjhhNWJkZWE5YTFjNmVlM2E3MTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkMDI2ZGM2MDg0MGE4NTlmZTU0ZWQzMWJjZGY0MWEyODZhMWQ1MWI0NmJmN2JiMzk0ODk3Y2E2OTgxZTNiOGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRhODk1YTBkZDc0NjVkNjFhNzNmYjg0ZTk2MDRmNTJiNjJhZTQzNDA3ZWFiMTk5YmU5Mzg5MzYyOWZiMzg2MzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxYzI0YzU4ZDU0YzkzOGVjZDM4N2VhMjcwOGQ1ODRhYjk0ZDI1ZWY4M2U5MWU3MzJlMTRkMTA1NTE4OGViMjcifQ"
+        },
+        {
+          "resource": "repo://plugins/teamharness/loongsuite/agents.d/teamharness.json",
+          "version": "repo-file-v1:sha256:b7c32eda09efe0b493cd47715bc7880f14584be5096136027b65e40cde484084"
+        }
+      ]
+    },
+    {
+      "id": "claim_1666e4e04fd44a06a188f21ac9db0ec0",
+      "statement": "agentteams CLI provides plugin install/update/uninstall commands storing state under .agentteams/, unpacking tarballs, calling lifecycle scripts, and recording manifests with content hashing for integrity verification.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/README.md#L16-L31",
+          "version": "repo-lines-v1:sha256:c2b0139b59d247c736b9832fd7bb0456f68df02ca911be62d1945998a13e04ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhNmZlMzk5MmRiNmI0ZDBkNzcwOTE0NjA0MDkzYWEyOTU1Yjc4NTM2Y2EwYzhmMmRiMjYwNjZhMzhiNDdjZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3ZmE1YWVmM2Q3ODZlZDYxNDlhMDU2OGQ1NDQ1N2VjMTk3ZjUzYjM2ZGJkYzZkMWFhN2YzYmQzNGZjOGViYTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkMWZlMDVkM2ZlZDhmMjBjNzMzNGExZGZlNjVmZDRhYjQ3MzE0ZWNhZjNiNTU3ZTBkZTk3NTgzYjI3ZmI4ZDAifQ"
+        },
+        {
+          "resource": "repo://plugins/cli/src/agentteams_cli/plugin_manager.py",
+          "version": "repo-file-v1:sha256:76d4c22b3965f1ea597d0d44c7c99f15a550575ccd60becf1bd0d528795415fe"
+        }
+      ]
+    },
+    {
+      "id": "claim_dc6aa6892cc84660b18ba23ad61ab5f2",
+      "statement": "QwenPaw adapter detects runtime via qwenpaw command, installs TeamHarness assets into QwenPaw workspace, and manages MCP server lifecycle with security measures including sensitive artifact detection and credential redaction.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/teamharness/adapters/qwenpaw/install.sh",
+          "version": "repo-file-v1:sha256:233072c61579b93a1b13e1089db723fb91ada28d965b1100498240015e60554b"
+        },
+        {
+          "resource": "repo://plugins/teamharness/adapters/qwenpaw/plugin.py",
+          "version": "repo-file-v1:sha256:38147e533584d301e5bfcc188747ddfae299605d3a5b230eb818846e67238f74"
+        }
+      ]
+    },
+    {
+      "id": "claim_2d1ecd4779564717bae675ff6e56758c",
+      "statement": "Plugin platform includes comprehensive testing with integration test suite covering protocol characterization, CLI management, manifest validation, packaging, contracts, adapter tests, and MCP server tool tests.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/tests/run-integration-tests.sh",
+          "version": "repo-file-v1:sha256:b33f04c04afbe3907fe2dae481f667d086ae00c4faf106fc6b78ab09c932eefd"
+        },
+        {
+          "resource": "repo://plugins/tests/teamharness/test-contracts.rb",
+          "version": "repo-file-v1:sha256:84724d9f8b63a432f118b35a2b6a5ba1fb49d97acc1eccecd69995cb376d85da"
+        },
+        {
+          "resource": "repo://plugins/tests/workerflow/mcp/test_server.py",
+          "version": "repo-file-v1:sha256:176dcd055bace3fe6fa89585a1db3f77f394840e2710c813ebbd3ac5c87274b1"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

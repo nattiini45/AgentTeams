@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:608d3a6b127df647f63c03b3285fa3fae4564c932d4d34fc8f3d3fe7ac50e97b",
+  "claims": [
+    {
+      "id": "claim_4e5cdc0a19534421b7d644efb2e586f2",
+      "statement": "The Worker provisioning lifecycle follows a sequence: CR creation with finalizer attachment, Matrix user registration, Matrix room creation, Higress gateway consumer setup, MinIO workspace initialization, and container deployment.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/controller/worker_controller.go#L92-L154",
+          "version": "repo-lines-v1:sha256:3cf9a8a60398ebb2775e4d175b7f3e3d42b1973d41d75494a32a46eee3ea247a:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmNDU1NDMzMTU0YzY2Y2FjZWZjOGQxYmY0MTc1MjQ2MWE1YmUyNTcyMmZiMWY2MTNlZTliMDhjZmY1ZWRkZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkNGRmYTE2NmVkNWY3ODYwZGI1ZThjZTYzMDYyYzdkNWRkNDVhMjY5NDM2ZTJlNTJiZGZmNTc1NGM1ZDA0MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyMTQ4YmM0YWIyZDczNDU3NjNmYzk5NTA4Y2EyMjM5ZWQ0YmE4MjM5YTM1MGJmOWNlOTExODhhMDczZDhhYjQifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/service/provisioner.go#L323-L537",
+          "version": "repo-lines-v1:sha256:a03e7ce221761e4c22e476b89a735cbfae25801a036a542de262b916ff4cb1b1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjE1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI4Y2YwZjkyNWExOWZiMzNiZDQyZTJhZDAxMDBlYTI3MTM4NzFhNjNmYmRkYzY4YWU3NzUxODdjZTY2MzljNzA3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0MDA4YjVmZTIzZmJiNjMwNTEwYmM3OWQ4ZmMxNDI4ZDUwMmUxZjljMTU3ZjA4YjgyYWFhZTI0NjgxMDc5OTNjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhM2MzYTA3OTFlYjI0MTRlNTQ3YmQ1NGMxN2ExODVkYjQ5ZTY2ODFlYTkyM2IyMDk1YjEwNGJiZjZlNGEwNDkzIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_3578c3eaf75c4f0588421c47a23a74dc",
+      "statement": "Matrix provisioning involves registering a Matrix user (AppService or password mode), creating a room with appropriate power levels, inviting authorities, and having the worker join its own room.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/service/provisioner.go#L356-L506",
+          "version": "repo-lines-v1:sha256:5dc40b450da58c86071ff61a11e55ebced9bf4288100b6e440c88e156c74a474:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJkM2ZiZGMxNjU2ZjIxYjVjMWQ1NjZjMTc4MjllNWFkYjM4MTBlOTI4ZGQyMTYwZmIzYzVhMDFiMzE1N2EzYjhmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2ZWRhNWQ4MjgyNzAwNTk2ODIxMDEwY2RiZjQ0MDg3ZDk5MTc1OTJhNDQ3ZWJlYTllZWJiNTkzNTcwYjdhYTQwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmMjgwZWQ2MDFiMDY3ZTg2ZjNlNTVkNTY2N2U5YTc2NDVjYzFjZDZkZTU4NTNmZjI3OGJiN2Y2ZWQ4Yjk4Y2FiIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_4ad54b5ef95247868a84267e73b0c4a1",
+      "statement": "Higress gateway setup creates a consumer with an API key, authorizes AI routes for the consumer, and waits 2 seconds for WASM key-auth plugin propagation.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/service/provisioner.go#L508-L527",
+          "version": "repo-lines-v1:sha256:ddb82d48675a83765076190780f1808397997ecb385a57bdfe11cb5259c017ec:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxYjZlOWNlNjdlMTk2OGZlYzNlMmRkZDVmYjhhMzgyMGNmM2JkZjczMDhkNjQzOGUwODdmM2FmZGRjODE1ZTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NTFiNWJlZmJjZTFlNTAxNTU3ZTA1ZGQ1Njg1OTNlYjA2YTFjZTJmY2ZhYzMzMTNjNTcxMGRhMTkwOGQyNDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1ZTE2ZjlkYTFiNzEwMDE2YmY2M2UxMzg3Y2Y2NDkzY2Y2M2IzZTQ5MmQ4MzI4Y2M0OWMwYjVjNGNlOTc4NjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a2e5c82a137b4484b34941609821c63d",
+      "statement": "Container creation builds environment variables, prepares worker dependencies, creates backend-specific containers (Docker, K8s Pod, or Sandbox), and sets container state to 'starting'.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/controller/member_reconcile.go#L481-L506",
+          "version": "repo-lines-v1:sha256:0084ad4e6d957a8cf33749328ea64234db582672e3fcb583e89006136c65a33b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwNzgzODMwZmQzOWFiOGYzNjczNTYwMDFjOWZkMDFjZGUxOWM4ZDg0ZmIwOGVmODk3MmJhY2U3NGIxYWI0MGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyNWJhNmZmNmJiYWVkMmM4MzA5MjE4MmZmYTQxZWYyZGIzMGIzYzYzMzcyZWM1ODdkMGU4Y2ZjMDhlY2MzNmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3YjY0Y2Q0NjA2ZDNjMGY5OTgxYjMzMGJjYzBiZmM0NmYwMzlmZTE4ZTNiY2MxMDljMzAyYmYwZjM5ODQzMjgifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/controller/member_reconcile.go#L741-L822",
+          "version": "repo-lines-v1:sha256:22c02a21aff263119293f94c8af4450c8e74bff7d2a537f76e53c97990f03c77:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZDEwNzJiODgxNGNlYzI1MWMxOWIwZGQ1ZDRiNWM3NTk4ZTFiOGIyNzc3YTk2ODBmZTE2MmQ4MGQ0ZDk3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzM2MyNjY0ODExYzhkNGU4ZGRkNzUzOGI2MjdiOWQ1MDUyMDlkNWIwZjkzMTQwZGY3OThkMjQ4ZWQzYmI1NmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmMDllOTkzMzRhM2Q5ZDA2OTFkZGM3NjJhMjFjNTk2YjAwMWM2NzAxNmRkMmU2ZmQzZWZhZmY4OGVhNzc1MDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_61ac45208db94daa91884bcf9c736ab9",
+      "statement": "Worker phases are computed based on desired state and container status: Running when container is running/ready, Starting when container is starting, Sleeping/Stopped based on desired state, and Failed on reconcile errors.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/controller/member_reconcile.go#L1824-L1860",
+          "version": "repo-lines-v1:sha256:2ca13acfc00f372691bb5b955900aa9a77672e742c639ed285782b19955c2634:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwZWNjMzVjOWMzMzZlYTdlNGZlYTgzNmFhNGY1NzUwNDI5MzY1ZDEyMjg4YWYzYjdjNWJmN2JlODdkOWU4ZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0MGI1Y2U0NGMxZjUxOTdiZDM5OTA3NzVkZDY3Y2U1YzEyNTUxMmVkNTAzZGUxMjgzMmMwNjU4YWJlZTIwY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2OTBhN2ZlZGFlMzNkNWFhZjBkNWQwZTQ0NGEyNzNkMzhiYzI4NjdjYzlkMDcxYzIwMTVlMTI5MzNiMjc3OWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_591b730b314741cbac02b3cc2642cba0",
+      "statement": "The HealthMonitorController classifies worker health into four states: Healthy (recent activity), Stalled (no activity for 60+ minutes with tasks), Zombie (no heartbeat for 15+ minutes), and Idle (no activity for 5+ minutes with no tasks).",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/controller/health_monitor_controller.go#L96-L136",
+          "version": "repo-lines-v1:sha256:83baae6be55a72d6d620e4d55e15962b9e3518a95894124eea70ed53e8d9b066:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3YTU5NTBiNmI1ZmJlMTg4OGEyZTU3MzBlMjMwZmE5MWQzN2Q0NmJiZmZmNDBkODA2NzdiNjZkZGZlNjMyYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyOTY0MDc5YzNjNWM4MTUyMGVmMzNhMmI5ZDJlMTVhMWI4NGQ3MjgwZGI4NTkwZGNkNjU3NDdlM2UwMTJhNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwNmI1N2Y4YWI5MDFlZGQxOTAyNWQzYTc4MGM0MmU1NjI4MGNjZmVkOTIwNDkyMGJkMDJhNDRiMDRmYWVlNzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_97e3ff676f004fe2bbcac4465d39046a",
+      "statement": "Edge workers have a lightweight controller path that doesn't manage Pods/Services. They report heartbeats every minute, and if no heartbeat is received for 2+ minutes, the phase is set to 'Pending'.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/controller/worker_controller.go#L156-L169",
+          "version": "repo-lines-v1:sha256:a8c6796e748320d157f4537a897052bb5311aa9aefb031b8e953162f1e41debf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0NWM3Mzc4M2Y4M2Q1ZTMwODg0NTIxN2QzMjFkNTVhZDYyMDA5NDRkM2YyNGVmN2U3MTdiZTZjYWY2MDk2NzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkOTIxZWE2NTkxYzE4MzZjNjBjYjg3OWNlNzQ5YTUwMGRjZTk3ZGY3NWM1NTEzYTdkZDgyMjI3NzljOGExMjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyNzA0ZDY1YTg3ZjdlZWVmMzE2M2FjNTM4OGMyMGQ0YmZkZGNmNTEwZGQ5N2FkMmE0N2E4ZDJlYjA2ODdkNjUifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/controller/worker_controller.go#L210-L254",
+          "version": "repo-lines-v1:sha256:88c7e794c0cc08e643b881d0224f92d24552efc0ec853e130a438d77e9e1407a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0Mzk3MmFhZmJjYWYwMGUwNzM1NDg5NzljMTdhNTA0OGE3MzQzNzk5ZjU5ZjA1NjNmMzM1OGM4ZGY2MTViZTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyMGYxMzhhOTRkMmFiMTQ5MWQ2YTQ2MWQzN2MyYWVjYzVkNjQ4MGMwZGEwOWViNmMwNzhlNjZjODMzNGY0YjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0ZGRkMmI3ZWIyNDJkNDJhMmE0ZmNmM2MzZWYwMDJkZmVkMTQ3ZjgwODY3YzNlMjZjZTJkZTJlMGFiOTQ5YmUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f4a691b3ab29484a802a126930f2c35d",
+      "statement": "Worker deletion involves leaving all Matrix rooms, deleting the room via admin command, deprovisioning infrastructure (gateway consumers, MinIO users), and removing the finalizer.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/controller/member_reconcile.go#L1896-L1920",
+          "version": "repo-lines-v1:sha256:410015009326e31751a5206599c587bd97701fe32b00a58d1ef096b1bb654df3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1Mzk3YTAyZGRlNjQwYzcyM2U3ODhhYmQ2NWU2ODMzOGEwMmQzZWYwOGI4ZWQyYzEwOWQzZTI4YzhiMmY1NDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3YTRiYTFkMTQzZGQ4MTY5MDNjZWI4OWY1MmQ5MTFkNGU3NTA3YjZkZDMwNThlODEyYmJiNjhmNzJlYzcxN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjODNmNzQzYjExNTRhZDgxZDgwMDhkZjJkYWMyNWIxNWQ5MGU0MjE3MTZhNGMyYTZjZTliMzg1NzI1ZDM5YjgifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/controller/worker_controller.go#L316-L364",
+          "version": "repo-lines-v1:sha256:687e83e2e39beaea98000d8c76799c3b000c343f2dd696a3a32483a7d23930a0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlODIyMmQ3YjI5NjQ0NWI2MWU4MGQ3NWYzMzU1Yzg5OWZhZTk5NTJkMjQxNThkYWMxMjRiZmJhMmQ0ZDg2NzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiZDc3NzI0NTg4NDY2MGFiN2UwZDg3ZjUzM2RmMDlmYzY5MzhlMzY1NzVhMTI1NTNjZjkyZDk2Yjg5NWQzMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzODhkNTdmOWZhZTQ2YjcyYzdmMDU1ODBhNzEzZWNjNzQ5MTI2YWE2MzI3MzM4Y2RhYjFiMzVjZDNkNDdiNDMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c486a2475cda437fb85b1928221b0f62",
+      "statement": "Docker backend manages containers via Docker Engine API with no Kubernetes resources, while Kubernetes backend creates Pods with labels, owner references, and ServiceAccounts for authentication.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/backend/docker.go#L95-L100",
+          "version": "repo-lines-v1:sha256:418bc2feea0639f3d90267ea63172b053d206bb4c98509a7457ce44644e8928f:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODExNDRlODVmNDExMTViNzQ3NjMzY2JjZGIxYjZhNTM5YTZlMGMzYWZhMTczMTBiYTNlOTc5NDQ4YjRhYTliMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGViZmYzNzEyNDFhNTRhNjFkYTY3ZTk4ZTlkYmUzZjRkNzQzZmM5ZmQ1YmFlODRhM2NjMDJjMmU3NjhhYTVkYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTYxNjNmZDEwMGY1OTI2MjMxZjllZjIwMGY1ZDhhZGYwN2I5NDZlOGEzMjg4YzZhYTJkMDQ2NGYxOTJhZDI0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGUwNjU0YzgwYjQzM2U5Y2QxY2UwYWMyZTY4NjQ2NmFmNzIyYzg1Yjk0YzQ0NmIyZmZmY2ZmYzNmYmNlODE5ZSJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/kubernetes.go#L53-L100",
+          "version": "repo-lines-v1:sha256:16f607bf3b95b489f101792aff0840db402c6b25c1cab45c4298f7fdfcce6c75:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4YTUyMDgxNmMzMGIwNmZiYzlhMmYwZTM2ZWVkNTZkMDc1ZDY1OTM4YmFmYTk5N2VlMDY0NWUzOGU3NzAwMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlNTYyMzI4ZWUzNjk0NDc2NzdlZTgwMzQ0ZDAwN2NmZjY5ZGQxNzdkNTAxMWIxMjlhMzRkMTA1ZmM0OGM5NjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzMTc0N2E0NDYwNjQzZDhlMGNlZTRhZWM0NmRjYzg4MjVjYzJmZmQ2YWMwZGJhYTMwMzk4MTdiOTg2ZGRiODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlZTRlOTg2MzM5NmRkZjE2NGU1NGU4Mjc0MDFiYjFlZjE5NGJlOGUxMTEyYjZhMDg1YjY1Nzg1MDZjY2JiZjAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2030295a168d4cc498b70151993eb0e3",
+      "statement": "Configuration deployment to MinIO includes runtime.yaml with member metadata, Matrix credentials, team context, model provider config, and agent configuration files like AGENTS.md and skills.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/service/deployer.go#L278-L470",
+          "version": "repo-lines-v1:sha256:a0b88499532a5849bfd1808b8cbf837ece478762078fb582ec412fda594b36c0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTkzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhYzc3ZGNmZDY5MzQyZjk3NjMzMDc3NmFhZmMyNzJhNDI2YzQ0MTNlMGRkYWE5ZjQ0NGQ3YWUzMGVhMjYzNGFlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI4NjU5OGQyZGQ0MmRkNmFiNmIyMTQ5ZDIzNWMxOTI0NjAyZDgzZDVkNWU1ZTAzZTJhODIzMTRlOWIyZGZiN2IwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxNjMxYjZlMmNhMDdkOGJhZjBlYjQ0ZTc0OWRiZjQ5MGIzOTJlM2E1MzRlZjYxMDIyNzcxMTQ2Y2RmOWFmMWEyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkY2I0ZDcyNDJmMGVmNWRmYTQzMTFlOTFiMWQyMzJlMzBiZDcwY2FiMjUyY2Q1NzcyYzA5ZjAwNjQzOWRlZDQ1In0"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/service/runtime_config.go#L22-L114",
+          "version": "repo-lines-v1:sha256:ba7b4b8da2ee905d2989ed407ca947778d2ee1cecca8742080d3e20d627dc6ed:eyJzZWxlY3RlZExpbmVDb3VudCI6OTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjZjE4ZTUwMmZiNzljYjU3NjhjZThhZmZmZjE5ZGM4NGE4NGY3MTg3NzQyZTAxOWYyZWM4ZDFlNzVjNjI0MTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ2OTVmOTRmNjIwY2UyMTFjNjIzYTcxMzk5N2UxYzIyYjE0NWMyYzEyZDRjMGVjMDkzNWVjMDY4ODY4OTMzZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2NTNkOTU4ZDUxMWE0YTI1ZDUyMTgzOTE1OTk2N2ViNDNiNDczNTE1NWNmMDIyOGUxNDM5YjJmMzU0OWUzYzYifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}

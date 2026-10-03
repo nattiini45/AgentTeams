@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:0f030be96416eb447e17705617993847d6b2f566b7dcff69181b3e668890e159",
+  "claims": [
+    {
+      "id": "claim_5cef4089222a4a79af38f4965e6e0d15",
+      "statement": "AgentTeams uses a Manager-Workers architecture where a central Manager agent orchestrates multiple Worker agents, with all communication happening over Matrix IM rooms and human participants having full visibility.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L6-L7",
+          "version": "repo-lines-v1:sha256:16ec59d82ac2a82cb8077082663962ce7d00e4797dcc058428998e62907f21f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTNhMjdlMWJkOTczMTEwZGIxYzJkNmM5MzQzMWRjMTc4MGE1NmYwMDVlN2U5NDc2ZTVmOTFhYjU3NmUwOTY5NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDE0YjI0ZWJiM2E0NTc4M2M3NjY5NjdiYmQyOWM0NWFjYWMyZjI3MzljZTM1MGIwN2VhNzU3NjBhOGVlMTNjZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjAyNGY1NDhjZGZmMGMxMzcxZmQxNzJhZGRiMWRlMjgzOTIzM2RiNDBjZjYxYzZlZTRlMDMzNjZiOWNmMjNjMiJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L1-L3",
+          "version": "repo-lines-v1:sha256:d80b13454e0aa2e0b8af0e12f49e4c916b6c01633391f84ad734ff3e07a99f22:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWVkNmQzMDEwNDY3YzViYjE1ODY0N2UwNDlkYzhhMTIyOTk4NjIxNWY5OGVjMmRiZjNkMTAwNTY4ZGU3MWE3NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmI5NzRjYjU3OGQ4OWViMWJiYjY4ZDMxZjY0MmRhOTdhN2EyZDNmYmJiOWQyN2FhNjQ3YmQwMTdkZGYyNTJjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2e67d0282d65404f8618af4ac9a32f6b",
+      "statement": "The agentteams-controller is a Go operator that reconciles five CRD types (Worker, Manager, Team, Human, Project) under the agentteams.io API group (v1beta1), exposing a REST API on port 8090.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/project_types.go#L6-L11",
+          "version": "repo-lines-v1:sha256:4ad80995ebabceefb6c8feca03a699f6883bb871637e673cc2eb36ffe8ec9c6a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWM0YzI2NGQ3MGJiYTNlNzM3MDZlYmFjMGFjZWRkN2VmYzM1ZjEyZDA2YzZiZjA2MWExMWIyZThiNTZlYzc1YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODEyYWNiNmVlMGQzMjZmYzA3MjI5OWIxMjllNzc5MTI0ZjA2NWU1ZGNjYTBlNWI3MmU0OWE2YTI1MTliZWRmNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmQyOGYyZWJjYWJiZTc0ZjAwYjY2NzUxNWE4ZGYzYmNjZjMzMDE3NjUxMDZkZjRhOGRiNDRkNGNlMjlkNmVmMCJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L10-L13",
+          "version": "repo-lines-v1:sha256:5032935ddabf4b36ce6ea22f5b8dceeec2275b8edb4ad15383de76a31addf7ab:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDBkOTg2YjBkZjdlOWM0N2FhNzgyYjA2NjA5NDY5YmM4ZWVjYTQ3NjEyYjgzOGNmODI5ZGRhNGJjZGRkMzMyOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmFmYmEwNTI3YzM5NTNjNGI2ZTBlNWI1NzM5YmE4MzYxMmY4MDUzYmNkYzk0NjY3MzAxOTNjZDFkNTkwYjQwOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWQ2MDNhYjdkY2MyMmZmNzhhNDE5MDllMzU0NzdkYzEyNzllZGIzYjJhMWUxMzJiM2IzNWVhZTRmYzM4YjlmYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWVlNDMyYzA4N2FjZmJlNjk2NDMxOTc1NDE0MzQ3MTE4MmMwMGY0ZDk2MmU0ODM3M2RlNzMyYzRmMzg4ZGIyOCJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/controller/worker_controller.go#L45-L90",
+          "version": "repo-lines-v1:sha256:72d54e20b7bf6b8dfc9fcbfa2866fd64f59aee096da18bfea50ba2825b103930:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzZTU1YzAzMzdjMmNiMzU0MTllMmNlMzIxZWUwMmI3YmQ2MjA1YTIwZTcxOGRhNGYyMTk5Yjc0MGY3MzUwZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZjIzYzA1NmJhZDMwZDU3Yzk4OTVkNzcwZDEwYmJlZjc1Y2E0ZjdiNTdhNTk2NjQ3NmE5ZmI3ZTAwZDcxZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4NDI0NjkxNDM0MDAzNjk3ODI3YTJhNjQ1NzE0MGY4OTY4MTQ2NDAxNzVkMTIyOTQwMjdlZGYyNGE1ZDRkMjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ad6cfbed44fa40b9be8f455c8a151506",
+      "statement": "Workers are stateless and disposable — all durable state lives in MinIO object storage and the Matrix homeserver, so containers can be destroyed and recreated freely.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L244-L246",
+          "version": "repo-lines-v1:sha256:5ff8fcfb708b5c21c96fd0eda2aafcdb8496b9e5809b77ae67e4b3a5f9eaf806:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTFhMmUwYTMzODJmYjRlZmJmZDUwMTIzNTM4OTBmZDMxNDdiNzI3ZDdjMmI4NTc3YTk4ZjZjYTdjNmQ2OWExNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmNjZWZjYTkyNDM3YTQxYTM1Nzg1ZmI5MzRiODlmODMyZTk2MjY3ZjI5NzA5ZTA2YmU5ZjUyM2RiM2Q0ODFmZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjdlNWM1NTVhNGYxNzFmZTcwMTdhNGYzMDhmZDJiZDE4OWNjZDE5MTkwNmYwYmYyNTBmMWQ3MDk5MTk3YjE2YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTJkNWZkYzdhOGRjMDI5MzBhNDg0ODU3MzRiMzY4N2I1ZWJjNmY2YmNmODk3NGQwZmM5ZWNlZGVhNmZhOTcyZiJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L129-L131",
+          "version": "repo-lines-v1:sha256:f2f54ac6e78daf05725e84709429e96463b33d29f62c25b6f161ed51136ea047:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWYzMDc0NjNjYzU4ZTAyNGRmMDY5NjQ0MjY5YWFjZmUwOWE0NDJiODUxNGMwOGFmNDAyYzQ3M2VjZDY4NWQwNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODlhM2MzNjIxMzJlNWViMWM4YmY3MzE0Njc2YWJjOGZjNTFlZTEwZjkxZWUxODUxNzIyYWMwMmQ3YWU4ZWI0MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjE2ZWNhZTg4MWVkNDdlYjQxY2JkNDk3YTBiOWJiM2E3YjVlMjk4YmM4YmFkYmYzNzU2ZWI3NGMzZTcwYmRhMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_cb7db332f1de4b2da408e58212ef09ae",
+      "statement": "Workers never see real credentials. The controller provisions Higress consumers with key-auth, and the gateway injects real API keys on the proxy path. The same consumer token authorizes MCP server calls.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L45-L46",
+          "version": "repo-lines-v1:sha256:6702075a454d5abb1a3a6e336b8004716a9b598dc09863e4856adeae93ed71d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQxYjgyZDhjOWYxMzVmOTM5ZDEzY2ZiNDQ4MmM2ZTRiYjAyNjhlZTgwODIzNzgyZTQ3OTlkY2RkYmYzODk3ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGViZjY5YTdhODFiNmQ2YjMzODYyMWQ0NGZiYmYwYTNhZTExODBiMjM4Y2JhMzMzNjNiMGE1NTJiOGVlODIwNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGU4YTQzMDJjYTgwYThlZTAwMDg0ZTkwMjQ4ODE0MmQ5ZjBhNDg2N2MyYTRiYjQ0MjNlZWM3OGNjZDZhZGVhZSJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L87-L102",
+          "version": "repo-lines-v1:sha256:6f972a3c37db087b304dbf159178901ff7db884daf3b5c0d759acc044087dbd7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmMGI2YjMxYjg4YzZiNjkxZWEzODRkMGFiY2UyMWZjNmMxY2QzZGYyYTI1NTNkNjkwMjNjNjcxOWQ3NzE2ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI0MDk2MjllMjdhZGM1ZWU4MTI0YTFiNDgyOWJjYmQ3MTc5MDJkMzQwYWM2YjVhZmQ5Y2FmNzZjYTVlNDdhNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkNmE0ZmE5N2E4MjcwMGVkNDI3ZGE0YzY2YmE3OTNmZjE5NWMxOTE4YzgxZTE1MWI4ODhiZDY3NDhlZDE4ZWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2208302fdf834858954c602df390cf63",
+      "statement": "The worker lifecycle phase is derived by computeMemberPhase from desired spec.state, observed container status, and reconcile error, producing Pending, Running, Sleeping, Stopped, Stopping, or Failed phases.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L372-L376",
+          "version": "repo-lines-v1:sha256:0fb6d42afa80059ac6c5e3118ffa9f04561afb294b57b52f51c4512098432a9e:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmZiOTFhMjk0YTkxOWRmNjczNTVlZjE3Y2M2YWZkNzRhYTI4ZWRmMTA4ZDQ3MjAwMjc2YzJmMzg0NTFlN2ZhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdkZGNkM2E3YTU0ZGZjZDZhM2YwYjMwNmIxNDJkNDI0ZTc0MzI1NmYzMmRmN2ZlMzliYWU0MjIzNWU1OTYwZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGI5MGEwZjAxMTMxZmYyNTcwNWU1MWNmMzMwYTQ0MjU0Mjk4YTNkZjQ5MzkwMThiOGQ5OTg3NjRjYTZlYWMzYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjc4ZmY5NTI0YjY0ZGRiMGRkNWQ2YzhjZjIxN2UxZjJjOTdmZGUwOGQyZDhjNDMwNmRiNjI2MTc2Zjc1ZWNlOCJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/controller/member_reconcile.go#L1824-L1860",
+          "version": "repo-lines-v1:sha256:2ca13acfc00f372691bb5b955900aa9a77672e742c639ed285782b19955c2634:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwZWNjMzVjOWMzMzZlYTdlNGZlYTgzNmFhNGY1NzUwNDI5MzY1ZDEyMjg4YWYzYjdjNWJmN2JlODdkOWU4ZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0MGI1Y2U0NGMxZjUxOTdiZDM5OTA3NzVkZDY3Y2U1YzEyNTUxMmVkNTAzZGUxMjgzMmMwNjU4YWJlZTIwY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2OTBhN2ZlZGFlMzNkNWFhZjBkNWQwZTQ0NGEyNzNkMzhiYzI4NjdjYzlkMDcxYzIwMTVlMTI5MzNiMjc3OWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_852a3724af0a45dbbf08b11f5c20897c",
+      "statement": "Local deployment uses an embedded controller container that bundles Higress, Tuwunel, MinIO, Element Web, and the controller binary, creating separate Manager and Worker containers via the Docker/Podman API.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L31-L32",
+          "version": "repo-lines-v1:sha256:e0677b6e01c2f38d7d02054df80014f085a9feafe0958943aa68f119edf2c28a:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTNkNGRkNjZmZjAzMzUxYTYyMTU0YTcyYWNlZDI5MDhkNDZhZTJmZjExZjY5N2FkNzRlNTlkZGY4NmNlNGRkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzIwZTZkZjE0NWIyN2U3MTNkN2Y0MDMxNTU4NDA2YWQzNWIyN2UwNDczNWZhYTM5OWMyNzVhNDQ3YjMxNWQ0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODZhYzUxYTNjNzljZjE1YmVhYWYyZDI0YjlhNGMzMmE5OTAwZGZhNDE1OThiYWI3M2ExZDgxNmQ3NjZmYjFlZCJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L86-L98",
+          "version": "repo-lines-v1:sha256:0aad55a47a4d0bf3e64d77a714ae24b22d140cebf693eabd8f89cb4fddc4ab90:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyMDIyNzI3MmVhMTM5MTNjYzE1MGI5ZGE4M2VmNjc0ODAxNTNiOTE3NzU5YjI0MDg2MDgyOWM1ZjU1MmUxZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxNjRhMWMyZTE3OWYyNzZmMDIxMjVjZWFkNTM4NGZmYjU4NTRkZGZhZmYxODBjODc5MDhiNzM1MmQ5YzQ1MjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmZjk2ZDA0ZWE4NGIyN2VjZTBhNGVmM2NkZDc4YzgzMWVhNDdlN2RiYmMwNDI3NzQxMjQzYmRiZDQ1NDM2N2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f039639e1bdd420eae535a3b66729ea2",
+      "statement": "Kubernetes deployment uses Helm where each component runs as its own Pod, with the controller reconciling Custom Resources to create Manager and Worker pods dynamically.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L113-L136",
+          "version": "repo-lines-v1:sha256:2bba723adc276fdbe55cf75530e935e4d0ea805f1486efa91d5d8e0e92013b8b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmNDA0YjNiNWE3NDU0ZWM1M2U1N2QxMzBjMGQ4ZDM4MjhhOTc4OGE1NjhjNDVhMGI4MGE4ZDViMmY5MTBmNTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0YTkxNDg2NDliN2I5MDZhZDgzYmQyOGM0Y2U3OWQ3OTAyZTdlNDc0MjkxMjM4OWQzZDBiOWY3MjY5NDE5YmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5NzI1NDdmZGNiYWU3NDdhNjYwODMwNTZmYTE4ZjhmZTM4MTkwOTA0NzI3YmE0MDUxMmMxNTMxZWY3NGQ4ZmUifQ"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L100-L101",
+          "version": "repo-lines-v1:sha256:2fdca5372585dc13bdc649dd1070652dc283f411276da05aa3341b69ba2fa1ac:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZThlNjQxYmU1NWUyM2ZjMDM3NjhhNDY2ZmEwZDhjNWZjNmNmOTA2ZTQ4MDAyMzIwNjQ3MDA3ZDkyMWI5N2QxOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODVkMTVkYWIxOTcxMjA5YzVlYjQ2MDk3MzI3MTI3YTZjNmExNWYzOWJjYzdhNTJlNzIwNjdkNzc1MjNmMzk4YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjM2ZTU1ZDVlZDQ3ZmM0NzM1ZmZkZDdiNzdmMDNhYjU3NzU5NTI2NDA1YzJhYzNiMzkxMzFkM2EyMzI0OTc1OSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_41f59b9f08e04b1288953dca5f674928",
+      "statement": "The Worker CRD spec includes model, runtime (openclaw|copaw|hermes|qwenpaw|openhuman), image, soul, skills, mcpServers, expose, channelPolicy, state (Running|Sleeping|Stopped), idleTimeout, deployMode, and containerManaged fields.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L175-L258",
+          "version": "repo-lines-v1:sha256:1b06674b79db9f30c0bff5517c1be4139399bfd416ca82e3b89d3477fe02a0bc:eyJzZWxlY3RlZExpbmVDb3VudCI6ODQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3MTg2ZDVmZmViMDllNTE3NGNjZjk4NDlhOTRlNjQ3OTU0MDQxMTVkNGVjYWEyZTI5YTNiYzk3ZDkwYjcxZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlOGVkOGM0ZTYxZDA5YWRkMTg0NWUyYjA4NmQzMThkMzNjMWMxNjNlNDM1MmY4ODI4MDc1YTBlMTUwZmQ3MDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyOGJhZDcyZDAzMGM5YTViZjY4YWM4MjU4NzhmNzEzOGFkMWI0NDczMDkyODU1OTc0NjA4NmQ5MDA2NmM3YzUifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/interface.go#L33-L39",
+          "version": "repo-lines-v1:sha256:c11f2dc4192c518ce983f374499a661ad67a8665610d152c739dee658c879fb2:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDBkOTg2YjBkZjdlOWM0N2FhNzgyYjA2NjA5NDY5YmM4ZWVjYTQ3NjEyYjgzOGNmODI5ZGRhNGJjZGRkMzMyOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmFmYmEwNTI3YzM5NTNjNGI2ZTBlNWI1NzM5YmE4MzYxMmY4MDUzYmNkYzk0NjY3MzAxOTNjZDFkNTkwYjQwOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmY0MTNlMWY1ZTFkODgxODI0MmNiNWIzOWRkOWMyOTUwNmZlMTg3MmZkZTY5NWNkOWE0OTk3ZjFiNDlkYWI5NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDI0Y2FhNTU0MzY4YjJiOTJjYmZkNjg5Njg3NWI3OGQzMjU1M2NkYmE2ZWY2NGYwMjcyM2RjM2NiOGVmZGYxZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a148a6bb25e9421e9c3d764781c0bab9",
+      "statement": "The Manager CRD spec includes model, runtime, image, soul, agents, skills, mcpServers, state, config (heartbeatInterval, workerIdleTimeout, notifyChannel), and accessEntries fields.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L779-L812",
+          "version": "repo-lines-v1:sha256:e8e312469fe9b60892408e1def465c9351347b5c5ec91ef016ad7777615bef20:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMWQ5NDk1NTZjZjE5MzNlYmMxYWMxNTllOGUyMmY0OTZiMTJiNWJjNjM5YjFiNDc2YWQ5OTA0ZTMzZGQ0MDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjczZGNhYjUwYjdiZGM3NWM4ZDI2M2FiNjJlMDExNjQ1YmYzZTg4Y2QyZDM2MGI0YTA0N2ZiYTgwOGFlMTc2MjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyYTc0ZDFmNTYzY2FiMWUyMmNlMzkyOWU5OTExYjE0NTVlNTdhNTIyNjY0MGVkOTJkMmI4MjI3ZjMwZjliZmEifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L823-L827",
+          "version": "repo-lines-v1:sha256:8b02b898b50281a03e031ae5be25d95a4054de8631cad10ed2ca44f1fe3814b0:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTAxMjY3YzMzYmY3ZGZjNzcyMTJjOTA0MDFiZDEwODI4ZGY2MGU2ZDU2MTU2MWUyOTcxYmExZTIxNzJkZmIzMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGZjNWQ4ZWM3ZDUzYTkxOTMzMjU2NjNkYzBlN2NiZmJkODNlODdkZjc3ZTFjOTY2YjY2NTdmZTY1Nzg0MGUwZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDI1ZDI5ZDBlZjExZTM2NjZiODA0NmE0YjEzOWQ3ZGYzMzYzMThkOWEwYTk3MDEwNjIxZjU3MzU3ZWNiZGJjNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4c0a252b54534fb1bd85f40435868342",
+      "statement": "The Team CRD defines groups of workers with a leader via workerMembers references, humanMembers, admin, channelPolicy, heartbeatEvery, and peerMentions, with status tracking per-member state and room IDs.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L437-L473",
+          "version": "repo-lines-v1:sha256:441edc9de65bd242ea409b6021da3d79f46bcfe797188b576f76aa4569db2103:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiMmQyN2U5MmE2ZGRjMWVmMGJlMTc4MGVkNGY2ZjkzOThmYzhlYjViMjk1MjNiNWU2MDU0ZDRjYzNkMzZhOWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5MDkyMGFjMzc4Y2ExNmVmYWVmODg1N2QxNGI4ZTcyODI4YzgxZGY0OGM4YTdhMGYzNjY0ODc1MDYwOGQ2NjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ4NDU3MzRjYTQ2NGFkNmU4MDdmOTIwODIxZDcyNjczYjliZDcyODVmNDViNTBiOWUzNzFjYjgwMjU5NjRhNmEifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L618-L700",
+          "version": "repo-lines-v1:sha256:cefff0c4071b86ca5acf61dfd39563a3652ad879da24747613b206d2ae0efd8c:eyJzZWxlY3RlZExpbmVDb3VudCI6ODMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRkMzU2ODQ0NjEwNTM3MTlkODk2ZTFkZDkzYjNjNWExMzA0ZGRiMTVkOGQ4ZmUwNzcyYTg3ODllZDg4NmQxZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxOWMwMDA5YzVlYmQ0YzYyY2M1MGE0YTIzODI5ODdkYjQ0ZDM2ZTVjNDY4ZTNhZGFkOTc1N2NhM2Q5ZmU1NGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI2Y2EwNzI0ZDRjMzc1NDIyYWFmNTQwZGJlYTk0OGI1ZTczZmQzNmM2ODVkZTEwODg2NmE5ODIyY2I2NTA4OTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d11427c3522245a18ab0562f4f27a45d",
+      "statement": "The Human CRD represents human participants with displayName, username, permissionLevel (1=Admin, 2=Team, 3=Worker), accessibleTeams, accessibleWorkers, and identitySource for SSO.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L714-L755",
+          "version": "repo-lines-v1:sha256:37bdad113c31712abe06b8a45257a46e6a907c71cf3c9b7f85c34660dcb97942:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkZjBhOWMyMmRjZDliODZlYzhmMTUyOWJiNGUzODkwM2E5YzcyZGQ0NTY0NzYyOGQ3Y2Y0MjNiMzExYjQxYTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4NzVkZTIzNjk5ZWI2OGUxNGY5MjQ2N2YwZTg0YWY3OThiZmQ3ZTlmMzE0ZGRjM2ZmNzlkMjUyZDQzYWEzOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI2Y2EwNzI0ZDRjMzc1NDIyYWFmNTQwZGJlYTk0OGI1ZTczZmQzNmM2ODVkZTEwODg2NmE5ODIyY2I2NTA4OTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4e10d8f7ba6147b1af71af80f3e53e4f",
+      "statement": "The Project CRD is team-scoped and defines repos with access levels (rw|ro), workers, and dependsOn for cross-project dependencies, with status tracking phases from Pending through Ready to Completed/Archived.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/project_types.go#L6-L66",
+          "version": "repo-lines-v1:sha256:3fc0fcc4890d2bfcad4f8101298a90c36c13a1f38a7eac7240b079141b2e4d0b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljNGMyNjRkNzBiYmEzZTczNzA2ZWJhYzBhY2VkZDdlZmMzNWYxMmQwNmM2YmYwNjFhMTFiMmU4YjU2ZWM3NWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxMmFjYjZlZTBkMzI2ZmMwNzIyOTliMTI5ZTc3OTEyNGYwNjVlNWRjY2EwZTViNzJlNDlhNmEyNTE5YmVkZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3NzhkYTI2NjM3MzlhOTI4Mzk0MmE5YTZmNDBkMWZkOTQyMjliYTM0ODU4YzJkZWE4M2I3MjliOTc4MGZkYzIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-03T08:15:26.963Z"
+  }
+}
