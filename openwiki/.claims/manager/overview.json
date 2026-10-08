@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:ca63f35c0e5577607709934236f699e04f11fd710b1d1dd9a36f3730105ddafb",
+  "claims": [
+    {
+      "id": "claim_fcb7ac05670c483aba80ae5aa0de9506",
+      "statement": "The Manager has 21 skill modules in the manager/agent/skills/ directory, including better-harness and harness-integration skills.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/skills/agentteams-find-worker/SKILL.md",
+          "version": "repo-file-v1:sha256:415339663b3b98003b6a351039ee3a573fb7f2897cb23571f2b6acf1ee7c198a"
+        },
+        {
+          "resource": "repo://manager/agent/skills/better-harness/SKILL.md",
+          "version": "repo-file-v1:sha256:87c7e014eabaccf6a1650d47510e9b02fa32f462aabc1f1eb8c37b71a82539bd"
+        },
+        {
+          "resource": "repo://manager/agent/skills/harness-integration/SKILL.md",
+          "version": "repo-file-v1:sha256:a09b69969f18d770cabb1c4b698232d1b5a1211c7205b6f33b2968c7a9d47322"
+        }
+      ]
+    },
+    {
+      "id": "claim_802368632a1f4fb29ccaee2fffb4f48e",
+      "statement": "The AGENTS fragments include heartbeat-section.md for heartbeat integration in the manager prompt assembly.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/fragments/AGENTS/heartbeat-section.md",
+          "version": "repo-file-v1:sha256:3442faed7904ed7943bf5420522fe8514a95bdfaabc224769445e6c4830a0c6e"
+        }
+      ]
+    },
+    {
+      "id": "claim_0a61a9332e96472787bd91271141d74c",
+      "statement": "The Manager bootstrap chain starts with start-manager-agent.sh which detects runtime, runs bootstrap steps from manager/scripts/lib/bootstrap/, then executes upgrade-builtins.sh and render-manager-prompts.sh before launching the runtime.",
+      "evidence": [
+        {
+          "resource": "repo://manager/scripts/init/start-manager-agent.sh#L1-L10",
+          "version": "repo-lines-v1:sha256:f11c9e86ce636959922e7dbfe89438369909494cb37d16af934de7d3861a7524:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NzVmOTI4NTQ2YWVlNzg1NWNiMWRiOWFmYzhhYjNmMWE4YTM0ZDQzZGU1YmJkNjJmNzA3NmQ3YmE5ZjM5MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4M2ZjZmRkNjY1NzFjZDUxNjVjZTllNzRiMjk1YWYyMmJmYjc5ZWRkOTA2NjhmZGIyZjNkN2U3YzhmZTk0ZmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgxOWUyOTA0MTc5Zjc4N2FlMmM0Mjk4ODE5NWI0NDdkNDhkMDI0ZGU3NWI5NjBkYzNlNmRkM2E5NDE4N2U1YjcifQ"
+        },
+        {
+          "resource": "repo://manager/scripts/init/upgrade-builtins.sh",
+          "version": "repo-file-v1:sha256:b0683e4309fc50218bd8c42f084543bdf094f13cd4eea3583ccb66480b7c526f"
+        },
+        {
+          "resource": "repo://manager/scripts/lib/bootstrap/pre-start.sh#L1-L41",
+          "version": "repo-lines-v1:sha256:023b3e74b01cf79a6c6ea1aeb6ac4cd26bf7616831b7aea872c2992ca306e86e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NzVmOTI4NTQ2YWVlNzg1NWNiMWRiOWFmYzhhYjNmMWE4YTM0ZDQzZGU1YmJkNjJmNzA3NmQ3YmE5ZjM5MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}

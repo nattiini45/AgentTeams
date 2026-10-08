@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:be32128ec3e4b258d2e7f17122c99e5ba7c9976c5b5d5ed18cab033c0f0a4312",
+  "claims": [
+    {
+      "id": "claim_723b75d9bee94175884fff02095caa51",
+      "statement": "The AgentTeams dashboard consists of a Vite vanilla-JS SPA and a Node.js same-origin proxy that mediates all communication between the browser and the controller REST API and MinIO object storage.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/README.md#L29-L36",
+          "version": "repo-lines-v1:sha256:dc9e53ed1ce27d287424ea9411239e443abf0c1f6eb79d6b0838934298bac5b3:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2FkMDJiOTI4YjU3NTA0NTk4MTI1MWIyZGNmOGVlMjlkNTVkZjk5ZjRmYjU4MzE4ZmFhMDE4ZWExODEzMjg2MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWFhZTdjN2U1MDI5NDI1ZmM4Mjg4NDk0MThlOWI4N2JiMGQ3M2RmMWM2M2FkZDU0YWU1YTdkMTAxM2Q5ZTI5YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGVjOTA2ODU2ODFiNDFjMjZmNDdjODUzZGZjOWMzYTMyMWEwYjQ0ODYxZGY1MTdmNmQzNDA0N2RmNzI2NWU1NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjVkZmM1ZGUyODBlZGI4ZjA2MzMwNmI4NDRmYjg1NWY3ZGUxZjE4MmExODYzNWQ4YWIzYjg1NmZlZWE0ZGJkZiJ9"
+        },
+        {
+          "resource": "repo://dashboard/server/src/server.js#L1-L60",
+          "version": "repo-lines-v1:sha256:102b03fff074dcc784cfd61e46041816cbe43f0ce45e8d8d838719010d2346a1:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2NWYzY2NhOWE0NjM3YzM0NTkzYzViNGRjNTY5OGQ2MzY4YjkxY2U0M2Y2ZDI2MjczYTcwYzQzMGE2NmI3MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiYTVmNTE5MjU3Mzc2NjcxNjlhZjZlZmMzMjU2NzBmODZkOWMyYjgyMjdjYjVlYzI2YjM2ZjViMGEyNmYwNDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://dashboard/web/src/main.js#L1-L40",
+          "version": "repo-lines-v1:sha256:4b6548fd4fd0ba47c6aad4fd60cd342abb326e3a503d8c6c5f49971c51c41e1e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NDMwNTliYTBiYmM4ZDc0MDBhMTc3NjUzMGY0OGY5N2I0MTA5YTJlMGNkYjE0YTEyYzcwMWFlMTFmMTM1NDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwZDVkZDA0YTMwOTM3ZWE3ZDNlMjY2OTAwNTg4ZDVlMGM3NTNlNmEwMmJkOTA2ZTVhZTFiZGVjYjliN2QzNDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fbd988d332e441879b89071c1c82a372",
+      "statement": "The proxy is mandatory because the controller's REST API sets no CORS headers and requires a Bearer admin token on every request, which the proxy reads from a file and injects server-side.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/README.md#L39-L51",
+          "version": "repo-lines-v1:sha256:db440ad64aec296e0fac6d1d0f46df00b757e003e2a328f2e7672776fa8f9422:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhOThiYWY1NWIwZGQ0OWEyZWRhZjhmMmI1Nzc5ZmE4ZGMzOGM3MGQ4NjdiY2ExOWVlYjc3MTAwNzZjZGZkZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkMDg3NzQ5NThiNjUwNTBjNTg1YmQ0NzFkMmIxN2Q2NzkyZjEzZDM1N2U3MjZkYjI1YTZiOGNkYzJkMWQ0NTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzOTcwOWZmN2UyYjczYTVjZGM5MDY4ZGUwZTJkMzA2YmFkMDc0NDQ1OTcwZDk4MGRkYWU1ZmM2MjY0MTUyN2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkMGU3YmRjZTFlOTE4MjJjMzE5YWRhYTc3Yzk5ZTkyZDcyZWMyMGU5MGYzN2Q0NjU3ZTA2ZGQ3Y2U4OTkwMmQifQ"
+        },
+        {
+          "resource": "repo://dashboard/server/src/config.js#L214-L224",
+          "version": "repo-lines-v1:sha256:fcbce5828bea63828f68ee411f2e7d6708a1dfb9d469f0d7852226a067563671:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1YTI5MGM3MWUzZjUwNzc5OTUxODE1MjA5NjcyZmQ2MTRlYzEzNjc3ZjhiNzA5NWJiNjc0NDMyZWEyYWNiYjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3NmUxMjVjOTUyYWZhMWFlZDI1ODk0MjRkNTc4Y2YzOTZlOTJlMjhkMWMxNTQ1YmEwNDkzNjI4M2NmNjE1NjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU0YTUyMzU1ZDBjYWNlZjQ0OGM0NGJhZjA3OGNkOTBmZmM3YzBlMGMyOTRjNDA1M2U4ZDM2Mjc2NDEzODkzNGUifQ"
+        },
+        {
+          "resource": "repo://dashboard/server/src/controller-client.js#L30-L78",
+          "version": "repo-lines-v1:sha256:e8ef6e19458f4775ecaa8164c9cf59812e8c5e176c24988d4db1dcc1486c1a63:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiM2E1MjFhNzA0YmVlNDEzMWQ5NjI4MzE1NmVhMjg3MGI1MDUxYzQxMmYxNDhlNDgxNDNlOTFlYzU1NDRkNmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhOTI5M2ZkODA1NGI2ZTQ3MjQ4MzczZjM5ZjRkZDc3ODAwMTA1ZWI3NTgzNDg2ODcyNTQyODVjZDEyODJiNzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyODc1MjZjNDU1MjEzMjNkNWIzNTYzZjczNjc2ZmZlNmJjMGNmZDkzM2M2ODIzODJlMDVkYTQzZjlmODI0ODIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_239f889022c94d8a9ba0a2e2834ed4f0",
+      "statement": "The scoped allowlist in `classify(method, pathname)` is a pure function that decides for every request whether it is allowed and where it should be routed, returning either a route decision or a 404/405 rejection.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/allowlist.js#L59-L199",
+          "version": "repo-lines-v1:sha256:497b5000a506d01248a246100ff31b0514782822c8033427dca89613925ca257:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI5NzJhNDI5MzgyYjJlMTQ3MThlMGUzN2IwNTcwYThhMTcwMjk5MWZjZDg0OThjZDg0MDYwYThiZjRmMDUwMTdiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjZTcyOThlODBkNGVhNGZiNDhhNDRjOTY2NzlhM2Q3MjlmODNjZTY3NmVkM2ViZjJlODAwMWRmMWUyNDJlZjUzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmNTgzYjZjNjQ4MDlhOGJjYzhhMTIwNDQyZjk0ZmMwOWU0ZTFlMGU4NTYxMzk4ZmU3MmFiYmVhNzBmNWQwM2RjIn0"
+        },
+        {
+          "resource": "repo://dashboard/server/src/handler.js#L56-L63",
+          "version": "repo-lines-v1:sha256:90836cd784a1412fd90ee616f7078ccdf31f7b12ed44ca02d1311a449314b74d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDZlMGM0MTg2OTEyNWZmYWRkMGNjNzNjYTkwNDA3ZmJhMGE4YjYxYWY2NzA4ODllM2YzOGUyZjFlN2MyNDY3OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmE0MWQ3M2M0NTIyYmVhMzlmZjgxNWUyNGJjZjEzMTE4NTMxZDY3MWViM2NmNTMxMjE4ODVlMTFhMWM0NzI0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTFiNTlhODQ4YzBkZTNkNzM1ODE2MDhhNDUyZGQwOTBhZmZmMmMxNzYyNjU0ZjQ2MGRjNTRlYWYwNWEyZmQ2YSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e3f2efecd9db45e5b82b35cbc21f7195",
+      "statement": "The allowlist defines exactly these route categories: GET controller passthrough for managers/teams/workers/manager-tasks/projects, GET MinIO for tasks and files under shared/agents roots, POST worker lifecycle writes (wake/sleep/ensure-ready), POST message injection for managers/teams, GET/POST/DELETE gateway provider management, and PUT model/provider assignment for workers/teams/managers.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/allowlist.js#L60-L198",
+          "version": "repo-lines-v1:sha256:bd222fbd38225520f195915663c8d1e3cb5af763c2ad888878119dc1576c2a24:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiNzllNmE3NTIxOWRlYjA3ZTc2YjUzNDM3MjJmNDQ1YjllYjA4NGVmYzcyZWVkOTMxZGE5MjBlY2I1OTc1ZDM5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxYTc0ZGM3NDdiYjU2MzgxZTJmMmJmNzI0MjVmMzJlNDRkZWEwZTM5ZDA1ZTJjYjFjODdhNzBmNmFjMTIzMzdlIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkOTBhODBhYmM5OTVkOTUxODk0YTViODZkMjVkNDgzNmJmY2U1YzkwZmIzMGQ4NjZmMGY1NTE0NjhkYWU3YTgzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJjNmFmYzg4YzYzMGE3MzljYjFjYzVhMTkwMWE1YWUyZjQwNTM2ZTIwZmUxYmViMjhmOGVkNmZkMWZhZmFkNjBhIn0"
+        },
+        {
+          "resource": "repo://dashboard/server/src/allowlist.js#L9-L39",
+          "version": "repo-lines-v1:sha256:ae83abecf68b1fde48754aa4d9a534b052fba77dda79da9861e2f582595473cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiMGZjNDc3NDU0MDk1Y2FiMzNmZDYyMmVkM2JlYWUxZjVkNDc2ODJmYmM3NWVlMWUwMTA4ZDUyZjQzZjk4ZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0Njg2NTg3NmQxNmJiMGU0ZGUzMjUwODdmNWIzNjkyYzNmNjU5ZTI5YTJkMDk5M2ZjNGQ0YTU0OTFjMTg1NTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJlNjAxYmJiYzE0OTQ0MzBmYzhjOWVjZWQyYTA5ODU3MjE4YzliOGZjYWYzMGM0MjRiODdlYTIzZWFlN2IwOWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7e451c3cf74e41d88f2e053218fd60b0",
+      "statement": "Path traversal in MinIO routes is prevented by `normalizeMinioKey` which rejects `..` segments, embedded backslashes, null bytes, and segments that decode into traversal attempts, plus the allowlist constraining the root prefix to `shared/` or `agents/` only.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/allowlist.js#L216-L237",
+          "version": "repo-lines-v1:sha256:66232cd70cd6068ce7251229889d0615533173d83139453634546a9bec8de2f0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRmYWI3MTBkZGY3ODU5ZTU3NTc2NGE5MTNhMDAyYzc0NTg1ZmZhNzAwMTUxMGNiODgxMWRhODNkMmNmNzRiMzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcyZWFjNTJiZDE2MGZlNjRlNjgwNTAzZDY5ZjkyZDg5N2ZjMDk1ODk0ZDk4YjQ2ZmExZGNiZTRkZTE5YjJkZTIifQ"
+        },
+        {
+          "resource": "repo://dashboard/server/src/allowlist.js#L40-L41",
+          "version": "repo-lines-v1:sha256:bfeb77d08b78401c953f7bd9f9cadaf7dc961353bc1d0c6b52007833b7d72a2c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjU4MjEzNDNjZjdjMTM3ZTFhODFiMGY1MWIxYWJiNTFhMTkwMjBiNmY3YjY4ZWUyMTI0NDk3YTVjMTU2YzczYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzcxNDBiOTUxOTZiYzI4ODMyZGU1NTI2YmRmNDAzNDc5MzAwNTMyMjkyNzViZGE5NzZhYjg1YjIxYTZlYzgxMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmE0YjljYzQ1YzU0YTdiOWI4MGZiNmNhNzhmODE1ODIzYWE4MmI0ZDgyNDc5YWNkNjhhNDNhZTEzNmExYTBjNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzFlYjgwYzllNGViNDAwMDg4NmY1MjQ3ODkzZWM5YTc2Y2QwMzcxNmNjNjkwZGIzYmM4NGMwOTg1YTc5NjgyNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ffa2773ab7e04ec3af753210eea346ca",
+      "statement": "The `/docker/` path (the controller's embedded-mode Docker socket passthrough) is never proxied — it has no route in the allowlist and returns 404.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/README.md#L91-L93",
+          "version": "repo-lines-v1:sha256:e257eebaf9d8ff016ccba0d4136469010f4aca8b7b71a3b82fd6cd2e837ebf25:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzg0NzFhMGViZGU0ODhhOGViMTA1NjI5ZjgzM2IxY2ZjNDRhNGNjOGUyNWI1OTY1YzYxZGI2ODJhZDFjNzEwNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzZmNzI2Y2U5ZDQwYzIwYzQwMTRiZDNiNGJlYTcwY2Q4NzQxODRkZTZiOWEwNDVjNTRjZDA2MzdmMGVlOGZhMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzQ4MjU2MDJiN2RjNzkzODJlNjIyNzA3ZmMyYjQwZTYzMTM1ODk4ODMwYmU2N2NlNjVkZjA1YmViNDEzZTQ1ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzhkYjgxNWEyYTU3MWZhZjU2YjJmMDM1NDI0Njg0MDZmOGE1YjFjYjczMzMwODk1OTcxODhjZTFjNGU5YjMxMSJ9"
+        },
+        {
+          "resource": "repo://dashboard/server/src/allowlist.js#L24-L26",
+          "version": "repo-lines-v1:sha256:798dadd4e094b957c6507151d68632c5c6e84867e3adf114f41fae9e5bc91d8e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDg1MzdlYzU2ZThjM2M1Yzc2YTM1MTdmMWQ0YzYzZDNkYzdjZWUwNThhYTdjZDNkNWRjMGY3Yjg0ZWNkY2NjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjk5NmFkNWUwMjMyZjhlNmY4Y2E4NWRmYmNiNGU3ZTk4NGM1MjZhMTk5MjJmOTJkYzkwZWE4ZjQxNzcyZDE2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmEzMzkzZmVhYTNjNzQxYjY2YWI5NTFjZTgyM2U3MTRmMjk3NDE1NzExNDA2ZTk5YTA3MWI3YjdmZjllNmRiOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzI5MjExZWM1NDM1YjUzMGRjNmY4MzFhMDRjMWRlODllYjEzNWU4YTgzZTMwNGM5ZTAyZGQ1MDY5YTUwNGVkMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_74f39ff251fc472eb2b637b51474954a",
+      "statement": "Every allow-listed write operation produces an audit log entry as a JSON line to stdout, with message-injection entries including a `bodyPreview` truncated to ≤120 characters and the full body never written to the log.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/handler.js#L248-L258",
+          "version": "repo-lines-v1:sha256:121ea16ed4d23337138da23271604cdaf9ab24bd375d34d36b5c3173584d30d2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhN2I5YjMyNmU1ZTMzMDMyZGZmMjJkNTY5YmI3YWM3Y2YyYzA5MzE2M2Y0Y2RmMWU1NzZkNzQ4OWUxZGM2MTEifQ"
+        },
+        {
+          "resource": "repo://dashboard/server/src/handler.js#L83-L117",
+          "version": "repo-lines-v1:sha256:9479fc9e371c3e03be86edef0f02ce35d73b8349383bd8ac3dc822f0276ba750:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmODQ3NGMwZTYxNzZiMjE4MzlhYzUxZDc5YmQzNTgwNjNkODQ3NDFjODllYzExNzdmMjE1ZTM3ZjA2NzlkYjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4MDA1ZDU3MTA2YTM2MmViMDAwZGFmM2RhNDY3NGM4MmI1MThmZjVhMmUyZjY3ZWU4ZTc1N2EzMzNjMmFmNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVjNDYzMjkzZTEwZjU0YmYwNWU4ZDAyMmE3ZTdiNDU4ODhlYjViNmYzYWE2ZmM2ZDZjN2ZjZjRhZmEzNGM5YzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1MGNkNzE1ZjUzNWY2ZDI3NTUyNzVjMjFlNWExNDU4YWMxYTYzOWNlMjg3NzEyOGUwNGVlOTg2NTZhYjQzZGMifQ"
+        },
+        {
+          "resource": "repo://dashboard/server/src/request-log.js#L1-L24",
+          "version": "repo-lines-v1:sha256:53ed6f25ae501c64a7bf3e2eaa9253cc3ee1fe4e5587fd4dfb329f0b0ed6c40f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2NWYzY2NhOWE0NjM3YzM0NTkzYzViNGRjNTY5OGQ2MzY4YjkxY2U0M2Y2ZDI2MjczYTcwYzQzMGE2NmI3MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiZjRjY2UzOWVjYzhmNDVkZDA1ZTdlNzQ5YWVhMzY0ZmQxZDgxYzk5NDVkOTExMmYwZTE1NzY4MzBlNTY3OGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6e6f4204e42f423fad8a8621dface708",
+      "statement": "Message injection request bodies are capped at 64 KB, returning 413 if exceeded without making any upstream call.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/handler.js#L220-L246",
+          "version": "repo-lines-v1:sha256:fad68ebb48acd49e6008376fbf4caddbde082f04b344399f1830d71ebf1b6235:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2YjM4MTIwZDk3ZDkwNmYwZWIxZjU4NmU0ZDkzZGYwYzEwOTAyMTFjOTQ4NGNhNDY0YzI1MWZiODE3ZmRlNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4ZDk3MmMyZTlmNTI0YTM2Yjg4NzVkMzJmMzg5NDkyOTVhNjk0OGYyYzBiMDk5MjNjN2U4NDNmYWQ4OWFiMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiOTFjMzIxMGM0Y2QzYzk4MjhlMzcyZThmNGYwMzZhMTM5NjQ4MDdiMzYyYmE2N2YwOTU3YzY4NDJjMTU3NjcifQ"
+        },
+        {
+          "resource": "repo://dashboard/server/src/handler.js#L6-L10",
+          "version": "repo-lines-v1:sha256:79bcc7d09c5b9f50830ea16b304aacef880d9019fcb900db457a53590c0c073a:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjc0ODhjZDE3N2JkZDRmYTQ5YTg0ZjAwZDgyY2ZhYzI5NzU0NWI3YzBmYjMxMmEzZmQ5N2MzZWQ3M2E2MDY2MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTQwMzI4M2E4MGUwZjJmZWI0NzEwZDA4N2M5ZmEwODQyNDg0MWE3N2U2ZTE0MTE2ZGI2MDc0ZjcxZjBiY2Y4OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTA1M2I0NTcyYzNhODk5MzNhMTQ0MDNmYTU0MjgzZmI2OTFlNzNmYmRlYThhM2FiN2U3NjRjMjM1YWU4ZjM5OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTA4YTRjNWI4MjhhNjg4MTY3ZmU1Y2U4MDVmMDJmZDk2MDUxODA5ZGRlM2I0NmY4NTdkZDE4YzJlZTZkM2I5YiJ9"
+        },
+        {
+          "resource": "repo://dashboard/server/src/handler.js#L69-L78",
+          "version": "repo-lines-v1:sha256:cb7499242b2cd65fe26b48e02c64c336c8dd6b6d20af815a4f34fe7fb3a490ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmODQ3NGMwZTYxNzZiMjE4MzlhYzUxZDc5YmQzNTgwNjNkODQ3NDFjODllYzExNzdmMjE1ZTM3ZjA2NzlkYjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4MDA1ZDU3MTA2YTM2MmViMDAwZGFmM2RhNDY3NGM4MmI1MThmZjVhMmUyZjY3ZWU4ZTc1N2EzMzNjMmFmNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlYjI2YWM4MWExODU4MjRkMjAwMmI5MGU1ODE2OWIxMjE2MzY1NTNiMzFiYTJiN2YxYjEwYWU0NzFlNDQ5YmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImViMmVjNWJiNjdiMDA1YjQ1NGJlOWRkZWQzNDlmYTZjYjZmZTQyNDMxNWE1MDg2ZGY5NjAxNDQ4MmYxOGQ4YWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_05a063b90bc4458a816b4bd09aca8447",
+      "statement": "Conditional-GET caching on MinIO routes forwards `If-None-Match` and `If-Modified-Since` as unsigned transport headers (never part of the SigV4 signature), relays MinIO 304 as bodyless 304, and on 200 sets `Cache-Control: no-cache` to force revalidation.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/handler.js#L136-L194",
+          "version": "repo-lines-v1:sha256:58b4868740354343770e35b61edf542577b837a193295801ee3abe2decdebf61:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmNjA5NGI3ZGE3MDQyNWVhNmQ1OGIxOGVjMzQ1M2ViMzc2ZGFjZjcwNWY1Y2MwZjQxOGEzYTIzMzZmNTAzMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZlMWExNjhkMTc0ODEyM2ZkNzVhYWFlZTk2NTYwMmExNTY0MGY0ZjQxNmM2MGZkNDAyYWU5MmM0M2U0NGU5YzgifQ"
+        },
+        {
+          "resource": "repo://dashboard/server/src/handler.js#L196-L207",
+          "version": "repo-lines-v1:sha256:03bebb6e1dcd2e78afbf3e72665d79720c539d1a26a358bfc003e5696cc7197a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlNzNjOGYzY2FkOTU5M2M0YTlmMzZmODQzNzZkYTgyMjEzMGE5M2UyN2EyNTE0MzVhYmMyZmIzMzM0MjBjYzIifQ"
+        },
+        {
+          "resource": "repo://dashboard/server/src/minio-client.js#L44-L52",
+          "version": "repo-lines-v1:sha256:21f31e7d3620e43b82e4679534de11892b116f6110d95f66f6a78d67fa381aa0:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjJkMTFjYWY0M2U5N2VmMzY5ZTZiZWVkMWEyNjhiZDA1ODM4ZjI5YjlkZDI1NGJmNjliYTY0ODg0MTQ3MjM0YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmRiMTQyNWNiYWFmM2RiYmE0ZTE3ZTcxZGY4ZDZjMTZmMDFiMTQ4OGJkNWViMTY5ZTNiMTYyZTBlZGZlMWEwOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzViMmZjMDdlZmY2OThkZDNhYjY1NGYyMDEyYTVlMzg4ZWUyZDE5NTA1YmI2MDNiMWIyOTJhNmFlYmIzODJmNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzhhM2Y3YzY4YTdjMmFmOGM2NDUzZTllYTRmZTg0NzkwNGEwMDg5OGE2NTg3YjRmZjFiYTA3OWU5ZTdmZjIxOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a759493a1f7745a2ba21905d03ec61d7",
+      "statement": "Listing responses from MinIO (directory listings when an object 404s) are never cached, using `Cache-Control: no-store`.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/handler.js#L179-L183",
+          "version": "repo-lines-v1:sha256:b601a64ec20d5223ad06cd9f72e7bd8a660204b680e779bcb58d4b25d1909107:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VjODNkYTg2NTU5MjZkN2E4ZTAwZWMxZTQyZjQ2NjFjZDRkNWU0NDQzZjVkOTJlZmQ0YmM0YTY3NDdlM2RkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjA2YTQ0Yjk3NDU1MmQ4MGM4ZTZhYjE1ZWQ1NDhlYTVhMzhhM2E3MmRkOGQ5NTA3MTFhNzcwYjE0N2UyZDE0NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWEyOWI5ZWViNWQ1YmIyM2NlNDgxMjY4Zjg3YWYwMDNmZTM4NzEzNTAzZmU4YjlhNjE3OTZmMzVhZjdjYTM3YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmRmZTU5NDg2ZGJjZWY2NGE3MDRkMDZiN2VjOWY5MTQ0ODE3OTBhNmZkMDY4NjI4ZGE1YmRhNDgwZjBiNzYyMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f6119aafc76045ff9e5379914ebe1d9d",
+      "statement": "The SPA never holds the admin Bearer token or MinIO credentials; the proxy's `sanitizeResponseHeaders` strips `authorization`, `set-cookie`, `connection`, `transfer-encoding`, `content-length`, and `content-encoding` from every upstream response.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/controller-client.js#L81-L106",
+          "version": "repo-lines-v1:sha256:53af190b2f5866ec055394fa9c4ba0a25175762fa2f226f8dce2daf91572fb83:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlNTg5OTBkZWVmNjdjYTY3MjhhYjFjYjZjZmZlYjExNDBlNGRlNDMyZTE3NTVmOTcyYjExMGMxMGU3N2Q0OWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBiMGM1MDFmNTJhOGY1MWRlZjYyOGIyMTM2MGM4ZDY2MGYxYzQzOTFmYmFlM2VmYTM4MTNkZDg3MGE4YzhlYjAifQ"
+        },
+        {
+          "resource": "repo://dashboard/web/src/api.js#L1-L4",
+          "version": "repo-lines-v1:sha256:519c2bc1356b3b68903fa4fc10de64eea7ae3e69263dc50a936bb5324ac1d617:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTM1ZDZmNjcwNWY4ZWFjZDVhY2VkZmExMjIwZWIwYzQxOGExNDQ1OTY2MTQzZDQ1YzY1NWI1MjQ0MjdhZTQ1NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWM3MGU1ZDI3ZmE0ZmRhNWI3MjIyZjllMDJkNmQ0MjY5N2UwYzQ2ZmNkMDZiNjVmMDM5YjlmYTZmMjU0ZjNlNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b585112d789e4a1696953122d7643cd5",
+      "statement": "The proxy supports HTTP Basic authentication with constant-time credential comparison, enabled by default, and can be disabled only when binding to a loopback address.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/auth.js#L1-L76",
+          "version": "repo-lines-v1:sha256:f1a898debc880e5d20411c48d103c0ef1ee961d8ce2c410a35b74a279fe7262a:eyJzZWxlY3RlZExpbmVDb3VudCI6NzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2NWYzY2NhOWE0NjM3YzM0NTkzYzViNGRjNTY5OGQ2MzY4YjkxY2U0M2Y2ZDI2MjczYTcwYzQzMGE2NmI3MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJlYWY3M2YwNjQ4ZGQ0NzJhNzQ5YmM4OWQ0Y2I0OWQyODViNmViYTNjZGM1MjdlMGU1ZjhmZDc0ZGEwMDJiZjUifQ"
+        },
+        {
+          "resource": "repo://dashboard/server/src/config.js#L38-L45",
+          "version": "repo-lines-v1:sha256:09c4018a162f4ccef411be8904aa477f3e3744489887d8b1e3fe769cd201ddf7:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjlkY2FmZTlkNTVlMjVmYmNmOGM3NGMwM2MyZWUyNGJmNDQ0Yzc5MmY1OTkzYWM5NDc0NDIyZmY0MzQyMDhjNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWFmMTkzNzRkN2QxM2EwNWU1MDM1N2M1ZmZlNDA0MDY0YTA2OWJiZTk2Y2ZlMzczNDU1OWEyY2VjNGNhMDI4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDI5Y2YyM2NlZDJhZGI4NDk4ZDQ4ZWRlZTM3NzI1YWI0OTk3ZThmZjhkNGIwYWE4ZjNmNzBkOTY4OTE1OGZlNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d0fa406a7e5e498ebf5665cd06887dc2",
+      "statement": "The MinIO client uses a hand-rolled AWS SigV4 signer (`node:crypto` only, no AWS SDK) with a fixed `SignedHeaders` set of `host;x-amz-content-sha256;x-amz-date`.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/minio-client.js#L1-L7",
+          "version": "repo-lines-v1:sha256:ab6baffbdd2ad7cb7deb2b2bed96672d634c563c3a023c4c0bdbea5bbc3f44ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTY1ZjNjY2E5YTQ2MzdjMzQ1OTNjNWI0ZGM1Njk4ZDYzNjhiOTFjZTQzZjZkMjYyNzNhNzBjNDMwYTY2YjcxZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjBmMTBmNmQ4OGU5OTljNTY5NTZmMjVhMWNlNmM1MmQwZTJjN2IwY2FhZTc5MWIzZWQzYWIxODAwOGRjYmJlZSJ9"
+        },
+        {
+          "resource": "repo://dashboard/server/src/sigv4.js#L1-L50",
+          "version": "repo-lines-v1:sha256:a8f10e782b62f0a029c9f7480a9577d9d0e045efec07bc6dbfbdc9a9372145b6:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2NWYzY2NhOWE0NjM3YzM0NTkzYzViNGRjNTY5OGQ2MzY4YjkxY2U0M2Y2ZDI2MjczYTcwYzQzMGE2NmI3MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1YzA2YjYxMWI2MTk1NjdiYTU5YzVmNmI1YmQ2ZjUzOGUxM2JjNzQ0N2E3NjhhOTdlM2VlY2ViNWFmNDgwN2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyODJjN2JlOWY0ZjJlNWFhMjI2MGJhZTc3NjI1NDE1OGZmZDhkMmMwYWRhOGI1NDQxMjBmNjI0YWY0YWU4MDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c32f10a348c9497da2baab48fead4790",
+      "statement": "The static file server reads the entire built `web/dist/` directory into memory at startup and serves from this cache, with path-traversal protection and fallback to `index.html` for extensionless paths.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/static.js#L44-L87",
+          "version": "repo-lines-v1:sha256:4fbf23c4089b3e6b1e8523b4278a0ce5ac0f51c89c1ee0e0f6c41892b3108c5c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5M2FhM2NhMjVhODYyYmYwNGVlMjNhMTBjYzI0ZTU5OTU2ODk5YjFlNTVjZThkZTQ4ODRmNjI5OGE4NzdlY2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyNzliNjgwNTIwZWQ1MjZkY2M0YzhhYTM3MzUyNzU5MGUyODE5NWU0MGZiZTYxMDdlMWU1YjQ5NWE0NTc3MzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7e7d5753680b410985648e9fa35da5bd",
+      "statement": "The dashboard was built across three milestones: v1 read-only + v1.1 lifecycle writes in M2, v1.5 message injection + conditional-GET caching in M3 Steps 1-2, and v2 task detail/kanban/DAG in M3 Step 3.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/README.md#L3-L25",
+          "version": "repo-lines-v1:sha256:d010d503e65ae3285418ad67d223399824bc28a8f8b27b4c27ab0c6fc948e3f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkMjY2ODgyNWRiNGVhYzk3ZDg4OTBmNTBkMWM1NjMzMzZmZWJiNTQ4OWQwMDYwZDg2YmZjZDIyZjVkYjA3NGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiNjMxN2NmN2EzZTE3MjExMmY3ODUwYWNkNzFhZmE5ZDA3MjUwMDI1OGJjODkwNTE2YTU1NWYwMzNmMjExOTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc4N2ZiNWMzZmYxNTcwM2ExYjcxNmRjZDQ2NGJjODc3OTc0MGUyYzdjMzQwNGU3MDdiODM5OGQ5MjBhY2MzMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlYzkwNjg1NjgxYjQxYzI2ZjQ3Yzg1M2RmYzljM2EzMjFhMGI0NDg2MWRmNTE3ZjZkMzQwNDdkZjcyNjVlNTQifQ"
+        },
+        {
+          "resource": "repo://docs/implementation-milestone-2.md#L71-L79",
+          "version": "repo-lines-v1:sha256:5ed66f7833f1f29e9ff4afa2e9c12e387684393e3f6458b7ec298371aaeb1036:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2RkNjdlMTNlOGJmNzVlYTM0Y2VjZGYyNWIyZjJjMTU2MzhmMzhmNTZhZWNhOTUxNzNiNjY0MzJlY2RmNGFkMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGYxOTM5OThlYjQ3MTM4NzFhOGNiZjk3NzdjNzdjYWI2NTA5OWRmYjU3NTg1ZjNiODk1YTA0YmY2NmI3OTk5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODYzNmY5MzgwNDhkMmVjYWE4MWI4OWUzODliNWMzNWNiODBmZmI5MmU1MWM4NDNmMjY1M2E1ZDlhOTM5ZmIzMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjM4MTNlMzFhNTkxMTk1MDU5YThjYjgxYzIzYmQxZDA3Y2Y3ZTZmMTBmYTkwYjkxNDY4OGZkNWEyMDQyMjE1NiJ9"
+        },
+        {
+          "resource": "repo://docs/implementation-milestone-3.md#L59-L97",
+          "version": "repo-lines-v1:sha256:1be04d8f89c28b5e9ba0a5319b60426d5efb1791d1c72d4d9eba0f5f1f0a8b04:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5YTM2MzdhYmUzYTRmYTI4YjA5OTBmZTk4ZWYzZjZhODM5ODNjOWEwOTk4MjNmNWVmOWMzNWNhMTdkMDQ1NTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjMzFhMmZlZTg4NDJiMTk4MDAyN2E5N2U2MDE5N2FmNDU4YmEyNzI5ZTcwMzg3MDA4YWYyNjZiZjExM2Q2NTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4NzQ0NTBlMmM0YTg2ZDA4YjIwYWYyNDZjNTM3ZDYwM2Y5NjZjYTAwY2MzMjJmMGJmMGM4OWM5ZDVjZjE3NjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bacabdbefa5e49f2b74599bdab535e56",
+      "statement": "The v2 board kanban has four columns (Active, Blocked, Completed, Cancelled) built from state.json and MinIO data without any new endpoints or proxy changes.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/web/src/panels/board.js#L1-L43",
+          "version": "repo-lines-v1:sha256:61efc4117c58a2c4d6f9b9434514070d95a2f0a3886004c5686640f9eb89efbc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5OWRmNjNjMzYwZjQ3NjQwM2Q4ZDg3ODBlMGZkNjMwN2M3MzMwMTYzMzRiMzIyOWIzMmZiYTMwODFhOTY0NDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4ZmY0ZDQwMWMxNWY1NGRhMDhiMWYzMGM3YWE1YzI0NzczMGI1ODMxNWE3YzI1MGYxYjNkOGZlMzgxOTg5MDQifQ"
+        },
+        {
+          "resource": "repo://dashboard/web/src/plan-parse.js#L132-L179",
+          "version": "repo-lines-v1:sha256:57bbbc2204c392a648be6a62c594449cb98ee6f770689857a2160c854d882ea8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxNzg3ODJjNjFhZDE0YmIyZDZjM2NhNTk0NjYzNmM2NzE0YjY2ZjJkNmE1ODQ3YmU3OGUzNjgwMjNhOWYwNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkNmQ5NzdlNDZmNzRiMmQyZDEyMDgwMGRjMzA0NTNiNTk0MTkyMDE0MzhhNmQ1NzNhZDRhNDc0MDQ2ZDY2MmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlNGI2NTU3ODNmMzEyZjMyZjcyOTM2ODRkMGFiNDg2M2QzODY4NTM0OWQ4YTRiMmY0YTI1OTJiZjhjNTBhMjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_27e49f19064e4914b27c732078f50a17",
+      "statement": "The SPA polling helper pauses timers when the browser tab is hidden and immediately ticks once when the tab becomes visible, with guard against overlapping concurrent ticks.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/web/src/poll.js#L1-L62",
+          "version": "repo-lines-v1:sha256:134d94c16e6b11b48171dcf3c51ac4a01b263201c0694920ca8a60466f0c0ce0:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMzhhOGZmNjIyNWUwNjZmZmEyNDA5N2VkZDY2ZDQ0NTY0MGIwMDBhOGYzNDhlZTQ3ZDA1ZGM0NTU0MmUwYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_88448444f2e148429013a2b925543a7c",
+      "statement": "Provider write operations (register-provider, delete-provider) never log body content to the audit log since it contains API keys.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/handler.js#L94-L101",
+          "version": "repo-lines-v1:sha256:da47a8c3cb436d491956abe109348053e5927c970d83a1c317dea9639284f6cc:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFmODhlNjM3ZWJlZDA5YWI1YTEyMDViOWY3MThlNTI5OTAyNmY1NDk1NDA1YzI5YjQ5MmJlOTFmMDkyMjBhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGU0NjJiZDg1ZWEzNTIyODIyYTlhZDNlYjI0MDk5YjAzMmExYjYyN2JlY2ZkN2M1ODMxZTk5MjdkNGJhYzQwZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODQ0Y2E1OTZjYjBmNmU4Y2JmY2U1NTc4Njg3YTg3ZWViYzg2MzExYWUzMjhiNmUzYmQ0YWI5Y2UzYzRjMGRhNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmJmNWFlNDQ2NTgyMDg5YjBmZDZlNDdkODA1ZGFlOWY3NDQxNWE3OGExOTkwOTU5YzE2ZDg4YjQ4MTVlOTUxYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e92ecf87785c4f6ca7ffaf3caa27e70c",
+      "statement": "The token file is read with an mtime-based cache and invalidated on 401 responses from the controller, enabling seamless token rotation.",
+      "evidence": [
+        {
+          "resource": "repo://dashboard/server/src/config.js#L214-L228",
+          "version": "repo-lines-v1:sha256:39ce9c2c313bc3b161dc3d9ad66da0f8333d7d9a39739dd76988d9e4394fb63d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1YTI5MGM3MWUzZjUwNzc5OTUxODE1MjA5NjcyZmQ2MTRlYzEzNjc3ZjhiNzA5NWJiNjc0NDMyZWEyYWNiYjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3NmUxMjVjOTUyYWZhMWFlZDI1ODk0MjRkNTc4Y2YzOTZlOTJlMjhkMWMxNTQ1YmEwNDkzNjI4M2NmNjE1NjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwYmI2ODIwODEwMjdmN2JiZjExZWIyOWZjYTZmMzdhN2QwZjZmNzg3MzkwNjc2OTIwODAzN2RiMDZkODA3ODYifQ"
+        },
+        {
+          "resource": "repo://dashboard/server/src/controller-client.js#L62-L65",
+          "version": "repo-lines-v1:sha256:521d77eb692260a543fdc2e67d4b2a85f4c4eca6497bb4dbcf7fa852e9dbc408:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDBhNDA3MTljOGQ5NWE1ODg0OGUxOTFiYjJjYzAxOTU2NmM5NjY2OTA1MTUwYjEwNjg0YjRmZjliMzZjNjIzZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTUyMmM0MmNkMTljNmQwM2Q4MDhjNDUyNzIwNTUyODI1YjdlYTFjNWI0OTFiMjE4NTExY2FjNzQxNWNmOWQ5YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2FjM2JjNTI4ZWRmYzNlZWJmNGQzZjZiNGUxZGIxYjlhZTk4YmJhMjQwYTVmMzg2YWFmNjMwMTAzNzdiNWRkOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTFkNWY4MTllNTNlZWQ5Yzk2NDRmMzUzY2U4Y2QxYjcxMGFhZGEwYzZkNTM3YThhM2YyZWFlM2U0YjQyYWIzMSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}

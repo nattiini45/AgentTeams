@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:dfe10ab9887b3859b292cb959104a8ed67174dfd79ce52a88a2364ad47cfa3fb",
+  "claims": [
+    {
+      "id": "claim_8d4e5b0cbb8744a4a3296c9a49c1e3d0",
+      "statement": "Every AgentTeams plugin must include a plugin.yaml manifest with apiVersion: agentteams.agentteam/v1alpha1, kind: AgentTeamPlugin, metadata (name, version), prompts, skills, mcp, adapters, and package fields.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/schemas/plugin.schema.json#L1-L18",
+          "version": "repo-lines-v1:sha256:b291404fe80075868b90b1c55e57dd894c9aedce282d5b4553509db469671d08:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkZDcyZDhkMDdlNjI5OWJmZDRhOWEwYWU0NzIzOGUwOTU0MjMwOWQzNGNjZWY3ZTY4ZTZlMGZiZjQxZTYwMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://plugins/scripts/validate-plugin.rb#L34-L50",
+          "version": "repo-lines-v1:sha256:d23b86c03ab4e02f221caa6320ade42e10407d2e9bdf8da0b75498b801e795c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwY2U1ZmY1NjQ4ODIwOTZjNzg2YjE2M2M1Nzc3ZmQ5MjQ5Njg1OGU5MjU5MDJiM2RlNjM5NDQ4NDY2ZTZkNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxZjkyMzcxNzk4MmQ3YjAyMGFiMGFiNmU1MGMyMWQzNGEyZWQyZTI5ZmU4ZjQ0MTFlODM5NjFiZDdmOWM4NDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwMjY4MmJjNWExNTgxNmZkMWM1NDBlNTllNTUzZTgwZDk2ZWY0N2YyZGIyYTYzODhlZjM1NjE0ODAwNmE0ZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwMGNmOTBhNTgxOTdlOTg2ZDczZmQ0Nzk2NjAxOWYwZGIzODg4NGZkODlhYzZkZjM5MGZmOTNjMGRjODJlY2YifQ"
+        },
+        {
+          "resource": "repo://plugins/teamharness/plugin.yaml#L1-L71",
+          "version": "repo-lines-v1:sha256:0c740c91b19c249796409d1d66de37cec135edcf40c0924a254d32f4351e70b8:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5NWUwNTIxYzg4MTdhZmU1NDAyYzFlZGU0YWYzMTZlMGRiZmE4ZjhiNGE4YWQwYTJiYjlhMjA2MDNhMDYzNzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhNDAyZDUwZGNmOThiMzA5MmFiNDBjZDE0Y2JhNjVkODc5YmFhYTkwN2Y2MjAzZjVmNzcwYmMyMjY3MTcxZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1ea44eb8e1d94fc9b2525327905ba615",
+      "statement": "The adapter pattern allows plugins to support multiple runtimes through runtime-specific installation logic, with the QwenPaw adapter as the primary example.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/adapters/qwenpaw/install-plugin.sh#L1-L57",
+          "version": "repo-lines-v1:sha256:eae79ee1dcd94a973660fd6d2d0710ea126a1e498bf476774f6434b439bdd35b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NjlkMjM3Y2Q0MjBiOWQzOGI5ODFhMGE0ZjY3NzAxOTBhNGE4M2RjYTFmZTU2YzRmNWJhMWUyY2JjMGVmNzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://plugins/teamharness/scripts/install.sh#L10-L13",
+          "version": "repo-lines-v1:sha256:8317e3b64254b1f1fdc6c0ee1d3c59db74a55f72e398771a1a8fe4ddbb33989e:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGFiMGIwYzg1NDgzYWQ1MmFmYzU4ZGU2NDEzOTQ5YzZmMDAzODMwYmRmZWQyZjhhYTVhYTcyOWQ0YTNkYzUwZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzc2OWQyMzdjZDQyMGI5ZDM4Yjk4MWEwYTRmNjc3MDE5MGE0YTgzZGNhMWZlNTZjNGY1YmExZTJjYmMwZWY3NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTcwMTA1M2JkMmRmYTY5YjYzM2NmM2JlMTcxYWVlYzVkNmYzODY2NDI3ZTA1Y2ZmZjNjZjg4YmYwMGVhZWM4NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTliZWQyMTgzYjQzZjViOTIyOTZlNDE2ZDU1NGYyODRlYzkxYzVjMGU2MzA0MjM1Y2JkMGFjZmM1NmM4NDgzNiJ9"
+        },
+        {
+          "resource": "repo://plugins/workerflow/adapters/qwenpaw/README.md",
+          "version": "repo-file-v1:sha256:6701d6ed981df3c2cbf4851e12aa4e13a090d1fd670afa07538469a873a38203"
+        }
+      ]
+    },
+    {
+      "id": "claim_51a6890f51284b7ca7fd7067c70f9af9",
+      "statement": "The AgentTeams CLI provides plugin management commands: install, list, update, and uninstall, storing local state under .agentteams/.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/README.md#L16-L25",
+          "version": "repo-lines-v1:sha256:e4773e3111d12f1557718fcfcc3d05e2e7d8e339915218a9397937817c8111f9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhNmZlMzk5MmRiNmI0ZDBkNzcwOTE0NjA0MDkzYWEyOTU1Yjc4NTM2Y2EwYzhmMmRiMjYwNjZhMzhiNDdjZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3ZmE1YWVmM2Q3ODZlZDYxNDlhMDU2OGQ1NDQ1N2VjMTk3ZjUzYjM2ZGJkYzZkMWFhN2YzYmQzNGZjOGViYTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhMjkwY2RiMjFhMTYxMDMwYTdiMjdmZmUwYWYwMzFjODE1ZmZiNjUxYmZiYTRlYWNkZmRmY2Y4NmExOTY3OGUifQ"
+        },
+        {
+          "resource": "repo://plugins/cli/src/agentteams_cli/main.py#L51-L91",
+          "version": "repo-lines-v1:sha256:42d435f2e6b924c675cd4bfdd70bc1dcb9a69de81382101f6ab532b713cc05a0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMzk3OTMzYTI0YTgwMWVlOTIzMzI3YmQ2OWEwMTA0OWMwNzc5MTUwMjFjZjJlYzM5ZGRhNGY4MWFhODM3ZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NWVmYTBmMDQxYTc3MmMxMThiZWM0NDllNWUzNzExMTc5NTMwMGNkZmZhNTA3OTU1YzE4YTNlMjk4ZDU1YjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlMGM0YTdkMGFhYzI4ZjZkZDk5ZTgwZDRmNjkxOTk4NjQwNDYyNDVmNWJiYjUyYmFlNGJjNGQzNjU2YTUzNDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkNDEzNDBjYzIzOWExNTljZTliNjAyMmU5ZjYzMjI4MzJlMmVhZDc2Y2FlOWU0NzU0ZDIxMGViOGZiNmQ1ZTgifQ"
+        },
+        {
+          "resource": "repo://plugins/cli/src/agentteams_cli/plugin_manager.py#L156-L208",
+          "version": "repo-lines-v1:sha256:b5e7e196db52a6161f4e071bbf00a505d4ff985793227bbf02f3d8a200cced7f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFjZWI1MGFjNTVjYTJkMGI0ZWUwZGZiMWJjNjNmMjZlZTgwN2U2NmEwNjIwODBhMWJiZmIzMjUzZDY5YWI5OTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkZjZlZjQ5MDc3OWZmY2EyMjk2ZWZjNDczMDNkNzIzNzFlMzc3ZDE1ZDBhMDQ2OTAxN2FiMDUxNWI3ODg3YWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwMjM1Mjk3OWNkNzZjZWJlZTNmOGNlZjVlOWY1NjgxMGQxNzdkOTliZjIwNWNiOWM3OGRjZDNlYzhmMWYwNmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkMjE0MWZkMjI5MGNlNDhjNmVlNmI4OTEwNjc4ZjRjNTA4OTNhZDg4ZmMyODc4MjljNzU0M2QyYzYxZjZlOTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a02db40ce5ad4dc8a1bd6d13feab80a5",
+      "statement": "TeamHarness supports LoongSuite/Pilot integration through the plugin-probe convention, using agents.d/teamharness.json for discovery and installation.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/README.md#L32-L71",
+          "version": "repo-lines-v1:sha256:438e3e01145184e1e1f32ffa6fee268949d84c27f71ecb048086e57f49631540:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkNWFmNGMxN2RlNmQyMjZjNmI2NTVhODU3NzE3NWU1ZDNmNzI3YTU1ZjU0ZjhhNWJkZWE5YTFjNmVlM2E3MTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkMDI2ZGM2MDg0MGE4NTlmZTU0ZWQzMWJjZGY0MWEyODZhMWQ1MWI0NmJmN2JiMzk0ODk3Y2E2OTgxZTNiOGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRhODk1YTBkZDc0NjVkNjFhNzNmYjg0ZTk2MDRmNTJiNjJhZTQzNDA3ZWFiMTk5YmU5Mzg5MzYyOWZiMzg2MzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxYzI0YzU4ZDU0YzkzOGVjZDM4N2VhMjcwOGQ1ODRhYjk0ZDI1ZWY4M2U5MWU3MzJlMTRkMTA1NTE4OGViMjcifQ"
+        },
+        {
+          "resource": "repo://plugins/teamharness/loongsuite/agents.d/teamharness.json",
+          "version": "repo-file-v1:sha256:b7c32eda09efe0b493cd47715bc7880f14584be5096136027b65e40cde484084"
+        }
+      ]
+    },
+    {
+      "id": "claim_59f7e0484575481db6201a5523385dac",
+      "statement": "TeamHarness provides comprehensive MCP tools including health, message, roomflow, filesync, artifact, projectflow, and taskflow for agent orchestration.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/teamharness/mcp/server.py",
+          "version": "repo-file-v1:sha256:418956de6781a25483a3acd94c97638be24c9dd1c06bc5f756894443796db25a"
+        },
+        {
+          "resource": "repo://plugins/teamharness/plugin.yaml#L46-L60",
+          "version": "repo-lines-v1:sha256:5dad4a53af8efb1bdcbc04a404e5b3e64e61e6150bc8dffdb66b01711088141a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYjk0ODc4MmNmYjRkODRlODczMDk3MmFjNTZhNmVlY2NhYTY0NzJjNzAwMTVjYzVjNTJhOTVlY2MzNzViMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwMTg0Y2NiNGNhYTgyN2Y1NmFhNmIwYWIwNDhlMGZiNmFhODEyYWEzMjhiYjQ1MGY5MGE0M2ZmNTczZDVhMDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkNDkxY2UwZTI5MjA3MTY3MDYyY2VlNjRhNGY2OWEzZDYxN2Q4ZmU5YzgwN2MyNWIxMGZlNmQ2N2E0OGJhODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzMDJjOGQ2MjZmYTUyYzNkZjNlYTk4ZmNjZDg4NDU0OWFhNGI1ZDJkNzYxYWE0NjFkZjRhNzEwYTExMGE1ZDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5ad475b5eb904f4c817b958185711c50",
+      "statement": "WorkerFlow is a simplified workflow plugin for Worker-local task execution without team-wide coordination, providing only the worker_agentflow MCP tool.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/workerflow/adapters/qwenpaw/README.md#L1-L8",
+          "version": "repo-lines-v1:sha256:6701d6ed981df3c2cbf4851e12aa4e13a090d1fd670afa07538469a873a38203:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGVhZGMxMWE0YmI1ODM4MjQ1NDA2NjMyMDNiYzAzMmRhNzUzYTJhZTYzZDc4MWQxOTNjOThjZmEzOWMxNGQ3YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWU3NGM0N2RkZWI4MDEzMDgxNGY2Nzg4M2FiZGEyMjJkODc3MmExYzY2ZTE4NGFkNzM4NDhkMzE1NzM2MzE1ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://plugins/workerflow/plugin.yaml#L18-L27",
+          "version": "repo-lines-v1:sha256:0e990922f0c3cc25f08770740657a480b23a793d05f15ab56d21386d6400c8b7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYjk0ODc4MmNmYjRkODRlODczMDk3MmFjNTZhNmVlY2NhYTY0NzJjNzAwMTVjYzVjNTJhOTVlY2MzNzViMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5OWJiMzBiYTQyNDdjMjAzNjkyZjEyYTU2ZmFmNzE2M2RhNTg3YzU0YzI3NzA4NzFjMjUxZWMxYWE4ZmE5OTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzZmY0ZGMzMjliMDE1ZjFmMjFkMDg4MGFlNDNlN2UxN2Y1Yjc1MTRmNWU4NWViODUwZGEwYjBlODZlZGRiOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjNDdlN2YyZmM5YjUyZTIxMWVmZGZlMzZiNzJiMmZkOWJhZWU3OTBmN2FlZmZlMjIwZTM3NmMyZjA1MTBmNzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6c7566c5888448eda8296722824af26e",
+      "statement": "The plugin system uses lifecycle scripts (install.sh, uninstall.sh) that detect runtimes and dispatch to matching adapters, called by both CLI and LoongSuite installation paths.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/cli/src/agentteams_cli/plugin_manager.py#L124-L141",
+          "version": "repo-lines-v1:sha256:4dca4f31f5999ea360287b7e362b38727e0b08bd0ac88046db61dde5e53e5277:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3ZmEzNTFmNTY5MDExODY3ZTQ5NzAwMzlhYTMwZWVmNzhkMzU5NzkyZTcxODk5Y2FiYzE0ZThjYmQxZDBjYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwZTJhNDY1MDA5NWZhOTVkMGUyYmI0MWIyZGIyOTA5NGQzNDA0ZDI4Y2UxMjMzOWVjODhiYjRiNWM1YmU4ZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlYzIzZTJjMTE3YTU5Y2M2NzEwNzBiZDcwY2E0NzY1OWJkNzE4YTA1NTJkNDJlNWQ1ODlmOWQwNTBiMmE5ZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3MzI1Yjc4NjRhOGMzNzQxYjVhYmQ0OGEzZjIyYTk2N2RlZjc2ZTYwNmFmMjhlOGE0MmQ3ZDgwYTIwMjdhNzMifQ"
+        },
+        {
+          "resource": "repo://plugins/teamharness/scripts/install.sh#L1-L18",
+          "version": "repo-lines-v1:sha256:340296da5bb8d7669d41f7726991f4aa4fe41198f654a9b7ff0083aa1a3407e0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NjlkMjM3Y2Q0MjBiOWQzOGI5ODFhMGE0ZjY3NzAxOTBhNGE4M2RjYTFmZTU2YzRmNWJhMWUyY2JjMGVmNzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://plugins/teamharness/scripts/uninstall.sh#L1-L16",
+          "version": "repo-lines-v1:sha256:99cd3156a97fc8857ddebd2e359b7a1f81b98db3eea2d2b22db2ea12155ff9d7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NjlkMjM3Y2Q0MjBiOWQzOGI5ODFhMGE0ZjY3NzAxOTBhNGE4M2RjYTFmZTU2YzRmNWJhMWUyY2JjMGVmNzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eaddbe4662af4b2f9160ae0dacdae4bc",
+      "statement": "Plugin validation checks manifest structure, file existence, skill directories with SKILL.md files, MCP server configuration, and adapter directory structure.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/scripts/validate-plugin.rb#L31-L98",
+          "version": "repo-lines-v1:sha256:e1cdcd6b5f28e693b9e05377ae829072648f7f8b39fb64a42c1f9b53e1e6dc33:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwODY2MDgzZWQwN2E4Y2VhNGZmZTRkOWZkZWRkNGVmMjNmMGY1MjFlYmE4ZGJiOWMyZWNhNzY2YWM4Y2FkNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyNDYyNjgxNzhiMjUzNGQ1Nzg2NGRkODNiYmRjMmE4MjNkNWFkZTYxMzYxYmM1MTY2MjY5MzgyNzM2ZmU2Y2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk3YTcxMTExNGNlNWQwNjg0ODIyZDkxNDg5YTA4MWU4YmRmM2NjOGE2NmU5ODRkMzJhYzlmYmE5NDczZjMxOTUifQ"
+        },
+        {
+          "resource": "repo://plugins/tests/run-integration-tests.sh#L1-L20",
+          "version": "repo-lines-v1:sha256:b33f04c04afbe3907fe2dae481f667d086ae00c4faf106fc6b78ab09c932eefd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxZWEyYjUwMTdiMmJhMzZiYTYzOTg3ODNmMjY2OTJjYzc0OWVjMTFhNmNlOGI4NzVjOThiNzQ3OWQ0Y2I4ZTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d6ed9b754a2d4acb926a9055cc4362ca",
+      "statement": "The runtime configuration system loads plugin settings from JSON or YAML files via environment variables, with fallback support for simple YAML parsing.",
+      "evidence": [
+        {
+          "resource": "repo://plugins/common/runtime_config.py#L12-L94",
+          "version": "repo-lines-v1:sha256:16919833730a8b94141a5bf21e3cbe3c6669813360569fa0cfb119b529ca98e4:eyJzZWxlY3RlZExpbmVDb3VudCI6ODMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwNjAzNmJhZDBjOGYyZjZlMzBhY2VkMTQ3NWY0NzBlNjgwMjI0ZTNiMjRiN2JkNGFjYjE5OTg3MTA2YWExYmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYTNlYjQxZDVjMDExZTJkMTZjYzNhYTkxNDA4YTQ1ZTc0YmNmNjIxYWU1YTM3OWI5OWNkMzI5ZDAxZTVmNWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkMzdhMzNkMDczYWI4ZGEyOWRjNzRjZTZhODkxMzE4MThhNTJhNWMxNjVkMTZmMzFkOTkxOTk3ZjBlNjZjZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE2NjE0NmRkYWY1N2Y2MjIzNTUyMTBmYzcxYTBlNWM2NGM4NWUyYjdkOGY1MGE2MDEyZDU2NWFkZGVmN2ZiN2EifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}

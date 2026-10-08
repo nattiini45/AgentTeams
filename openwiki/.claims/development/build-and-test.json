@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:c7b5ce71c9c910b7e83f7397989e49e48d29136961b5023e9a63c656d265b804",
+  "claims": [
+    {
+      "id": "claim_dea0f73c86414a7cb66d8dffdc95c3e0",
+      "statement": "The Makefile provides unified build, test, push, and install targets for AgentTeams, including individual image builds for manager, worker, copaw-worker, hermes-worker, openhuman-worker, qwenpaw-worker, agentteams-controller, and embedded images.",
+      "evidence": [
+        {
+          "resource": "repo://Makefile",
+          "version": "repo-file-v1:sha256:5c305ef4bf7720f094c26acf5277ed759696fcf91450b7a64bdd272afbfde48e"
+        }
+      ]
+    },
+    {
+      "id": "claim_516c311c4ced4ec29eb5c23525283869",
+      "statement": "Integration tests live in the tests/ directory and run against a full embedded stack, verifying container startup, Manager-Worker communication via Matrix, task delegation, file sync with MinIO, and gateway routing.",
+      "evidence": [
+        {
+          "resource": "repo://tests/README.md",
+          "version": "repo-file-v1:sha256:557f8438f8da936a8b56db2f79499e5ac9f06e532501c2a02d90f24c216fbc7d"
+        },
+        {
+          "resource": "repo://tests/run-all-tests.sh",
+          "version": "repo-file-v1:sha256:d36423cf9302546053ae15a74092923e844117f00b88d7c52a877314fd7adec7"
+        }
+      ]
+    },
+    {
+      "id": "claim_5cc449ff8ab2479aa2a8ee47c11453a6",
+      "statement": "The CI/CD pipeline includes 14 GitHub Actions workflows covering integration tests, controller tests, remediation gates, image builds, releases, Helm linting, CRD sync verification, documentation updates, and PyPI publishing.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build.yml",
+          "version": "repo-file-v1:sha256:190f73c316c6f065df28405da34871493e8405d1af4fccfa8239bd792e7fb50e"
+        },
+        {
+          "resource": "repo://.github/workflows/check-crd-sync.yml",
+          "version": "repo-file-v1:sha256:4752a0948d95b8fc5a1de1201e87f96d5161262e0d10cc797c773c0d73e44b30"
+        },
+        {
+          "resource": "repo://.github/workflows/helm-lint.yml",
+          "version": "repo-file-v1:sha256:2c941f68d3d2c2b9b192382e700713fc225748e6b0bca6ae4823b3d7cf138f55"
+        },
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yml",
+          "version": "repo-file-v1:sha256:b86edabf4b8a1d40667cd89b17fae6c2ce503d9a1fbe4d6748a2a14abe9d30f0"
+        },
+        {
+          "resource": "repo://.github/workflows/publish-copaw.yml",
+          "version": "repo-file-v1:sha256:1e9db237014725c64e4eb2ecf94edd2c9df261c81d7a19d0180de851862375f7"
+        },
+        {
+          "resource": "repo://.github/workflows/release.yml",
+          "version": "repo-file-v1:sha256:4fe5a4d651dc63cdfd23bfb2f88cc35c802237ffc34b135c73bdfa6068c20bb5"
+        },
+        {
+          "resource": "repo://.github/workflows/remediation-gates.yml",
+          "version": "repo-file-v1:sha256:772394f13a7482af76c11ceabb34653e54200c8aea19cb3d419048ccdccdb574"
+        },
+        {
+          "resource": "repo://.github/workflows/test-controller.yml",
+          "version": "repo-file-v1:sha256:80d7c57a02a09806172f7423444011697d8a2df4ef13436f4ba0b32f6b63c8c1"
+        },
+        {
+          "resource": "repo://.github/workflows/test-integration.yml",
+          "version": "repo-file-v1:sha256:3e017ee3d99c95a141218b754e2f9559259d8acc2173043692c6d0b59e124ea6"
+        }
+      ]
+    },
+    {
+      "id": "claim_61d1b62cc5424d52b2bbde692fc68468",
+      "statement": "Integration tests are sharded for parallel execution: Shard A (01-06) for LLM interaction tests with sequential dependencies, Shard B (14) for task assignment, Shard C (15, 17-20, 22-25, 100) for independent controller tests, and Shard D (21) for team project DAG.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/test-integration.yml",
+          "version": "repo-file-v1:sha256:3e017ee3d99c95a141218b754e2f9559259d8acc2173043692c6d0b59e124ea6"
+        }
+      ]
+    },
+    {
+      "id": "claim_a48efb7a338e4696ae115ce25a91c47e",
+      "statement": "Shared Python libraries in shared/python/ include agentteams_matrix_format, agentteams_matrix_policies, agentteams_openclaw_merge, agentteams_protocol, and agentteams_sync, each with their own test suites.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/agentteams_protocol/pyproject.toml",
+          "version": "repo-file-v1:sha256:92fbe5a53e2c05c3d4150d8b7afc5d975493465066183dca4af9caf8f79b631c"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_sync/pyproject.toml",
+          "version": "repo-file-v1:sha256:496f7474d543ef18971565a629980b3f4b7a9215fee963bd6f52ac2a2bc792be"
+        }
+      ]
+    },
+    {
+      "id": "claim_23b8f55ad3a144d88c471a4243f61b80",
+      "statement": "The agentteams-controller has a dedicated Makefile with test-unit, test-integration, and test-all targets, where test-integration uses envtest for Kubernetes API testing.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/Makefile",
+          "version": "repo-file-v1:sha256:5ddb5e750135d586a94849a5cea81fd05bef7979740a304430bdcce77eaf7dbf"
+        }
+      ]
+    },
+    {
+      "id": "claim_1499d44252f04e038b2ba8d159a90247",
+      "statement": "Pre-commit hooks are configured for trailing whitespace, end-of-file fixing, YAML/JSON validation, merge conflict detection, and Go formatting for controller code.",
+      "evidence": [
+        {
+          "resource": "repo://.pre-commit-config.yaml",
+          "version": "repo-file-v1:sha256:62020f832a09ff8b9155898f7ffef3efc8b76be56225328c76c675862a17b0be"
+        }
+      ]
+    },
+    {
+      "id": "claim_858b17ff6ef144a7bde94b4a6b1041a8",
+      "statement": "The changelog policy requires recording changes affecting built image content in changelog/current.md before committing, with automatic renaming to versioned files on release.",
+      "evidence": [
+        {
+          "resource": "repo://changelog/current.md",
+          "version": "repo-file-v1:sha256:7f8cbb0e2199bef08f16da77f550721418f27c5df85e8e18e6d50e25ee20fb78"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}

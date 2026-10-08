@@ -1,3 +1,29 @@
+---
+type: "Reference"
+title: "Manager"
+description: "Coordinator agent details: runtimes, directory structure, 21 skills, prompt fragments, bootstrap chain."
+tags: ["manager", "coordinator", "agent", "runtimes", "skills", "bootstrap", "openclaw", "copaw"]
+verified:
+  - by: openwiki/0.7.1
+    at: 2026-10-08T08:19:13.018Z
+sources:
+  - id: openwiki-source-ee37aab9966517ae18c3de7f
+    resource: repo://manager/agent/fragments/AGENTS/heartbeat-section.md
+  - id: openwiki-source-bd935243cb80b19e5af48e26
+    resource: repo://manager/agent/skills/agentteams-find-worker/SKILL.md
+  - id: openwiki-source-6c98406b155f001cfe1c1af4
+    resource: repo://manager/agent/skills/better-harness/SKILL.md
+  - id: openwiki-source-ea711b3c0bdf0421bea25263
+    resource: repo://manager/agent/skills/harness-integration/SKILL.md
+  - id: openwiki-source-f21f802391622e0ea8356731
+    resource: repo://manager/scripts/init/start-manager-agent.sh
+  - id: openwiki-source-b28e752bb4e9a94966ef8c1d
+    resource: repo://manager/scripts/init/upgrade-builtins.sh
+  - id: openwiki-source-37e77828edca2e00c0cda839
+    resource: repo://manager/scripts/lib/bootstrap/pre-start.sh
+generated: { by: "openwiki/0.7.1", at: "2026-10-08T08:19:13.018Z" }
+---
+
 # Manager
 
 The Manager is the coordinator agent in AgentTeams. It orchestrates Workers, manages Teams, handles Human interactions, and configures the Higress gateway. The Manager runs as a dedicated container and communicates with Workers and Humans through Matrix rooms.
@@ -23,7 +49,7 @@ manager/agent/
 ├── HEARTBEAT.md                 # OpenClaw Manager periodic duties
 ├── SOUL.md                      # Manager personality (filled by onboarding)
 ├── TOOLS.md                     # Available tools reference
-├── skills/                      # 19 Manager skills (shared by both runtimes)
+├── skills/                      # 21 Manager skills (shared by both runtimes)
 ├── skills-alpha/                # Experimental skills
 ├── fragments/                   # Composable prompt fragments
 │   ├── AGENTS/                  # AGENTS.md fragments by topic
@@ -43,15 +69,17 @@ manager/agent/
 
 ## Manager Skills
 
-The Manager has 19 skill modules in [`manager/agent/skills/`](../../manager/agent/skills/). Each skill directory contains a `SKILL.md` (instructions for the agent), optional `scripts/` (executable helpers), and optional `references/` (detailed docs).
+The Manager has 21 skill modules in [`manager/agent/skills/`](../../manager/agent/skills/). Each skill directory contains a `SKILL.md` (instructions for the agent), optional `scripts/` (executable helpers), and optional `references/` (detailed docs).
 
 | Skill | Purpose |
 |-------|---------|
+| `agentteams-find-worker` | Find and query workers |
+| `better-harness` | Enhanced team harness integration |
 | `channel-management` | Create and manage Matrix channels |
 | `escalation-management` | Handle escalation protocols |
 | `file-sync-management` | Manage MinIO file synchronization |
 | `git-delegation-management` | Delegate git operations to workers |
-| `agentteams-find-worker` | Find and query workers |
+| `harness-integration` | TeamHarness plugin integration |
 | `human-management` | Manage human participants |
 | `matrix-server-management` | Matrix server administration |
 | `mcp-server-management` | Create and configure MCP servers |
@@ -100,6 +128,7 @@ The [`manager/agent/fragments/`](../../manager/agent/fragments/) directory conta
 - `message-sending-*.md` — Message sending by runtime
 - `host-files.md` — File system access
 - `minio.md` — MinIO integration
+- `heartbeat-section.md` — Heartbeat integration section
 
 **HEARTBEAT fragments:**
 - `header-openclaw.md` / `header-copaw.md` — Runtime-specific headers

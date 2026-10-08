@@ -1,3 +1,29 @@
+---
+type: "Reference"
+title: "Architecture Overview"
+description: "System layers, deployment shapes, component relationships, CRD model, credential flow, and data flow diagrams."
+tags: ["architecture", "overview", "system-design", "deployment", "crd", "credential-flow", "data-flow"]
+verified:
+  - by: openwiki/0.7.1
+    at: 2026-10-08T08:19:13.018Z
+sources:
+  - id: openwiki-source-845528493cc1e45f815a725f
+    resource: repo://agentteams-controller/api/v1beta1/project_types.go
+  - id: openwiki-source-219d13a95e1a93cb4e24f3f0
+    resource: repo://agentteams-controller/api/v1beta1/types.go
+  - id: openwiki-source-17e432a872d8893d0a68fc21
+    resource: repo://agentteams-controller/internal/gateway/client.go
+  - id: openwiki-source-cafc37482e52379955c257b7
+    resource: repo://agentteams-controller/internal/gateway/higress.go
+  - id: openwiki-source-115b2dad781e2a2c5b5a980d
+    resource: repo://docs/architecture.md
+  - id: openwiki-source-124a12417423aecf5b9b4da7
+    resource: repo://helm/agentteams/values.yaml
+  - id: openwiki-source-067453d36925cd87a6260d7a
+    resource: repo://install/agentteams-install.sh
+generated: { by: "openwiki/0.7.1", at: "2026-10-08T08:19:13.018Z" }
+---
+
 # Architecture Overview
 
 AgentTeams uses a **Manager-Workers architecture** where a central Manager agent orchestrates multiple Worker agents. Communication happens over Matrix IM rooms, with human participants having full visibility. The system is designed so that Workers are stateless and disposable — all state lives in object storage and the Matrix homeserver.

@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:c2b7e5c3ad64f0a799fd17025fd9caa22f3b6a934014c33bd1073bfbdad01885",
+  "claims": [
+    {
+      "id": "claim_88ea44ab13c5421d9e601726f9d6d328",
+      "statement": "AgentTeams provides five shared Python packages (agentteams_protocol, agentteams_sync, agentteams_openclaw_merge, agentteams_matrix_format, agentteams_matrix_policies) and shell libraries in shared/lib/ that provide domain logic across all worker runtimes.",
+      "evidence": [
+        {
+          "resource": "repo://shared/lib/agentteams-env.sh",
+          "version": "repo-file-v1:sha256:1209bf7942b6f4890c69f1f6a2ac8d993abcdd93cba1b36ef0750e797aef8144"
+        },
+        {
+          "resource": "repo://shared/python/AGENTS.md",
+          "version": "repo-file-v1:sha256:dc5531a001efd79de74c4b76fa0e9456d7b9c6f490bff6ec1ca588e8ecba606a"
+        }
+      ]
+    },
+    {
+      "id": "claim_b7b7b67acb2f470384d5a7506b8843c5",
+      "statement": "Critical constraint: no cross-package imports except agentteams_protocol. All other packages may import agentteams_protocol, but must not import each other.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/AGENTS.md",
+          "version": "repo-file-v1:sha256:dc5531a001efd79de74c4b76fa0e9456d7b9c6f490bff6ec1ca588e8ecba606a"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_sync/pyproject.toml",
+          "version": "repo-file-v1:sha256:496f7474d543ef18971565a629980b3f4b7a9215fee963bd6f52ac2a2bc792be"
+        }
+      ]
+    },
+    {
+      "id": "claim_c77e0dcad9bf458c816640617fa46ddf",
+      "statement": "Shell libraries (agentteams-env.sh, oss-credentials.sh, mc-wrapper.sh, render-skills.sh) provide environment bootstrapping, STS credential management for MinIO, transparent credential refresh, and environment variable substitution in documentation files.",
+      "evidence": [
+        {
+          "resource": "repo://shared/lib/agentteams-env.sh",
+          "version": "repo-file-v1:sha256:1209bf7942b6f4890c69f1f6a2ac8d993abcdd93cba1b36ef0750e797aef8144"
+        },
+        {
+          "resource": "repo://shared/lib/mc-wrapper.sh",
+          "version": "repo-file-v1:sha256:56f8ef4101b0d22eede3f1aa4649a150f0e2b48eb5b68ef4a33765d7f03b0096"
+        },
+        {
+          "resource": "repo://shared/lib/oss-credentials.sh",
+          "version": "repo-file-v1:sha256:07142b9457d8118385f66fcf18357d025b048ee9fa4faae79b523cb086155d9e"
+        },
+        {
+          "resource": "repo://shared/lib/render-skills.sh",
+          "version": "repo-file-v1:sha256:67232447a921f14563fae739a8808122ef54787a03a192cce5c3272c039c8a61"
+        }
+      ]
+    },
+    {
+      "id": "claim_e36938514028482f8ff4d2ea15011100",
+      "statement": "The five Python packages provide domain logic: agentteams_protocol (task/project DAG validation), agentteams_sync (MinIO file sync with runtime-specific policies), agentteams_openclaw_merge (openclaw.json merge logic), agentteams_matrix_format (Markdown-to-HTML rendering), and agentteams_matrix_policies (Matrix channel message filtering).",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/agentteams_matrix_format/src/agentteams_matrix_format/__init__.py",
+          "version": "repo-file-v1:sha256:31466dc1d7c012922077523cb3b38b631ef7c6b23ab38c6d72c3f944aae9cfdc"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_matrix_policies/src/agentteams_matrix_policies/__init__.py",
+          "version": "repo-file-v1:sha256:ee1a6db6ecbc11a33755cd5ea355fd3ec82301c49a8856bc52cb1fcf75cdc8e0"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_openclaw_merge/src/agentteams_openclaw_merge/__init__.py",
+          "version": "repo-file-v1:sha256:d37cf105448944fca4c365bbde3058f9bb8431a5f8b35a803fc89f54458a3f1e"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_protocol/src/agentteams_protocol/__init__.py",
+          "version": "repo-file-v1:sha256:b42c98e8ba65a86784a8d16e9ce119bbd582c4a3ee5dd7ba12e56018299c66d2"
+        },
+        {
+          "resource": "repo://shared/python/agentteams_sync/src/agentteams_sync/__init__.py",
+          "version": "repo-file-v1:sha256:4f3b5dcdbe58a5bda05f735d96ead5c0e270f5b6f38edac9342d325fe541465d"
+        }
+      ]
+    },
+    {
+      "id": "claim_e6d1d4c8d9394d7b9add6c8d49de41a1",
+      "statement": "Changes to shared libraries trigger rebuilds of dependent runtime images (copaw, hermes, qwenpaw, openhuman, worker, manager-copaw). The remediation-gates.yml CI job auto-discovers and tests all shared/python/agentteams_* packages on every PR.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/AGENTS.md",
+          "version": "repo-file-v1:sha256:dc5531a001efd79de74c4b76fa0e9456d7b9c6f490bff6ec1ca588e8ecba606a"
+        }
+      ]
+    },
+    {
+      "id": "claim_866b18a02e8d4395a75e397e0212e33c",
+      "statement": "Each runtime installs specific shared packages: OpenClaw Worker installs agentteams_openclaw_merge and agentteams_sync; CoPaw Worker installs agentteams_protocol, agentteams_openclaw_merge, and agentteams_sync; Hermes Worker installs all four packages including agentteams_matrix_policies.",
+      "evidence": [
+        {
+          "resource": "repo://copaw/Dockerfile#L159-L168",
+          "version": "repo-lines-v1:sha256:10a1b922e9a43d9cca37c40b859ea1cc26e7d7e13470a27a67e911832e6b29a8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjNGU2MjRjMGRkYWQzYzk4NmY2NDY5ZDhlMjQwZjA1Mjk2ODQ3ZmMwZTFhMDNhZTM2NDdhYjVlODJhYTAxNWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4MGI3ZjEzZjIwZjQ3NjgyMTE4YzEzMDRmY2M1Yzg2MmIwMGFiNzg3ZjY5ZWFmY2FmYmFjNTAzOGUxN2NmYmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljNTkzOGU0ZGVhYzJiZWQwODA1MWVhMjNmYzY2ZGMxMjQ3NmUyYTgyYWNmNzkyYTkwMDk4YTBiYjU5NGJlMGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2OTk2NzFkNjhlYzI2M2U3MDRmNmViYjg1MzZmY2M2Y2RlZjRjMjY3YjA3YTA1Yjc3ODRmYjk3M2ZhOTI3MmQifQ"
+        },
+        {
+          "resource": "repo://hermes/Dockerfile#L109-L131",
+          "version": "repo-lines-v1:sha256:c4b8bf07cf6f487a63b00b4d17ce4848593e3ef8bcf3879539c2e8101a4494d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MmY4NTY3MmRiMzlhODU1MjY1ZGRkNjBlMjgxY2ZmNjRlZmJkMzE2YzhmNWE4OTc4NWNhNjJhMDU2NzM0ZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1MmMwY2IxYmM4NDY4ZDU3MDU3NzU5NTE3N2I3YjcyMDdhM2ExNGRhMzA1YWNjNGYyOTM2ODg0ZWE2OTI3MGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2NDBlNmI4YWZlMDUxNzRkZDI0MjUyODQ0ZjQyZTVhODEwYzQ1MzMwNjI4Y2RiYWM5MjZkOGMxYjQ1MTJkNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhhYjA4YzU3NjQ5YzI0ZTRjY2VkOGViOGIyZjdlMDY0ZjNiODQzZmY5YTZjNWFlZTM0ZTQ4MWE5ODZhOTZjZmYifQ"
+        },
+        {
+          "resource": "repo://worker/Dockerfile#L62-L67",
+          "version": "repo-lines-v1:sha256:34948fc2d55a680d3d3ed992804cfb8f8d6a6e99706bc6136e17b835fe2306a6:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU1MTM3ZjIyOTk1Mzc0ZWUzNGFkYzQ5ZGJkMDI5OGIxZjM1YjgyYmJmNmU0ZDdiN2I4OWJiMDhiYzYzZDAyMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU0NjlkODZiNWZiYTJjZmY2YTljNWYzZjgzNGNjYjMyYjQ4Y2FhM2U4MjFkYjNkZTE4OGVjMGQzM2YzYTQ0MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDIwMjI0MjAzZWFjZTA0NDQzZTgyNDkzMWJhYzQyZDg5NzRmNGU4YTNjYjUwZDg3YTcwNGUzYjRjYmZiMDM3MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWM1MzY4YzljODcwMTgwY2M1N2YxZDVlMGExMjg4Mzk2NjIyZWQ0Zjc5NWM3MjZkNDMzZTEwZTYzZjRlNmE4YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_753975d9d1df457bb92f9ec2e2d378a8",
+      "statement": "Testing includes shell library tests in shared/tests/ and Python package tests via pytest. Each Python package has its own test suite, and tests can be run individually or via make test-python.",
+      "evidence": [
+        {
+          "resource": "repo://shared/python/agentteams_protocol/tests/test_verify_artifacts.py",
+          "version": "repo-file-v1:sha256:f8dc7571089d91b9d41eb98e11eb109d2ac1041e84d780e310c60d8ce2e5eca2"
+        },
+        {
+          "resource": "repo://shared/tests/test-agentteams-env.sh",
+          "version": "repo-file-v1:sha256:749ff70134b149045a5e874aea9f639f21b400afd5dbbf74d617f9d060794680"
+        },
+        {
+          "resource": "repo://shared/tests/test-oss-credentials.sh",
+          "version": "repo-file-v1:sha256:4bc4189d8211b2613ab5f1064806f5a8078b35bc00e87907d7ef4bffa9b6d70f"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}

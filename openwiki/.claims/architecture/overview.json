@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:9b1d7c3e544322df24fd5b3b2d50e99f37e90d59663b1e143ba3bb08afa94e0e",
+  "claims": [
+    {
+      "id": "claim_5e89eca04b8140a2b218178f750acf39",
+      "statement": "AgentTeams uses a Manager-Workers architecture where a central Manager agent orchestrates multiple Worker agents through Matrix IM rooms with human-in-the-loop visibility.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L168-L173",
+          "version": "repo-lines-v1:sha256:bf9f0b2446930dfd98fd9126ba229d0a7680f34c479142ceaa3ff6d36f9c2f17:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjI3NmU2MTZhYmZmMWNkYTYyZDkxNTIzNzRmMDc0MTMzM2VlMDY0Y2M4MzBiYWI0ZmQ2N2I1YzE5ODhmNTMwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUyZTZlODhiOGU5ZGYzYWZjMmU2ZDBkMGQzMGM4NTNhYmI0NjlkNWQ0ZDczNGQzYjYxY2FiY2QzM2FjOThjYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGQ2YmZhY2Y5N2M5NDllZGUzYjcxMzMyYzMwMmExNmEzZmNhZDUxMmE1M2ViM2Q2ODE2MjcwOWIzNjhiMGM0NiJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L1-L10",
+          "version": "repo-lines-v1:sha256:e8077f34349fbb9ff0bc5fafa8b2a787079c58c54a3587a0daf9f390e3a208c1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlZDZkMzAxMDQ2N2M1YmIxNTg2NDdlMDQ5ZGM4YTEyMjk5ODYyMTVmOThlYzJkYmYzZDEwMDU2OGRlNzFhNzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4ODBiOTcyN2NmZjBmYTYzYzdlY2U0ZGNjOTJkM2YwZTc4NGQ5ODRlNDI0ZTFhNzgwYzJkNzYwNGY4NzEyZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY5OTc0ZjY2ZGE4MDY1M2VkMTU5Yzg3ODc4YjgwYWZiZmQ0NTg2OWU4YTY0ZDlkODFkZDQ2MWNmODQ0Y2QwNjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_25d6b10e3df94c6d8d133b5b91a2080b",
+      "statement": "The system has three main layers: agentteams-controller (Go operator), Manager (coordinator agent), and Worker (task executor), with Workers being stateless and disposable.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L168-L173",
+          "version": "repo-lines-v1:sha256:bf9f0b2446930dfd98fd9126ba229d0a7680f34c479142ceaa3ff6d36f9c2f17:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjI3NmU2MTZhYmZmMWNkYTYyZDkxNTIzNzRmMDc0MTMzM2VlMDY0Y2M4MzBiYWI0ZmQ2N2I1YzE5ODhmNTMwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUyZTZlODhiOGU5ZGYzYWZjMmU2ZDBkMGQzMGM4NTNhYmI0NjlkNWQ0ZDczNGQzYjYxY2FiY2QzM2FjOThjYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGQ2YmZhY2Y5N2M5NDllZGUzYjcxMzMyYzMwMmExNmEzZmNhZDUxMmE1M2ViM2Q2ODE2MjcwOWIzNjhiMGM0NiJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L9-L14",
+          "version": "repo-lines-v1:sha256:2e9e18d8a8edbad36a144cd037802c1d3420c08196d39f5025a185adf119d745:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOThlOWRmODZhNmViZjVmZjE2MTdmNzNhZmRjOGE2Zjc2ZTU5NzdmOTA2OWRjMDY5OTRjODM3OWQ2NDkwNWFiZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGQ4MTAzNGUwODcyNGM5NmQ5NmQ3Mjk2YTE2YzgzMDA1YTlmZTdiNjgwZDMzYWUzYzcyMWQwNWNjYmFiYjI0YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTliMWNmNGVmMTIyNWFhYWJhOWZjMjZmOTE2MjRjMDZlZjQ3NTMzODk2ODc1OTkyZjU2MGY4NTgwYjJjMDQ0NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fc0dd23153fd44fab37efe9a4d30336e",
+      "statement": "The controller reconciles five CRD types under the agentteams.io API group: Worker, Manager, Team, Human, and Project.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/project_types.go#L6-L11",
+          "version": "repo-lines-v1:sha256:4ad80995ebabceefb6c8feca03a699f6883bb871637e673cc2eb36ffe8ec9c6a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWM0YzI2NGQ3MGJiYTNlNzM3MDZlYmFjMGFjZWRkN2VmYzM1ZjEyZDA2YzZiZjA2MWExMWIyZThiNTZlYzc1YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODEyYWNiNmVlMGQzMjZmYzA3MjI5OWIxMjllNzc5MTI0ZjA2NWU1ZGNjYTBlNWI3MmU0OWE2YTI1MTliZWRmNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmQyOGYyZWJjYWJiZTc0ZjAwYjY2NzUxNWE4ZGYzYmNjZjMzMDE3NjUxMDZkZjRhOGRiNDRkNGNlMjlkNmVmMCJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L168-L173",
+          "version": "repo-lines-v1:sha256:bf9f0b2446930dfd98fd9126ba229d0a7680f34c479142ceaa3ff6d36f9c2f17:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjI3NmU2MTZhYmZmMWNkYTYyZDkxNTIzNzRmMDc0MTMzM2VlMDY0Y2M4MzBiYWI0ZmQ2N2I1YzE5ODhmNTMwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUyZTZlODhiOGU5ZGYzYWZjMmU2ZDBkMGQzMGM4NTNhYmI0NjlkNWQ0ZDczNGQzYjYxY2FiY2QzM2FjOThjYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGQ2YmZhY2Y5N2M5NDllZGUzYjcxMzMyYzMwMmExNmEzZmNhZDUxMmE1M2ViM2Q2ODE2MjcwOWIzNjhiMGM0NiJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L436-L443",
+          "version": "repo-lines-v1:sha256:0db14e5cbc41533f6ec3072aa17005b352368564d7fe5a9150a4e84403de88b4:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWZkNGVmMzViZDNhYjdlMTQ1MWZjM2I3ZmQ4MDg1OWUyMDJiYjI0NDE5YTdhNDFmNzY4ZTM5ZTU5Y2M0ZmY2NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDg3NWRlMjM2OTllYjY4ZTE0ZjkyNDY3ZjBlODRhZjc5OGJmZDdlOWYzMTRkZGMzZmY3OWQyNTJkNDNhYTM5YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDEzMzY5NzJlYzEyZjhjNGRhZjIwNWZkMWU5ODljNGQyNDFlN2UzOGNlMzJiNWRlMDJhNjEwYWI5MzI5NTVjZSJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L716-L720",
+          "version": "repo-lines-v1:sha256:344076e0ddd1397bd2a8dbc9756da9cf525c815f37054db8ffb0240745efd0bd:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDVmZjE0YTM1ZmM3MmJkYjAwM2U1NWQ3Njc3MmJmNWM3NGMxNmExMGQxMzVhZTIzOThkOTMyYWRjNjQxZjA4YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDNlY2JiMjRhMDgzZmFjY2ZhMTk0ZDFhZTAzNGNhNmU1ODE2NTQ4NmIzYjQ5Y2MzNjkxYTUyNWE4MGYxYjMyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzE3ODdlOTM1ZjBkMjhlOGJmNTQ2ODkzNmQxZTZjODljMjU3ZTg3MDJhYzQ0NTk3NzE1NjFiMWQ2ZDA4N2ExNyJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L772-L777",
+          "version": "repo-lines-v1:sha256:72f0316e95ffc7c062973f385269ba02b2a59d776a52f9f2ed63336b22e3bc0e:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2U3YWY4OGFkN2IxZTE3NTYzZTJlNTE4NTIxMDAxNTY3NzU3YzAzOTQ4ZjM1N2MxMzdmMjIwMDVhNzk5ODM4NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODY0YTQxNzVjZDNkOTE2NDNkZmFiNGU4MGVmZTAwODEzNGU0OGIwOTIyZjZhYTcwZDA2NDc2MjZlZDQ1NDViZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDIyNTE4ZjUyNTQ4YjA3ZjUwMjQyOGU2OGEwODk5NzY5YTQwOTI4MzRiY2MwMzk4NWI0MjBjN2E5OTk0MGU5ZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2b17306ec23a43aa895c7c8f2e5228da",
+      "statement": "Local deployment uses an embedded controller container that bundles Higress, Tuwunel, MinIO, Element Web, and the controller binary, creating Manager and Worker containers via Docker/Podman API.",
+      "evidence": [
+        {
+          "resource": "repo://docs/architecture.md#L86-L98",
+          "version": "repo-lines-v1:sha256:0aad55a47a4d0bf3e64d77a714ae24b22d140cebf693eabd8f89cb4fddc4ab90:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyMDIyNzI3MmVhMTM5MTNjYzE1MGI5ZGE4M2VmNjc0ODAxNTNiOTE3NzU5YjI0MDg2MDgyOWM1ZjU1MmUxZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxNjRhMWMyZTE3OWYyNzZmMDIxMjVjZWFkNTM4NGZmYjU4NTRkZGZhZmYxODBjODc5MDhiNzM1MmQ5YzQ1MjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmZjk2ZDA0ZWE4NGIyN2VjZTBhNGVmM2NkZDc4YzgzMWVhNDdlN2RiYmMwNDI3NzQxMjQzYmRiZDQ1NDM2N2UifQ"
+        },
+        {
+          "resource": "repo://install/agentteams-install.sh#L1-L10",
+          "version": "repo-lines-v1:sha256:d942db3f8025170fdf1eb91ba7f934227c36cc60ac77d25d4bb83a9e4b922304:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NzVmOTI4NTQ2YWVlNzg1NWNiMWRiOWFmYzhhYjNmMWE4YTM0ZDQzZGU1YmJkNjJmNzA3NmQ3YmE5ZjM5MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkNTk1Y2RhODk3MjBiYzI0MDVlZTliOGNkNDkzNTBhZjRhOThjYTE4MTU5ZmI1MmNjMTcwNGNmMjFlZTcxM2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFkNDAwNTA3NmU2NGVhZmQxNmE1ZTcxMDNlOTQ0OTdlZGJkMTQyNjgxM2JmYmMxYTZlOTA4Yjg2N2ZhYWI0ZWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9c3ad5691bba46dbba4c25f13947f283",
+      "statement": "Kubernetes deployment uses Helm with each component running as its own Pod: Higress subchart, Tuwunel StatefulSet, MinIO StatefulSet, Element Web Deployment, Controller Deployment, with Manager and Worker Pods created from CRs.",
+      "evidence": [
+        {
+          "resource": "repo://docs/architecture.md#L100-L101",
+          "version": "repo-lines-v1:sha256:2fdca5372585dc13bdc649dd1070652dc283f411276da05aa3341b69ba2fa1ac:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZThlNjQxYmU1NWUyM2ZjMDM3NjhhNDY2ZmEwZDhjNWZjNmNmOTA2ZTQ4MDAyMzIwNjQ3MDA3ZDkyMWI5N2QxOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODVkMTVkYWIxOTcxMjA5YzVlYjQ2MDk3MzI3MTI3YTZjNmExNWYzOWJjYzdhNTJlNzIwNjdkNzc1MjNmMzk4YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjM2ZTU1ZDVlZDQ3ZmM0NzM1ZmZkZDdiNzdmMDNhYjU3NzU5NTI2NDA1YzJhYzNiMzkxMzFkM2EyMzI0OTc1OSJ9"
+        },
+        {
+          "resource": "repo://helm/agentteams/values.yaml#L1-L20",
+          "version": "repo-lines-v1:sha256:c97fa30266ea92a80b226c8761b82d47094b6b37d0957e4d0532c9a870863239:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2OTNiZjc3MGM0MDFhNWMzYmU3MzRlMWUxOTg4Mjg4MmIzMjRhNjlhNGQxMzdmMTljYTljMjliNTZiODRkN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiNzQxNzRhMDM1ZWZjN2I4MzRkM2QyMWYwODhjNWY2YTA0ODk4NDdhMzA4YzhmY2ZiYTVlMmJlZmQ4NDhhZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwZjZkMWYzNWM2YjJkYTI4NDg0ZGZhZDg2YTdjNTNlZGE5MjRiYjUxNDM1NDVjNjY4ZGM0YzNlMWE2Mzg5ZDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f218d08805ee45b79e47ae2b06b163a4",
+      "statement": "Workers never see real credentials; the controller provisions Higress consumers with key-auth, and the gateway injects real API keys on the proxy path.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/client.go#L7-L11",
+          "version": "repo-lines-v1:sha256:f9d05c7d47c8a6e3d11dd6a448399dcf117c7fddd9e1d9f2e5f181fc8a2f5bf6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTY2Mjc4ZTUxM2UwOGU2NGMxMzI5NTRlZWMyNjA3MTgyNjg3MWU1ZTM2NWE5N2M0NjYyMmRkNzY5OTVkOWZkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTZhZDA1YWYyOTc3ZDkwODg3OTU3MDYxMmM2YzQ2YjU4ZGY4YjJiZGVlZmEwMjI4MTY4MmZkN2I3MmFiYWRlNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzZiN2ZmMTJmNmFlYjk0YmM5ZDg5MjU5MDlmMjk1MWU3ZmFlNGRhNzA1MTk1MTNlMzM3ZTRjMjBhNmFhYmY5NiJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/gateway/higress.go#L140-L168",
+          "version": "repo-lines-v1:sha256:90efd20344589ec7c7bf863011188ae5a640bca34c18a6e8dcce0db9ed7dd0e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiY2U1OGFlOWZkMWEwYmM4MjFmODIzNTRlNjcxN2Q0MTFhZTEyNTQyNWUxYWQ2ZTE3NjM0YTMzOGQxNmNjODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiN2ZkZGYxYzg1OGI2MDQ5NjRmYWY5OTg2YjdmMmRlYjQwZDI2ZjVkNzQ5YzA0OTJmZGFkNWQ3MWUyYzJiODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmYTgzYmYxNDk2N2NhNmY5Y2ZmOTcxMDQyZTEwYTk0ZDRiZDMzYWIzYTk3M2RmN2QyMGI3ZjcyZWNmOWVlMmMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fa264d643919458493da0dbd7076035e",
+      "statement": "Data flows through MinIO object storage with workspaces for workers, shared projects, tasks, and deployed packages, with workers syncing their workspace on startup.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L168-L173",
+          "version": "repo-lines-v1:sha256:bf9f0b2446930dfd98fd9126ba229d0a7680f34c479142ceaa3ff6d36f9c2f17:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjI3NmU2MTZhYmZmMWNkYTYyZDkxNTIzNzRmMDc0MTMzM2VlMDY0Y2M4MzBiYWI0ZmQ2N2I1YzE5ODhmNTMwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUyZTZlODhiOGU5ZGYzYWZjMmU2ZDBkMGQzMGM4NTNhYmI0NjlkNWQ0ZDczNGQzYjYxY2FiY2QzM2FjOThjYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGQ2YmZhY2Y5N2M5NDllZGUzYjcxMzMyYzMwMmExNmEzZmNhZDUxMmE1M2ViM2Q2ODE2MjcwOWIzNjhiMGM0NiJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L130-L131",
+          "version": "repo-lines-v1:sha256:59ce6259a9ce077248d9660d2080bb71130c0808f2e2c209c8db43f8357f0b64:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTczNDQyZjI1MDIzODYwMjhmZmZmMzg0NjEwZDU5NzJhZGVlZTE4N2MxZDc1ODEwYTc2OWEzMjQxNjkzNmZkMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmRkNGU4MWI1M2MzYWI5ZjM5ZDAzNGNhMWQ3OTg3OWRjNzUwMzMyZmUwZDYzOWI1YTFlMDQ2OTY2Y2UwNWY3NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjE2ZWNhZTg4MWVkNDdlYjQxY2JkNDk3YTBiOWJiM2E3YjVlMjk4YmM4YmFkYmYzNzU2ZWI3NGMzZTcwYmRhMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6c8f5fa029f04ed4ba7f67bb7bcdd8e6",
+      "statement": "All agent communication happens in Matrix rooms with key design principles: human-in-the-loop by default, stateless workers, centralized credentials, and skills as documentation.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L168-L173",
+          "version": "repo-lines-v1:sha256:bf9f0b2446930dfd98fd9126ba229d0a7680f34c479142ceaa3ff6d36f9c2f17:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjI3NmU2MTZhYmZmMWNkYTYyZDkxNTIzNzRmMDc0MTMzM2VlMDY0Y2M4MzBiYWI0ZmQ2N2I1YzE5ODhmNTMwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUyZTZlODhiOGU5ZGYzYWZjMmU2ZDBkMGQzMGM4NTNhYmI0NjlkNWQ0ZDczNGQzYjYxY2FiY2QzM2FjOThjYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGQ2YmZhY2Y5N2M5NDllZGUzYjcxMzMyYzMwMmExNmEzZmNhZDUxMmE1M2ViM2Q2ODE2MjcwOWIzNjhiMGM0NiJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L119-L131",
+          "version": "repo-lines-v1:sha256:cc55d56eaf2cf12fa8ae94f6b163a2e5478f2255a80f0f00b466758acf7cd6d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyZDVlN2Y2YTg0ZWJjM2Q0Zjg2ZjFkMjU4ZmEzNWE5MGUzNjI3OWM3OWI5YWVmYzQyODk2YTIxMTRiMzhmNjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxNmVjYWU4ODFlZDQ3ZWI0MWNiZDQ5N2EwYjliYjNhN2I1ZTI5OGJjOGJhZGJmMzc1NmViNzRjM2U3MGJkYTMifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}

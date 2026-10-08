@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:2598f0479e0b943b4d92cb76272e8bf37a88be5cf6a1beb1966473ce09ade7b1",
+  "claims": [
+    {
+      "id": "claim_f0a76e3dedb5438badf1ac7b9c2c12d9",
+      "statement": "AgentTeams supports five worker runtimes (OpenClaw, CoPaw, Hermes, OpenHuman, QwenPaw) with different languages, frameworks, and Manager compatibility.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L40-L53",
+          "version": "repo-lines-v1:sha256:4271d084237446672e2890a177ac5ce480d66b54f27802e950fbe4f9f6647a0b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjMmQ0ZDRmODVlZTZjMTc5N2VmYzViNWRjMTYwZDYyYWQzNTU3YTJhZTBlYzM0MGYxNTk4Nzc5MGQzYmNhNzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZGZlNTk0OTc4ODRmODBiZWZmOTdmMzc5ODVkNDA3NmU4NTFiZGJkZjAyN2ZjZjRhYTY5OTU5ZmI3NjE3ZmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhNGJhZTZmY2JkZTY1NzU4NGMwNjQxODU0MDllOTY2N2RkYjZlMDhlNjQ2N2Q5MDM3YzQ0NDU4NGIzNDM3OTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4MDQ1NmY3Zjg3ZWRmYjQ2Y2RlMjM3NDI4OWE2ZWI0MmMxMDBkODkxMDc2ZmM1M2M5MmU5MGNjYTE0YzIyZjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_62bbb4aa9cf34fb09fb2ca87cbf8ec00",
+      "statement": "The worker runtime architecture includes a common contract for Matrix connection, Higress gateway access, and MinIO synchronization, with five runtime implementations.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L36-L55",
+          "version": "repo-lines-v1:sha256:ac041484c2a55c1fb75aa10e6aa7e6b66f700d2ee08d7ddb4d2979d9a31ebd24:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlOTdmMjYxYjdjNzRkY2NiMWY4YjMxNmY0OTJiZjdiYjM3ZTQxZmVmZTFiNTEwZGY3YzkxZGE2ZDU1NTIxMzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5ZTY2ZGFmZTdjODYzYWVlODJlMjIwYWFmODg5ZDM0OWFjNzE2YzFhMzQxNjI0YjkxNTM3MDhiMDEyOWQ5ZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg2YWM1MWEzYzc5Y2YxNWJlYWFmMmQyNGI5YTRjMzJhOTkwMGRmYTQxNTk4YmFiNzNhMWQ4MTZkNzY2ZmIxZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjMTQ1OTdhNWZmYTgxZTJjNDIxNzc1MTJjYmM0NzRmMDYyMWFjYTc1MTZlNzgxYWMwNGFkOGVjYTlhMjc1YTAifQ"
+        },
+        {
+          "resource": "repo://copaw/Dockerfile#L1-L211",
+          "version": "repo-lines-v1:sha256:4d33d7b03965104cb5deda45dbe5e6d9478be3c055c5330dbf3a6f8dae7e8049:eyJzZWxlY3RlZExpbmVDb3VudCI6MjExLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyNzA4NzNlYTFjZDJkM2VlMDFjZGY5OGZmZWNkMWE5Nzk2MGRhNDQ0ZjkyNDlhMzlmZDlkMTM4ODNmMTg3MTcwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyMzhiMzFhZmI1YjY3ZmEzMWJhMjAwNzgwZTM2ZDVkOThjNGNkZmNhYWYxOTVmMDRjYmUxMDE0ODVlNjQ1YjNiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://hermes/Dockerfile#L1-L202",
+          "version": "repo-lines-v1:sha256:1a031c0a233922b98f9598cd00f4f87bde9a03e37c0d652eecb08a5c2278a806:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyNzA4NzNlYTFjZDJkM2VlMDFjZGY5OGZmZWNkMWE5Nzk2MGRhNDQ0ZjkyNDlhMzlmZDlkMTM4ODNmMTg3MTcwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2M2M4OGIyMzE4NTFhNDdiYjk2YzBkY2ZjYTk0YWMzMTg0ZTg4M2RhZTE2ZTc2YzIyNWEyYWNjYzAyZDUyMDNhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://openhuman/Dockerfile#L1-L198",
+          "version": "repo-lines-v1:sha256:1e3ac8154bd8e041e852a51a3a838556788efaa282af742fe8ff75fdb9b59744:eyJzZWxlY3RlZExpbmVDb3VudCI6MTk4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmYTBjMjFhZWMyOGU2NjIwZmVjMjI0NTg5ZTlhMDI0Njk5ZWYzYmU4ZWZjYWRkYWExNmI0MzUzYmVhYjJlNTVlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJjMjI2NjQ4MWVjOTJhMGY2YTE2MDBhN2YwNDgzOGE0N2Q1MmU2NjE3NDE0MjMzNzcxYzFjZGUxMjk3ZWYzMmJjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://qwenpaw/Dockerfile#L1-L173",
+          "version": "repo-lines-v1:sha256:48213aeb2bf35b65fdbd105181e5c8339b67c1c90a4b7f33efb0a0d6f8641722:eyJzZWxlY3RlZExpbmVDb3VudCI6MTczLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyNzA4NzNlYTFjZDJkM2VlMDFjZGY5OGZmZWNkMWE5Nzk2MGRhNDQ0ZjkyNDlhMzlmZDlkMTM4ODNmMTg3MTcwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxYzY3ZWM2OGQwYjc5Y2IwMjgzZWYzNDYzNzNmMzRiNjUyNzA1MDhiMWM2MWI1Y2E4YWIwYjNhY2M1YzllOTY1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://worker/Dockerfile#L1-L87",
+          "version": "repo-lines-v1:sha256:965b4ad0640e865449fa8b9c0fae261995ba7a0149462bbc772a9a2a4d6f6505:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3MDg3M2VhMWNkMmQzZWUwMWNkZjk4ZmZlY2QxYTk3OTYwZGE0NDRmOTI0OWEzOWZkOWQxMzg4M2YxODcxNzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzYjUwNDRjYWI2NDZhMGYxZDFmNjIwODEzMzM4ODRjMzE1MWRmZWRiNDI4MzI1YmFhZTNkNTk0ZmJhNzI4ZTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0f6b80ad1e33454fb26551875e474e07",
+      "statement": "OpenClaw is the default runtime based on Node.js and the OpenClaw gateway framework, using openclaw-base image with Ubuntu 24.04 and Node.js 22.",
+      "evidence": [
+        {
+          "resource": "repo://openclaw-base/Dockerfile#L1-L151",
+          "version": "repo-lines-v1:sha256:22e41af2a74fc7d055784e868e048f5bfd0e4d1a6d9dfde106593beb3aa715de:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyNzA4NzNlYTFjZDJkM2VlMDFjZGY5OGZmZWNkMWE5Nzk2MGRhNDQ0ZjkyNDlhMzlmZDlkMTM4ODNmMTg3MTcwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJhNDY2NzdmMDRhNjI5ZTUzMTAzYjA0ZWY1NDhhNmExNzdlMGJlMzE4YjAyMDQ2YmQ1MDkyNjcxYjg1MzNkNGM2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://worker/Dockerfile#L1-L87",
+          "version": "repo-lines-v1:sha256:965b4ad0640e865449fa8b9c0fae261995ba7a0149462bbc772a9a2a4d6f6505:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3MDg3M2VhMWNkMmQzZWUwMWNkZjk4ZmZlY2QxYTk3OTYwZGE0NDRmOTI0OWEzOWZkOWQxMzg4M2YxODcxNzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzYjUwNDRjYWI2NDZhMGYxZDFmNjIwODEzMzM4ODRjMzE1MWRmZWRiNDI4MzI1YmFhZTNkNTk0ZmJhNzI4ZTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a80a1519e46043ed8b072c67f294635e",
+      "statement": "CoPaw runtime uses a bridge pattern to translate openclaw.json to CoPaw configuration, with dual virtual environments (standard and lite).",
+      "evidence": [
+        {
+          "resource": "repo://copaw/Dockerfile#L88-L100",
+          "version": "repo-lines-v1:sha256:9d2000ddf0988cdc479c7e14cbc1c59eeecc50cc95267f8c9b3c05d3a74ca8f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3NDU0MDY4MDhiZGExMzZjYjg3OTI0ZmJjNjEwZmZhMjMxNDMwYjY2NTEyNjY2Mjg0MGY3YmJjYzhlZDU2YTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4MmRiYWRkNmIzYTFhZGM2ZmFiMzVjY2VhNjJjN2Y3NzJhZjBhZmVhMjkzNDZmYTgxNGM0NTFhMjgyOTE0M2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MTZmMDg1NGVmOTY3ZDA0NjMxYTY3ZWQzMTUxZjE5NzE5YjE0MTZmNzQ5YjUyNmRhNDhlOTZhNDViODFkN2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1MzczY2FhMzdmNzgxODk4Yjk5OWEzMTkzODU5ZjhlYzk2Mzk4MWVlNTRiZjljZjRiNTkwYTlhZjJhMGY2NzgifQ"
+        },
+        {
+          "resource": "repo://copaw/src/copaw_worker/bridge.py#L1-L50",
+          "version": "repo-lines-v1:sha256:3b11c1d02fe69accd46d40b7d144c4434c07b6106060384a2d3e9729d43a87e0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzZDY5MzVjZGIzYTExZTdjOTA0MGRjZDJiNTE2MzM5MmIyZDEwZjE0MWU2MWI5YjdmNGQ4ZjRhMTA3ZTNkYmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzMGNlYWM2MWE1YWU3NmY1Mjc3NWZlNzZhYzMzYmZjODViNmE4OWJjNTc0YzY0Y2FkNzMwZDIxNDMzMDc0ZDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_12b96560ed48461f82787450d8171246",
+      "statement": "Hermes runtime uses a custom Matrix adapter overlaying hermes-agent's native mautrix implementation with policy-based filtering.",
+      "evidence": [
+        {
+          "resource": "repo://hermes/README.md#L1-L81",
+          "version": "repo-lines-v1:sha256:4c70df404ac2a11a690778b70b026b5f45e07cf7c1a8e97269b08cb0000df5aa:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmMzViMWY3MzJiY2ZkYzM2N2JjOTNkZTdhMTE5OWQ1OTFkNzJjNjg2NGY5NjI2MWIzMGRjZDQzODNjN2E0YzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiMzRhMjQ0OTVhZDI4MmQ3ZDEyZGE2NmRjNTc1ZjZkNjI0ODkwMzUyOTQ3Zjc4MWFmZjQ1MzdiZTFlOTg4YjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://hermes/src/hermes_matrix/overlay_adapter.py#L1-L50",
+          "version": "repo-lines-v1:sha256:0cba52ceea590b1ad21bb08130a5f8fd36fb121bddb568ee1c188b26649a7f11:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1ZmVlNDViZDIxNmIxODI1M2E5YTAyODFiMTJiNWZkMzEzOTQ3OTRhM2RiZjA2NWIwZDIyYjIwMmM4YjQxNzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZGFmZjI0NjIxZGVlOGZmNmY5MjkxYzEzNTY1YmY1Njc3MTE5MjUzODhlOTI2NTRmM2MyNzRhYjhjMDE4YzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2NDc2N2FlMDhmY2E5NGE1YWI3OTg4YTU1Nzk3NjQyYWY3YTJhOWM0YWE0NjNmYzEwNDY5MzA4MDczYmU4NjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_77e8339f79234bf7af9e2656e8598449",
+      "statement": "OpenHuman runtime is built in Rust with native Matrix support via channel-matrix feature flag, using multi-stage Docker build.",
+      "evidence": [
+        {
+          "resource": "repo://openhuman/Dockerfile#L1-L198",
+          "version": "repo-lines-v1:sha256:1e3ac8154bd8e041e852a51a3a838556788efaa282af742fe8ff75fdb9b59744:eyJzZWxlY3RlZExpbmVDb3VudCI6MTk4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmYTBjMjFhZWMyOGU2NjIwZmVjMjI0NTg5ZTlhMDI0Njk5ZWYzYmU4ZWZjYWRkYWExNmI0MzUzYmVhYjJlNTVlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJjMjI2NjQ4MWVjOTJhMGY2YTE2MDBhN2YwNDgzOGE0N2Q1MmU2NjE3NDE0MjMzNzcxYzFjZGUxMjk3ZWYzMmJjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_0500eb0de28f43d9a22eccf5413a2365",
+      "statement": "QwenPaw runtime uses a plugin system with TeamHarness integration, runtime.yaml configuration, and better-harness CLI for agent self-review.",
+      "evidence": [
+        {
+          "resource": "repo://qwenpaw/Dockerfile#L88-L100",
+          "version": "repo-lines-v1:sha256:b7bd06ce313aace9db4d533e2207bff387036aaf8ba73c55e8136f22d8ca4fba:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1YTVhNmMyNWNiNjAxNDFhMzA4OTFhMDliNTBiOTk0YWQyMmQxZWVhNjJlMjBjYjIyMzRiZjg4ZmM2MGVlNDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4MDA2YmMwMmRlNjg1ZTYyYzExMGRiYTlhYzY2OGZmYjhkNDcyNWFiNWM5MDc4MjQ5OWZjNGZiOTg1YTJiZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmMWQ4M2MzMTMzYzZjMjlhNTgxMzAyZjQzMWJlMTZlZGJhMWM4YTVhYjkyNmU3NDMyYTVlYzk5MDc4OGM3ZWUifQ"
+        },
+        {
+          "resource": "repo://qwenpaw/src/qwenpaw_worker/plugin_bootstrap.py#L1-L50",
+          "version": "repo-lines-v1:sha256:14e159a4dd1f7dc66489dbf064a9a9fbb4b24dd2069821c8a6687a2977a5d13b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZjEwMTIyNWMxZmIzOTI5MGNkYzkxMTZmZDZjYmM2ZTQwZTEzNGJkM2ZiODMyNTBkNzVmOTAzYjM5Y2ZjOGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlMDVkMGJmMTJhMGZhODkxMGIzN2Q0MjdiNjgyZTBlNmMxZDQwNjg0ZWM2ZWZmZDY5MGUwOTk3OGYwMjA1NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2ZTA0YmZiNWZkYmYwZGEyOTgxZjVlMWVmMmQwMjgyMTRlZWIwZGNiYTMwZmY1OTUxZDI2ODJiZWM5YjM2NzEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_db647126d76549fea68f88215793eddb",
+      "statement": "Each runtime has a corresponding agent template directory under manager/agent/ that is copied into worker workspaces during provisioning.",
+      "evidence": [
+        {
+          "resource": "repo://manager/agent/copaw-worker-agent/AGENTS.md#L1-L50",
+          "version": "repo-lines-v1:sha256:3949f662c9199bd15be677d9db44239f51c17ddc466a348f0379fd99fdf4219d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmZDUzM2ZiMDhjYmYxMjBkN2IxYjA0MDk0YjQ2ZmQ5ZmRhOTZkNzUxMDI4YTU0NzRhYzBiNjU0YjQzOGRhMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlNDk0MWEzOWY5NDFhNzZmYzk3ZWQ3ZjA1OGQyMWFhN2Q0NTczYjYxNzQxYWNmNTEzYjk3MTUxNjBmNGI2MWQifQ"
+        },
+        {
+          "resource": "repo://manager/agent/worker-agent/AGENTS.md#L1-L50",
+          "version": "repo-lines-v1:sha256:5be3cfcb79d5e5d221b6cf6f8431f807fba113e003b036780dc3987065e946a2:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiYTcwNjc5ZTQ0Y2E4NmUxYWYyYzYwZTdjZjg0M2M0NDE5NDhmZjU2YzM2NTQxZmJhOTFmMmY2NzEzYzE5MDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyZGYzNzY5MDY2ZTVhOGU1MTU5NDFjNjYxNmEzOGFmNjg5NDcwZjlhNTkyMjRlZmQ3MjJhYjQxMjRhY2VlZjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmYmNhNDAwYmUyNDVhZjdiZjA2NzNiM2JmOTMyYjIxMTM4NDI4MmFmZmE3ODRlYzFhODhhYjlhZjQ1NWNiMTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_20869bc2e0ab4cf58546e092202487dd",
+      "statement": "All runtimes share common patterns: Matrix connection, gateway auth, MinIO sync, health reporting, skill loading, configuration bridge, and shared libraries.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L243-L248",
+          "version": "repo-lines-v1:sha256:fc0d0a70133100ee8e5ea4935ba082b642db5cc2ec4053e5dca8d08f537454e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjQ0OTM5MDA5MTI2MDlhMzE5MWExMWJiN2U0YzM0MzQ5NzI4OTFiYWFhMDIwYmQyYmU3ZWNkODM2N2NkMmM1OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmNjNzhlZjMxYzdkODc4OGEwOTYzZDUxYjZhNWVmZGMwMzc1MzhlMzdjMzI0ZjhjYmZjZDY3ZTNkNTEwZTI4MSJ9"
+        },
+        {
+          "resource": "repo://shared/lib/agentteams-env.sh#L1-L50",
+          "version": "repo-lines-v1:sha256:3c38d0871bf7c5098498fb3ba9a310fedb2b44bdea90066753ae22040cb31f6f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NzVmOTI4NTQ2YWVlNzg1NWNiMWRiOWFmYzhhYjNmMWE4YTM0ZDQzZGU1YmJkNjJmNzA3NmQ3YmE5ZjM5MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzMDg2NmUxYmNjNWFiNzZlM2VmNTkwMTJkMGFkMzlhNjg3YWJlMDAyM2I0MzhhY2IxMTMwYTE4ODI1ZTgxOTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmNzBiYWU1MGRlNWJhZDU5NjRlYjU4NjA0MTFjMTUwMDE5OTQyZWY1ZDcyZTBlMTA1ODEwYTA0NTk0YmMyMGQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}

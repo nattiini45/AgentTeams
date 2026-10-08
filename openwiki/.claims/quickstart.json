@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:2b3359936ed239fe4ba05776e6f24148a0896ac7a08f3c03ee38125e384f7cfc",
+  "claims": [
+    {
+      "id": "claim_7f67c81250354340ac0243fea67acae5",
+      "statement": "The 'What This Wiki Covers' table includes 10 linked wiki pages: Architecture Overview, Controller: CRDs & Reconcilers, Controller: CLI & API, Worker Runtimes, Manager, Plugin System, Shared Libraries, Operations: Install & Deploy, Operations: Dashboard, and Development: Build & Test.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md",
+          "version": "repo-file-v1:sha256:04e66d6336c2cef923264f0624523ce16491b034066d3bd83f2bbf5ac94a3405"
+        },
+        {
+          "resource": "repo://README.md",
+          "version": "repo-file-v1:sha256:7bc1c1df2d5e056abfa43ce01bf040c3d17ba3cf38694b46833264372ffabd7f"
+        }
+      ]
+    },
+    {
+      "id": "claim_ffe50d54e068475dae6bb63687fb65d0",
+      "statement": "The Manager agent has 21 skills documented in the manager/agent/ directory.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md",
+          "version": "repo-file-v1:sha256:04e66d6336c2cef923264f0624523ce16491b034066d3bd83f2bbf5ac94a3405"
+        },
+        {
+          "resource": "repo://manager/agent/AGENTS.md",
+          "version": "repo-file-v1:sha256:0156dddd1d539029bdb8cfa735a0188858d969975380a8cf29f06730ef5afae1"
+        }
+      ]
+    },
+    {
+      "id": "claim_e2bf2b33912748b092536ab11dbb5173",
+      "statement": "AgentTeams supports five worker runtimes: OpenClaw, CoPaw, Hermes, OpenHuman, and QwenPaw.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md",
+          "version": "repo-file-v1:sha256:04e66d6336c2cef923264f0624523ce16491b034066d3bd83f2bbf5ac94a3405"
+        },
+        {
+          "resource": "repo://README.md",
+          "version": "repo-file-v1:sha256:7bc1c1df2d5e056abfa43ce01bf040c3d17ba3cf38694b46833264372ffabd7f"
+        }
+      ]
+    },
+    {
+      "id": "claim_7ec8d208f4b6418b93bb16869c3c2189",
+      "statement": "The plugin system supports TeamHarness and WorkerFlow plugin types with a standardized plugin.yaml contract and adapter pattern.",
+      "evidence": [
+        {
+          "resource": "repo://README.md",
+          "version": "repo-file-v1:sha256:7bc1c1df2d5e056abfa43ce01bf040c3d17ba3cf38694b46833264372ffabd7f"
+        }
+      ]
+    },
+    {
+      "id": "claim_9c8554939cc64245895e50b1974ca91f",
+      "statement": "The shared libraries provide domain logic across all runtimes with shell libraries in shared/lib/ and Python packages in shared/.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md",
+          "version": "repo-file-v1:sha256:04e66d6336c2cef923264f0624523ce16491b034066d3bd83f2bbf5ac94a3405"
+        },
+        {
+          "resource": "repo://README.md",
+          "version": "repo-file-v1:sha256:7bc1c1df2d5e056abfa43ce01bf040c3d17ba3cf38694b46833264372ffabd7f"
+        }
+      ]
+    },
+    {
+      "id": "claim_ed355d3ac8a142ac86d0357a0c743078",
+      "statement": "The repository map includes plugins/ and dashboard/ directories alongside other standard directories like agentteams-controller/, manager/, worker/, and shared/.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md",
+          "version": "repo-file-v1:sha256:04e66d6336c2cef923264f0624523ce16491b034066d3bd83f2bbf5ac94a3405"
+        },
+        {
+          "resource": "repo://README.md",
+          "version": "repo-file-v1:sha256:7bc1c1df2d5e056abfa43ce01bf040c3d17ba3cf38694b46833264372ffabd7f"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}

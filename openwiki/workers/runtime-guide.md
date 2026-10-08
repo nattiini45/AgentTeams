@@ -1,3 +1,44 @@
+---
+type: "Reference"
+title: "Worker Runtimes"
+description: "Five worker runtimes (OpenClaw, CoPaw, Hermes, OpenHuman, QwenPaw) with configuration and differences."
+tags: ["runtimes", "workers", "openclaw", "copaw", "hermes", "openhuman", "qwenpaw"]
+openwiki_generated: true
+verified:
+  - by: openwiki/0.7.1
+    at: 2026-10-08T08:19:13.018Z
+sources:
+  - id: openwiki-source-8037e2358a2c4f9b2c722a11
+    resource: repo://AGENTS.md
+  - id: openwiki-source-ffd6aaeb62ab32468d8e6996
+    resource: repo://copaw/Dockerfile
+  - id: openwiki-source-3058aef7075040525090f5ec
+    resource: repo://copaw/src/copaw_worker/bridge.py
+  - id: openwiki-source-6611a78e24321ddf152d2493
+    resource: repo://hermes/Dockerfile
+  - id: openwiki-source-659655438f34dc2903a0ccc2
+    resource: repo://hermes/README.md
+  - id: openwiki-source-39211e553e6463534f4079b3
+    resource: repo://hermes/src/hermes_matrix/overlay_adapter.py
+  - id: openwiki-source-25fe400a1dcf9af060a21400
+    resource: repo://manager/agent/copaw-worker-agent/AGENTS.md
+  - id: openwiki-source-84339713f4aaf7691f639795
+    resource: repo://manager/agent/worker-agent/AGENTS.md
+  - id: openwiki-source-e85fbba2b29f939b9021823a
+    resource: repo://openclaw-base/Dockerfile
+  - id: openwiki-source-bec89751ce4684c074688cae
+    resource: repo://openhuman/Dockerfile
+  - id: openwiki-source-7dc971ee5250a41a1784e67d
+    resource: repo://qwenpaw/Dockerfile
+  - id: openwiki-source-ed5c844df8a00cec30fc0ce1
+    resource: repo://qwenpaw/src/qwenpaw_worker/plugin_bootstrap.py
+  - id: openwiki-source-ef6e752277a37cde760a5429
+    resource: repo://shared/lib/agentteams-env.sh
+  - id: openwiki-source-57ee6679dfbabf27c935b1e4
+    resource: repo://worker/Dockerfile
+generated: { by: "openwiki/0.7.1", at: "2026-10-08T08:19:13.018Z" }
+---
+
 # Worker Runtimes
 
 AgentTeams supports five worker runtimes. Each runtime implements the same core contract — join Matrix rooms, respond to messages, call LLMs through the Higress gateway — but uses a different language and agent framework. The runtime is selected per Worker CR via `spec.runtime`.
@@ -7,10 +48,47 @@ AgentTeams supports five worker runtimes. Each runtime implements the same core 
 | Runtime | Language | Framework | Image | Manager Compatible | Notes |
 |---------|----------|-----------|-------|-------------------|-------|
 | `openclaw` | Node.js | OpenClaw (fork) | `agentteams-worker` | Yes | Default runtime; uses openclaw-base |
-| `copaw` | Python 3.11 | CoPaw/AgentScope | `agentteams-copaw-worker` | Yes | Dual venv (standard/lite); bridge pattern |
-| `hermes` | Python 3.11 | hermes-worker | `agentteams-hermes-worker` | No (worker-only) | Mautrix Matrix SDK; autonomous coding |
+| `copaw` | Python 3.11 | CoPaw | `agentteams-copaw-worker` | Yes | Dual venv (standard/lite); bridge pattern |
+| `hermes` | Python 3.11 | hermes-worker | `agentteams-hermes-worker` | No (worker-only) | Custom Matrix adapter; autonomous coding |
 | `openhuman` | Rust | openhuman-core | `agentteams-openhuman-worker` | No (worker-only) | Native Matrix support; channel-matrix feature |
-| `qwenpaw` | Python 3.11 | QwenPaw + TeamHarness | `agentteams-qwenpaw-worker` | No (worker-only) | Plugin system; runtime.yaml config |
+| `qwenpaw` | Python 3.11 | QwenPaw + TeamHarness | `agentteams-qwenpaw-worker` | No (worker-only) | Plugin system; runtime.yaml config; TeamHarness integration |
+
+## Runtime Architecture
+
+```mermaid
+flowchart TB
+    subgraph Worker["Worker Agent Container"]
+        RC["Runtime Contract"]
+        MC["Matrix Connection"]
+        HG["Higress Gateway"]
+        MS["MinIO Sync"]
+        
+        subgraph Runtimes["Runtime Implementations"]
+            OC["OpenClaw (Node.js)"]
+            CP["CoPaw (Python)"]
+            HM["Hermes (Python)"]
+            OH["OpenHuman (Rust)"]
+            QP["QwenPaw (Python)"]
+        end
+    end
+    
+    subgraph Infrastructure["Infrastructure Services"]
+        TW["Tuwunel Matrix"]
+        HG2["Higress Gateway"]
+        MO["MinIO Object Storage"]
+    end
+    
+    MC --> TW
+    HG --> HG2
+    MS --> MO
+    
+    Runtimes --> RC
+    RC --> MC
+    RC --> HG
+    RC --> MS
+```
+
+*Figure: Worker runtime architecture showing the common contract and five runtime implementations*
 
 ## OpenClaw Runtime (`openclaw`)
 
@@ -21,6 +99,7 @@ The default and most mature runtime. Based on the OpenClaw agent framework (a fo
 - Matrix plugin handles room joins and message routing
 - Gateway mode: LLM calls go through Higress proxy
 - `mcporter` CLI for MCP server tool calls
+- OpenClaw CMS plugin for observability
 
 **Base image:** `openclaw-base` provides Ubuntu 24.04, Node.js 22, OpenClaw, and mcporter.
 
@@ -37,7 +116,7 @@ The default and most mature runtime. Based on the OpenClaw agent framework (a fo
 
 ## CoPaw Runtime (`copaw`)
 
-Python-based alternative using the CoPaw/AgentScope framework.
+Python-based alternative using the CoPaw framework.
 
 **Architecture:**
 - Python process with CoPaw bridge
@@ -66,18 +145,19 @@ Python-based alternative using the CoPaw/AgentScope framework.
 
 ## Hermes Runtime (`hermes`)
 
-Python-based autonomous coding agent runtime.
+Python-based autonomous coding agent runtime built on hermes-agent (v0.10.0).
 
 **Architecture:**
 - Python process with `hermes-worker` package
-- Mautrix Matrix SDK for native Matrix support
-- Policy-based message filtering
+- Custom Matrix adapter overlaying hermes-agent's native mautrix implementation
+- Policy-based message filtering (allowlists, mention-required, vision support)
 - Worker-only (cannot serve as Manager)
 
 **Key components:**
-- `hermes_worker/` — Worker runtime package
-- `hermes_matrix/` — Matrix integration with policies
-- `hermes_matrix/policies.py` — Message filtering policies
+- `hermes_worker/` — Worker runtime package with CLI, bridge, and run-loop
+- `hermes_worker/bridge.py` — Configuration bridge from openclaw.json to hermes config
+- `hermes_matrix/` — Matrix adapter with CoPaw-equivalent policies
+- `hermes_matrix/overlay_adapter.py` — Matrix-nio adapter overlay for policy enforcement
 
 **Key files:**
 - [`hermes/Dockerfile`](../../hermes/Dockerfile) — Image build
@@ -118,12 +198,14 @@ Python-based runtime using the QwenPaw framework with TeamHarness plugin integra
 - Worker-only (cannot serve as Manager)
 
 **Key components:**
-- `qwenpaw_worker/worker.py` — Worker lifecycle
-- `qwenpaw_worker/plugin_bootstrap.py` — Plugin initialization
-- `qwenpaw_worker/plugin_install.py` — Plugin installation
-- `qwenpaw_worker/runtime_configurator.py` — Dynamic configuration
-- `qwenpaw_worker/security_bootstrap.py` — Security setup
-- `qwenpaw_worker/sync.py` — File synchronization
+- `qwenpaw_worker/worker.py` — Worker lifecycle management
+- `qwenpaw_worker/plugin_bootstrap.py` — Plugin initialization and TeamHarness integration
+- `qwenpaw_worker/plugin_install.py` — Plugin installation and management
+- `qwenpaw_worker/runtime_configurator.py` — Dynamic configuration updates via runtime.yaml
+- `qwenpaw_worker/security_bootstrap.py` — Security setup and credential isolation
+- `qwenpaw_worker/sync.py` — File synchronization with MinIO
+- `qwenpaw_worker/heartbeat.py` — Health monitoring and reporting
+- `qwenpaw_worker/better_harness.py` — Better-harness CLI integration for agent self-review
 - `qwenpaw_worker/update/` — Update subsystem (agent packages, channels, models, runtime)
 
 **Key files:**
@@ -154,6 +236,8 @@ All runtimes share these patterns:
 3. **MinIO sync** — Download workspace on startup, upload state periodically
 4. **Health reporting** — Report health status to controller
 5. **Skill loading** — Load SKILL.md files from workspace/skills/
+6. **Configuration bridge** — Translate openclaw.json to runtime-specific config
+7. **Shared libraries** — Use agentteams_* Python packages for domain logic
 
 ## Source References
 

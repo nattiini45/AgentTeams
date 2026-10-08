@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4e73facf07e9a4807301e06126c1a7c436c6b78101e43a5835a08e8003eb104c",
+  "claims": [
+    {
+      "id": "claim_8f7a39d5de5d4c9eab84b8180b925d30",
+      "statement": "AgentTeams supports two deployment modes: local Docker/Podman install and Kubernetes via Helm, both using the same container images but differing in infrastructure orchestration.",
+      "evidence": [
+        {
+          "resource": "repo://docs/embedded-docker-layout.md#L5-L16",
+          "version": "repo-lines-v1:sha256:0d791e9988c8a82418c380a8f47cf20864f14ac6aca525875726e9741ae3014c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2NzNjM2E3MjFiOWFkYmY0NDVmZWJlNjk0NGExYTg4YTBiNzU5YWE2NDRlZjgyYTYwMjdiOGU4ZDJiMWVjMzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmOGQyY2I5NWY4ZTA4N2FjMTcwNWM5MGFkZDE5NjMxM2I0OTlkYjJmYTE3NmJhNjBkZTY5ZjhkN2M3NmZlMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhNDRlNzU3N2Y3MzUwNTczNjM5Mzc4ODcxMDE2Njg3MGIxZGU3Mjk0ZDQwNWFlMTgzYzY0MWNhNTUzNDJkYjIifQ"
+        },
+        {
+          "resource": "repo://helm/agentteams/Chart.yaml",
+          "version": "repo-file-v1:sha256:9a7e5c4a486ba5e8ace70ead703bee5bd71a0a756d27508497d93aed4490125e"
+        }
+      ]
+    },
+    {
+      "id": "claim_56dd1bd60087405ea6b1734f55f47f94",
+      "statement": "Since v1.1.0, the local install uses the embedded stack architecture where a single agentteams-embedded container runs Higress, Tuwunel, MinIO, Element Web, and the controller under a supervisord process, with the Manager as a separate slim container.",
+      "evidence": [
+        {
+          "resource": "repo://docs/embedded-docker-layout.md#L9-L17",
+          "version": "repo-lines-v1:sha256:704146e83c4808c4fe3b3a6c64984735f8949b63fc1563f66f1b8fc961b002b5:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGRjMmM0ODg2YzJhNzM4ZmNkMTg1YTRkODcxNGU0ZDQyMmZhN2ZjMzE3MTczYmViOGRmMmE4YjU3YjZhMzJhMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjhlYTU4MDUzYjRjNThjNTlkYzhiNjQzNDQxOTg3ZWY2OTMwOWU2NjYzMjFiNzRiNTQxYWIwZjI0YjBjOGI2YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODU1ODgyMWI1ZDNkZDUzZmFkMTY5MjRkNWQ1NzAxYjM0NjQyYzA2NzQ0ZjIyOGY5ZGRmZGY5MTQ3NzU2YmE4NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzZhNmI0NzkxYjFjMzUzNDYxNWZjYmZhMjk4MjMzNjc4YjA2ZWI0MzY1NjE5MjEyOTQwYjFkNWRiNDVlZjBkYSJ9"
+        },
+        {
+          "resource": "repo://install/defaults.env#L38-L46",
+          "version": "repo-lines-v1:sha256:fa77f1cd5e509223d8b4df57df1e0dab2b24539ea67de75f938b17e8bad0c01a:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzMzA5ZTBmZWM0NmRmZGMzYWEwZGFmZjcwNTJjYjZmMzlkZWQ2OTcyZTM2ZmVmZjY4ODg1YzAyODgyNjc2NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGVkNGQxYWU1ODI2ZmNiMGM1NWVjNDkwZjJlMTJjMGIzM2ExMDI0YmFmZTljOTQ2YTQxOTYxZjEyNDY2NTI3YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGUxZDRmZThmOGVlMzAwYzgyMjUzNTE1ZTZiMjFjNTU1Njg5NWVjMmExN2Q4NjBjOGNkYWFkNjcyZjEwNTcyNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTkzYjEwNDQ0NGFkMzc3MjMxZjYwZTU5MzFmMDA5MzJlNjFiNDdmZTQ2NGEzMTQ1ODQ2Y2U4MjIxNGQxYWU3NyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e56551fbdd0e44d992943f4e74941170",
+      "statement": "Default host ports for local install are: Higress gateway=18080, Higress console=18001, Element Web=18088, Manager console=18888.",
+      "evidence": [
+        {
+          "resource": "repo://install/defaults.env#L8-L12",
+          "version": "repo-lines-v1:sha256:544950663a03434f588272924b236daed37c65afeddc4e88235182b6ddeb4ba5:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjBlOGI3MDdiYmZkYjMwODIyNzlkMzUwNjU4MGFmOWM1M2U3YTlmMDAyYzQyYzg4NDhkOWYwYzM1ZTYzYjAwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGMzMWNjZmJjZDA5NTBiODg4MGUyOGE1NDJmZmRlY2E1ZjBjZmFhZjI2ODBlY2MzZjdhZTBlZTczMzBkMDIyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTliNWQzYjYxMWVlN2I4NTUzOWE3OTExNWExODI1OWIxYmRjNzIxOTUyMTgzYWZiNTZiYmFjNzMyODkzMGUyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmY5MzQ2NmIwMzhhZjQ3NWYyNjljMzU4ODNkMWNjY2Y0YjZkOTMzYWQ2ZWQyZTg2MjUyZWJjNThhOGRjYjg2YSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_30047fb51c7e49b1929fdc8e267f3694",
+      "statement": "The installer performs a keep-all upgrade by default, preserving all existing data (Docker volumes, workspace files, and configuration) while pulling updated images.",
+      "evidence": [
+        {
+          "resource": "repo://install/agentteams-install.sh#L1-L8",
+          "version": "repo-lines-v1:sha256:0b13320e1e333865ed0cba1e0a5264c5525b9c19a76b88c40cfa6268e895f30d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjg3NWY5Mjg1NDZhZWU3ODU1Y2IxZGI5YWZjOGFiM2YxYThhMzRkNDNkZTViYmQ2MmY3MDc2ZDdiYTlmMzkxNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGJhMGUxNzhkNzUwMTk3ZmU4ZDFkOTJkYmEwYWZjNmY2YTBjYzk0YjEzMGQzZjgwMTA0YzU1NDFlOGQyODUyNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzM3M2FiY2NkNmI0YjRiNDAwYWM5NTE5YzRjYTI3NGE2NWFhMGYwMzMyODBmYTViMDFkNzRhN2YxM2U1MTZhZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe2980072fb0429a9db45dd6fa5991e7",
+      "statement": "The Helm chart includes a preflight LLM check (preflight.llm.enabled=true) that validates LLM connectivity during install and upgrade, failing the operation when preflight.llm.strict=true and the check cannot reach the LLM endpoint.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/values.yaml#L29-L36",
+          "version": "repo-lines-v1:sha256:2b5e067e0f7ddcff554f9a2cb9d66cbe65878a20a998a0a09b1a54e0ca4d29f7:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGZhMjA4MTNkOGJhMzY3Mzc1MTcyZTZiZDBiYmY5YWNjMGNjMjMxNzZiMjgxZTk2OWQ4ODU5OWYxYjY0ZmI3ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjU2NTk2ZjhlNjI3ZDlkODBiMGExOWRhODhhN2JjNmQzZDZhNzU4NzQ5YWI1YWY4YmQxNWJkMTM5NDU4ZDliOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjQ4NzhhZTUwMDU1MTE2NDMxMDg2ZDU5MmRlYWE4OGM5OGMyNjA5NWZlYmY0ZGUyNzc1NDViZGY0MGUyZmVjOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWRmMDA0ZTQ2YzUwNmM4NjEzMjdmMmY5ODExOWE0OTI3ZmY0MmI0OTdjMzNmYWU0NTU3MzRlNDYyZTU0MTk1ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_154db5cc6cfc4833b097a2d1eb575804",
+      "statement": "When controller.uninstallHook.enabled=true (default), helm uninstall runs a cleanup Job that deletes all Manager/Worker/Team/Human CRs while the controller is still alive, enabling the controller's finalizer logic to clean up Pods, Matrix users, and storage data.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/values.yaml#L229-L242",
+          "version": "repo-lines-v1:sha256:48e13e6581a402d0790f145ef426858e50da2898cd400cf37d6c02ac72cba202:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyZGFkN2ExZmE4M2E2MGUyMmRmNDQ0MDQyMGVhMGQ1OGZkODVmNDI2ODdmMzNkZmY3YzE1MzdmOWY1ZGQ5YmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0YmM3NjAyOWRlYmMwNzFkYmVlNDFmZWM4ZmI0YWQ5NTE0YTdiZjk4ODFiNWQ0Yjk4YmMzZTczM2M4MWUyNTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyZjlhOTZhYjQxODExYzVlMGZjMjZlNzk2OGU0YjcwMzA4ZWM3YjUxMjA1YmMxNDhjNDgzYjA5MWY1ODEwYjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE4MGQxOTY1MTkyNWYwMDhlNmRjMzA0YzcwZmVlZWI1M2ZjNWI5MDAxYzFmMTZmOTRkOTljNjViZGU1N2ZhNWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6b0123c011ae46dc9e24823e48988fd9",
+      "statement": "Workers are created on demand by the Manager through Docker socket; each Worker is a stateless, disposable container with all persistent state in MinIO object storage and the Tuwunel Matrix homeserver.",
+      "evidence": [
+        {
+          "resource": "repo://docs/embedded-docker-layout.md#L15-L15",
+          "version": "repo-lines-v1:sha256:4af00a300dd565ad91981701e2fc525648e3d2c6f8f312916492df8424cdb5c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGFmMDBhMzAwZGQ1NjVhZDkxOTgxNzAxZTJmYzUyNTY0OGUzZDJjNmY4ZjMxMjkxNjQ5MmRmODQyNGNkYjVjNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGFmMDBhMzAwZGQ1NjVhZDkxOTgxNzAxZTJmYzUyNTY0OGUzZDJjNmY4ZjMxMjkxNjQ5MmRmODQyNGNkYjVjNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmZhYThlNGY1MjFlZDVkYjkwNzI4NmQ1NGY2NmFhNDU0YzJmMzM4MGNmMmE0NzVkYjFkZjgzMTlmODU3ZmNmMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTU1NWFkNjU2OTYwOWEyZmZlZWM3OGNkMTVmNjk0ODU3ODQ0YTU4YTkwM2UzM2RlNDkyMzEwZjJlMzYyMWE4MSJ9"
+        },
+        {
+          "resource": "repo://install/agentteams-install.sh#L1-L8",
+          "version": "repo-lines-v1:sha256:0b13320e1e333865ed0cba1e0a5264c5525b9c19a76b88c40cfa6268e895f30d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjg3NWY5Mjg1NDZhZWU3ODU1Y2IxZGI5YWZjOGFiM2YxYThhMzRkNDNkZTViYmQ2MmY3MDc2ZDdiYTlmMzkxNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGJhMGUxNzhkNzUwMTk3ZmU4ZDFkOTJkYmEwYWZjNmY2YTBjYzk0YjEzMGQzZjgwMTA0YzU1NDFlOGQyODUyNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzM3M2FiY2NkNmI0YjRiNDAwYWM5NTE5YzRjYTI3NGE2NWFhMGYwMzMyODBmYTViMDFkNzRhN2YxM2U1MTZhZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0ffc6c391a0b4263828611fffb7d4bd3",
+      "statement": "The Helm chart depends on the Higress subchart (higress v2.2.1) for gateway deployment when gateway.higress.enabled=true.",
+      "evidence": [
+        {
+          "resource": "repo://helm/agentteams/Chart.yaml#L23-L27",
+          "version": "repo-lines-v1:sha256:9f2385a4b8c605723bcd5c35f9e5bd0453914c9e1ac22079b95446a2b79cec29:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODY2ZTdhMjkyYTg3MGFkMzQyYjYxNWE1NWM5YjMyMmZjYjZlYWQyZTA5NzU4YTVmZmE5NTQ0N2RiODQyMTZkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGUxNGQ4ZGU2MmZiYTM2YWI3Yjg0NDcwNjY2N2ZmZjYzZjU4ZmEyMjYyZTY4NmQ2NzE0YTU0NTdiMmNiYzdmOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTIwNGZmN2RkYzU1M2QxZjAzZTBmZWU0NjkwODc2YmMwNzk5ZjYzYjFiZjdiZWY3MDc0N2M5M2NlZDU4M2NiZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c1c2e88d398342d2bf685a8c85e76fc3",
+      "statement": "The installers accept numerous environment variables for automation including AGENTTEAMS_NON_INTERACTIVE, AGENTTEAMS_LLM_PROVIDER, AGENTTEAMS_DEFAULT_MODEL, AGENTTEAMS_LLM_API_KEY, AGENTTEAMS_VERSION, and port configuration variables.",
+      "evidence": [
+        {
+          "resource": "repo://install/agentteams-install.sh#L14-L48",
+          "version": "repo-lines-v1:sha256:fbd134ddb8d454751cf8301fc7de8d8ba9f8cea02c3fb8267e6e06c3ab6f4b0f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiOTYxM2E4YWFkNmRkMDRkZGM1MzM3NDRhZGVhNTAwMDdlNGMyYmEzY2IxNDUxZWYwNGFlZTNiZGM2ZTQxZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5ODFmYWY0M2IxZGRhYmIxYWFiN2QyMTY1YjczYTEyYmJlZDZmNTk0OTY5NDA3YzI3YWJhMzc3ZjRjNDJmODAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkNDAwNTA3NmU2NGVhZmQxNmE1ZTcxMDNlOTQ0OTdlZGJkMTQyNjgxM2JmYmMxYTZlOTA4Yjg2N2ZhYWI0ZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4MWQxMTNjNDQ2ZjNmMmMzMTUyZjBhNzAzNGM5OTEyZTcxNTBiY2U0MjIzNjEzMzc2OGUzZjdhMjgzOTM3NDIifQ"
+        },
+        {
+          "resource": "repo://install/defaults.env",
+          "version": "repo-file-v1:sha256:2edec3ea66a2c280e861119cd67874bf0aaf38b63acd839d46bc70758666fb17"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}

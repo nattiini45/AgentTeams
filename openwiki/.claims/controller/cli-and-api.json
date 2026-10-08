@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:86032f3ec09634f878194f0471599fc6369ab393e8729e4a1f7a583cca5410f6",
+  "claims": [
+    {
+      "id": "claim_3c3bf0f9a88846cfbf767a197f7b6a9c",
+      "statement": "The agt CLI communicates with the controller REST API and is built with Cobra. It registers 11 top-level subcommands: apply, create, get, update, delete, worker, status, version, llm-preflight, rotate, and manager-state.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/main.go#L17-L44",
+          "version": "repo-lines-v1:sha256:558b69eb70183073eac68e2b960482238976aaf5736c1ee1d879eeb4294042f5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhZjE2YjcyNzUzMWQ3NjRlNzMyYmZjNmUzM2QxYTg5ZGNhZGYxNDkwMmYxZGNjMzBmNjlkYzQyMjU3YTRiYWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwMjQ1ODc0MGM4ZDlkZDkyYzI0NTc5ZDNjNTljNjFiNjc0MmNjMzMxY2EzOGE1YTc2ZDBkMTc1MmMxOGI3ZTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyOTY0MDc5YzNjNWM4MTUyMGVmMzNhMmI5ZDJlMTVhMWI4NGQ3MjgwZGI4NTkwZGNkNjU3NDdlM2UwMTJhNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f7b4b51da3d2492892fbfbc53c5f6bf6",
+      "statement": "The CLI authenticates via bearer token discovered in order: AGENTTEAMS_AUTH_TOKEN env var, AGENTTEAMS_AUTH_TOKEN_FILE file path, or unauthenticated fallback. The default controller URL is http://localhost:8090.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/client.go#L33-L65",
+          "version": "repo-lines-v1:sha256:92ebd8824184f68afc9c80e364a2b2523dc35844ee2ab0c5e911a09d9cc8ed87:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyMzE3NzdjM2E5OTRmMzdlMmFkYjI3NzBlMzUyMjAxNGU5ZTk5ZjE3MWM2ODNmZmVlZDNhMGRhMjQwMTM3MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhmYTU2MmZiZDY2NTlhMzJiMWZiYmZkNjA3MzRlY2IzY2U4MzhlMWVmZmFiZGFkMDc4OTJjYzMzM2E2YmZlNWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhMzY3OWE3YjBmMDJjOWYzYzBhYzllMWJiZTY5ZGI3YmNiYTYwOGEzYWE5OGE3Zjc5YmNmNzg4M2U0YTk4ZTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5352006bd1cc445098a63ffbbe986292",
+      "statement": "The worker lifecycle subcommands (wake, sleep, ensure-ready, status, report-ready) all accept --name and optionally --team flags. The report-ready subcommand also reads the worker name from AGENTTEAMS_WORKER_CR_NAME or AGENTTEAMS_WORKER_NAME env vars and supports --heartbeat with configurable --interval (default 60s).",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/worker_cmd.go#L11-L291",
+          "version": "repo-lines-v1:sha256:1249e40bc5ea8816eee3451727ca05d63059f01083703ab70ed51166fd27c925:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjODY5NGQyOWYxMTViOGE2OTUzYmRiYjk1YTZjYmJiOTZhY2EwYmU5ZGVmOWU3MjdmZWM4MjBkYzVmOWRhNDk2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyZjViZmEwZmYzMmU0OTQwNzA2ZTBkNmY3MDcxMTI2MmI3YWM5MzYyNDkzN2E3YzAxNWM1YWFlMTJmMGVhMTFiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5NDQ4NGRiMDcxNjk3ODhjZTNlMDc1YzBlYThjOWQ1ZjAyNDk3ZTM0MTdmNDlhZjFiNDZlNTIzZGFhNzMwNTA0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiYTJiZjQ4MDI1NTNmZmJlNmUzY2Q5YTk4MWE3ZGNmNDIzNjgxNTc2ZTUzZTc2NTAwYzE4MTdlODJmZWQzMzBlIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_258c8f56963b476592208b08430591ce",
+      "statement": "The REST API is registered in http.go with Go 1.22+ method-pattern routing. It registers routes for resource CRUD (workers, teams, humans, managers, projects), lifecycle (wake/sleep/ensure-ready/ready/status), message injection, gateway consumer/provider management, credentials (STS and Matrix token), package upload, status/version/healthz, AppService management, manager-tasks passthrough, Docker proxy (embedded mode), and Matrix AppService event push.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/http.go#L47-L167",
+          "version": "repo-lines-v1:sha256:04fe88a18251fc56b1a6342e697824068c011ddf1269673be8c633f851ac2bfa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3ZjAyNDc5MmQwODIzMzEwZDU4YTgzNGJmNWNmZDBhYTJhZDIyYTgzNGIyNjcxNzQ4MzEwNTY0MTJhNzA5YWNlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3NTMwZDJlZTIwYzQ5Mjk0NTNhZGRlNDYyOWIzZWYyOTg2Y2E4NWZiMDhmOTk4MzM3MDFhNDdmYWQ0YWY5ZjAyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxOGRlNWI3NTY5NTgyM2MwNjc0OWYxMGNmM2U3OTA0ZmE0OTVmNzI0N2JmM2QxNWE1NDkxZjJlMjAwMDQ0Y2Q4In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_1bd348be243640ee867e7801f3d149ee",
+      "statement": "GET /api/v1/workers returns an aggregated view that includes both standalone Worker CRs and synthesized WorkerResponse entries for every member of every Team, enriched with live backend status. The list supports a ?team= query parameter filter.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/resource_handler.go#L190-L250",
+          "version": "repo-lines-v1:sha256:36b0dea606b0be79025538035b4eb9b7111aeef309854119cbcf124282ef2d56:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxZTZiZmJhOGI0NzA4MzZlMDkzMmEwNjgyMjdkMDM2NjE4MWE0MThiNmU2MDgwNmUxN2E4ZmE0NzliZjRmMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkNTE4MWM3MjM5NGZjMmVkZmMzNDI2ZTNiMzFmMmJiMDdmNDFjN2VjZmYyY2I4Njk5M2I3ZGNjYTE0M2IxODkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmNDM1NzhmMDJlMjEwMmU0MmNlMWQzMzYwYzQxZTgwMmRjMWYyZjA2NmM3NTVhZjU3OGRhOTAxNmY4ZDFmMzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVmNjZmZWIyNjJkMDliMDE4NTBkNzJhNWVlNWRhNDk5Y2M0NjY2MjU3YWNkNTA4YjY2YWNkZDJlMGEyZGRiZTEifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/server/resource_handler.go#L25-L34",
+          "version": "repo-lines-v1:sha256:990e003b626c97fca7da6eb6b8deab1fec4219fe280fce84aeed34660499aa90:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1NzU0MTliMTJkM2E4ZGQ3NzliMjdlNmNkODY0YTEzMWRkNTNjYzA0ZDYwZmJlNjNkZDUzMGI5NGFkMDU5ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3YWUzMzk3OTU4ZGMwMDM4Y2ZjOGYxMTQxZDFkNGYzZGJkMjBmNzA5ZTkzNzllNzk0ZDU1YWZhZDU2OWQ1NjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyY2I1MjE1NzA1OTc5NDAzNzA3N2NmYTJlYTZiZWE2OGYzZGJmYzliNjAzODlhY2Q1NGFjYjBjNjVjN2M0MGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjllMzVhNDdjNzBlOTFlYjNiNTZiZDU3NDI1YTE1NjU0NTNiOTRjMTEwNmQzOTM0NzA2M2Q2NWM2YTljNGNjOGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_88dbea746761462dbd940e3aeb155c11",
+      "statement": "GET /api/v1/workers/{name}/events returns the worker's bounded event history (newest first) recorded by the health monitor and lifecycle handlers. Events are capped at MaxWorkerRecentEvents.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/resource_handler.go#L167-L188",
+          "version": "repo-lines-v1:sha256:06429261ad4a2f8cee2795467ef971e700add06dd8b582f4a3f3ea45e62653ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4MTIwZmUxZWM5OWM2OWFhY2IyMjZkYmNiODAzZDRjY2IyNmE3NTE1YWE4MTNkYzU3NTBjM2ZlYmQ3OTRhMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI5ODYzZTAzODA3NTM5NGNhMDNmYzRmOTcwN2VkOGNhMTUzNjFmZGVjN2UzYjYxYjJkMDg4ODc5ZWI4YWY4NDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxYzczYzExNDg2MGJkZmJmMzEyNDUxZjk5NTgxZjdkMzk1MTVjNjJlNDA1YTUxZWQ3OTA4Y2M4M2E4YThmOGIifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/server/worker_events_test.go#L17-L38",
+          "version": "repo-lines-v1:sha256:13e816f73e951817d1a3beefbc9fbaed8e30ea443e292ad6775a6e998938b015:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjN2VmOWE4MDgwNTgyYTQzZWViZDhmNjAxYzAxZmQ3MjUzNTdhMTExOWJkZDdhYTY2ODgxODYyYjdkNzI5YmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY5NjQ3Nzc3ZWQwNzU0NDY4YTFmNTM2MjU5Y2Y4MThmNDMzYjcwMTliZGFkYWMyZjgyOWRhODRiYjU2YzliMjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwZDgzNDA1YmEwZTQ5MTdmNzE1MGFlN2JiMjNmMWExNTY0YmQ0MDQxOTk2MTg5N2M2NDc1ODNhZGQ0MThiZmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e1f7da536b3447278d5c2eb0327ecf09",
+      "statement": "Lifecycle handlers (wake, sleep, ensure-ready) set spec.State declaratively to trigger the reconciler AND directly operate the backend for immediate response. If the direct backend operation fails, the reconciler retries.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/lifecycle_handler.go#L141-L199",
+          "version": "repo-lines-v1:sha256:489236717e4afa28e0af52737fcb331ec93a3cc195e86ed8ced4cdb2e654255e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwNWMzNWUxMTQxOTg5YTY0OTZhMjkyNDkzNmFjYWZiOTgzOTA0ZTViODU1YmFkNmQzMjE2MGM4M2VmYWI2NWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4MTliZmU0MjQ3NDUzODg1NmZhNDU2MjAxODU1NDY0MDE1MWI0NmI0NWI5ODFkYzM4MDM4NjRlOTZkMTg0NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxNDRkM2E3ODdmODVhZGExMDBlODM0ODExZWNkMjVhOGIyZTcxOWRmNmQ0ZGE4MjE4MGY0NzBkZTRhYzdiNDMifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/server/lifecycle_handler.go#L37-L87",
+          "version": "repo-lines-v1:sha256:c6aa9c5ba5c4e883627cfc3192714884f0248c2d0bb87295550817e09daa033e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkYmJjMzk1OTFjYjgzNTM4ZTMzZDk0NDhhNzg4YzQzMmVhNDA0M2M0NmY0ZWUwYjVlNWQ3MmVmZGZlZDhiZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyOTY0MDc5YzNjNWM4MTUyMGVmMzNhMmI5ZDJlMTVhMWI4NGQ3MjgwZGI4NTkwZGNkNjU3NDdlM2UwMTJhNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyOTNlOWUzMTljODJmNjMwZmJlNTEyZmI1ODUyYTc4MWZhMWVjNzgzN2I5ZTNhZmRiZmE4NmM1MTQ1YmUyNDkifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/server/lifecycle_handler.go#L89-L139",
+          "version": "repo-lines-v1:sha256:27a0b15351cb37c4ab2bcae51c78772a7f60857cf14d735cf32c0ad42e09a828:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzZjdkNjZkZGU0MWYwZjYwNjZlNjU1ZDY0YWU3YWEyZWUzOGIyNDAwYjg2MTcyNmNkYWQ3YWY4OWFhYTQxM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY2NGJkM2VlZWYxNjRjMzYwNDVjNWQ4YmY0Yzg4NGI0NDY1MzA0YjljZmUyNDQ4NzRlOTEwOTJhMzQ3MDRkNDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3OTAxN2RmNDg1M2EzNTczYmU4ZWZmMjAyNGZjZmQyYmUyYTU2ZjU3N2I3M2FiNjc5NGQxMGM2MTIzZGY2ZDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_89fe598f95914a348b8fcd8cd634f7f2",
+      "statement": "The Ready endpoint (POST /api/v1/workers/{name}/ready) is the worker's self-report mechanism. It stores readiness in an in-memory map. The GetWorkerRuntimeStatus endpoint promotes phase to Ready when the backend reports running AND the worker has self-reported ready.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/lifecycle_handler.go#L201-L267",
+          "version": "repo-lines-v1:sha256:1d9ef7a37bf6b908c5319bf71530c5a5632fc5103c31bb57698c92e983812208:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkYWI1M2JlZDUxNWI1MDYwN2ZkMDJiZDk0OGU3ZTg4NjA1MzU5YjU0YmY5ZDFiMzY4YjY2YmZlNzBkOTEyMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhZTllOTMyN2I4ZThmODY5N2JlMDBkZTQwMTI0NmExZDkyMTgwYTcyOTRhZmEyMThkNWEzZDQ4Y2JmNjBjYzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkNWZlYmE5YWUxY2U0MTRkOGJkOWE3MWE0MWNjM2M1YmU0YTNkYzMwN2E5NTVjMmU2ODJmNDM2NmY0NmNkODAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_71d34e0f375e48eca448a55e9c230fec",
+      "statement": "The gateway handler supports four AI provider endpoints: GET/POST /api/v1/gateway/providers, DELETE /api/v1/gateway/providers/{name}, and GET /api/v1/gateway/providers/{name}/models. Provider registration creates a DNS service source, AI provider, and provider-specific AI route.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/gateway_handler.go#L106-L233",
+          "version": "repo-lines-v1:sha256:34a040401e277a5d17675ab9a68fb8483b945635383d3a1c71d4adac4cdccbd2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiOTkxNjZhOWE3NTRjOTE1YjNlZGQwYmQxNzFmZTM3Njg0MmI4NjJiM2ZiYzViNTRhNWQ0NmUyNmVlZmIyYWYxIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2MjQ4Y2U4MTkyYTBjMzkwODViNjJlNzNhZTNmYmM0NzljZGVlOTlkNDBkN2Q4ZmQxOTFlYmEyYzI2OThjNWE0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIyNmMzMzgwMWZiZmIwMzEzMjU1OTA4YzVhYTFkZDk5NzY4ZWNkMzFhNGEzMDM3ZmY5ODY5MTRlMjI0ZmJiZTZkIn0"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/server/http.go#L137-L141",
+          "version": "repo-lines-v1:sha256:12e70c692dbe0f045b92add6ae5c9ce3b268537de27639bd09635ad4bb37bf61:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjFlZDQ5OWU2NjIyYWIxMzAxNTBlNGZmYTZlYTFmZWM0NmRhMWFmOGEzMWUxNzdkZmNkMjhhNjU2YTFmZmJkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTkwNWI2OWI5ZmY5NGY4NzVlMDJkMDg3NGY4Nzg1OTY1ODg5MGE3OTUyOTEzMWM4YmJkZTdiM2Q5NDM3NzlkYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjg4ZTFkMDkyYzMzOTBiNTZlNDExYjE3YTFkNzkwM2Q5OWE1MzFiYmVmYzk3NzY3MTk4ZDk0YmY4Y2E4ZmVmMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTBkYTc0ZWM2NGJlZWY3YmIzZThiZGQ0ODU1ZmY5M2RiMWM1NjgzYzkwNDZlM2VjNTgwZmYzMDEwN2YwZTk2NyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_16e950bfc0794ca9aa9967d682d6063e",
+      "statement": "The Docker API proxy is registered only in embedded mode (kubeMode=embedded with a non-empty SocketPath). It strips the /docker prefix and delegates to proxy.NewHandler with security validation.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/http.go#L159-L164",
+          "version": "repo-lines-v1:sha256:c84cd02832674f55b1e769e8ed460d8caab6e38a2c51aee81e0c7b5ef29c76e7:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQzY2E2YTY1MGM0ZmZlNDY4MzI5NzI5NmY0Nzg3Njk2YzdmNjYwMzI4ZTJhYmNiYWJiZjExYjk5MDhlNTNlYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGYwMGE3N2FmMTE1YzU2MjA5NDcwNTY3ZmIwMzI1MWQ4MGYwZjNmNDRiZWQwYmU1NjZlOTQ0NTIxMjQ2NmVlMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGY5YjYzOTgxYTQ5MzE5ZWRiYjRiYzk4NzZjY2E0ZWFmODFkMjJmNzIzNmYwMmQ1N2RhMjBkMGVmNWE1MzdiNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_416066ec501546ccae1b6293a6c74637",
+      "statement": "The manager-tasks endpoint reads state.json from disk and passes it through unmodified. It is available only in embedded mode where the controller and Manager container share a host workspace mount.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/managertasks_handler.go#L9-L68",
+          "version": "repo-lines-v1:sha256:f82a6b5334f0a22efcb570bfee3eb83e161659597686680da14ce76f7ca5e8af:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1N2FkOWRmMjgzYjU3YTBiMjI3MWVmNjdkMzlhNWM4NjdhZGI2ZWIzODM1MGQxZThmZDZjNzM2OWZiZjI5MmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwMDE4NTljMzhmZjJjNzM2MWJmM2JiNDg4NDNiMzhjZjRmMjBiN2UyMjY4YzA1YThjMDEyYWM2NmRjYTc0MDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUyZWNlNzFjZTY0MjI3NzY0MDk3N2Y1MzM0N2I3NzdlZTYzZGEyYjA2YjlkNjk5ZWU5MDcwODQ1MmY3NDc1NDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c1bdf00303524c159eeb02cbdac3afe8",
+      "statement": "The create worker CLI command validates the worker name, expands package URIs, supports --soul-file for inline SOUL.md content, --skills as comma-separated list, --expose for port forwarding, --team/--role for team assignment, and --wait-timeout (default 3m) with --no-wait to skip ready polling.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/create.go#L30-L146",
+          "version": "repo-lines-v1:sha256:3f1c249298cf2419bb7fc3d16035aaf05999622239d303638f56839cabb46c7c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MWJjNWEzNWM1NGE2MTlmNjVhMzNkZDM0ZDA3NTRkMjQ4YjEyYjc2Yzc3OWY3YWNhYzI1MGRlZmM2YWE4Mzg2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyZjViZmEwZmYzMmU0OTQwNzA2ZTBkNmY3MDcxMTI2MmI3YWM5MzYyNDkzN2E3YzAxNWM1YWFlMTJmMGVhMTFiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzODM1YmZmYmY3YjAyOGQ2ZjM4ODA3NDMxODU5YTJhMDFjNmMxNTQzNWM1YTU0NGM0MDVlMGFlNDQzYmExZmZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI4MWIyODM2YTk4MzcwMzI3MzBiYmM0YTM4NGU2YzViYjk0NDI2MTBkZGZiMjc2MTgxYzkzZTBlM2NkNGM2N2FiIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_aacb59c84e8c4e53b41c5a40336cccac",
+      "statement": "The status command fetches all four resource lists and the controller version in parallel using goroutines, renders a one-screen overview with phase breakdowns, and supports --watch mode with 3-second auto-refresh using ANSI escape sequences.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/status_cmd.go#L16-L200",
+          "version": "repo-lines-v1:sha256:274fdcc589daad79fb91d9ca01813148423016be3a8850f1ed19d10681c96797:eyJzZWxlY3RlZExpbmVDb3VudCI6MTg1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZDg2ZjVhOWIwYTQ2YjFkOGIwNmJhNThlMzI2OTlmOTlkOGNhMGVkNGFlMTI5MDYxMmZhMjI5MTkwMGQxNjAzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5NDQ4NGRiMDcxNjk3ODhjZTNlMDc1YzBlYThjOWQ1ZjAyNDk3ZTM0MTdmNDlhZjFiNDZlNTIzZGFhNzMwNTA0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkZjBmMmUwYzE3NjU4Y2JiYTBkMTMwOWExYWU0MDI1MmIwOGM5YWUyZWY4M2EyMGM3NzI0ZDk5ODhjOWVmZTk2In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_c5971befb2a44021a59b704c8cfbd580",
+      "statement": "All API endpoints are wrapped with Prometheus HTTP metrics middleware via withControllerHTTPMetrics, which observes method, route pattern, duration, and status code.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/server/http.go#L54-L54",
+          "version": "repo-lines-v1:sha256:0a65d3a8bcb2e64ffa8d40693151f0f24c89591fa78f406e05f60e6d430ccdab:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGE2NWQzYThiY2IyZTY0ZmZhOGQ0MDY5MzE1MWYwZjI0Yzg5NTkxZmE3OGY0MDZlMDVmNjBlNmQ0MzBjY2RhYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGE2NWQzYThiY2IyZTY0ZmZhOGQ0MDY5MzE1MWYwZjI0Yzg5NTkxZmE3OGY0MDZlMDVmNjBlNmQ0MzBjY2RhYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWM4MGMwOTI4YTAzNGE1ODEyNmI4N2VhYTQ3ZDQ1ODMwZjk5ZjljYzhmZWI1OTQ5NDk2MzE5OTEyY2ZlOTU2MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWEzZTEwYjZkNTE3NGExMDUzMGE0Mjc5OTVhYzg3YjVmZDJiMGIxYjhjZmIyMDQ4NTBlN2IyNjc0Yzk1MmMyMiJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/server/http_metrics.go#L11-L18",
+          "version": "repo-lines-v1:sha256:602e00a7e07e4d27a47eb18838d02305991d6744974dc4e6ecd8af843450db06:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGY2Y2Y1M2VkZTAzODEyZjM1YmQyNzUyZjY4YjEwNWJjMzQ5YzhiYjJiMjZmMjU1YTRkNTFmZmJiNmFmZjk1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2M4YzAzZmYyNTZhMjFlZjNjYmNiMmM3MGZlMDhkOGEzZWZjMjlhNjA2MzY5MWFmMjIwMTY5NmZhODI2YTFlZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDA3YTlkYWJlMTBhOTgyN2NmMTNhMWEzY2VlMmU5ZGJjMzNlODM4NzA5MjI5NTEzMjU2MzlhZjE3MDRlNWEwMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1cc3c9b6abfe4b4d8791bb0c2a21b16f",
+      "statement": "The llm-preflight command validates LLM API key, base URL, and model before startup. It supports providers openai-compat, qwen, and custom, with configurable timeout, retries, and --strict mode that fails instead of warning.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/cmd/agt/llm_preflight.go#L79-L100",
+          "version": "repo-lines-v1:sha256:8fee8a3fd5d2a06836c7572893668af5a33e99c1bbbb626ff4710233775594ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0NjRiOTQyMGI3MTAwMGZiODA3OTMzMmFkMDE2ZTY1NzdkOTIwMGQ4ZWYwODBkMmEwNzI0Mzg1OTNmM2Y4NzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwY2I4NjdhZGE1ZjgwN2QzMTUwMGVhYjhlNzE5Mjg2NDIyNmEyODhhYTFmZjY1ZDZmYjA1OGVkNWM3MTU2ZTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFmM2Y5MDJkNGE1MTA0MjA3MmIyYTk3MGU5M2EyMGJkZjE2NTUzZDY1NDY1MzM0MTg2YzUyMTRkYzI2NzAyMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxNzUzNzM0NmEzN2Y3ZDg3MmQ1ZmJlMGU3NTViOGRjYjAwYmRhNDU3MzY2MjU4NzhkMzQxYzRiMjMzYzJiZmUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}

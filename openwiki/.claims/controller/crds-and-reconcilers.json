@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:8883b3465e5abf60799ce129b5cb9f2b3c2285a0d37ccdb77b4eebe3f308cd8b",
+  "claims": [
+    {
+      "id": "claim_1bf6d0aed83f4f8a838310b688e91f1f",
+      "statement": "The agentteams-controller is a Go-based Kubernetes operator that reconciles five Custom Resource Definitions: Worker, Manager, Team, Human, and Project.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/project_types.go#L6-L11",
+          "version": "repo-lines-v1:sha256:4ad80995ebabceefb6c8feca03a699f6883bb871637e673cc2eb36ffe8ec9c6a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWM0YzI2NGQ3MGJiYTNlNzM3MDZlYmFjMGFjZWRkN2VmYzM1ZjEyZDA2YzZiZjA2MWExMWIyZThiNTZlYzc1YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODEyYWNiNmVlMGQzMjZmYzA3MjI5OWIxMjllNzc5MTI0ZjA2NWU1ZGNjYTBlNWI3MmU0OWE2YTI1MTliZWRmNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmQyOGYyZWJjYWJiZTc0ZjAwYjY2NzUxNWE4ZGYzYmNjZjMzMDE3NjUxMDZkZjRhOGRiNDRkNGNlMjlkNmVmMCJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L163-L173",
+          "version": "repo-lines-v1:sha256:7e54524d288a1fe2f8d4b306949080be73b0f3228c37649f5b4458859711f4aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTJmYzk5YjhiZGRkMWQzNjgyYzI1YTg3OTQxMDBmNjk1YWUxMDc2ZjY3N2U3Y2M5MDdiYjk4YmQ5M2U0NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwMDkwZTY1NjFkZjE1ZjQ3ZDQzZDUxMjczNjhjMDZiZmVlMDllYWZiYTJhZWM2YmQyMWQyM2I1MWRlMWY4ZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkNmJmYWNmOTdjOTQ5ZWRlM2I3MTMzMmMzMDJhMTZhM2ZjYWQ1MTJhNTNlYjNkNjgxNjI3MDliMzY4YjBjNDYifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L432-L442",
+          "version": "repo-lines-v1:sha256:bf1a4f0eca16ef8dde10dc0d9c939f9252e08bc98cdb0e35ec5a659947df18be:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTJmYzk5YjhiZGRkMWQzNjgyYzI1YTg3OTQxMDBmNjk1YWUxMDc2ZjY3N2U3Y2M5MDdiYjk4YmQ5M2U0NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwZmZkNWZhOGNjODNlNTA2NjgzNjgxMjYyNjFiMzQyMDI0NjU2NTAyN2YwMDc5OTBmZWZiOTExMWU4MGZjODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzYTE4Y2NlYzJjNWM3NWU4ZmNjNzRjZmVmNzk3N2UwZjE0NmY3MThjMTZhZjdhZjE0NDM4NDJlYjUyNDM0MTAifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L710-L720",
+          "version": "repo-lines-v1:sha256:c38dd78e8cbb5f7e945bd0cbaa75a0c497db122f4b474f7c687bf0e3fdf57db5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTJmYzk5YjhiZGRkMWQzNjgyYzI1YTg3OTQxMDBmNjk1YWUxMDc2ZjY3N2U3Y2M5MDdiYjk4YmQ5M2U0NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1YTAyN2E3OTU5ZDgzYzcyNmFjYWIwZmFhYzllNDE0MDEyMmIzN2M4ZmY0OTNiYzAzNzg4NTAwMjJlMDc2MjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxNzg3ZTkzNWYwZDI4ZThiZjU0Njg5MzZkMWU2Yzg5YzI1N2U4NzAyYWM0NDU5NzcxNTYxYjFkNmQwODdhMTcifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L765-L777",
+          "version": "repo-lines-v1:sha256:01fd06e21a68bf955548c2201e71210e24c2036f7b8138d188aed6a207e189f9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTJmYzk5YjhiZGRkMWQzNjgyYzI1YTg3OTQxMDBmNjk1YWUxMDc2ZjY3N2U3Y2M5MDdiYjk4YmQ5M2U0NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyYmNkNDc1ODZiNjdiNDkxNDkyYzA3ZGM1MWM3MGYxYmRmODIwZmQ5MGRkZGYwOGQ0ODBhOTY0ZDNkZjM3NDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyMjUxOGY1MjU0OGIwN2Y1MDI0MjhlNjhhMDg5OTc2OWE0MDkyODM0YmNjMDM5ODViNDIwYzdhOTk5NDBlOWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d1073e5530924f439d7e6b94d36a2d5b",
+      "statement": "The controller operates in two modes: as a Kubernetes Deployment (incluster mode) or as an embedded process in a local Docker container (embedded mode), selected via the KubeMode configuration.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/Dockerfile.embedded",
+          "version": "repo-file-v1:sha256:665ad53c190e4ece2ebb767c015e77e2cfd35fb8d72c2a167eb19b032b1104b0"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/app/app.go#L399-L407",
+          "version": "repo-lines-v1:sha256:bf519dbee33135dd49091827289aad4365512357a152521aed7110d4f54173c5:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWEzOTExYzNmMmY4YTQ1NjJhMmIyYTgyM2M5ZDAyNjdkOTgxNzQyZTFlMjY0NWRiNjYxNWJkYzEzZDA3NmM3YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTYzMWI2ZTJjYTA3ZDhiYWYwZWI0NGU3NDlkYmY0OTBiMzkyZTNhNTM0ZWY2MTAyMjc3MTE0NmNkZjlhZjFhMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDk3NjQ4MDE0NDNlZTkwMDRkMGQzYzg4YzNmOTA4YTg3ODQ0MmJjMTgyMDY5NGUwZDQxY2E5MDYzMzBiMzdkYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ecc9d88248dc43079e396fa77540a854",
+      "statement": "The backend abstraction layer provides a WorkerBackend interface with three implementations: DockerBackend (local embedded mode), KubernetesBackend (incluster mode), and SandboxBackend (not used in the open-source controller).",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/app/app.go#L927-L939",
+          "version": "repo-lines-v1:sha256:0906bfcf37d4f981996533dbb134f9616c32536b8a50dfbb02a8cf7deee670c2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjMWI3ODVkNDkxNTlhMTAxYmRkZmE5ZDlmNDY1ODhiM2EzMzhiOTRhYzhjZWFiZmIxYTcyOTBjMTBmZGU3ZmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiNjM5Y2Q1NDViMTNlN2RhMTFiYWFmNWUwYzRlMTQxOTI2NDdjZGI5ZTQ4Y2NiYWRiNTkyNzI3NmI0ZGVhMmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY0MmJhMTg3NjkyZWE1NTdiMTQwMGU5ZmYyOTI1ODZiNGFmMDNkZTk0YjVkNzYwM2I5MGY1Y2E5OWMxMWI4MzAifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/docker.go#L40-L45",
+          "version": "repo-lines-v1:sha256:8dfa0b3cdac7575da057bacb250ee461cbcd20d4e171d351cfadb4a3241a12a1:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDQwNzk0YTBiODdkMWMwZDk1M2NiZWZiNmY4NjNlYzlhMzk4MzM0NzNmNGM5NmY3Mzc2NWU1ZmU5MDgxYjMyNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGQzZmY0NzljOTI4MDQ0MzdkOGIzYTY5ZjJmOWU4MTcxMmNkOGZkZDNmOGYyNmYzOGJmZThlMmIzMmQ5ZTJlMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGFhOTNhMjI3NzQ2NmM3YWMwNWVmY2EwMjU0ZTVhMDM3MjllMWNiM2M3NWZlOTRkMzNlNTZmZjNhMGVlNThmNCJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/interface.go#L313-L343",
+          "version": "repo-lines-v1:sha256:901f0a81edc53d4d11cd465e797ce22794139f96a2168d0d12c03ec0efb8ce96:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljNTUzNzZlYTBiN2VlYTM3MDVkN2M5MWM2MzJlOWQ2NzhmYmZiODlkMTE0ZmJiYzRmYmZmYWQzMjZmNTkxYTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3OGJhZGE3Yjc0ZWRhYjE4YjYyYjk0NDgxODA4NjYyNmMyNzExNDk3MjEzMGI3NTU0YTRiZmY2NzYyOTM1YjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/kubernetes.go#L27-L50",
+          "version": "repo-lines-v1:sha256:cf5c23244924bef25f9bd851438739878dd4751b7008412ecbe600a29f218bf5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2OTkwMjc3ZTYxNjVjYTE5NDJjNWEyNGZkYWQzNjdkMjUzN2VkNmM1YmFhZDJkNTViMzhhNzhiYzI4OTQ4ZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiYWIzZjc1OGQ1ZTVmYzM2MGJhODRiMmE1YTc3NWU0NjM5ZjAxMzFlZWRkZWJlN2EzNjk4YzgwOTBmYWYxODkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0MzgwNzg3YzI0N2YzNjRmYmI3ZWNkZWI4MTAzM2E3NjQ3MjJkYjJmOGU5MzQ2MzFlNWY4NDY5ZWYzNWVhZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiYThjN2YyZGUxMTM1NjhmNjExYjllMDJlM2Q1ZDM2NzEyNWUwM2VjZTFhZDU2ZDIwN2I2N2NmNDEwNTY3ZTcifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/sandbox.go#L51-L60",
+          "version": "repo-lines-v1:sha256:85e05e6cadc5eddfa5008dac1e4b504af69bba8451761df2c6cb165b5419088b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjZjI5YjQ0OTQyYmY3NWY5NDYyNDgxOTBlYTEwNzBmNjVhYjNiOWE4NGY1YThkMGUzZDcxODEyMzVjOTZmODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmNGJmOWI4MzNkN2YwYTMyOGMyZjJmNDJjZWJhYmRmMDg1MjJkNDhiMTEwM2VjMzFkZmI2ZmJkYTY4YzVlMTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA2NzM3YzFjMmYwODAwZmJlN2M3ZjY1NjY3MjEyMDMzOWFjOWEzOTQxZGZkYmY4NGY2NjUzMDkwYmEzODBjZDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6f51cbadb50f4ea69138889f9e0ff3b8",
+      "statement": "The backend registry auto-detects the available backend by priority order: Docker backend first (in embedded mode), then Kubernetes backend (in incluster mode), returning nil if no backend is available.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/app/app.go#L915-L942",
+          "version": "repo-lines-v1:sha256:5c45134286bd0c9e3ce98b32881a17212638dca5492322ae282737ab50a7bbb7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4ZWE4OTJkOGQ3ZmYwMDJmM2YxMDQ1NzU1OTEwYTIyMTZhMmZhOTNhNGEwMjQ1MWI3OTliYWI3MjAyMmI3MDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1OTU5NTdhZDAzNzg5YTY2ZTQ3MmQzMWFkNmRhM2M4OGZiYjcxYjZkYzI3YWRmOTg1NWRlMTg0MGRhOWFmYzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIxYTMxMzRhYzhiZjZhNzYxYTFjZjNjZmU5MDQyNGIyYzMyMDJkYjVhOGRhOTUxMTM5NDc0NDMwODNhNmFkNGIifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/registry.go#L28-L40",
+          "version": "repo-lines-v1:sha256:05be43b4d0df64090aefdc4f28dbc27f2c203ff276ae91169f1f71d8fea0f003:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0YmZiNDExZGNjOGMyYThiMGZiZDg0ZjZkYzQ2MTRiMzgxMDZiYzIwMTJkN2I5MGE1YzhhY2Y4MDMyZDI0ZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1NGNmODc0NWQ1OTgxZmJkNWU1NWIyZDRmNGE0YjhhZjM2ZTExY2RlZDUxNGRjNmY0N2RmN2JkMjcxNTM2YTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNmYTNjOTVjOTg2OTBjNzJjY2QzMTUxZTNkMmEwYmM1Mjg4MjI1OWUyYWMyOGM1Y2YzMDdlZWFhMDAyM2I0Y2EifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f5c2d36a605441d7bdd585893dda5354",
+      "statement": "The WorkerBackend interface defines the contract for worker lifecycle operations: Create, Delete, Start, Stop, and Status, with implementations normalizing status across different infrastructure providers.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/backend/interface.go#L18-L30",
+          "version": "repo-lines-v1:sha256:67da7d41b9f10fe31d2ebaf1a8c46b9ded7f2549dfe7a1b60db2ad19b22c69fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ODZkM2Y4MmEyZmMxNDkwOGRjZWY3NGY2ZWRkM2UxYmJjN2E4N2JmNGY2ZmVkYjYwY2Q0Nzk3Njk3ODIxZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3OWQxODA3M2JkYjg1MTYwZWM0Zjk3MDM5N2RlNThjMjcyNmIzMTU5M2Y1YzhmZGNkNDI0YzFmMDIyNTcyYmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3ZDg0MWQ1Yzg5MzJjYzBmNWY4N2ZlMTVmNmE1MzUyYjczZjhkZDQwOTRkODI0M2VkNzYyYzVkNmIyNDAzODAifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/interface.go#L313-L343",
+          "version": "repo-lines-v1:sha256:901f0a81edc53d4d11cd465e797ce22794139f96a2168d0d12c03ec0efb8ce96:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljNTUzNzZlYTBiN2VlYTM3MDVkN2M5MWM2MzJlOWQ2NzhmYmZiODlkMTE0ZmJiYzRmYmZmYWQzMjZmNTkxYTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3OGJhZGE3Yjc0ZWRhYjE4YjYyYjk0NDgxODA4NjYyNmMyNzExNDk3MjEzMGI3NTU0YTRiZmY2NzYyOTM1YjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_76fb1bdaf57a4ca8bd0e596dc53ef149",
+      "statement": "Each backend implements different infrastructure providers: DockerEngine API for DockerBackend, Kubernetes Pod API for KubernetesBackend, and SandboxPlugin API for SandboxBackend.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/backend/docker.go",
+          "version": "repo-file-v1:sha256:02f2b165be03962f7eb60698e03a22083079dc7c6b827b3dfc08a6be1e85cef5"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/kubernetes.go",
+          "version": "repo-file-v1:sha256:d3cf97467d8fbf91845c9fb1c000ecb0b359964e84773992d3496282746f3120"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/sandbox.go",
+          "version": "repo-file-v1:sha256:708a9fadddbef70e219299fcd8639838a2487b754fc6ad3941d3601d397baceb"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/backend/sandbox/plugin.go",
+          "version": "repo-file-v1:sha256:36b7885266190bb662cd77701bc94a4e2442d4f69ee904127397112519e76339"
+        }
+      ]
+    },
+    {
+      "id": "claim_e98789e18217483ab0afe7064fdc9739",
+      "statement": "The service layer provides provisioner and deployer logic used by reconcilers through interfaces: WorkerProvisioner, WorkerDeployer, ManagerProvisioner, ManagerDeployer, and HumanProvisioner.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/service/interfaces.go#L131-L138",
+          "version": "repo-lines-v1:sha256:ed99299a1a416116020eaa4bfb9863bcac78f442dbd54171e31dc7fcd0d09ae2:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjJlOGVkN2UxOWQzODQzODdiODRlZTEyNzVhMzQyNTMyYWY0MmUwMThlM2U3MmEzZmYzODlhNjcyZTFkMTNjMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTAyZmIzZjZjY2ZmM2U0M2FmNTM0YWQxYzM1OGM2ZWMwYWVlZDNhMTg3NzdhZmM3NmNlYWU1Mjc1YjU3NzZjNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODQxMzYwMzI1Y2EwYjRmNDA5NTUzODU1YTc3ZDY2Nzk4NDQyNDUwYTNkNDkyZTU2YmM1MjMxYTNkMjIwYTBiZiJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/service/interfaces.go#L146-L200",
+          "version": "repo-lines-v1:sha256:2d85ffe9cef3ad34269304e03ea08ccdee3e9f62fd90a680201ae30e07b45e1e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhNDdkM2Q1M2JhN2UzNjBiYWEyNzU2MzMzYjg2NTg3YzIxZWQyYmJjYTllZDYzZTJhYTcyMWUzZjBlNzljMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiNDg3N2M3ODc0ZGMwMTQ3Zjk0ZjQ0ZWIxYTY0NWM2MGJkZmM2N2EzMTVhNDkxOWQ2NWU5ZTEwYWJlODM2NWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljMDhhYmE2OTc4ZDk0NjA1MmMxN2IwNzlkZjYxMWRlOTNhZDRiYWQ4YTFjNjI2NGY0YmFlMTA3ZDkzYTAyNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyZWU2M2EzYjIxNTAzNGI4ZGNhOTBiYjRhMjA1ZGNjM2JjOTIwNjUwY2Q0M2Y1ZDgzMmM2YjEwNjFiOGIzZDgifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/service/interfaces.go#L19-L52",
+          "version": "repo-lines-v1:sha256:42c0fbf956028a47eb3062ed29eab2af6f5b5aecd17dd135e718456e373093cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5NDNlY2FmMzY5NmU5Y2U3YjZkMmEzYjZiYTY1M2I0OWIxMDZlODJlZGRlMmMxMmVhNTk5ZTFmZjNhNjEzZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3NTU1YTlhNjJkZTZjMWY2ZDZiMjczY2ExZWZmNzM2NGZlYzI1YWJkMDNlOTQwNmM2MjhmZWI1MGM2NTFmZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4MjkzYWZiMjEwZjU4ZDEzNjM5YjJhMDA3YmIyNzllZjZlNjA1Mzg5MDNjMzM4ZmM5NGVmZGUwZjg5NGNiZWIifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/service/interfaces.go#L55-L71",
+          "version": "repo-lines-v1:sha256:d9345d726ded2a9b10929fed685478891d72f4237180c37a59ccc67beb5152e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyNmI0MDcwYmM5NWIwNzE0M2U3NDFhYmM5MWVhY2JjMjM0YzhkNThjMDE0NzUwZWNiNzk3ZjViZGQ0ZDM5MjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1YWJhN2QxNjBhZDk5ODdiZWZjNzBkN2NiMTFmM2I1MjM5OGI4MDYzMzdjZDYwMjQ1MzE5Nzc5ZWRkMzRlZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcyNDA3MGFhYTJiYzU3MDkyMGUxNjE0ZDc0NzUxZjFiYmQ5OTA2YzlhZjMwZmQyNTU5YmVlMDc1YjY0OGFlMGUifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/service/interfaces.go#L79-L129",
+          "version": "repo-lines-v1:sha256:ed8c8fed4c070ead14e7c09c3399f109e0966e4d1a33d16aaab0d253cc6e92ff:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1MmYwMmRhYTQ1NGY3NmRkZjdhMDcwZjE1NmZlNmJlZDBlZGMxZTMzMDNlYmRhMmUzMjNlZTk4OTA2ZjZjZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyYjEyNjdhMzIxYWYyMWM5YzE4MGFmZGQxMzZmZDgzZTk0MDZjMzkwYmZiMWM3MjU0YWMzNDk1YzQ4NDM4YTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjNjA1ZWYwYmRjMTc1OWM1MGUwZTE3YmM4MzE1NDg4ZTcwMGNkMDgyNDdiZjYyN2ZiYzdiNjhhYmU0N2I0ZTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_36cc86d3710c4c36b69f35c9efcae85f",
+      "statement": "WorkerReconciler and TeamReconciler share member_reconcile.go helpers for container lifecycle, backend provisioning, and runtime config injection of individual team members.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/internal/controller/member_reconcile.go",
+          "version": "repo-file-v1:sha256:ef49b70bd362295bea1236af00dd2d780f2e7ef3a65cdb77580d3d754a905ee3"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/controller/team_controller.go#L43-L45",
+          "version": "repo-lines-v1:sha256:707c909084320c050b55763e4f63ff42c0376f08ad73751d8cd20107011a9dda:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmNhOGJhODM0YzA4ZjAwYzg5OWQ2MDJiZWI0YzM5MTU5MWZmMzAzZjQzMDhkNmRhNDc1OTI4MmIzMWI1NWQ2YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjI4NDM2YTI5OTJlYmYxODY4MzQxNWQ3MDMwMWUzNGRmODAxZmRmNmY0ZjRhYzc2OWMzYTE2NzI0MGMwMjYwMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWJiOWVhNjQ5N2EyNWQwNjk2ZTZiMjc3NmRhZTlmOWVjNzI1MjEzZDlmNjRlYmY3MGY3MDZmZjZkNWNjZDFhNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjliZjlhMzEzYWEzNDA1NTgyZTYyNzMxMGQ2ZjFlMTQ3ZDJhZGQ5NTQ5NTQ0MzczMjJkMWQ1MGUwZGE5NWI5MyJ9"
+        },
+        {
+          "resource": "repo://agentteams-controller/internal/controller/worker_controller.go#L45-L48",
+          "version": "repo-lines-v1:sha256:7c945d15a182fe5201787065364f91477968ab29da6f5891cdac73e2f367f83f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODNlNTVjMDMzN2MyY2IzNTQxOWUyY2UzMjFlZTAyYjdiZDYyMDVhMjBlNzE4ZGE0ZjIxOTliNzQwZjczNTBkNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjc5YzRjZWU2YzFlNmI4Mzk3Mjg3ZWJmMmQ3MzI0N2E1YTYxY2Q0NjA0MzU4NTRkMzg1YWU5M2FlNmY3ODEzYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRmMjNjMDU2YmFkMzBkNTdjOTg5NWQ3NzBkMTBiYmVmNzVjYTRmN2I1N2E1OTY2NDc2YTlmYjdlMDBkNzFkYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDYwMGZkOThmMDQwMzE1YzFjZDJkMjdlZTI0ZDU2YTQyOWViYmQ5NjRhZDRjZDZiZjkzNmRkZDA3OTEyMmUxZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_98763fc504b444fba63ce63913c82ed0",
+      "statement": "Each CRD type defines both spec (desired state) and status (observed state) fields, with the reconciler continuously working to converge actual state toward the desired state.",
+      "evidence": [
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/project_types.go#L12-L26",
+          "version": "repo-lines-v1:sha256:d0483e864b9274e630024193f8fa53df5569b2aa4da8c7723f9509a92d431afb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyMTBkNjgxYjVhM2I1ZGIzNjgxZDg3YzEzNmUzZDQ0ZGYwOTNkOWVmYTY4YTA3MDE4YWExZWI5ZDNiMDQ5MzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkNzRiNmIyYWZjMjZhMDkyNjg4ODkxMWE1MDM1NmI0ZDkxYzQzZWRlZTI4ZGIxYjgxZWI1ZDFhYjU2OWE4OTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlOGYyNzdiYWYzN2M2YWQ4MGExYmRmM2E3NDA0Y2UzYjVjNzg4YjQ3NzRkOGE0NzNkZWJiMWI2OWI0OWQ5ZjIifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/project_types.go#L54-L66",
+          "version": "repo-lines-v1:sha256:12ab76b06101d9d2af6203ae60cec2fa4ffbbb9283788fb897f17f1ecd6ed07a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1YjgyNTBjOTgyZWQxZmY3ZGY5ZGIxZWY2Y2YxNzA5YzU2NWE5NDE4Y2E4NDY3YTI1ZGNiMjQyZWU0ZjY5ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0ZGRjYThkZDMxYmMzMWM1OGQ1MmNiZmJhNTU2MzZlNjQ4NDUwNTZhMjk0MjVmYTdjNjg1MTdlMjIxM2NiZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3NzhkYTI2NjM3MzlhOTI4Mzk0MmE5YTZmNDBkMWZkOTQyMjliYTM0ODU4YzJkZWE4M2I3MjliOTc4MGZkYzIifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L175-L258",
+          "version": "repo-lines-v1:sha256:1b06674b79db9f30c0bff5517c1be4139399bfd416ca82e3b89d3477fe02a0bc:eyJzZWxlY3RlZExpbmVDb3VudCI6ODQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3MTg2ZDVmZmViMDllNTE3NGNjZjk4NDlhOTRlNjQ3OTU0MDQxMTVkNGVjYWEyZTI5YTNiYzk3ZDkwYjcxZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlOGVkOGM0ZTYxZDA5YWRkMTg0NWUyYjA4NmQzMThkMzNjMWMxNjNlNDM1MmY4ODI4MDc1YTBlMTUwZmQ3MDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyOGJhZDcyZDAzMGM5YTViZjY4YWM4MjU4NzhmNzEzOGFkMWI0NDczMDkyODU1OTc0NjA4NmQ5MDA2NmM3YzUifQ"
+        },
+        {
+          "resource": "repo://agentteams-controller/api/v1beta1/types.go#L372-L408",
+          "version": "repo-lines-v1:sha256:64aba37371d6f1f53ccd1f17d389b2f943bb71d008a031395517a451e65b8a33:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmYjkxYTI5NGE5MTlkZjY3MzU1ZWYxN2NjNmFmZDc0YWEyOGVkZjEwOGQ0NzIwMDI3NmMyZjM4NDUxZTdmYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiOTBhMGYwMTEzMWZmMjU3MDVlNTFjZjMzMGE0NDI1NDI5OGEzZGY0OTM5MDE4YjhkOTk4NzY0Y2E2ZWFjM2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzZGM0NjczMzIxMTdiYTdjODQ4N2UxNzc1OTA3NzliMzllOTMxYWM1MTEwZWJkMTExMjc4NDljYmM2NTUyNDAifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.1",
+    "at": "2026-10-08T08:19:13.018Z"
+  }
+}
